@@ -3,13 +3,14 @@
 
 More information coming soon.\
 If you would like to be notified when the code is made publicly available, please contact me at: <u>shiraishi@os.is.s.u-tokyo.ac.jp</u>\
-I will add your email address to my notification list. Please use "SmartC2Rust Code Notification" as the email subject line.
+I will add your email address to my notification list. Please use "SmartC2Rust code notification" as the email subject line.
 
 
 ## Contact
 Momoko Shiraishi\
 University Email: <u>shiraishi@os.is.s.u-tokyo.ac.jp</u>\
 (Personal Email: <u>momoko.shiraishi36@gmail.com</u>)
+
 
 
 
