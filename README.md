@@ -1,5 +1,5 @@
 ## SmartC2Rust
-🆕 This work has been accepted at ICSE 2026.
+🆕 This work has been accepted at [ICSE 2026](https://conf.researchr.org/track/icse-2026/icse-2026-research-track).
 
 More information coming soon.\
 If you would like to be notified when the code is made publicly available, please contact me at: <u>shiraishi@os.is.s.u-tokyo.ac.jp</u>\
@@ -10,6 +10,7 @@ I will add your email address to my notification list. Please use "SmartC2Rust c
 Momoko Shiraishi\
 University email: <u>shiraishi@os.is.s.u-tokyo.ac.jp</u>\
 (Personal email: <u>momoko.shiraishi36@gmail.com</u>)
+
 
 
 
