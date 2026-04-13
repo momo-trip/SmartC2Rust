@@ -1,0 +1,5 @@
+baseline run exit code: 133
+50MB alloc run exit code: 133
+mem-baseline(kb): ''
+mem-50MB(kb): ''
+FAIL: could not read mem-baseline or mem-50MB

@@ -7,4 +7,7 @@ all: $(TARGET)
 $(TARGET): avl.c
 	$(CC) $(CFLAGS) $^ -o $@
 
+clean:
+	rm -f $(TARGET)
+	
 .PHONY: all

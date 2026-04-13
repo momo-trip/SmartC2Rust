@@ -2,6 +2,8 @@
 ####    Reformat
 ########################################################
 
+cd macro
+
 # time-1.9
 python3 pre_process.py /root/SmartC2Rust/benchmark/time-1.9 reformat base /root/SmartC2Rust/benchmark/time-1.9/base_test.sh
 
@@ -69,64 +71,64 @@ python3 pre_process.py /root/SmartC2Rust/benchmark/su-exec reformat base /root/S
 
 
 # time-1.9
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/time-1.9 macro off /root/SmartC2Rust/macro/trans_re_0000/time-1.9/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/time-1.9/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/time-1.9 macro off /root/SmartC2Rust/macro/trans_re_0000/time-1.9/run_test.sh /root/SmartC2Rust/macro/benchmark/time-1.9/targets.txt
 
 # avl 
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/avl/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
 
 # which-2.21
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/which-2.21 macro off /root/SmartC2Rust/macro/trans_re_0000/which-2.21/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/which-2.21/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/which-2.21 macro off /root/SmartC2Rust/macro/trans_re_0000/which-2.21/run_test.sh /root/SmartC2Rust/macro/benchmark/which-2.21/targets.txt
 
 # Tinyhttpd
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd macro off /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/Tinyhttpd/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd macro off /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd/run_test.sh /root/SmartC2Rust/macro/benchmark/Tinyhttpd/targets.txt
 
 # ht
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/ht macro off /root/SmartC2Rust/macro/trans_re_0000/ht/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/ht/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/ht macro off /root/SmartC2Rust/macro/trans_re_0000/ht/run_test.sh /root/SmartC2Rust/macro/benchmark/ht/targets.txt
 
 # buffer
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/buffer macro off /root/SmartC2Rust/macro/trans_re_0000/buffer/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/buffer/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/buffer macro off /root/SmartC2Rust/macro/trans_re_0000/buffer/run_test.sh /root/SmartC2Rust/macro/benchmark/buffer/targets.txt
 
 # qsort
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/qsort macro off /root/SmartC2Rust/macro/trans_re_0000/qsort/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/qsort/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/qsort macro off /root/SmartC2Rust/macro/trans_re_0000/qsort/run_test.sh /root/SmartC2Rust/macro/benchmark/qsort/targets.txt
 
 # rgba
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/rgba macro off /root/SmartC2Rust/macro/trans_re_0000/rgba/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/rgba/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/rgba macro off /root/SmartC2Rust/macro/trans_re_0000/rgba/run_test.sh /root/SmartC2Rust/macro/benchmark/rgba/targets.txt
 
 # bst
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/bst macro off /root/SmartC2Rust/macro/trans_re_0000/bst/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/bst/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/bst macro off /root/SmartC2Rust/macro/trans_re_0000/bst/run_test.sh /root/SmartC2Rust/macro/benchmark/bst/targets.txt
 
 # zopfli
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/zopfli macro off /root/SmartC2Rust/macro/trans_re_0000/zopfli/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/zopfli/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/zopfli macro off /root/SmartC2Rust/macro/trans_re_0000/zopfli/run_test.sh /root/SmartC2Rust/macro/benchmark/zopfli/targets.txt
 
 # FastestWebsiteEver
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver macro off /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/FastestWebsiteEver/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver macro off /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver/run_test.sh /root/SmartC2Rust/macro/benchmark/FastestWebsiteEver/targets.txt
 
 # mark-sweep
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mark-sweep macro off /root/SmartC2Rust/macro/trans_re_0000/mark-sweep/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/mark-sweep/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mark-sweep macro off /root/SmartC2Rust/macro/trans_re_0000/mark-sweep/run_test.sh /root/SmartC2Rust/macro/benchmark/mark-sweep/targets.txt
 
 # sds
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/sds macro off /root/SmartC2Rust/macro/trans_re_0000/sds/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/sds/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/sds macro off /root/SmartC2Rust/macro/trans_re_0000/sds/run_test.sh /root/SmartC2Rust/macro/benchmark/sds/targets.txt
 
 # yank
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/yank macro off /root/SmartC2Rust/macro/trans_re_0000/yank/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/yank/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/yank macro off /root/SmartC2Rust/macro/trans_re_0000/yank/run_test.sh /root/SmartC2Rust/macro/benchmark/yank/targets.txt
 
 # tiny-AES-c
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c macro off /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/tiny-AES-c/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c macro off /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c/run_test.sh /root/SmartC2Rust/macro/benchmark/tiny-AES-c/targets.txt
 
 # SipHash
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/SipHash macro off /root/SmartC2Rust/macro/trans_re_0000/SipHash/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/SipHash/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/SipHash macro off /root/SmartC2Rust/macro/trans_re_0000/SipHash/run_test.sh /root/SmartC2Rust/macro/benchmark/SipHash/targets.txt
 
 # c4
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/c4 macro off /root/SmartC2Rust/macro/trans_re_0000/c4/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/c4/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/c4 macro off /root/SmartC2Rust/macro/trans_re_0000/c4/run_test.sh /root/SmartC2Rust/macro/benchmark/c4/targets.txt
 
 # urlparser
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/urlparser macro off /root/SmartC2Rust/macro/trans_re_0000/urlparser/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/urlparser/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/urlparser macro off /root/SmartC2Rust/macro/trans_re_0000/urlparser/run_test.sh /root/SmartC2Rust/macro/benchmark/urlparser/targets.txt
 
 # mcrcon
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mcrcon macro off /root/SmartC2Rust/macro/trans_re_0000/mcrcon/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/mcrcon/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mcrcon macro off /root/SmartC2Rust/macro/trans_re_0000/mcrcon/run_test.sh /root/SmartC2Rust/macro/benchmark/mcrcon/targets.txt
 
 # su-exec
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec macro off /root/SmartC2Rust/macro/trans_re_0000/su-exec/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/su-exec/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec macro off /root/SmartC2Rust/macro/trans_re_0000/su-exec/run_test.sh /root/SmartC2Rust/macro/benchmark/su-exec/targets.txt
 
 
 
@@ -136,61 +138,61 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec macro off /
 ########################################################
 
 # time-1.9
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/time-1.9 macro off /root/SmartC2Rust/macro/trans_re_0000/time-1.9/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/time-1.9/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/time-1.9 macro off /root/SmartC2Rust/macro/trans_re_0000/time-1.9/run_test.sh /root/SmartC2Rust/macro/benchmark/time-1.9/targets.txt
 
 # avl
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/avl/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
 
 # which-2.21
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/which-2.21 macro off /root/SmartC2Rust/macro/trans_re_0000/which-2.21/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/which-2.21/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/which-2.21 macro off /root/SmartC2Rust/macro/trans_re_0000/which-2.21/run_test.sh /root/SmartC2Rust/macro/benchmark/which-2.21/targets.txt
 
 # Tinyhttpd
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd macro off /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/Tinyhttpd/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd macro off /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd/run_test.sh /root/SmartC2Rust/macro/benchmark/Tinyhttpd/targets.txt
 
 # ht
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/ht macro off /root/SmartC2Rust/macro/trans_re_0000/ht/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/ht/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/ht macro off /root/SmartC2Rust/macro/trans_re_0000/ht/run_test.sh /root/SmartC2Rust/macro/benchmark/ht/targets.txt
 
 # buffer
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/buffer macro off /root/SmartC2Rust/macro/trans_re_0000/buffer/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/buffer/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/buffer macro off /root/SmartC2Rust/macro/trans_re_0000/buffer/run_test.sh /root/SmartC2Rust/macro/benchmark/buffer/targets.txt
 
 # qsort
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/qsort macro off /root/SmartC2Rust/macro/trans_re_0000/qsort/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/qsort/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/qsort macro off /root/SmartC2Rust/macro/trans_re_0000/qsort/run_test.sh /root/SmartC2Rust/macro/benchmark/qsort/targets.txt
 
 # rgba 
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/rgba macro off /root/SmartC2Rust/macro/trans_re_0000/rgba/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/rgba/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/rgba macro off /root/SmartC2Rust/macro/trans_re_0000/rgba/run_test.sh /root/SmartC2Rust/macro/benchmark/rgba/targets.txt
 
 # bst 
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/bst macro off /root/SmartC2Rust/macro/trans_re_0000/bst/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/bst/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/bst macro off /root/SmartC2Rust/macro/trans_re_0000/bst/run_test.sh /root/SmartC2Rust/macro/benchmark/bst/targets.txt
 
 # zopfli
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/zopfli macro off /root/SmartC2Rust/macro/trans_re_0000/zopfli/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/zopfli/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/zopfli macro off /root/SmartC2Rust/macro/trans_re_0000/zopfli/run_test.sh /root/SmartC2Rust/macro/benchmark/zopfli/targets.txt
 
 # FastestWebsiteEver
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver macro off /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/FastestWebsiteEver/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver macro off /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver/run_test.sh /root/SmartC2Rust/macro/benchmark/FastestWebsiteEver/targets.txt
 
 # mark-sweep
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mark-sweep macro off /root/SmartC2Rust/macro/trans_re_0000/mark-sweep/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/mark-sweep/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mark-sweep macro off /root/SmartC2Rust/macro/trans_re_0000/mark-sweep/run_test.sh /root/SmartC2Rust/macro/benchmark/mark-sweep/targets.txt
 
 # sds
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/sds macro off /root/SmartC2Rust/macro/trans_re_0000/sds/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/sds/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/sds macro off /root/SmartC2Rust/macro/trans_re_0000/sds/run_test.sh /root/SmartC2Rust/macro/benchmark/sds/targets.txt
 
 # yank
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/yank macro off /root/SmartC2Rust/macro/trans_re_0000/yank/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/yank/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/yank macro off /root/SmartC2Rust/macro/trans_re_0000/yank/run_test.sh /root/SmartC2Rust/macro/benchmark/yank/targets.txt
 
 # tiny-AES-c
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c macro off /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/tiny-AES-c/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c macro off /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c/run_test.sh /root/SmartC2Rust/macro/benchmark/tiny-AES-c/targets.txt
 
 # SipHash
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/SipHash macro off /root/SmartC2Rust/macro/trans_re_0000/SipHash/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/SipHash/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/SipHash macro off /root/SmartC2Rust/macro/trans_re_0000/SipHash/run_test.sh /root/SmartC2Rust/macro/benchmark/SipHash/targets.txt
 
 # c4
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/c4 macro off /root/SmartC2Rust/macro/trans_re_0000/c4/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/c4/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/c4 macro off /root/SmartC2Rust/macro/trans_re_0000/c4/run_test.sh /root/SmartC2Rust/macro/benchmark/c4/targets.txt
 
 # urlparser
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/urlparser macro off /root/SmartC2Rust/macro/trans_re_0000/urlparser/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/urlparser/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/urlparser macro off /root/SmartC2Rust/macro/trans_re_0000/urlparser/run_test.sh /root/SmartC2Rust/macro/benchmark/urlparser/targets.txt
 
 # mcrcon
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mcrcon macro off /root/SmartC2Rust/macro/trans_re_0000/mcrcon/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/mcrcon/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mcrcon macro off /root/SmartC2Rust/macro/trans_re_0000/mcrcon/run_test.sh /root/SmartC2Rust/macro/benchmark/mcrcon/targets.txt
 
 # su-exec
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec macro off /root/SmartC2Rust/macro/trans_re_0000/su-exec/run_test.sh /root/SmartC2Rust/macro/benchmark/targets/su-exec/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec macro off /root/SmartC2Rust/macro/trans_re_0000/su-exec/run_test.sh /root/SmartC2Rust/macro/benchmark/su-exec/targets.txt

@@ -43,6 +43,8 @@ from collections import defaultdict, deque
 from datetime import datetime, timedelta
 from threading import Timer, Thread
 from dataclasses import dataclass, field
+import subprocess
+from pathlib import Path
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -123,13 +125,10 @@ from utils_api import (
 )
 
 from llm_api import (
-    RepairConfig,
     SemConfig,
     LLMInterface,
     init_prompt_count, 
     #set_exp_data,
-    repair_test,
-    repair_branch,
     occupy_llm,
     configure_llm,
     shutdown_llm,
@@ -152,7 +151,6 @@ from c_parser_api import (
     p_f,
     #parse_files_c,
     get_files_list,
-    setup_dynamic_macro,
     #analyze_macros_llm,
     detect_include_guards,
     delete_guards,
@@ -165,11 +163,6 @@ from c_parser_api import (
     get_build_path,
     parse_trace,
 )
-
-from debug import (
-    debug_with_pexpect
-)
-
 
 from rust_parser_api import (
     parse_files_rust,
@@ -184,7 +177,7 @@ from rust_parser_api import (
 MACRO_HOME = "/root/SmartC2Rust/macro"
 TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
-
+CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
 full_regions = []
 
@@ -201,6 +194,128 @@ iteration_dict = {}
 ####################################################
 ########## instrument_io
 ####################################################
+
+def debug_with_pexpect(c_run_script, target_dir, breakpoints=None, use_breakpoints=True):
+    """
+    Interactively control rust-gdb using pexpect (no timeout).
+    
+    Args:
+        c_run_script: Path to the executable to debug
+        target_dir: Target directory
+        breakpoints: List of breakpoints to set
+        use_breakpoints: Whether to use breakpoints (True/False)
+    """
+    try:
+        import pexpect
+    except ImportError:
+        print("Error: pexpect not installed. Install with: pip install pexpect")
+        return False
+    
+    c_run_script = Path(c_run_script)
+    
+    if not c_run_script.exists():
+        print(f"Error: Executable not found at {c_run_script}")
+        return False
+    
+    if breakpoints is None:
+        breakpoints = ["main"]
+    
+    print(f"\n=== Debugging {c_run_script} with pexpect-controlled rust-gdb ===")
+    print(f"Use breakpoints: {use_breakpoints}\n")
+    
+    # Launch rust-gdb
+    gdb = pexpect.spawn(f"rust-gdb -q {c_run_script}")
+    gdb.logfile = open("/tmp/gdb_log.txt", "wb")
+    
+    try:
+        # Wait for GDB prompt (no timeout)
+        gdb.expect(r"\(gdb\)")
+        
+        # Configure settings
+        gdb.sendline("set print pretty on")
+        gdb.expect(r"\(gdb\)")
+        
+        # Set breakpoints (only when use_breakpoints is True)
+        if use_breakpoints:
+            for bp in breakpoints:
+                print(f"Setting breakpoint at {bp}")
+                gdb.sendline(f"break {bp}")
+                gdb.expect(r"\(gdb\)")
+                print(gdb.before.decode())
+        
+        # Run the program
+        print("\nRunning program...")
+        gdb.sendline("run")
+        gdb.expect(r"\(gdb\)")
+        print(gdb.before.decode())
+        
+        # Display backtrace
+        print("\nBacktrace:")
+        gdb.sendline("backtrace")
+        gdb.expect(r"\(gdb\)")
+        print(gdb.before.decode())
+        
+        if use_breakpoints:
+            # Only execute the following when breakpoints are enabled
+            
+            # Display local variables
+            print("\nLocal variables:")
+            gdb.sendline("info locals")
+            gdb.expect(r"\(gdb\)")
+            print(gdb.before.decode())
+            
+            # Step to the next line
+            print("\nNext line:")
+            gdb.sendline("next")
+            gdb.expect(r"\(gdb\)")
+            print(gdb.before.decode())
+            
+            # Display variables
+            print("\nPrinting variables:")
+            gdb.sendline("info locals")
+            gdb.expect(r"\(gdb\)")
+            print(gdb.before.decode())
+            
+            # Continue execution
+            print("\nContinuing...")
+            gdb.sendline("continue")
+            gdb.expect(r"\(gdb\)")
+            print(gdb.before.decode())
+            
+            # Check Rust variables at the next breakpoint
+            print("\nAt next breakpoint - checking Rust variables:")
+            gdb.sendline("info args")
+            gdb.expect(r"\(gdb\)")
+            print(gdb.before.decode())
+            
+            gdb.sendline("info locals")
+            gdb.expect(r"\(gdb\)")
+            print(gdb.before.decode())
+            
+            # Run to completion (skip all remaining breakpoints)
+            print("\nRunning to completion...")
+            gdb.sendline("continue")
+            gdb.expect(r"\(gdb\)")
+            print(gdb.before.decode())
+        
+        # Quit GDB
+        print("\nQuitting GDB...")
+        gdb.sendline("quit")
+        gdb.expect(pexpect.EOF)
+        
+        print("\n=== Debug session completed ===")
+        
+        return True
+        
+    except Exception as e:
+        print(f"\nError during debugging: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+    finally:
+        gdb.close()
+        print("Full log saved to /tmp/gdb_log.txt")
+
 
 def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, exec_time):
     c_paths = []
@@ -5056,7 +5171,7 @@ if __name__ == "__main__":
     # target = str(sys.argv[1])
 
     user_id = "0000"
-    config_path = f"{TRANS_HOME}/config.json"  # This is being affected
+    config_path = f"{CONFIG_PATH}"  # This is being affected
     config_data = read_json(config_path)
     #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
     llm_choice = config_data["llm_choice"]

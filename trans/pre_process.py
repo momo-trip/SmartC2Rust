@@ -103,7 +103,6 @@ from c_parser_api import (
     p_f,
     #parse_files_c,
     get_files_list,
-    setup_dynamic_macro,
     #analyze_macros_llm,
     detect_include_guards,
     delete_guards,
@@ -119,20 +118,16 @@ from c_parser_api import (
     get_build_path,
     #detect_cfg,
     get_compile_json,
-    insert_expanded_code,
-    change_combined_condition,
+    #insert_expanded_code,
     is_system_file,
     setup_compile_json,
 )
 
 
 from llm_api import (
-    RepairConfig,
     LLMInterface,
     init_prompt_count, 
     #set_exp_data,
-    repair_test,
-    repair_branch,
     occupy_llm,
     configure_llm,
     shutdown_llm,
@@ -1531,8 +1526,9 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
 
     ################################################
     # Newly insert locations to be partially expanded
-    changed = insert_expanded_code(target_dir, meta_dir, database_dir)
+    #changed = insert_expanded_code(target_dir, meta_dir, database_dir)
 
+    changed = False
     if changed is True:
         # 4th round: parsing
         parse_all("4", macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
@@ -1700,7 +1696,7 @@ def handle_paths(all_macros_path, taken_macros_path, all_directive_path, taken_d
     #guards_path = "database_0000/mini/guards.json"
 
     paths = [all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, dep_json_path, compile_json_path]
-    paths = [f"{MACRO_HOME}/{item}".replace("allrust", "macrust") for item in paths]
+    paths = [f"{MACRO_HOME}/{item}".replace("trans", "macro") for item in paths]
     all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, dep_json_path, compile_json_path = paths
 
     return all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, dep_json_path, compile_json_path
@@ -1994,7 +1990,7 @@ def allrust_preprocess_main(config): #process_type, user_id, original_dir, targe
         print(f"************ pre-process finished ************")
         
         print(f"\nNext action:")
-        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} {MACRO_HOME}/benchmark/targets/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
+        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} /root/SmartC2Rust/benchmark/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
 
 
     if process_type == "merge":
@@ -2004,7 +2000,7 @@ def allrust_preprocess_main(config): #process_type, user_id, original_dir, targe
         merge_different_meta_dir(old_meta_dir, meta_dir, old_div_meta_dir, div_meta_dir)
 
         print(f"\nNext action:")
-        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} {MACRO_HOME}/benchmark/targets/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
+        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} /root/SmartC2Rust/benchmark/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
         
 
 

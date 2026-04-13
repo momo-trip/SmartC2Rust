@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from functools import reduce
 import clang.cindex
-clang.cindex.Config.set_library_file('/usr/lib/llvm-19/lib/libclang.so.1')  # The numbers may change depending on the version
+#clang.cindex.Config.set_library_file('/usr/lib/llvm-19/lib/libclang.so.1')  # The numbers may change depending on the version
 #clang.cindex.Config.set_library_file('/opt/homebrew/opt/llvm/lib/libclang.dylib') # for mac os
 from clang.cindex import CursorKind
 import tempfile
@@ -137,7 +137,7 @@ from llm_api import (
 MACRO_HOME = "/root/SmartC2Rust/macro"
 TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
-CONFIG_PARH = "/root/SmartC2Rust/config.json"
+CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
 MACRO_TRANSFORMATION = False #True # False
 DEBUG_LLM = False
@@ -494,7 +494,7 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
             sum_modified_list = []
                 
         #if mode is not None and mode == "modify_data":
-        error, std_out = run_script_wo_log(run_test_path, 1000, True, None, "both") # 10 #, progress_queue, iteration_count, max_iterations, log_dir)
+        error, std_out = run_script_wo_log(run_test_path, 1000, True, None, "init") # 10 #, progress_queue, iteration_count, max_iterations, log_dir)
         std_out = run_script_pty(run_test_path, 1000) # 60
 
         if error is None:
@@ -807,8 +807,7 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
             sum_modified_list = []
                 
         #if mode is not None and mode == "modify_data":
-        error, std_out = run_script_wo_log(run_all_path, 1000, True, None, "both")  # 10
-        #error, std_out = run_script_wo_log(run_test_path, 10, True, None, "both") #, progress_queue, iteration_count, max_iterations, log_dir)
+        error, std_out = run_script_wo_log(run_all_path, 1000, True, None, "init")  # 10 #, progress_queue, iteration_count, max_iterations, log_dir)
         std_out = run_script_pty(run_test_path, 1000) # 60
 
         if error is None:
@@ -1007,7 +1006,7 @@ def set_golden_dir(original_dir):
                 print(f"ERROR: {futures[future]}: {e}")
 
 
-def macrust_main(config): #process_type, user_id, original_dir, given_test_path, target_path, llm_choice, claude_api_key, azure_endpoint, out_meta_dir):
+def macro_main(config): #process_type, user_id, original_dir, given_test_path, target_path, llm_choice, claude_api_key, azure_endpoint, out_meta_dir):
 
     ############################################
     ##### Configuration
@@ -1023,8 +1022,6 @@ def macrust_main(config): #process_type, user_id, original_dir, given_test_path,
     claude_api_key = config["claude_api_key"]
     azure_endpoint = config["azure_endpoint"]
     out_meta_dir = config["out_meta_dir"]
-
-    print("Starting macrust main")
 
     macro_finder = f"{MACRO_HOME}/macro_finder/build/macro-finder"
     occupy_path = None
@@ -1179,7 +1176,7 @@ def macrust_main(config): #process_type, user_id, original_dir, given_test_path,
             llm_interface = occupy_llm(llm_interface)
             atexit.register(lambda: shutdown_llm(llm_interface))
 
-        run_script(build_path, 100000, True, None, "both", None, 0, 0, None, None)
+        run_script(build_path, 100000, True, None, "init", None, 0, 0, None, None)
 
         if reformat_type == "genifai":
             reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_test_path, llm_interface)
@@ -1195,7 +1192,7 @@ def macrust_main(config): #process_type, user_id, original_dir, given_test_path,
     
         print("\n************ End of reformat process ************")
         print(f"\nNext action->")
-        print(f"python3 pre_process.py /home/ubuntu/macrust/trans_re_0000/{target} golden\n") # {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
+        print(f"python3 pre_process.py {MACRO_HOME}/trans_re_0000/{target} golden\n") # {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
         
     elif process_type == "golden":
 
@@ -1206,7 +1203,7 @@ def macrust_main(config): #process_type, user_id, original_dir, given_test_path,
         print("\n************ End of golden process ************")
     
         print(f"\nNext action->")
-        print(f"python3 pre_process.py /home/ubuntu/macrust/trans_re_0000/{target} macro off /home/ubuntu/macrust/trans_re_0000/{target}/run_test.sh /home/ubuntu/macrust/benchmark/targets/{target}/targets.txt\n") # {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
+        print(f"python3 pre_process.py {MACRO_HOME}/trans_re_0000/{target} macro off {MACRO_HOME}/trans_re_0000/{target}/run_test.sh /root/SmartC2Rust/benchmark/{target}/targets.txt\n") # {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
 
     elif process_type == "macro":
 
@@ -1322,8 +1319,8 @@ def macrust_main(config): #process_type, user_id, original_dir, given_test_path,
         # analyze_macros_llm(target_dir, c_run_path, picked_path, macro_path, call_path, classified_path, defined_path, undefined_path, cmd_line_path)
         
         print("\n************ End of macro analysis ************\n")        
-        print("\ncd ~/allrust")
-        print(f"python3 pre_process.py /home/ubuntu/macrust/trans_c_0000/{target} meta {target_path} {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
+        print("\ncd ~/SmartC2Rust/trans")
+        print(f"python3 pre_process.py {MACRO_HOME}/trans_c_0000/{target} meta {target_path} {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
 
     save_to_output_dir(output, output_dir)
     return output, output_dir
@@ -1399,7 +1396,7 @@ if __name__ == "__main__":
         "out_meta_dir": None,
     }
 
-    output, output_dir = macrust_main(config) #process_type, user_id, original_dir, given_test_path, target_path, llm_choice, claude_api_key, azure_endpoint, None)
+    output, output_dir = macro_main(config) #process_type, user_id, original_dir, given_test_path, target_path, llm_choice, claude_api_key, azure_endpoint, None)
     
     #print(f"Saved at {output_dir}")
     if process_type == "reformat":

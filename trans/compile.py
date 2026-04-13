@@ -100,14 +100,14 @@ from utils_api import (
 )
 
 from llm_api import (
-    RepairConfig,
+    #RepairConfig,
     TransConfig,
     CorConfig,
     LLMInterface,
     init_prompt_count, 
     #set_exp_data,
-    repair_test,
-    repair_branch,
+    # repair_test,
+    # repair_branch,
     occupy_llm,
     configure_llm,
     shutdown_llm,
@@ -131,7 +131,6 @@ from c_parser_api import (
     p_f,
     #parse_files_c,
     get_files_list,
-    setup_dynamic_macro,
     #analyze_macros_llm,
     detect_include_guards,
     delete_guards,
@@ -164,7 +163,7 @@ from rust_parser_api import (
 MACRO_HOME = "/root/SmartC2Rust/macro"
 TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
-
+CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
 full_regions = []
 
@@ -7491,7 +7490,7 @@ def handle_paths(dep_json_path): # , compile_json_path # , cfg_path
     #guards_path = "database_0000/mini/guards.json"
 
     paths = [dep_json_path]  # , compile_json_path
-    paths = [f"{MACRO_HOME}/{item}".replace("allrust", "macrust") for item in paths]
+    paths = [f"{MACRO_HOME}/{item}".replace("trans", "macro") for item in paths]
     dep_json_path = paths[0]  # , compile_json_path
 
     return dep_json_path  #, compile_json_path
@@ -7883,7 +7882,7 @@ if __name__ == "__main__":
 
     user_id = "0000"
 
-    config_data = read_json("config.json")
+    config_data = read_json(f"{CONFIG_PATH}")
     #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
