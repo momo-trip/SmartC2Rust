@@ -67,7 +67,7 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 
 Each benchmark program has a `targets.txt` file in `benchmark/{program}/targets.txt` that specifies which C functions to be the entry point. The entry points are the C functions that will be replaced by their translated Rust equivalents and called from C via FFI.
 The `targets.txt` lists function names with their source locations in the format:
-`function_name:path/to/file.c:start_line`
+`function_name:path/to/file.c:start_line:end_line`
 
 **Note:** For the benchmark programs, the entry point is set to the main function.
 
