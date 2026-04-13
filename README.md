@@ -30,12 +30,12 @@ bash update.sh
 ```
 
 This runs `git pull` on all repositories:
-- [SmartC2Rust](https://github.com/momo-trip/SmartC2Rust) — main translation pipeline
-- [kiso-utils](https://github.com/momo-trip/kiso-utils) — utility library
-- [kiso-llm](https://github.com/momo-trip/kiso-llm) — LLM interaction library
-- [kiso-parser-macro](https://github.com/momo-trip/kiso-parser-macro) — Macro analyzer
-- [kiso-parser-c](https://github.com/momo-trip/kiso-parser-c) — C parser and static analyzer
-- [kiso-parser-rust](https://github.com/momo-trip/kiso-parser-rust) — Rust parser
+- [SmartC2Rust](https://github.com/momo-trip/SmartC2Rust): Main translation pipeline
+- [kiso-utils](https://github.com/momo-trip/kiso-utils): Utility library
+- [kiso-llm](https://github.com/momo-trip/kiso-llm): LLM interaction library
+- [kiso-parser-macro](https://github.com/momo-trip/kiso-parser-macro): Macro analyzer
+- [kiso-parser-c](https://github.com/momo-trip/kiso-parser-c): C parser and static analyzer
+- [kiso-parser-rust](https://github.com/momo-trip/kiso-parser-rust): Rust parser
 
 
 ## Configuration
@@ -73,23 +73,70 @@ cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/benchmark/{program} reformat base /root/SmartC2Rust/benchmark/{program}/base_test.sh
 ```
 
+**Input:**
+- `<c_source_dir>`: Path to the benchmark program directory (e.g., `/root/SmartC2Rust/benchmark/avl`)
+- `reformat`: Processing mode — reformats test cases
+- `base`: Test type — uses the base test script as input
+- `<base_test_script>`: Path to the original test script (e.g., `benchmark/avl/base_test.sh`)
+
+**Output:**
+- `<c_source_dir>/run_test.sh`: reformatted test script with individual test cases
+
+
 ### Step 2: Get golden flows
+```bash
+cd /root/SmartC2Rust/macro
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
+```
+**Input:**
+- `<c_source_dir>`: Path to the reformatted program directory (e.g., `macro/trans_re_0000/avl`)
+- `golden`: Processing mode - golden flow extraction
+
+**Output:**
+- `<c_source_dir>/golden/`: directory for saving golden execution flows
+
+
+### Step 3: Macro pre-processing
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off /root/SmartC2Rust/macro/trans_re_0000/{program}/run_test.sh /root/SmartC2Rust/macro/benchmark/{program}/targets.txt
 ```
 
-### Step 3: Macro pre-processing
-```bash
-cd /root/SmartC2Rust/macro
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
-```
+**Input:**
+- `<c_source_dir>`: Path to the reformatted program directory (e.g., `macro/trans_re_0000/avl`)
+- `macro`: Processing mode — macro analysis and golden flow extraction
+- `off`: LLM usage flag — `off` means no LLM calls in this step
+- `<run_test_script>`: Path to the reformatted test script (e.g., `macro/trans_re_0000/avl/run_test.sh`)
+- `<targets_file>`: Path to the entry point specification (e.g., `benchmark/avl/targets.txt`)
 
-### Step 4: Pre-processing
+
+**Output:**
+- `macro/trans_c_0000/{program}/`: C source with macros resolved and annotated
+- `macro/metadata_0000/{program}/`: per-file metadata (function signatures, types, macros)
+- `macro/div_metadata_0000/{program}/`: per-block metadata for translation units
+
+
+### Step 4: Pre-processing for translation
 ```bash
 cd /root/SmartC2Rust/trans
 python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root/SmartC2Rust/benchmark/{program}/targets.txt /root/SmartC2Rust/macro/metadata_0000/{program} /root/SmartC2Rust/macro/div_metadata_0000/{program} /root/SmartC2Rust/macro/trans_c_0000/{program}
 ```
+
+**Input:**
+- `<c_source_dir>`: Path to the macro-processed C source (e.g., `macro/trans_c_0000/avl`)
+- `meta`: Processing mode — generates static analysis metadata for translation
+- `<targets_file>`: Path to the entry point specification (e.g., `benchmark/avl/targets.txt`)
+- `<metadata_dir>`: Per-file metadata from Step 3 (e.g., `macro/metadata_0000/avl`)
+- `<div_metadata_dir>`: Per-block metadata from Step 3 (e.g., `macro/div_metadata_0000/avl`)
+- `<original_c_dir>`: Path to the original macro-processed source (e.g., `macro/trans_c_0000/avl`)
+
+
+**Output:**
+- `trans/trans_c_0000/{program}/`: C source prepared for translation
+- `trans/metadata_0000/{program}/`: enriched metadata (call graphs, dependencies, FFI boundaries)
+- `trans/div_metadata_0000/{program}/`: block-level metadata for incremental translation
+- `trans/database_0000/{program}/`: translation database (prompt history, token usage)
+
 
 ### Step 5: Compilation-repair
 ```bash
@@ -97,14 +144,89 @@ cd /root/SmartC2Rust/trans
 python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt off
 ```
 
+**Input:**
+- `<c_code_dir>`: Path to the C source for translation (e.g., `trans/c_code_0000/avl`)
+- `<trans_c_dir>`: Path to the pre-processed C source (e.g., `trans/trans_c_0000/avl`)
+- `<targets_file>`: Entry points for translation (e.g., `benchmark/avl/targets_actual.txt`)
+- `trans`: Processing mode — performs C-to-Rust translation with iterative compilation repair
+- `<metadata_dir>`: Enriched metadata from Step 4 (e.g., `trans/metadata_0000/avl`)
+- `<div_metadata_dir>`: Block-level metadata from Step 4 (e.g., `trans/div_metadata_0000/avl`)
+- `<block_output>`: Block output file tracking translation progress (e.g., `database_0000/avl/block_output.txt`)
+- `off`: Debug flag
+
+**Output:**
+- `trans/workspace_0000_{program}/`: workspace containing:
+  - `trans_rust/`: translated Rust library crate (src/lib.rs, Cargo.toml)
+  - `run_test.sh`: test execution script for the Rust version
+  - `run_all.sh`: combined build and test script
+
+
 ### Step 6: Compilation-repair
 ```bash
 cd /root/SmartC2Rust/trans
 python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} s_repair
 ```
 
-### LLM model
-- claude
+**Input:**
+- `<workspace_dir>`: Path to the translation workspace (e.g., `trans/workspace_0000_avl/avl`)
+- `s_repair`: Processing mode — semantic equivalence repair
+
+
+**Output:**
+- `trans/workspace_s_repair_0000_{program}/`: workspace containing:
+  - `trans_rust/`: translated Rust library crate (src/lib.rs, Cargo.toml)
+  - `run_test.sh`: test execution script for the Rust version
+  - `run_all.sh`: combined build and test script
+
+
+## LLM model
+The default model is Claude Opus 4.6 (Anthropic).
+> **Note:** Only Claude models are actively maintained and tested. Other LLM backends (GPT, Gemini, Llama) are included in the codebase but have not been recently verified and may not work as expected.
+
+
+
+## Repository structure
+
+### SmartC2Rust
+```
+SmartC2Rust/
+├── macro/                  # Step 1-3: Test reformatting, golden flow extraction, macro pre-processing
+│   └── pre_process.py
+├── trans/                 
+│   ├── pre_process.py      # Step 4: Static analysis
+│   ├── compile.py          # Step 5: Translation and compilation repair
+│   ├── semantics.py        # Step 6: Semantic equivalence repair
+│   └── template/           # Build templates (build.rs, run_all.sh)
+├── benchmark/              # Benchmark C programs with test cases
+│   ├── avl/
+│   ├── time-1.9/
+│   ├── zopfli/
+│   └── ...
+├── config.json             # LLM API configuration (not tracked by git)
+├── setup.sh                # Dependency installation script
+├── commands.txt            # Example commands for all benchmarks
+└── README.md
+```
+
+### External dependencies (pre-installed in Docker)
+
+```
+/root/
+├── SmartC2Rust/
+├── kiso-utils/             # Shared utility functions (file I/O, JSON, path handling)
+├── kiso-llm/               # LLM client (Claude, GPT, Bedrock, Databricks)
+├── kiso-parser-c/          # C static analyzer (AST, includes, macros, call graph)
+│   ├── c_parser_api/       #   Python API
+│   ├── include_finder/     #   Header dependency analyzer
+│   ├── usage_analyzer/     #   Symbol usage analyzer
+│   └── usage_macro_ref_analyzer/  # Macro reference analyzer
+├── kiso-parser-rust/       # Rust code parser
+│   └── rust_parser_api/    #   Python API
+├── kiso-parser-macro/      # Clang-based macro analyzer
+│   ├── macro_finder/       #   Preprocessor directive tracker
+│   └── macro_analyzer/     #   Macro definition analyzer
+└── update.sh               # Pull latest updates for all repositories
+```
 
 ## Paper
 
