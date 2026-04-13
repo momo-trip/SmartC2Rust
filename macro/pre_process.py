@@ -137,7 +137,7 @@ from llm_api import (
 MACRO_HOME = "/root/SmartC2Rust/macro"
 TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
-
+CONFIG_PARH = "/root/SmartC2Rust/config.json"
 
 MACRO_TRANSFORMATION = False #True # False
 DEBUG_LLM = False
@@ -1377,7 +1377,7 @@ if __name__ == "__main__":
     
     user_id = "0000"
 
-    config_path = f"{TRANS_HOME}/config.json"  # This is being affected
+    config_path = f"{CONFIG_PATH}"  # This is being affected
     config_data = read_json(config_path)
     #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
     llm_choice = config_data["llm_choice"]
