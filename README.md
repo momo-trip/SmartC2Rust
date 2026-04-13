@@ -50,29 +50,40 @@ Each benchmark program has a `targets.txt` file in `benchmark/{program}/targets.
 
 ## Translation procedure
 ### Step 1: Reformat test cases
+```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/benchmark/avl reformat base /root/SmartC2Rust/benchmark/avl/base_test.sh
+```
 
 ### Step 2: Get golden flows
+```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
-
+```
 
 ### Step 3: Macro pre-processing
+```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl golden
+```
 
 ### Step 4: Pre-processing
+```bash
 cd /root/SmartC2Rust/trans
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/avl meta /root/SmartC2Rust/benchmark/avl/targets.txt /root/SmartC2Rust/macro/metadata_0000/avl /root/SmartC2Rust/macro/div_metadata_0000/avl /root/SmartC2Rust/macro/trans_c_0000/avl
+```
 
 ### Step 5: Compilation-repair
+```bash
 cd /root/SmartC2Rust/trans
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/avl /root/SmartC2Rust/trans/trans_c_0000/avl /root/SmartC2Rust/benchmark/avl/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/avl /root/SmartC2Rust/trans/div_metadata_0000/avl database_0000/avl/block_output.txt off
+```
 
 ### Step 6: Compilation-repair
+```bash
 cd /root/SmartC2Rust/trans
-
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_avl/avl s_repair
+```
 
 ### LLM model
 - claude
