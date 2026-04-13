@@ -83,6 +83,7 @@ python3 pre_process.py /root/SmartC2Rust/benchmark/{program} reformat base /root
 
 **Output:**
 - `<c_source_dir>/run_test.sh`: reformatted test script with individual test cases
+- `macro/chats_0000_reformat/{program}/`: LLM interaction prompt logs for the reformatting step
 
 
 ### Step 2: Get golden flows
@@ -162,6 +163,7 @@ python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Ru
   - `run_test.sh`: test execution script for the Rust version
   - `run_all.sh`: combined build and test script
 - `trans/database_0000/{program}/`: translation database (prompt history, token usage)
+- `trans/chats_0000_trans/{program}/`: LLM interaction prompt logs for the compile-repair step
 
 
 ### Step 6: Compilation-repair
@@ -180,6 +182,7 @@ python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} 
   - `trans_rust/`: translated Rust library crate (src/lib.rs, Cargo.toml)
   - `run_test.sh`: test execution script for the Rust version
   - `run_all.sh`: combined build and test script
+- `trans/chats_0000_c_repair/{program}/`: LLM interaction prompt logs for the semantics-repair step
 
 
 ## LLM model
