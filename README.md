@@ -2,6 +2,8 @@
 
 Iterative, Feedback-Driven C-to-Rust Translation via Large Language Models for Safety and Equivalence
 
+> **Note:** The documentation may not yet cover everything in detail, and the code still contains some traces of trial and error from the development process, so it may not be the easiest to read. I'll continue to clean it up going forward. At the same time, feedback and suggestions are very welcome!
+
 ## Setup with Docker
 
 We prepared the pre-built Docker image, which contains the complete environment (Ubuntu 22.04, Python, Rust, Clang, and all dependencies) ready to run.
