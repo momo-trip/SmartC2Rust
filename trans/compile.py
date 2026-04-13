@@ -7525,7 +7525,7 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     build_template_path = f"{TRANS_HOME}/template/template_build.rs"
     run_all_template_path = f"{TRANS_HOME}/template/run_all.sh"
 
-    average = 400
+    average = config["average"] #400
 
     """
     if len(sys.argv) != 2: #3:
@@ -7888,7 +7888,8 @@ if __name__ == "__main__":
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"]
     TEST_MODE = config_data["test_mode"]
-
+    average = config_data["average"]
+    
     config = {
         "original_dir": original_dir,
         "c_code_dir" : c_code_dir,
@@ -7905,6 +7906,7 @@ if __name__ == "__main__":
         "llm_choice": llm_choice,
         "claude_api_key": claude_api_key,
         "azure_endpoint": azure_endpoint,
+        "average" : average,
     }
 
     allrust_compile_main(config)  #process_type, user_id, c_code_dir, original_dir, target_path, rust_edition, llm_choice, claude_api_key, azure_endpoint)

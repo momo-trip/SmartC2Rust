@@ -47,7 +47,8 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
     "llm_choice": "claude",
     "claude_api_key": "<your-api-key>",
     "azure_endpoint": "<your-endpoint-if-applicable>",
-    "test_mode": false
+    "test_mode": false,
+    "average" : 400,
 }
 ```
 
@@ -55,8 +56,9 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 |-------|-------------|
 | `llm_choice` | LLM backend to use: `claude`, `claude_azure` |
 | `claude_api_key` | API key for the selected LLM provider |
-| `azure_endpoint` | Endpoint URL (required for `claude_azure` and `gpt_azure` backends, otherwise leave empty `""`) |
+| `azure_endpoint` | Endpoint URL (required for `claude_azure` backends, otherwise leave empty `""`) |
 | `test_mode` | Set `false` for normal use |
+| `average` | Maximum number of source lines per translation group. |
 
 
 ## Entry point selection
@@ -135,8 +137,8 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root
 - `trans/trans_c_0000/{program}/`: C source prepared for translation
 - `trans/metadata_0000/{program}/`: enriched metadata (call graphs, dependencies, FFI boundaries)
 - `trans/div_metadata_0000/{program}/`: block-level metadata for incremental translation
-- `trans/database_0000/{program}/`: translation database (prompt history, token usage)
-
+- `trans/database_0000/{program}/`: translation database
+    - `block_output.txt`: Block output file tracking translation units (e.g., `database_0000/avl/block_output.txt`)
 
 ### Step 5: Compilation-repair
 ```bash
@@ -151,14 +153,15 @@ python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Ru
 - `trans`: Processing mode — performs C-to-Rust translation with iterative compilation repair
 - `<metadata_dir>`: Enriched metadata from Step 4 (e.g., `trans/metadata_0000/avl`)
 - `<div_metadata_dir>`: Block-level metadata from Step 4 (e.g., `trans/div_metadata_0000/avl`)
-- `<block_output>`: Block output file tracking translation progress (e.g., `database_0000/avl/block_output.txt`)
 - `off`: Debug flag
+- `<block_output>`: Block file tracking recording translation units  (e.g., `database_0000/avl/block_output.txt`)
 
 **Output:**
 - `trans/workspace_0000_{program}/`: workspace containing:
   - `trans_rust/`: translated Rust library crate (src/lib.rs, Cargo.toml)
   - `run_test.sh`: test execution script for the Rust version
   - `run_all.sh`: combined build and test script
+- `trans/database_0000/{program}/`: translation database (prompt history, token usage)
 
 
 ### Step 6: Compilation-repair
