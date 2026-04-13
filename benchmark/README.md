@@ -8,7 +8,7 @@ Each benchmark program is stored under `benchmark/{program}/` and contains the f
 - `-finstrument-functions -g -gdwarf-4` flags: These are required for golden flow extraction.
 - `bear` or CMake's `CMAKE_EXPORT_COMPILE_COMMANDS`: These generate `compile_commands.json` which is required for parsing analysis.
 
-**`base_test.sh`** — Original test script for the C program. This is the input to Step 1 (reformat test cases) and is not used directly by the pipeline after reformatting. See [docs/reformat-testcases.md](docs/reformat-testcases.md) for details on how this is transformed.
+**`base_test.sh`** — Original test script for the C program. This is the input to Step 1 (reformat test cases) and is not used directly by the pipeline after reformatting. See [docs/reformat-testcases.md](https://github.com/momo-trip/SmartC2Rust/blob/main/docs/reformat-testcases.md) for details on how this is transformed.
 
 **`targets.txt`** — Specifies the entry point functions for translation. Each line follows the format:
 

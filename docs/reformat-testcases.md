@@ -16,7 +16,8 @@ The original `base_test.sh` is written for human use and varies in style across 
 
 ### Per-test binary
 
-The original script calls a single binary (e.g., `./build/zopfli`). The reformatted script calls a per-test binary (e.g., `./test_binaries/zopfli_t1`, `./test_binaries/zopfli_t2`, ...). This allows golden flows to be recorded separately for each test case.
+The original script calls a single binary (e.g., `./build/zopfli`). The reformatted script calls a per-test binary (e.g., `./test_binaries/zopfli_t1`, `./test_binaries/zopfli_t2`, ...). 
+This allows golden flows to be recorded separately for each test case, so that the LLM can localize and fix failures on a per-test basis.
 
 ### Tracing instrumentation
 

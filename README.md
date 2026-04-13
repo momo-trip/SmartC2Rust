@@ -74,6 +74,7 @@ The `targets.txt` lists function names with their source locations in the format
 ## Translation procedure
 ### Step 1: Reformat test cases
 Reformats the original test script into individual test cases using the LLM so that the subsequent iterative cycle can run automatically.
+See [docs/reformat-testcases.md](docs/reformat-testcases.md) for details.
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/benchmark/{program} reformat base /root/SmartC2Rust/benchmark/{program}/base_test.sh
