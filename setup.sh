@@ -20,7 +20,7 @@ cd ../..
 cargo install rustfilt
 cargo install bindgen-cli
 cargo install cargo-modules
-
+rustup toolchain install nightly-aarch64-unknown-linux-gnu
 
 # Macro parser
 cd kiso-parser-macro 

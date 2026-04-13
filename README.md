@@ -9,13 +9,13 @@ We prepared the pre-built Docker image, which contains the complete environment 
 ### Pull the image
 
 ```bash
-docker pull ghcr.io/momo-trip/smartc2rust:v1.0
+docker pull ghcr.io/momo-trip/smartc2rust
 ```
 
 ### Run
 
 ```bash
-docker run --rm -it smartc2rust:v1.0
+docker run -it smartc2rust
 ```
 
 This drops you into the container with all tools and source code pre-installed at `/root`.
@@ -25,7 +25,7 @@ This drops you into the container with all tools and source code pre-installed a
 SmartC2Rust depends on several kiso-* libraries that are pre-installed in the Docker image. To pull the latest updates for all components:
 
 ```bash
-cd /root
+cd /root/SmartC2Rust
 bash update.sh
 ```
 
@@ -205,6 +205,7 @@ SmartC2Rust/
 ├── config.json             # LLM API configuration (not tracked by git)
 ├── setup.sh                # Dependency installation script
 ├── commands.txt            # Example commands for all benchmarks
+├── update.sh               # Pull latest updates for all repositories
 └── README.md
 ```
 
@@ -222,10 +223,9 @@ SmartC2Rust/
 │   └── usage_macro_ref_analyzer/  # Macro reference analyzer
 ├── kiso-parser-rust/       # Rust code parser
 │   └── rust_parser_api/    #   Python API
-├── kiso-parser-macro/      # Clang-based macro analyzer
-│   ├── macro_finder/       #   Preprocessor directive tracker
-│   └── macro_analyzer/     #   Macro definition analyzer
-└── update.sh               # Pull latest updates for all repositories
+└── kiso-parser-macro/      # Clang-based macro analyzer
+    ├── macro_finder/       #   Preprocessor directive tracker
+    └── macro_analyzer/     #   Macro definition analyzer
 ```
 
 ## Paper

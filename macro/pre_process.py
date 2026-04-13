@@ -26,7 +26,7 @@ import tiktoken
 import chardet
 from pycparser import c_parser, c_ast
 import replicate
-import google.generativeai as genai  
+#import google.generativeai as genai  
 from typing import List, Any
 from google.generativeai.protos import Content, Part
 from anthropic import InternalServerError
