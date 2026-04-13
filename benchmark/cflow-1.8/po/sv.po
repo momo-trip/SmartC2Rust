@@ -1,0 +1,982 @@
+# Swedish translations for GNU cflow package
+# Svenska översättningar för paket GNU cflow.
+# Copyright © 2012, 2016 Free Software Foundation, Inc.
+# Copyright © 2012, 2021 Sergey Poznyakoff
+# This file is distributed under the same license as the cflow package.
+#
+# Göran Uddeborg <goeran@uddeborg.se>, 2012, 2016, 2021, 2022.
+#
+# $Id: cflow.po,v 1.15 2022-01-05 12:50:51+01 göran Exp $
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU cflow 1.7\n"
+"Report-Msgid-Bugs-To: bug-cflow@gnu.org\n"
+"POT-Creation-Date: 2025-07-30 11:49+0300\n"
+"PO-Revision-Date: 2022-01-05 12:50+0100\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/c.l:153
+msgid "unterminated string?"
+msgstr "oavslutad sträng?"
+
+#: src/c.l:341
+#, c-format
+msgid "Command line: %s\n"
+msgstr "Kommandorad: %s\n"
+
+#: src/c.l:344
+#, c-format
+msgid "cannot execute `%s'"
+msgstr "kan inte köra ”%s”"
+
+#: src/c.l:399
+#, c-format
+msgid "cannot open `%s'"
+msgstr "kan inte öppna ”%s”"
+
+#: src/c.l:480
+#, c-format
+msgid "New location: %s:%d\n"
+msgstr "Ny plats: %s:%d\n"
+
+#: src/main.c:147
+#, c-format
+msgid "%s: no symbol type supplied"
+msgstr "%s: ingen symboltyp given"
+
+#: src/main.c:157
+#, c-format
+msgid "cyclic alias: %s -> %s"
+msgstr "cykliskt alias: %s → %s"
+
+#: src/main.c:163
+#, c-format
+msgid "cyclic alias: %s -> %s -> %s"
+msgstr "cykliskt alias: %s → %s → %s"
+
+#: src/main.c:181
+#, c-format
+msgid "unknown symbol type: %s"
+msgstr "okänd symboltyp: %s"
+
+#: src/main.c:310 src/main.c:317
+#, c-format
+msgid "level indent string is too long"
+msgstr "nivåindenteringssträngen är för lång"
+
+#: src/main.c:343
+#, c-format
+msgid "level-indent syntax"
+msgstr "nivåindenteringssyntax"
+
+#: src/main.c:365
+#, c-format
+msgid "unknown level indent option: %s"
+msgstr "okänd nivåindenteringsflagga: %s"
+
+#: src/main.c:395
+#, c-format
+msgid "Unknown symbol class: %c"
+msgstr "Okänd symbolklass: %c"
+
+#: src/main.c:407
+#, c-format
+msgid "%s: No such output driver"
+msgstr "%s: Ingen sådan utdrivrutin"
+
+#: src/main.c:511
+msgid "General options:"
+msgstr "Allmänna flaggor:"
+
+#: src/main.c:515 src/main.c:662 src/main.c:881
+msgid "NUMBER"
+msgstr "ANTAL"
+
+#: src/main.c:516
+msgid "set the depth at which the flowgraph is cut off"
+msgstr "ange djupet vid vilket flödesgrafen skärs av"
+
+#: src/main.c:527
+msgid "CLASSES"
+msgstr "KLASSER"
+
+#: src/main.c:528
+msgid ""
+"include specified classes of symbols (see below); prepend CLASSES with ^ or "
+"- to exclude them from the output"
+msgstr ""
+"inkludera angivna klasser av symboler (se nedan); föregå KLASSER med ^ eller "
+"- för att exkludera dem från utdata"
+
+#: src/main.c:540
+msgid "all data symbols, both external and static"
+msgstr "alla datasymboler, både externa och statiska"
+
+#: src/main.c:545
+msgid "symbols whose names begin with an underscore"
+msgstr "symboler vars namn börjar med understrykningstecken"
+
+#: src/main.c:550
+msgid "static symbols"
+msgstr "statiska symboler"
+
+#: src/main.c:555
+msgid "typedefs (for cross-references only)"
+msgstr "typedef:ar (endast för korsreferenser)"
+
+#: src/main.c:560 src/main.c:701 src/main.c:835 src/main.c:858
+msgid "NAME"
+msgstr "NAMN"
+
+#. TRANSLATORS: Don't translate quoted names.
+#: src/main.c:562
+msgid ""
+"use given output format NAME; valid names are `gnu' (default), `posix', and "
+"`dot'"
+msgstr ""
+"använd angivet utformat NAMN; giltiga namn är ”gnu” (standard), ”posix” och "
+"”dot”"
+
+#: src/main.c:573
+msgid "print reverse call tree"
+msgstr "skriv ut ett omvänt anropsträd"
+
+#: src/main.c:584
+msgid "produce cross-reference listing only"
+msgstr "skapa endast en korsreferenslista"
+
+#: src/main.c:594 src/main.c:610
+msgid "FILE"
+msgstr "FIL"
+
+#: src/main.c:595
+msgid "set output file name (default -, meaning stdout)"
+msgstr "ange utfilnamn (standard -, som betyder standard ut)"
+
+#: src/main.c:606
+msgid "Program initialization:"
+msgstr ""
+
+#: src/main.c:611
+msgid "read options from FILE"
+msgstr ""
+
+#: src/main.c:616 src/main.c:712
+msgid "DIR"
+msgstr "KAT"
+
+#: src/main.c:617
+msgid "prepend DIR to the profile search path"
+msgstr ""
+
+#: src/main.c:628
+msgid "don't load default profile"
+msgstr ""
+
+#: src/main.c:636
+msgid "Parser control:"
+msgstr "Parserstyrning:"
+
+#: src/main.c:640
+msgid "rely on indentation"
+msgstr "lita på indentering"
+
+#: src/main.c:651
+msgid "accept only sources in ANSI C"
+msgstr "acceptera endast källkod i ANSI C"
+
+#: src/main.c:663
+msgid "set initial token stack size to NUMBER"
+msgstr "sätt initial storlek på symbolstack till ANTAL"
+
+#: src/main.c:674
+msgid "SYMBOL:[=]TYPE"
+msgstr "SYMBOL:[=]TYP"
+
+#. TRANSLATORS: Don't translate type names.
+#: src/main.c:677
+msgid ""
+"register SYMBOL with given TYPE, or define an alias (if := is used); valid "
+"types are: keyword (or kw), modifier, qualifier, identifier, type, wrapper, "
+"or any unambiguous abbreviation thereof"
+msgstr ""
+"registrera SYMBOL med angiven TYP, eller definiera ett alias (om := "
+"används); giltiga typer är: keyword (eller kw), modifier, qualifier, "
+"identifier, type, wrapper eller en entydig förkortning av dem"
+
+#: src/main.c:690
+msgid "NAME[=DEFN]"
+msgstr "NAMN[=DEFN]"
+
+#: src/main.c:691
+msgid "predefine NAME as a macro"
+msgstr "fördefiniera NAMN som ett makro"
+
+#: src/main.c:702
+msgid "cancel any previous definition of NAME"
+msgstr "annullera eventuell tidigare definition av NAMN"
+
+#: src/main.c:713
+msgid ""
+"add the directory DIR to the list of directories to be searched for header "
+"files"
+msgstr ""
+"lägg till katalogen KAT till listan av kataloger som huvudfiler letas efter i"
+
+#: src/main.c:724
+msgid "COMMAND"
+msgstr "KOMMANDO"
+
+#: src/main.c:726
+msgid "run the specified preprocessor command"
+msgstr "kör det angivna preprocessorkommandot"
+
+#: src/main.c:736
+msgid "disable preprocessor"
+msgstr "avaktivera preprocessorn"
+
+#: src/main.c:747
+msgid "Output control:"
+msgstr "Utmatningsstyrning:"
+
+#: src/main.c:751
+msgid "show all functions, not only those reachable from main"
+msgstr "visa alla funktioner, inte bara de som kan nås från main"
+
+#: src/main.c:763
+msgid "print line numbers"
+msgstr "skriv radnummer"
+
+#: src/main.c:774
+msgid "print nesting level along with the call tree"
+msgstr "skriv nästningsnivå tillsammans med anropsträdet"
+
+#: src/main.c:785
+msgid "ELEMENT"
+msgstr ""
+
+#: src/main.c:786
+msgid "control graph appearance; see [1] for details"
+msgstr "anropsgrafsutseende; se [1] för detaljer"
+
+#: src/main.c:792
+msgid "draw ASCII art tree"
+msgstr "skriv ett träd med ASCII-tecken"
+
+#: src/main.c:803
+msgid "brief output"
+msgstr "kortfattad utdata"
+
+#: src/main.c:814
+msgid "additionally format output for use with GNU Emacs"
+msgstr "formatera utdata ytterligare för användning med GNU Emacs"
+
+#: src/main.c:821
+msgid "don't print argument lists in function declarations"
+msgstr "skriv inte argumentlistor i funktionsdeklarationer"
+
+#: src/main.c:828
+msgid "don't print symbol names in declaration strings"
+msgstr "skriv inte symbolnamn i deklarationssträngar"
+
+#: src/main.c:836
+msgid "start graph at this function; multiple options are allowed"
+msgstr "börja grafen vid denna funktion; flera flaggor är tillåtna"
+
+#: src/main.c:851
+msgid "there's no main function; print graphs for all functions in the program"
+msgstr ""
+"det finns ingen main-funktion; skriv graf över alla funktioner i programmet"
+
+#: src/main.c:859
+msgid ""
+"show only graphs leading from start symbols to this function; multiple "
+"options are allowed"
+msgstr ""
+"visa endast grafer som leder från startsymboler till denna funktion; flera "
+"flaggor är tillåtna"
+
+#: src/main.c:866
+msgid "Informational options:"
+msgstr "Informationsflaggor:"
+
+#: src/main.c:870
+msgid "verbose error diagnostics"
+msgstr "utförliga felmeddelanden"
+
+#: src/main.c:883
+msgid "set debugging level"
+msgstr "sätt felsökningsnivå"
+
+#: src/main.c:892
+#, fuzzy
+msgid ""
+"\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+msgstr ""
+"Licens GPLv3+: GNU GPL version 3 eller senare <%s>.\n"
+"Detta är fri programvara: du får lov att ändra och vidaredistribuera den.\n"
+"Det finns INGEN GARANTI, så långt lagen tillåter.\n"
+
+#: src/main.c:906
+msgid "(C)"
+msgstr "©"
+
+#: src/main.c:909
+#, fuzzy, c-format
+msgid "Written by %s."
+msgstr "Skriven av %s.\n"
+
+#: src/main.c:916
+msgid "References:"
+msgstr "Referenser:"
+
+#: src/main.c:919
+#, fuzzy, c-format
+msgid "Profile search path: %s\n"
+msgstr "inga filer matchar mönstret %s"
+
+#: src/main.c:925
+#, fuzzy
+msgid "generate program flowgraph"
+msgstr "generera en programflödesgraf"
+
+#: src/main.c:931
+#, fuzzy
+msgid "General help using GNU software: <https://www.gnu.org/gethelp/>"
+msgstr "Allmän hjälp om att använda GNU-programvara: <%s>\n"
+
+#: src/main.c:976 src/main.c:1434
+#, c-format
+msgid "parseopt_getopt failed"
+msgstr ""
+
+#: src/main.c:1043
+#, c-format
+msgid "error splitting line: %s"
+msgstr ""
+
+#: src/main.c:1064
+#, c-format
+msgid "file read error: %s"
+msgstr ""
+
+#: src/main.c:1158 src/main.c:1264
+#, fuzzy, c-format
+msgid "can't open option file %s: %s"
+msgstr "kan inte öppna filen ”%s”"
+
+#: src/main.c:1180
+#, fuzzy, c-format
+msgid "can't open directory %s"
+msgstr "kan inte öppna filen ”%s”"
+
+#: src/main.c:1186
+#, fuzzy, c-format
+msgid "can't open file %s/%s"
+msgstr "kan inte öppna filen ”%s”"
+
+#: src/main.c:1202
+#, c-format
+msgid "can't stat %s/%s"
+msgstr ""
+
+#: src/main.c:1234
+#, fuzzy, c-format
+msgid "no such profile: %s"
+msgstr "inga infiler"
+
+#: src/main.c:1302
+#, c-format
+msgid "warning: processing obsolete %s file"
+msgstr ""
+
+#: src/main.c:1308
+#, c-format
+msgid "warning: consider renaming it to %*.*s/%s%s"
+msgstr ""
+
+#: src/main.c:1383
+#, c-format
+msgid "Exiting"
+msgstr "Avslutar"
+
+#: src/main.c:1423
+#, c-format
+msgid "INTERNAL ERROR: %s: No such output driver"
+msgstr "INTERNT FEL: %s: Ingen sådan utdrivrutin"
+
+#: src/main.c:1438
+#, c-format
+msgid "argument to -p cannot be 0"
+msgstr ""
+
+#: src/main.c:1466
+#, c-format
+msgid "no input files"
+msgstr "inga infiler"
+
+#: src/parser.c:210
+#, c-format
+msgid " near "
+msgstr " nära "
+
+#: src/parser.c:313
+#, c-format
+msgid "INTERNAL ERROR: cannot return token to stream"
+msgstr "INTERNT FEL: kan inte returnera en symbol till en ström"
+
+#: src/parser.c:404
+msgid "unrecognized definition"
+msgstr "okänd definition"
+
+#: src/parser.c:626 src/parser.c:656 src/parser.c:791 src/parser.c:911
+#: src/parser.c:1127
+msgid "unexpected end of file in declaration"
+msgstr "oväntat filslut i deklaration"
+
+#: src/parser.c:675 src/parser.c:693 src/parser.c:726 src/parser.c:732
+msgid "unexpected end of file in expression"
+msgstr "oväntat filslut i uttryck"
+
+#: src/parser.c:771 src/parser.c:874
+msgid "expected `;'"
+msgstr "”;” förväntades"
+
+#: src/parser.c:823
+msgid "missing `;' after struct declaration"
+msgstr "”;” saknas efter struct-deklaration"
+
+#: src/parser.c:896
+#, fuzzy
+msgid "expected expression"
+msgstr "oväntat filslut i uttryck"
+
+#: src/parser.c:933
+msgid "unexpected end of file in initializer list"
+msgstr "oväntat filslut i initierarlista"
+
+#: src/parser.c:963 src/parser.c:970
+msgid "unexpected end of file in struct"
+msgstr "oväntat filslut i struct"
+
+#: src/parser.c:1019 src/parser.c:1144
+msgid "unexpected end of file in function declaration"
+msgstr "oväntat filslut i funktionsdeklaration"
+
+#: src/parser.c:1054 src/parser.c:1066
+#, fuzzy
+msgid "unexpected end of file"
+msgstr "oväntat filslut i struct"
+
+#: src/parser.c:1105 src/parser.c:1134
+msgid "expected `)'"
+msgstr "”)” förväntades"
+
+#: src/parser.c:1206
+msgid "unexpected token in parameter list"
+msgstr "oväntad symbol i parameterlista"
+
+#: src/parser.c:1222
+msgid "unexpected end of file in parameter list"
+msgstr "oväntat filslut i parameterlista"
+
+#: src/parser.c:1260
+msgid "forced function body close"
+msgstr "framtvingat avslutande av funktionskropp"
+
+#: src/parser.c:1274
+msgid "unexpected end of file in function body"
+msgstr "oväntat filslut i funktionskropp"
+
+#: src/parser.c:1374
+#, c-format
+msgid "%s/%d redefined"
+msgstr "%s/%d omdefinierad"
+
+#: src/parser.c:1378
+#, c-format
+msgid "%s redefined"
+msgstr "%s omdefinierad"
+
+#: src/parser.c:1381
+#, c-format
+msgid "this is the place of previous definition"
+msgstr "detta är platsen för den tidigare definitionen"
+
+#: src/parser.c:1395
+#, c-format
+msgid "%s:%d: %s/%d defined to %s\n"
+msgstr "%s:%d: %s/%d definierad som %s\n"
+
+#: src/parser.c:1420
+#, c-format
+msgid "%s:%d: type %s\n"
+msgstr "%s:%d: typ %s\n"
+
+#: src/output.c:432
+#, c-format
+msgid "cannot open file `%s'"
+msgstr "kan inte öppna filen ”%s”"
+
+#: src/posix.c:59
+#, c-format
+msgid "--format=posix is not compatible with --emacs"
+msgstr "--format=posix är inte kompatibelt med --emacs"
+
+#: gnu/error.c:196
+msgid "Unknown system error"
+msgstr "Okänt systemfel"
+
+#: gnu/obstack.c:319 gnu/obstack.c:321 gnu/xalloc-die.c:36
+#: src/wordsplit/wordsplit.c:78 src/wordsplit/wordsplit.c:2851
+msgid "memory exhausted"
+msgstr "minnet slut"
+
+#: src/wordsplit/wordsplit.c:132
+msgid "memory exhausted while trying to store error context"
+msgstr "minnet tog slut vid försök att lagra felkontext"
+
+#: src/wordsplit/wordsplit.c:873
+msgid "Restarting"
+msgstr "Startar om"
+
+#: src/wordsplit/wordsplit.c:1599
+#, c-format
+msgid "%.*s: variable null or not set"
+msgstr "%.*s: variabeln är null eller inte satt"
+
+#: src/wordsplit/wordsplit.c:1629
+#, c-format
+msgid "warning: undefined variable `%.*s'"
+msgstr "varning: odefinierad variabel ”%.*s”"
+
+#: src/wordsplit/wordsplit.c:2130
+#, c-format
+msgid "no files match pattern %s"
+msgstr "inga filer matchar mönstret %s"
+
+#: src/wordsplit/wordsplit.c:2595
+msgid "WS trimming"
+msgstr "WS-trimning"
+
+#: src/wordsplit/wordsplit.c:2597
+msgid "command substitution"
+msgstr "kommandosubstitution"
+
+#: src/wordsplit/wordsplit.c:2599 src/wordsplit/wordsplit.c:2607
+msgid "coalesce list"
+msgstr "förena lista"
+
+#: src/wordsplit/wordsplit.c:2601
+msgid "tilde expansion"
+msgstr "tildeexpansion"
+
+#: src/wordsplit/wordsplit.c:2603
+msgid "variable expansion"
+msgstr "variabelexpansion"
+
+#: src/wordsplit/wordsplit.c:2605
+msgid "quote removal"
+msgstr "borttagning av citat"
+
+#: src/wordsplit/wordsplit.c:2609
+msgid "path expansion"
+msgstr "sökvägsexpansion"
+
+#: src/wordsplit/wordsplit.c:2634
+#, c-format
+msgid "(%02d) Input:%.*s;"
+msgstr "(%02d) Indata:%.*s;"
+
+#: src/wordsplit/wordsplit.c:2660
+msgid "Initial list:"
+msgstr "Initial lista:"
+
+#: src/wordsplit/wordsplit.c:2675
+msgid "Coalesced list:"
+msgstr "Förenad lista:"
+
+#: src/wordsplit/wordsplit.c:2849
+msgid "no error"
+msgstr "inget fel"
+
+#: src/wordsplit/wordsplit.c:2850
+msgid "missing closing quote"
+msgstr "avslutande citationstecken saknas"
+
+#: src/wordsplit/wordsplit.c:2852
+msgid "invalid wordsplit usage"
+msgstr "felaktig användning av wordsplit"
+
+#: src/wordsplit/wordsplit.c:2853
+msgid "unbalanced curly brace"
+msgstr "obalanserad klammerparentes"
+
+#: src/wordsplit/wordsplit.c:2854
+msgid "undefined variable"
+msgstr "odefinierad variabel"
+
+#: src/wordsplit/wordsplit.c:2855
+msgid "input exhausted"
+msgstr "indata slut"
+
+#: src/wordsplit/wordsplit.c:2856
+msgid "unbalanced parenthesis"
+msgstr "obalanserad parentes"
+
+#: src/wordsplit/wordsplit.c:2857
+msgid "globbing error"
+msgstr "matchningsfel"
+
+#: src/wordsplit/wordsplit.c:2858
+msgid "user-defined error"
+msgstr "användardefinierat fel"
+
+#: src/wordsplit/wordsplit.c:2859
+msgid "invalid parameter number in assignment"
+msgstr "felaktigt parameternummer i tilldelning"
+
+#: src/wordsplit/wordsplit.c:2871
+msgid "unknown error"
+msgstr "okänt fel"
+
+#: src/wordsplit/wordsplit.c:2880
+#, c-format
+msgid "missing closing %c (start near #%lu)"
+msgstr "avslutande %c saknas (börjar nära nr. %lu)"
+
+#: src/parseopt/help.c:91
+#, c-format
+msgid "error in ARGP_HELP_FMT: improper usage of [no-]%s"
+msgstr ""
+
+#: src/parseopt/help.c:104
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: bad value for %s (near %s)"
+msgstr "ARGP_HELP_FMT: värdet %s är mindre eller lika med %s"
+
+#: src/parseopt/help.c:110
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: %s value is out of range"
+msgstr "ARGP_HELP_FMT: värdet %s är mindre eller lika med %s"
+
+#: src/parseopt/help.c:117
+#, fuzzy, c-format
+msgid "%s: ARGP_HELP_FMT parameter requires a value"
+msgstr "%.*s: ARGP_HELP_FMT-parameter kräver ett värde"
+
+#: src/parseopt/help.c:123
+#, fuzzy, c-format
+msgid "%s: unknown ARGP_HELP_FMT parameter"
+msgstr "%.*s: Okänd ARGP_HELP_FMT-parameter"
+
+#: src/parseopt/help.c:149
+#, c-format
+msgid "ARGP_HELP_FMT: missing delimiter near %s"
+msgstr ""
+
+#: src/parseopt/help.c:300
+msgid "Usage:"
+msgstr "Användning:"
+
+#: src/parseopt/help.c:319
+#, fuzzy, c-format
+msgid "or: %s [OPTIONS...] %s\n"
+msgstr " [FLAGGA …]"
+
+#: src/parseopt/help.c:582
+msgid ""
+"Mandatory or optional arguments to long options are also mandatory or "
+"optional for any corresponding short options."
+msgstr ""
+"Obligatoriska eller valfria argument till långa flaggor är även "
+"obligatoriska eller valfria för motsvarande korta flaggor."
+
+#: src/parseopt/help.c:584
+msgid ""
+"If an option has several forms, mandatory or optional argument is listed "
+"only once, after the last form."
+msgstr ""
+
+#: src/parseopt/help.c:740
+#, fuzzy, c-format
+msgid "usage: %s"
+msgstr "Användning:"
+
+#: src/parseopt/help.c:746
+#, fuzzy
+msgid "[OPTIONS...]"
+msgstr " [FLAGGA …]"
+
+#: src/parseopt/help.c:757
+#, c-format
+msgid "or: %s %s\n"
+msgstr ""
+
+#: src/parseopt/help.c:802
+#, fuzzy, c-format
+msgid "Report bugs and suggestions to <%s>\n"
+msgstr ""
+"Rapportera fel på %s till: %s\n"
+"Rapportera kommentarer på översättningen till: <tp-sv@listor.tp-sv.se>\n"
+
+#: src/parseopt/help.c:806
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr "%s hemsida: <%s>\n"
+
+#: src/parseopt/optset.c:120 src/parseopt/optset.c:136
+msgid "memory allocation error"
+msgstr ""
+
+#: src/parseopt/parseopt.c:71
+#, fuzzy, c-format
+msgid "unrecognized option '-%c'"
+msgstr "%s: okänd flagga ”%s%s”\n"
+
+#: src/parseopt/parseopt.c:142
+#, fuzzy, c-format
+msgid "option '%s%*.*s' is ambiguous; possibilities:"
+msgstr "%s: flaggan ”%s%s” är tvetydig; möjligheter:"
+
+#: src/parseopt/parseopt.c:174
+#, fuzzy, c-format
+msgid "unrecognized option '%s%*.*s'"
+msgstr "%s: okänd flagga ”%s%s”\n"
+
+#: src/parseopt/parseopt.c:337
+#, fuzzy, c-format
+msgid "option '%s%s' requires argument"
+msgstr "%s: flaggan ”%s%s” behöver ett argument\n"
+
+#: src/parseopt/parseopt.c:351
+#, fuzzy, c-format
+msgid "option '%s%s' does not take argument"
+msgstr "%s: flaggan ”%s%s” tar inget argument\n"
+
+#: src/parseopt/parseopt.c:369
+#, fuzzy, c-format
+msgid "bad value for option '%s%s'"
+msgstr "%s: okänd flagga ”%s%s”\n"
+
+#: src/parseopt/parseopt.c:395
+#, c-format
+msgid "invalid argument '%s'"
+msgstr ""
+
+#: src/parseopt/parseopt.c:580
+#, fuzzy
+msgid "Informative options"
+msgstr "Informationsflaggor:"
+
+#: src/parseopt/parseopt.c:585
+#, fuzzy
+msgid "produce this help text"
+msgstr "ge denna hjälplista"
+
+#: src/parseopt/parseopt.c:594
+msgid "give a short usage message"
+msgstr "ge ett kort användningsmeddelande"
+
+#: src/parseopt/parseopt.c:604 src/parseopt/parseopt.c:613
+msgid "print program version"
+msgstr "skriv ut programversionen"
+
+#, c-format
+#~ msgid "Garbage in ARGP_HELP_FMT: %s"
+#~ msgstr "Skräp i ARGP_HELP_FMT: %s"
+
+#~ msgid "  or: "
+#~ msgstr "  eller:   "
+
+#, c-format
+#~ msgid "Try '%s --help' or '%s --usage' for more information.\n"
+#~ msgstr "Försök med ”%s --help” eller ”%s --usage” för mer information.\n"
+
+#, c-format
+#~ msgid "Report bugs to %s.\n"
+#~ msgstr ""
+#~ "Rapportera fel till %s.\n"
+#~ "Rapportera kommentarer på översättningen till <tp-sv@listor.tp-sv.se>.\n"
+
+#~ msgid "set the program name"
+#~ msgstr "sätt programnamnet"
+
+#~ msgid "SECS"
+#~ msgstr "SEK"
+
+#~ msgid "hang for SECS seconds (default 3600)"
+#~ msgstr "häng i SEK sekunder (3600 som standard)"
+
+#~ msgid "(PROGRAM ERROR) No version known!?"
+#~ msgstr "(PROGRAMFEL)  Ingen känd version!?"
+
+#, c-format
+#~ msgid "%s: Too many arguments\n"
+#~ msgstr "%s: För många argument\n"
+
+#~ msgid "(PROGRAM ERROR) Option should have been recognized!?"
+#~ msgstr "(PROGRAMFEL)  Flaggan skulle ha varit känd!?"
+
+#, c-format
+#~ msgid "%s: option '%s%s' is ambiguous\n"
+#~ msgstr "%s: flaggan ”%s%s” är tvetydig\n"
+
+#, c-format
+#~ msgid "%s: invalid option -- '%c'\n"
+#~ msgstr "%s: ogiltig flagga -- ”%c”\n"
+
+#, c-format
+#~ msgid "%s: option requires an argument -- '%c'\n"
+#~ msgstr "%s: flaggan behöver ett argument -- ”%c”\n"
+
+#, c-format
+#~ msgid "Packaged by %s (%s)\n"
+#~ msgstr "Paketerad av %s (%s)\n"
+
+#, c-format
+#~ msgid "Packaged by %s\n"
+#~ msgstr "Paketerad av %s\n"
+
+#, c-format
+#~ msgid ""
+#~ "License GPLv3+: GNU GPL version 3 or later <%s>.\n"
+#~ "This is free software: you are free to change and redistribute it.\n"
+#~ "There is NO WARRANTY, to the extent permitted by law.\n"
+#~ msgstr ""
+#~ "Licens GPLv3+: GNU GPL version 3 eller senare <%s>.\n"
+#~ "Detta är fri programvara: du får lov att ändra och vidaredistribuera "
+#~ "den.\n"
+#~ "Det finns INGEN GARANTI, så långt lagen tillåter.\n"
+
+#, c-format
+#~ msgid "Written by %s.\n"
+#~ msgstr "Skriven av %s.\n"
+
+#, c-format
+#~ msgid "Written by %s and %s.\n"
+#~ msgstr "Skriven av %s och %s.\n"
+
+#, c-format
+#~ msgid "Written by %s, %s, and %s.\n"
+#~ msgstr "Skriven av %s, %s och %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "and %s.\n"
+#~ msgstr ""
+#~ "Skriven av %s, %s, %s\n"
+#~ "och %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, and %s.\n"
+#~ msgstr ""
+#~ "Skriven av %s, %s, %s,\n"
+#~ "%s och %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, and %s.\n"
+#~ msgstr ""
+#~ "Skriven av %s, %s, %s,\n"
+#~ "%s, %s och %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, and %s.\n"
+#~ msgstr ""
+#~ "Skriven av %s, %s, %s,\n"
+#~ "%s, %s, %s och %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "and %s.\n"
+#~ msgstr ""
+#~ "Skriven av %s, %s, %s,\n"
+#~ "%s, %s, %s, %s\n"
+#~ "och %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "%s, and %s.\n"
+#~ msgstr ""
+#~ "Skriven av %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "%s och %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "%s, %s, and others.\n"
+#~ msgstr ""
+#~ "Skriven av %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "%s, %s med flera.\n"
+
+#, c-format
+#~ msgid "Report bugs to: %s\n"
+#~ msgstr ""
+#~ "Rapportera fel till: %s\n"
+#~ "Rapportera kommentarer på översättningen till: <tp-sv@listor.tp-sv.se>\n"
+
+#, c-format
+#~ msgid "General help using GNU software: <%s>\n"
+#~ msgstr "Allmän hjälp om att använda GNU-programvara: <%s>\n"
+
+#~ msgid "Symbol classes for --include argument"
+#~ msgstr "Symbolklasser för argument till --include"
+
+#~ msgid "don't rely on indentation (default)"
+#~ msgstr "lita inte på indentering (standard)"
+
+#~ msgid "accept both ANSI and K&R C (default)"
+#~ msgstr "acceptera både ANSI- och K&R-C (standard)"
+
+#~ msgid "don't print line numbers (default)"
+#~ msgstr "skriv inte ut radnummer (standard)"
+
+#~ msgid "don't print nesting levels (default)"
+#~ msgstr "skriv inte ut nästningsnivåer (standard)"
+
+#~ msgid "don't draw ASCII art tree (default)"
+#~ msgstr "skriv inte ett träd med ASCII-tecken (standard)"
+
+#~ msgid "full output (default)"
+#~ msgstr "fullständig utdata (standard)"
+
+#~ msgid "don't format output for Emacs (default)"
+#~ msgstr "formatera inte utdata för Emacs (standard)"
+
+#~ msgid "print argument lists in function declarations (default)"
+#~ msgstr "skriv ut argumentlistor i funktionsdeklarationer (standard)"
+
+#~ msgid "print symbol names in declaration strings (default)"
+#~ msgstr "skriv inte ut symbolnamn i deklarationssträngar (standard)"
+
+#~ msgid "disable verbose diagnostics (default)"
+#~ msgstr "avaktivera utförliga felmeddelanden (standard)"
+
+#~ msgid "[FILE]..."
+#~ msgstr "[FIL]…"

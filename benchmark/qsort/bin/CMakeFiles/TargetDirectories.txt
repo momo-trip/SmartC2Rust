@@ -1,0 +1,4 @@
+/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/CMakeFiles/Qsort.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/CMakeFiles/qsort_test.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/CMakeFiles/edit_cache.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/CMakeFiles/rebuild_cache.dir

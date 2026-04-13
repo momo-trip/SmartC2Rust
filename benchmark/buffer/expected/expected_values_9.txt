@@ -1,0 +1,16 @@
+[9/17] Testing test_buffer_slice__end()
+
+  expected: 'Tobi Ferret'
+    actual: 'Tobi Ferret'
+
+
+  expected: 'Ferret'
+    actual: 'Ferret'
+
+
+  expected: 'Ferr'
+    actual: 'Ferr'
+
+
+  expected: 'ret'
+    actual: 'ret'

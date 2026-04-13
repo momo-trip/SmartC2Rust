@@ -1,0 +1,1 @@
+/usr/bin/clang  -fprofile-arcs -ftest-coverage -finstrument-functions -g  --coverage CMakeFiles/qsort_test.dir/qsort.c.o -o qsort_test  libQsort.a -lgcov 

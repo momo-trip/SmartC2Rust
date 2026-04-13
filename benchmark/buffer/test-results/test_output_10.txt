@@ -1,0 +1,8 @@
+[10/17] Testing test_buffer_slice__end_overflow()
+
+  expected: 'Tobi Ferret'
+    actual: 'Tobi Ferret'
+
+
+  expected: 'Ferret'
+    actual: 'Ferret'

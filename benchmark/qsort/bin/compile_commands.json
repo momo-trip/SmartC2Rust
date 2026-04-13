@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin",
+  "command": "/usr/bin/clang    -fprofile-arcs -ftest-coverage -finstrument-functions -g -o CMakeFiles/Qsort.dir/qsort.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c",
+  "file": "/home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c"
+},
+{
+  "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin",
+  "command": "/usr/bin/clang    -fprofile-arcs -ftest-coverage -finstrument-functions -g -o CMakeFiles/qsort_test.dir/qsort.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c",
+  "file": "/home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c"
+}
+]

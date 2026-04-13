@@ -1,0 +1,204 @@
+GNU cflow NEWS -- history of user-visible changes. 2025-07-30
+See the end of file for copying conditions.
+
+Please send cflow bug reports to <bug-cflow@gnu.org>.
+
+Version 1.8, 2025-07-30
+
+* Configuration system rewritten
+
+Cflow is shipped with a set of "profiles", providing defaults for
+different standards of the C language.  For example, to enable support
+for gcc extensions it suffices to load the "gcc" profile:
+
+  cflow --profile=gcc
+
+Users can define their own profiles and place them in a well-known
+disk location for further use with the --profile option.
+
+Site-wide or user-specific settings can be stored in the default
+profile, which is always loaded.
+
+Two options are provided for managing profiles: --prepend-path
+modifies the profile search path and -q disables the use of the
+default profile.
+
+The configuration system used in previous versions (via the
+CFLOW_OPTIONS and CFLOWRC environment variables) is considered
+deprecated, but is still supported for backward compatibility.
+
+* Emacs cflow-mode improved
+
+* Bugfixes
+
+
+Version 1.7, 2021-12-30
+
+* Multiple start functions are allowed
+
+The '--main' option can be given multiple times.  A separate graph
+will be drawn for each function given as its argument.
+
+* New option --target=FUNCTION
+
+If this option is given, the produced graph will contain only paths
+leading from start function (or functions) to the given FUNCTION.
+
+Multiple '--target' options are allowed.
+
+* New output format: dot
+
+The '-f dot' (or '--format=dot') option instructs cflow to output
+graph as a description in DOT language, suitable as input to graphviz
+programs.
+
+* cflow-mode: new commands for navigating in the graph:
+
+  c   go to the calling function
+  n   go to the next function at the same nesting level
+  p   go to the previous function at the same nesting level
+
+* Bugfixes:
+
+** CVE-2019-16165
+** CVE-2019-16166
+** Fix parsing of K&R style function declarations
+** Improve parsing of typecasts
+** Fix recursive call detection
+
+
+Version 1.6, 2019-02-23
+
+* New option --all (-A)
+
+Produce graphs for all global functions in the program.  Use this
+option if your program contains functions which are not directly
+reachable from main().
+
+The output consist of separate flow graphs for each global function
+defined in the program.  These graphs will be placed after the graph
+for main() (if it exists), and will be ordered lexicographically by
+the function name.
+
+* New option --no-main
+
+This option has the same effect as '--all', except that the graph for
+main() function (if it exists) is treated same way as all the other
+graphs, i.e. it will not be placed at the top of output, but in its
+place as per the lexicographic ordering of function names.
+
+
+Version 1.5, 2016-05-17
+
+* Correctly handle functions returning struct/union (fixes bug #31792)
+* Gracefully handle invalid inputs (fixes bug #44113)
+* Debugging output goes to stderr
+* Add a manpage
+* Consistent use of exit codes
+
+
+Version 1.4, 2011-10-11
+
+* Symbol aliases
+
+The `--symbol' option has been extended to allow for defining
+symbol aliases.  Aliases are useful for declaring reserved
+words such as `__restrict' or `__inline'.  For example,
+the option `--symbol __restrict:=restrict' instructs cflow
+to treat `__restrict' exactly as `restrict'.
+
+* New syntactic class: qualifiers
+
+Tokens in this class can legitimately appear in place
+of C qualifiers, such as `static' or `inline'.  This class
+is useful for some compiler-depending keywords, such as
+`__extension__' in gcc.  The usual declaration of this symbol
+is `--symbol __extension__:qualifier'.
+
+* Speed up recursive call detection.
+
+* Fix parsing of typedefs after `struct'.
+* Fix the output of branch marks in tree mode.
+* Fix processing of static inline functions (RH bug 650716).
+
+
+Version 1.3, 2009-07-11
+
+* Optimize symbol tables.
+
+New symbol tables considerably improve the program performance.
+
+* Bugfixes.
+
+
+Version 1.2, 2007-06-29
+
+* Licensed under the GPLv3
+
+
+Version 1.1, 2006-07-09
+
+* Bugfixes:
+** Fix stack overflow on erroneous nameless function arguments.
+** Fix global/static and static/static name clashes.
+** Fix initial allocation for level mark array
+
+* New localization: Danish and Vietnamese
+
+
+Version 1.0, 2005-10-15
+
+* First official release.
+
+
+Version 0.2.3:
+
+* Finished documentation.
+
+* Added `--no-' options.
+
+
+Version 0.2.2:
+
+* Added testsuite
+
+* New option --number=N (-nN) - print line numbers along with the flow tree
+(default in POSIX mode)
+
+* Added localization support. New localizations: Polish and Ukrainian.
+
+
+Version 0.2:
+
+* Added autoconf suite.
+* Added POSIX output support.
+
+
+Version 0.1:
+
+Initial version restored from 1997 snapshots. 
+
+
+----------------------------------------------------------------------
+* Copyright information:
+
+Copyright (C) 2005-2025 Sergey Poznyakoff
+
+   Permission is granted to anyone to make or distribute verbatim copies
+   of this document as received, in any medium, provided that the
+   copyright notice and this permission notice are preserved,
+   thus giving the recipient permission to redistribute in turn.
+
+   Permission is granted to distribute modified versions
+   of this document, or of portions of it,
+   under the above conditions, provided also that they
+   carry prominent notices stating who last changed them.
+
+Local variables:
+mode: outline
+paragraph-separate: "[ 	]*$"
+eval: (add-hook 'write-file-hooks 'time-stamp)
+time-stamp-start: "changes. "
+time-stamp-format: "%:y-%02m-%02d"
+time-stamp-end: "\n"
+end:

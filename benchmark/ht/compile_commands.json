@@ -1,0 +1,114 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-O2",
+      "-o",
+      "lsearch",
+      "samples/lsearch.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/samples/lsearch.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/lsearch"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-O2",
+      "-o",
+      "bsearch",
+      "samples/bsearch.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/samples/bsearch.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/bsearch"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-O2",
+      "-o",
+      "demo",
+      "samples/demo.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/samples/demo.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/demo"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-O2",
+      "-o",
+      "demo",
+      "ht.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/ht.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/demo"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-O2",
+      "-o",
+      "dump",
+      "samples/dump.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/samples/dump.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/dump"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-O2",
+      "-o",
+      "dump",
+      "ht.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/ht.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/dump"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-O2",
+      "-Wall",
+      "-o",
+      "stats",
+      "samples/stats.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/samples/stats.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/stats"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-O2",
+      "-Wall",
+      "-o",
+      "stats",
+      "ht.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/ht",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/ht.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/ht/stats"
+  }
+]

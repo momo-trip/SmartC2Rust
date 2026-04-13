@@ -1,0 +1,5075 @@
+import os
+import json
+import sys
+import subprocess
+import shutil
+import logging
+import base64
+import atexit
+import signal
+import random
+import math
+import time
+import tempfile
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
+import tiktoken
+import chardet
+import requests
+import threading
+import http.server
+import socketserver
+import traceback
+from functools import partial, reduce
+import select
+import platform
+import webbrowser
+import stat
+import pwd
+import grp
+import glob
+import fcntl
+import pty
+import termios
+import tty
+import argparse
+import re
+import textwrap
+import toml
+from pathlib import Path
+from typing import Dict, List, Tuple, Set, Any, Optional, Union, NamedTuple
+from copy import deepcopy
+from collections import defaultdict, deque
+from datetime import datetime, timedelta
+from threading import Timer, Thread
+from dataclasses import dataclass, field
+
+import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
+from pydantic import BaseModel
+import openai
+import anthropic
+from anthropic import InternalServerError
+import replicate
+# import google.generativeai as genai
+# from google.generativeai.protos import Content, Part
+
+from clang.cindex import (
+    Index, 
+    CursorKind, 
+    TypeKind, 
+    TranslationUnit, 
+    CompilationDatabase, 
+    Config
+)
+
+from graphviz import Digraph
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+import clang.cindex
+clang.cindex.Config.set_library_file('/usr/lib/llvm-19/lib/libclang.so.1')  # Numbers may change depending on version
+#clang.cindex.Config.set_library_file('/opt/homebrew/opt/llvm/lib/libclang.dylib') # for mac os
+
+
+from utils_api import (
+    # normal
+    read_json,
+    write_json,
+    read_file,
+    write_file,
+    delete_file,
+    create_file, 
+    copy_file,
+    append_file,
+    create_permissioned_file,
+    create_directory,
+    delete_directory,
+    copy_directory,
+    grant_permissions,
+    run_script,
+    run_cov_script,
+    run_branch_cov_script,
+    get_coverage,
+    get_branch_covered,
+    find_compile_commands_json,
+    deduplicate_compile_commands,
+    count_file_lines,
+    get_timestamp,
+    write_testcase,
+    remove_base_path,
+    calculate_execution_time,
+    rename_directory,
+    get_last_directory,
+    create_backup_directory,
+    run_script_wo_log,
+    run_script_pty,
+
+    # translation
+    set_log,
+    create_path_config,
+    extract_all_paths,
+    get_setting_data,
+    get_lined_code,
+    update_parent_path,
+    obtain_metadata,
+    get_ref_files,
+    get_path_map,
+    read_specific_lines,
+    append_rust_path,
+    update_modified_keys,
+)
+
+from llm_api import (
+    RepairConfig,
+    SemConfig,
+    LLMInterface,
+    init_prompt_count, 
+    #set_exp_data,
+    repair_test,
+    repair_branch,
+    occupy_llm,
+    configure_llm,
+    shutdown_llm,
+    save_coverage_report,
+    get_dir_struct,
+    adjust_prompt,
+    ask_llm,
+    reflect_line_modification,
+    get_modified_rust_lines,
+    get_grouped_c_keys,
+    ask_correspondence,
+    get_claude_model,
+    adjust_prompt,
+)
+
+from c_parser_api import (
+    analyze_dependencies,
+    #analyze_function,
+    analyze_call_relationship,
+    p_f,
+    #parse_files_c,
+    get_files_list,
+    setup_dynamic_macro,
+    #analyze_macros_llm,
+    detect_include_guards,
+    delete_guards,
+    delete_macro_defs,
+    #generate_build_rs,
+    generate_cargo_toml,
+    generate_run_all_path,
+    generate_header_paths_rust_code,
+    get_headers,
+    get_build_path,
+    parse_trace,
+)
+
+from debug import (
+    debug_with_pexpect
+)
+
+
+from rust_parser_api import (
+    parse_files_rust,
+    #update_rust_block,
+    get_rust_interface,
+    rust_find_function_end,
+    update_c_rust_metadata,
+    merge_c_rust_metadata,
+    setup_rust_trace,
+)
+
+
+full_regions = []
+
+FFI_ON = True #False
+WITH_FLOW = True #False #True
+DEBUG_LLM = False
+TEST_MODE = None #False #True #False
+
+REPAIR_MAX = 500
+given_time = 60 #200 # 20 # default 20
+
+iteration_dict = {}
+
+####################################################
+########## instrument_io
+####################################################
+
+def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, exec_time):
+    c_paths = []
+    
+    dep_json = read_json(dep_json_path)
+    for item in dep_json:
+        if 'div_parts' in item:
+            for div in item['div_parts']:
+                c_paths.append(div['source'])
+        else:
+            c_paths.append(item['source'])
+    
+    result = {}
+    sum_file_total = 0
+    sum_func_count = 0
+    for file_path in c_paths:
+        meta_data, meta_path = obtain_metadata(file_path, meta_dir, False, None, "def")
+        
+        func_count = 0
+        file_total = 0
+        for item in meta_data:
+            if item['category'] == 'function' and 'equivalence' in item:
+                file_total += item['equivalence']
+                func_count += 1
+            
+            if 'components' in item:
+                for com in item['components']:
+                    if com['category'] == 'function' and 'equivalence' in com:
+                        file_total += com['equivalence']
+                        func_count += 1
+
+        if func_count != 0:
+            file_result = file_total / func_count
+        else:
+            file_result = 0
+        file_result = round(file_result, 5)
+        result[file_path] = file_result
+
+        sum_file_total += file_total
+        sum_func_count += func_count
+    
+    print("----------------------------------------------")
+    print("Caluculate equivalence_rata...")
+    print()
+
+    print(f"File Result:")
+    for file_path in result:
+        print(f"   {result[file_path]} for {file_path}")
+    print("----------------------------------------------")
+    if sum_func_count != 0:
+        sum_result = sum_file_total / sum_func_count
+    else:
+        sum_result = 0
+    sum_result = round(sum_result, 5)
+    print(f"Total: {sum_result} for {target}")
+
+    result_json = read_json(result_path)
+
+    # Inherit from moment_path
+    moment_json = read_json(moment_path)  #result_json[target]['current_count'] = moment_json[target]['current_count']
+
+    """
+    if target not in moment_json:
+        moment_json[target] = {}
+    if 'current_count' not in moment_json[target]:
+        moment_json[target]['current_count'] = 0
+    """
+    if not os.path.exists(f"{database_dir}/s_repair_count.json"):
+        write_json(f"{database_dir}/s_repair_count.json", {})
+
+    f_count_json = read_json(f"{database_dir}/s_repair_count.json")
+    if target not in f_count_json:
+        f_count_json[target] = 0
+    f_count = f_count_json[target]
+    trial_id = "trial_" + str(f_count)  #str(moment_json[target]['current_count'] - 1)
+    f_count_json[target] = f_count + 1
+    write_json(f"{database_dir}/s_repair_count.json", f_count_json)
+
+    if result_json is None:
+        result_json = {}
+    if target not in result_json:
+        result_json[target] = {}
+    if trial_id not in result_json[target]:
+        result_json[target][trial_id] = {}
+        
+    #avr = moment_json[target][trial_id]['average']
+    destination = archive_dir + "/" + target + "/" + "s_repair_" + trial_id #+ f"_{avr}"
+
+    calculate_execution_time(chat_dir, "time.json", trial_id, target)
+
+    #copy_directory(rust_output_dir, destination)
+    #copy_directory(meta_dir, destination)
+    copy_directory(exp_dir, destination)
+    copy_directory(chat_dir, destination)  # added
+    # if os.path.exists(chat_macro_dir):
+    #     copy_directory(chat_macro_dir, destination)  # added
+    #copy_file("judge.json", destination)
+
+    copy_directory(mix_io_dir, destination)
+    copy_file(log_file_path, destination)
+    #copy_file(dep_json_path, destination)
+    copy_file(token_path, destination)
+    # copy_file("token_macro.json", destination)
+    copy_file("time.json", destination)
+    # copy_file("classify_data.json", destination)
+
+    current_directory = os.getcwd()
+    result_json[target][trial_id]['cwd'] = current_directory
+    result_json[target][trial_id]['exec_time'] = exec_time
+    result_json[target][trial_id]['archive_dir'] = destination
+    #result_json[target][trial_id]['saved_rust_dir'] = saved_rust_dir
+    #result_json[target][trial_id]['saved_meta_dir'] = saved_meta_dir
+    #result_json[target][trial_id]['saved_log_dir'] = saved_log_dir
+    result_json[target][trial_id]['average'] = None #moment_json[target][trial_id]['average']
+
+    # for category in ['conv_type', 'llm_model', 'conv_sum_prompt', 'repair_sum_prompt', 'repair_history', 'conv_show_files', 'repair_show_files', 'log_file_path']: #, 'llm_model'
+    #     if category in moment_json[target][trial_id]:
+    #         result_json[target][trial_id][category] = moment_json[target][trial_id][category]
+
+    if trial_id not in result_json[target]:
+        result_json[target][trial_id] = {}
+
+    #num = result_json[target]['current_count']
+
+    result_json[target][trial_id]['equivalence_average'] = None
+    result_json[target][trial_id]['compile_average'] = None # Store the average compile count across all files
+
+    if 'equivalence_details' not in result_json[target]:
+        result_json[target][trial_id]['equivalence_details'] = {}
+
+    if 'compile_details' not in result_json[target]:
+        result_json[target][trial_id]['compile_details'] = {}
+
+    if 'input_token' not in result_json[target]:
+        result_json[target][trial_id]['input_token'] = {}
+    
+    if 'output_token' not in result_json[target]:
+        result_json[target][trial_id]['output_token'] = {}
+    
+    result_json[target][trial_id]['equivalence_average'] = sum_result
+
+    write_json(result_path, result_json)
+
+
+    ######### updating result.json
+    """
+    result_json = read_json(result_path)
+    moment_json = read_json(moment_path)
+    trial_id = "trial_" + str(moment_json[target]['current_count'] - 1) # Same in moment_path
+
+    average = moment_json[target][trial_id]['average']
+    sum_repair_count = 0
+    file_count = 0
+
+    for rust_path in moment_json[target][trial_id]['paths']:
+        exp_path = obtain_exp_path(rust_path, average)
+        exp_data = read_json(exp_path)
+
+        if rust_path == "modified_rust/src/urlparser/test_c/parts0_h.rs":
+            print("-----")
+            #"modified_rust/src/build.rs": 1,
+            #"modified_rust/src/urlparser/url_h/parts0_h.rs": 2,
+            #"modified_rust/src/urlparser/test_c/parts0_h.rs": 2
+
+        repair_count = 0  # Or a default value
+        sum_input = 0
+        sum_output = 0
+
+        #repair_count = exp_data['trials'][-1] # Last element # build.rs is not working well.
+        if exp_data is not None and 'trials' in exp_data and exp_data['trials']:
+            repair_count = exp_data['trials'][-1]['repair_count']
+            print(repair_count)
+            if repair_count is None:
+                repair_count = 0
+            sum_repair_count += repair_count
+
+            for item in exp_data['trials']:
+                sum_input += item['input_token']
+                sum_output += item['output_token']
+        
+        else:
+            print("Error: Invalid or empty data")
+
+        result_json[target][trial_id]['compile_details'][rust_path] = repair_count
+        result_json[target][trial_id]['input_token'][rust_path] = sum_input
+        result_json[target][trial_id]['output_token'][rust_path] = sum_output
+
+        file_count += 1
+
+    print("-------")
+    print(rust_path)
+    print(result_json[target][trial_id]['input_token'][rust_path])
+    print(exp_path)
+    #sum_repair_count / file_count
+    if file_count == 0:
+        result_json[target][trial_id]['compile_average'] = sum_repair_count
+    else:
+        result_json[target][trial_id]['compile_average'] = sum_repair_count / file_count
+    """
+    write_json(result_path, result_json)
+
+
+def add_line_numbers_custom(input_file, fixed_number):
+    try:
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, encoding='utf-8') as temp_file:
+            with open(input_file, 'r', encoding='utf-8') as infile:
+                # Read all lines and get the maximum indent level and line count
+                lines = list(infile)
+                if not lines:
+                    #print(f"File {input_file} is empty.")
+                    return
+                max_line_num = len(lines)
+                max_indent = max((len(line) - len(line.lstrip())) // 4 for line in lines)
+                
+                # Calculate the maximum digit count for line numbers and indent levels
+                line_num_width = len(str(max_line_num))
+                indent_width = len(str(max_indent))
+                
+                # Create the format string (fix the position of the colon)
+                format_str = f"Line{{:{line_num_width}d}} [{{:{indent_width}d}}]: {{}}"
+                
+                # Process each line
+                for line_number, line in enumerate(lines, start=fixed_number):
+                    indent_level = (len(line) - len(line.lstrip())) // 4
+                    numbered_line = format_str.format(line_number, indent_level, line)
+                    temp_file.write(numbered_line)
+                
+        # Overwrite the original file with the contents of the temporary file
+        os.replace(temp_file.name, input_file)
+        #print(f"Wrote file with line numbers and indent levels to {input_file}.")
+    except IOError as e:
+        print(f"An error occurred: {e}")
+
+
+
+def find_matching_path(workspace_dir, target_suffix):
+
+    matching_paths = []
+    matching_path = target_suffix
+    for root, _, files in os.walk(workspace_dir):
+        for file in files:
+            full_path = os.path.join(root, file)
+            if full_path.endswith(target_suffix):
+                matching_paths.append(full_path)
+                matching_path = full_path
+                break
+    
+    return matching_path
+
+
+def get_lined_specific_code(test_path, start_line, end_line, work_dir):
+    if not os.path.exists(test_path):
+        test_path = find_matching_path(work_dir, test_path)
+
+    target_code = read_specific_lines(test_path, start_line, end_line)
+    
+    lined_test_path = "lined.txt" #"lined.c"
+    write_file(lined_test_path, target_code)
+    add_line_numbers_custom(lined_test_path, start_line) #add_line_numbers(lined_test_path)
+    test_code = read_file(lined_test_path)
+
+    delete_file(lined_test_path)
+
+    return test_code
+
+
+def support_returns(file_path):
+    output_list = []
+
+    tmp_file = "tmp.c"
+    copy_file(file_path, tmp_file)
+    remove_comments_file(tmp_file)
+
+    with open(tmp_file, 'r') as f:
+        lines = f.readlines()
+
+    for i in range(0, len(lines)): #for i in range(input_line - 1, func_data['def_end_line']):
+        output_line = None
+        return_var = None
+        current_line = lines[i]
+        
+        # 1. Extract the part that does not include comments
+        code_parts = []
+        in_comment = False
+        in_string = False
+        string_char = None
+        j = 0
+    
+        while j < len(current_line):
+            if in_string:
+                if current_line[j] == string_char and current_line[j-1] != '\\':
+                    in_string = False
+                code_parts.append(current_line[j])
+            elif in_comment:
+                if current_line[j:j+2] == '*/':
+                    in_comment = False
+                    j += 1
+            else:
+                if current_line[j:j+2] == '//':
+                    break
+                elif current_line[j:j+2] == '/*':
+                    in_comment = True
+                    j += 1
+                elif current_line[j] in '"\'':
+                    in_string = True
+                    string_char = current_line[j]
+                    code_parts.append(current_line[j])
+                else:
+                    code_parts.append(current_line[j])
+            j += 1
+        
+        code_line = ''.join(code_parts).strip()
+        
+        # 2. Pattern-match actual return statements
+        if code_line and 'return' in code_line:
+            # Basic patterns of return statements: 
+            # - Starts with return at the beginning of the line (excluding whitespace)
+            # - There is a space or parenthesis after return
+            if (code_line.lstrip().startswith('return') and 
+                (len(code_line.lstrip()) == 6 or  # return alone
+                code_line.lstrip()[6] in ' \t(')): # Space or parenthesis after return
+                
+                start_line = i + 1 #output_line = i + 1
+
+                current_line = start_line - 1 # in the sense of index
+                end_line = start_line - 1  # in the sense of index # set default value
+                
+                while current_line < len(lines):
+                    if ';' in lines[current_line]:
+                        end_line = current_line
+                        break
+                    current_line += 1
+                
+                end_line = end_line + 1 # in terms of line number
+
+                if start_line != end_line:
+                    entry = {
+                        "file_path" : file_path,
+                        "start_line" : start_line,
+                        "end_line" : end_line
+                    }
+                    output_list.append(entry)
+
+    delete_file(tmp_file)
+
+    return output_list
+
+
+
+def get_rust_lib(file_path):
+    base_path = os.path.splitext(file_path)[0]
+
+    lib_header_path = f"{base_path}_rust.h" # Add _rust.h and create new path
+
+    return lib_header_path
+
+def create_rustlib_header(target_funcs, target_dir, list_path, meta_dir, ommited_paths): #, lib_header_path):
+
+    order = read_compile_order(list_path)
+
+    for file_path in order:
+        if file_path in ommited_paths:
+            continue
+        # create header file
+        lib_header_path = get_rust_lib(file_path)
+        delete_file(lib_header_path)
+
+        filename = os.path.splitext(os.path.basename(file_path))[0]  # Filename without extension
+        filename = filename.upper().replace('-', '_')  # Convert hyphens to underscores and uppercase
+
+        content = []
+        content.append(f"#ifndef {filename}_RUST_LIB_H")
+        content.append(f"#define {filename}_RUST_LIB_H")
+
+        meta_data, meta_path = get_metadata(file_path, meta_dir, None)
+        for func_data in meta_data:
+            if func_data['category'] != 'function':
+                continue
+            if not is_target_func(func_data, target_funcs):
+                continue
+
+            args = func_data['arguments']
+            arg_names = [f"{arg['actual_type']} {arg['var_name']}" for arg in args]  #[f"{arg['base_type']} {arg['var_name']}" for arg in args] #[f"{arg['register_type']}, {arg['var_name']}" for arg in args] #arg_names = [f"\"{arg['register_type']}\", {arg['var_name']}" for arg in args] # arg_names = [f"{arg['var_name']}" for arg in args] #[f"{arg['var_type']}, {arg['var_name']}" for arg in args]
+            arg_str = f"{', '.join(arg_names)}" if arg_names else ""
+           
+            return_type = func_data['return_value']['actual_type']  #func_data['return_value']['base_type']
+
+            content.append(f"extern {return_type} {func_data['rust_function_name']}({arg_str});")
+
+        content.append("#endif")
+        
+        final_content = '\n'.join(content) # Join the list with newlines into a single string
+        final_content += '\n' # Add a trailing newline
+
+        write_file(lib_header_path, final_content)
+
+        # add a include statement for the file_path
+        with open(file_path, 'r') as f: # Add an include statement to the source file
+            source_content = f.read()
+        
+        relative_header_path = os.path.relpath(lib_header_path, os.path.dirname(file_path)) # Get the relative path to the header file
+        include_statement = f'#include "{relative_header_path}"\n'
+        
+        modified_content = include_statement + source_content # Prepend the include statement to the original file content
+        
+        with open(file_path, 'w') as f: # Write the updated content back to the file
+            f.write(modified_content)
+
+
+def generate_zombi(target_funcs, target_dir, list_path, meta_dir, type_json_path):
+
+    seen_files = set()
+
+    order = read_compile_order(list_path)
+    for file_path in order:
+        print(f"generate_zombi for {file_path}...")
+        meta_data, meta_path = get_metadata(file_path, meta_dir, None)
+
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+
+        #print(f"file_path is {file_path}")
+        for func_data in meta_data:
+            if func_data['category'] != 'function':
+                continue
+            if not is_target_func(func_data, target_funcs):
+                continue
+
+            if 'rust_function_name' not in func_data:
+                continue
+
+            #call_line = input_line + 1
+            #print(json.dumps(func_data, indent=4))
+            end_line = func_data['def_end_line']
+            func_name = func_data['name']
+
+            # Start from the function definition line and search for { #input_line = func_data['input_line'] # item
+            input_line = None
+            prefix = ""  # Part before {
+            suffix = ""  # Part after {
+
+            print("Before searching the function start...")
+            for i in range(func_data['def_start_line'] - 1,  len(lines)): # end_line):
+                if '{' in lines[i]:
+                    input_line = i #+ 1
+                    parts = lines[i].split('{', 1)
+                    prefix = parts[0] + '{ ' # Keep the part before {
+                    if len(parts) > 1:
+                        suffix = parts[1]  # Keep the remaining part including {
+                    else:
+                        suffix = ""
+                    break
+
+            if input_line is None:
+                print(f"Could not find function body start for {func_data['name']}")
+                return line, None, line, None, None, None
+            
+            file_info = f'"{func_data["def_file_path"]}", "{func_data["def_start_line"]}"'
+            return_arg = func_data['return_value']
+            args = func_data['arguments']
+            
+            arg_names = []
+            for arg in args: #arg_names = [f"{arg['register_type']}, {arg['var_name']}" for arg in args] #arg_names = [f"\"{arg['register_type']}\", {arg['var_name']}" for arg in args] # arg_names = [f"{arg['var_name']}" for arg in args] #[f"{arg['var_type']}, {arg['var_name']}" for arg in args]
+                if arg['var_type'] == "union": #if ('is_incomplete' in arg and arg['is_incomplete'] is True) or arg['var_type'] == "union":  # What should the logic here ultimately be?
+                    continue
+                formatted_arg =  f"{arg['var_name']}" #f"{arg['register_type']}, {arg['var_name']}"
+                arg_names.append(formatted_arg)
+
+            #arg_names = [f"{arg['register_type']}, {arg['var_name']}" for arg in args] #arg_names = [f"\"{arg['register_type']}\", {arg['var_name']}" for arg in args] # arg_names = [f"{arg['var_name']}" for arg in args] #[f"{arg['var_type']}, {arg['var_name']}" for arg in args]
+            arg_str = f", {', '.join(arg_names)}" if arg_names else ""
+
+            if input_line is not None:
+                # PRINT_INPUT statement to insert at the beginning of the function body
+                #input_indent = ' ' * (len(lines[input_line - 1]) - len(lines[input_line - 1].lstrip()))
+                wrapped_input = f'{prefix}PRINT_INPUT_{len(arg_names)}ARG({file_info}, {func_data["name"]}{arg_str});'
+
+            return_var = "result"
+
+            arg_names = [f"{arg['var_name']}" for arg in args]  #[f"{arg['base_type']} {arg['var_name']}" for arg in args] #[f"{arg['register_type']}, {arg['var_name']}" for arg in args] #arg_names = [f"\"{arg['register_type']}\", {arg['var_name']}" for arg in args] # arg_names = [f"{arg['var_name']}" for arg in args] #[f"{arg['var_type']}, {arg['var_name']}" for arg in args]
+            arg_str = f"{', '.join(arg_names)}" if arg_names else ""
+            #call_statement = f"{arg_prefix}{return_arg['base_type']} {return_var} = {func_data['name']}({arg_str}); {arg_suffix}"
+            if return_arg['actual_type'] == "void":
+                call_statement = f"{func_data['rust_function_name']}({arg_str});" # rust_{func_data['rust_function_name']}
+                return_statement = ""
+            else:
+                call_statement = f"{return_arg['actual_type']} {return_var} = {func_data['rust_function_name']}({arg_str});" # rust_{func_data['rust_function_name']}
+                return_statement = f"return {return_var};"
+            
+            is_void = return_arg['register_type'].strip() == 'void'
+            output_file_info = f'"{file_path}", "{end_line - 1}"'  # Use the actual line number
+            if is_void:
+                #wrapped_output = f'{return_prefix}PRINT_OUTPUT_VOID({output_file_info}, {func_data["name"]}); {return_suffix}'
+                wrapped_output = f'PRINT_OUTPUT_VOID({output_file_info}, {func_name});' # {return_suffix}'
+            else:
+                #wrapped_output = f'{return_prefix}PRINT_OUTPUT({output_file_info}, {func_data["name"]}, {return_var}); {return_suffix}'
+                wrapped_output = f'return PRINT_OUTPUT({output_file_info}, {func_name}, {return_arg['base_type']}, {return_arg['register_type']}, {return_var});' #  {return_suffix}'
+            
+            total_statement = f"{prefix} {call_statement} {return_statement}\n"  #total_statement = f"{wrapped_input} {call_statement} {wrapped_output}\n" # {suffix}"
+            
+            
+            lines[input_line] = total_statement #call_statement
+            #lines[output_line] = return_statement
+
+            # Count the original number of lines
+            original_line_count = end_line - input_line - 1 # - 1 # This might be due to the .._rust.h insertion
+
+            # Set the range based on the original line count
+            for i in range(input_line + 1, input_line + 1 + original_line_count):
+                original_line = lines[i]
+                leading_spaces = len(original_line) - len(original_line.lstrip())
+                indent = "    "
+                lines[i] = f"{indent}// removed\n"
+            
+            # Add a blank line after the function
+            #lines[input_line + 1 + original_line_count] = "\n"
+            """
+            if input_line < end_line - 1:
+                # Fix the range: from the line after input_line to the line before end_line
+                for i in range(input_line + 1 + 1, end_line):
+                    original_line = lines[i]
+                    leading_spaces = len(original_line) - len(original_line.lstrip())
+                    indent = "    " #" " * leading_spaces
+                    lines[i] = f"{indent}// removed\n"
+            """
+
+            if file_path not in seen_files:
+                seen_files .add(file_path)
+        with open(file_path, 'w') as f:
+                f.writelines(lines)
+
+        # if file_path == "c_io/sample02/main.c":
+        #     print(file_path)
+
+    return list(seen_files)
+
+         
+def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_dir):  # initial_list_path
+
+    order = read_compile_order(list_path)  # This is the order.txt before merging
+    print(f"order at merge_metadata(): {order}")
+    # Updating metadata becomes recursive by the amount being updated. Only o_meta_dir should be updated
+    """
+    def_file_paths =[]
+    for file_path in order:
+        meta_data, meta_path = obtain_metadata(file_path, meta_dir, False, None, "def")
+        for item in meta_data:
+            print("Round 1")
+            print(f"meta_path: {meta_path}")
+            def_file_path = item['o_file_path']
+            print(f"def_file_path: {def_file_path}")
+
+            def_file_path = remove_base_path(def_file_path, raw_dir)
+            def_file_path = f"{c_io_dir}/{def_file_path}"
+            print(f"def_file_path: {def_file_path}")
+
+            item['o_file_path'] = def_file_path
+
+            def_file_paths.append(def_file_path)
+
+        write_json(meta_path, meta_data)
+    
+    print("End of Round 1")
+    #print(def_file_paths)
+    for item in def_file_paths:
+        print(item)
+    """
+
+    for file_path in order:
+        meta_data, meta_path = obtain_metadata(file_path, meta_dir, False, None, "def")
+        for item in meta_data:
+            o_file_path = item['o_file_path']
+            print(f"meta_path: {meta_path}")
+            print(f"def_file_path: {o_file_path}")
+
+            o_file_path = remove_base_path(o_file_path, raw_dir)
+            o_file_path = f"{c_io_dir}/{o_file_path}"
+
+            o_meta_data, o_meta_path = get_metadata(o_file_path, o_meta_dir, None)
+            print(f"o_meta_path: {o_meta_path}")
+            print(f"new def_file_path: {o_file_path}")
+
+            if o_meta_data is None:
+                continue
+
+            for o_item in o_meta_data:
+                if (o_item['def_file_path'] == o_file_path and
+                    o_item['def_start_line'] == item['o_start_line'] and
+                    o_item['def_end_line'] == item['o_end_line']):
+                    
+                    if 'rust_function_name' in item:
+                        o_item['rust_function_name'] = item['rust_function_name']
+                        # if item['rust_function_name'] == "rust_newNode":
+                        #     print("aru")
+                            
+
+            write_json(o_meta_path, o_meta_data)
+
+    print(f"o_meta_dir is {o_meta_dir}")
+    io_order = read_compile_order(io_list_path)  # This is the order.txt before merging
+
+    print(f"io_order at merge_metadata(): {io_order}")
+
+    for file_path in io_order:
+        o_meta_data, o_meta_path = get_metadata(file_path, o_meta_dir, None) #False, None, "def") 
+        if o_meta_data is None: # There is a possibility that print_io.h is included
+            continue
+
+        found = False 
+        for o_item in o_meta_data:
+            #item['file_path']
+            # Search from metadata here
+            """
+            parent_path = get_parent_path(file_path, dep_json_path)
+            if parent_path is None:
+                print(o_item['def_file_path'])
+                print("Do we have a parent?")
+                continue
+            """
+            raw_file_path = remove_base_path(file_path, c_io_dir)
+            raw_file_path = f"{raw_dir}/{raw_file_path}"
+
+            meta_data, meta_path = obtain_metadata(raw_file_path, meta_dir, False, None, "def")
+
+
+            if meta_data is None:
+                print(file_path)
+                continue
+            
+            for item in meta_data:
+                if o_item['def_file_path'] == "workspace_io/io_c/sample02/calculator.c":
+                    print(f"raw_file_path: {raw_file_path}")
+                    print(meta_data)
+                    print(meta_path)
+                    print(o_meta_path)
+
+                if 'rust_function_name' not in item:
+                    continue
+                    
+                if (item['o_file_path'] == raw_file_path and
+                   item['o_start_line'] == o_item['def_start_line'] and
+                   item['o_end_line'] == o_item['def_end_line']):
+
+                    o_item['rust_function_name'] = item['rust_function_name']
+
+
+                    #found = True
+                    #break
+            #if found:
+            #    break
+
+    write_json(o_meta_path, o_meta_data)
+
+
+
+
+def instrument_io(target_funcs, o_dep_json_path, o_run_path, run_test_path, list_path, io_list_path, c_io_dir, o_meta_dir, c_flow_path, c_log_path, target, func_json_path, type_json_path, raw_dir, golden_flow_path, all_struct_path, all_typedef_path, ommited_files): #target_dir, list_path, meta_dir, main_dir):
+    c_io_tmp = "c_io_tmp"
+    c_io_print = "c_io_print"
+
+    c_io_tmp = f"{mix_io_dir}/{c_io_tmp}"
+    c_io_print = f"{mix_io_dir}/{c_io_print}"
+
+
+    copied_dir = create_backup_directory(c_io_dir)
+    rename_directory(copied_dir, c_io_tmp)
+
+    plain_used_path = "used_plain.json"
+    used_path = "used.json"
+    o_compile_log_path = "c_io_comile.log"
+
+    # Functions imported from io checker
+    analyze_call_graph(o_dep_json_path, o_run_path, io_list_path, f"{c_io_dir}/{target}", o_meta_dir, target, func_json_path, type_json_path, all_struct_path, all_typedef_path, o_compile_log_path, ommited_files)
+    
+    analyze_type(f"{c_io_dir}/{target}", o_dep_json_path, io_list_path, o_meta_dir, type_json_path, all_struct_path, all_typedef_path, plain_used_path, used_path)
+
+    prepare_print_io(f"{c_io_dir}/{target}", io_list_path, o_dep_json_path, o_meta_dir, o_run_path, True, c_log_path, type_json_path, used_path, plain_used_path, target)
+
+    # C: get golden c flows # When to capture this (whether the paths can change or we don't want them to change)
+    get_golden_flows(c_io_dir, o_run_path, run_test_path, c_flow_path, c_log_path, o_meta_dir, golden_flow_path)
+
+    ############# From here on, insertion of Rust FFI functions
+
+    rename_directory(c_io_dir, c_io_print)
+    rename_directory(c_io_tmp, c_io_dir)
+
+    delete_directory(c_io_print) # Delete it here
+
+    # Re-acquire metadata
+    previous_ommited_files = ommited_files
+    ommited_files = []  # Need to clear here
+    analyze_call_graph(o_dep_json_path, o_run_path, io_list_path, f"{c_io_dir}/{target}", o_meta_dir, target, func_json_path, type_json_path, all_struct_path, all_typedef_path, o_compile_log_path, ommited_files) 
+    
+    analyze_type(f"{c_io_dir}/{target}", o_dep_json_path, io_list_path, o_meta_dir, type_json_path, all_struct_path, all_typedef_path, plain_used_path, used_path)
+
+    # prepare_print_io(c_io_dir, list_path, meta_dir, main_dir, True, flow_log_path, type_json_path)
+    # # get_execution_flow("all_flow.txt", None, None, None, "flow_moment.txt", meta_dir)
+
+    # Revert metadata from merged state back to original # This might not be necessary
+    #reverse_metadata(meta_dir)
+
+    # Merge metadata and original metadata (o_meta)
+    merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_dir)
+
+    # Prepare for inserting Rust functions
+    create_rustlib_header(target_funcs, c_io_dir, io_list_path, o_meta_dir, previous_ommited_files)  # , "rust_lib.h"
+
+    # Insert Rust functions
+    log_files = generate_zombi(target_funcs, c_io_dir, io_list_path, o_meta_dir, type_json_path)
+
+    # Process headers for PRINT_IO
+    function_used = get_function_used(c_io_dir, io_list_path, o_meta_dir, type_json_path, plain_used_path)
+    write_json("function_used.json", function_used)
+
+    header_path = 'print_io.h'
+    #normal_member_counts, struct_member_counts, input_arg_counts, log_files
+    normal_member_counts = []
+    struct_member_counts = []
+    input_arg_counts = []
+    #log_files = []
+    fuzz_flag = False
+    #io_modify_header(c_io_dir, target, io_list_path, o_meta_dir, o_run_path, fuzz_flag, c_flow_path, type_json_path, normal_member_counts, struct_member_counts, input_arg_counts, log_files, used_path)  # header_path
+
+
+def modify_build(mix_io_dir, c_io_dir, o_run_path, o_meta_dir, rust_io_dir, run_all_path, run_test_path):
+    print("Modifying the build system...")
+    exp_data = {}
+    exp_data['experiment_path'] = "build_system.c"  #experiment_path
+    exp_data['file_path'] = "build_system.c"
+    exp_data['repair_count'] = 0
+    exp_data['average'] = 0
+
+    create_permissioned_file(run_all_path)
+
+    repair_count = 1
+    interface = {
+        "mix_io_dir" : mix_io_dir,
+        "c_io_dir" : c_io_dir,
+        "o_run_path" : o_run_path,
+        "meta_dir" : o_meta_dir,
+        "exp_data" : exp_data,
+        "rust_io_dir" : rust_io_dir,
+        "repair_count" : repair_count,
+        "run_all_path" : run_all_path,
+        "run_test_path" : run_test_path
+    }
+    repair_execute("modify_link", interface)
+
+
+def modify_test_run(mix_io_dir, c_io_dir, o_run_path, o_meta_dir, rust_io_dir, run_all_path, run_test_path):
+
+    exp_data = {}
+    exp_data['experiment_path'] = "test_run.c"  #experiment_path
+    exp_data['file_path'] = "test_run.c"
+    exp_data['repair_count'] = 0
+    exp_data['average'] = 0
+
+    create_permissioned_file(run_all_path)
+
+    repair_count = 1
+    interface = {
+        "mix_io_dir" : mix_io_dir,
+        "c_io_dir" : c_io_dir,
+        "o_run_path" : o_run_path,
+        "meta_dir" : o_meta_dir,
+        "exp_data" : exp_data,
+        "rust_io_dir" : rust_io_dir,
+        "repair_count" : repair_count,
+        "run_all_path" : run_all_path,
+        "run_test_path" : run_test_path
+    }
+    repair_execute("modify_test", interface)
+
+
+
+solo_id = 0
+
+# Since this uses append_file, need to determine where to clear it
+def filter_cloned_target_logs(log_path, log_out_path):
+    log_content = read_file(log_path)
+    global solo_id
+    # Split each line and filter only lines starting with 'cloned_target'
+    filtered_lines = [f"Fuzzing ID: solo_{solo_id}"]
+    filtered_lines.extend([
+        line for line in log_content.split('\n')
+        if line.strip().startswith('cloned_target')  #if line.strip().startswith('TRACK cloned_target')
+    ])
+    
+    # Join the filtered lines
+    content = '\n'.join(filtered_lines)
+    append_file(log_out_path, content)
+    #return '\n'.join(filtered_lines)
+
+    solo_id += 1
+
+
+
+def rust_parse_struct_value(struct_str):
+    # Separate the struct type and parameters
+    match = re.match(r'(\w+)\((.*)\)', struct_str)
+    if not match:
+        return struct_str.strip()
+    
+    struct_type = match.group(1)
+    params = match.group(2)
+    result = {}
+    
+    # Parse parameters
+    param_list = []
+    current_param = ''
+    bracket_count = 0
+    
+    for char in params:
+        if char == '(' or char == '{':
+            bracket_count += 1
+            current_param += char
+        elif char == ')' or char == '}':
+            bracket_count -= 1
+            current_param += char
+        elif char == ',' and bracket_count == 0:
+            param_list.append(current_param.strip())
+            current_param = ''
+        else:
+            current_param += char
+    
+    if current_param:
+        param_list.append(current_param.strip())
+    
+    # Parse each parameter
+    for param in param_list:
+        if '=' in param:
+            name, value = param.split('=', 1)
+            name = name.strip()
+            value = value.strip()
+            # Recursively parse inner structs
+            if '(' in value or '{' in value:
+                result[name] = rust_parse_struct_value(value)
+            else:
+                result[name] = value
+    
+    return result
+
+
+def get_rust_arguments(line_idx, lines):
+    args_dict = {}
+    if line_idx + 1 < len(lines):
+        next_line = lines[line_idx + 1]
+        
+        # Extract Enter_log values
+        if "Enter_log:::" in next_line:
+            # Split by "Enter_log:::" and get the part after it
+            value_part = next_line.split("Enter_log:::")[-1]
+            # Extract variable name and value
+            if "=" in value_part:
+                var_name, var_value = value_part.split("=", 1)
+                args_dict[var_name.strip()] = var_value.strip()
+    
+    return args_dict 
+
+def get_rust_returns(line_idx, lines):
+    args_dict = {}
+    if line_idx - 1 >= 0:  # Check the line before the exit log
+        return_line = lines[line_idx - 1]
+        
+        if "Return_log:::" in return_line:
+            value_part = return_line.split("Return_log:::")[-1]
+            if "=" in value_part:
+                var_name, var_value = value_part.split("=", 1)
+                args_dict[var_name.strip()] = var_value.strip()
+    
+    return args_dict
+
+def rust_parse_log(log_file_path, rust_flow_path):
+    log_content = read_file(log_file_path)
+
+    if log_content is None:
+        print("Not found rust frow log")
+        return
+
+    lines = log_content.split('\n')
+
+    results = []
+    call_stack = {}
+    
+    for line_idx, line in enumerate(lines): #log_content.split('\n'), start=1): #for line in log_content.split('\n'):
+        log_line = line_idx + 1
+        if not line.strip():
+            continue
+            
+        if ':::' in line:
+            # Get the part after the timestamp and log level
+            log_parts = line.split(' INFO ')[-1]
+            
+            # Get the part starting from the last 7GqX9B2:::
+            function_blocks = log_parts.split('7GqX9B2:::')
+            last_block = function_blocks[-1] if function_blocks else ''
+            
+            if last_block:
+                # Extract information from the last block
+                parts = last_block.split(':::')
+                if len(parts) >= 3:
+                    function_name = parts[0]
+                    file_path = parts[1]
+                    file_line = parts[2].split(':')[0]
+                    
+                    """
+                    # Extract arguments - search for {} within the last block
+                    args_dict = {}
+                    if '{' in last_block and '}' in last_block:
+                        args_str = last_block[last_block.find('{')+1:last_block.find('}')]
+                        if args_str:
+                            # Temporarily replace values containing spaces before splitting by spaces
+                            temp_args_str = args_str
+                            quoted_values = []
+                            import re
+                            
+                            # Find quoted values and replace with temporary placeholders
+                            quoted_pattern = r'"[^"]*"'
+                            for idx, match in enumerate(re.finditer(quoted_pattern, args_str)):
+                                placeholder = f"__QUOTED_{idx}__"
+                                quoted_values.append(match.group())
+                                temp_args_str = temp_args_str.replace(match.group(), placeholder)
+                            
+                            # Split by spaces and process
+                            arg_pairs = temp_args_str.split()
+                            for pair in arg_pairs:
+                                if '=' in pair:
+                                    name, value = pair.split('=', 1)
+                                    # Restore placeholders to original values
+                                    for idx, quoted_value in enumerate(quoted_values):
+                                        value = value.replace(f"__QUOTED_{idx}__", quoted_value)
+                                    args_dict[name] = value
+                    """
+
+                    if ": enter" in line:
+                        args_dict = get_rust_arguments(line_idx, lines)
+
+                        current_call = {
+                            "name": function_name,
+                            #"function_name": function_name,
+                            "file_path": file_path,
+                            #"line_number": file_line,
+                            "def_start_line": file_line,
+                            "log_line" : log_line,
+                            "call_type": "input",
+                            "arguments": args_dict
+                        }
+                        call_stack[function_name] = current_call
+                        results.append(current_call)
+                        
+                    elif ": exit" in line: #elif ": return=" in line:
+                        args_dict = get_rust_returns(line_idx, lines)
+
+                        #return_value = line.split("return=")[1].split()[0]
+                        output_call = {
+                            "name": function_name,
+                            "file_path": file_path,
+                            #"line_number": file_line,
+                            "def_start_line": file_line,
+                            "log_line" : log_line,
+                            "call_type": "output",
+                            "return_value": args_dict #return_value
+                        }
+                        results.append(output_call)
+                        
+                    # elif ": exit" in line:
+                    #     if function_name in call_stack:
+                    #         del call_stack[function_name]
+    
+    write_json(rust_flow_path, results)
+
+    moment_rust_flows = read_json(rust_flow_path)
+    for item in moment_rust_flows:
+        if 'arguments' in item:
+            all_values = []
+            values = list(item['arguments'].values())
+            # Add to the list
+            all_values.extend(values)
+            item['arg_list'] = all_values
+
+    write_json(rust_flow_path, moment_rust_flows)
+    moment_rust_flows = read_json(rust_flow_path)
+
+    # Find the boundaries between test cases
+    flow_sum_path = "flow_sum.json"
+    find_test_lines(rust_log_path, flow_sum_path) 
+
+    insert_test_lines(rust_flow_path, flow_sum_path)
+
+    add_depth_to_calls(rust_flow_path)
+    # Initialize the log file here
+    #delete_file(rust_log_path)
+
+    return results
+
+
+def parse_arguments(input_str: str) -> Dict[str, str]:  # Parse arguments from input string into a dictionary with named arguments
+
+    if not input_str or input_str == "()":
+        return {}
+    
+    # Remove outer parentheses
+    input_str = input_str.strip('()')
+    
+    args_dict = {}
+    # Pattern 1: Extract argument names from print_input format
+    # e.g.: (int, 5, char*, "hello") -> {"int": "5", "char*": "hello"}
+    pattern1 = re.findall(r'(\w+(?:\s*\*)*)\s*,\s*([^,]+)(?=\s*,\s*\w+(?:\s*\*)*|$)', input_str)
+    if pattern1:
+        for arg_type, arg_value in pattern1[::2]:  # Skip every other pair as they're types
+            args_dict[f"arg{len(args_dict)+1}"] = arg_value.strip()
+        return args_dict
+
+    # Pattern 2: Struct format
+    # e.g.: {x:1, y:2} -> {"x": "1", "y": "2"}
+    if input_str.startswith('{'):
+        input_str = input_str.strip('{}')
+        pairs = re.findall(r'(\w+)\s*:\s*([^,}]+)', input_str)
+        return {k: v.strip() for k, v in pairs}
+    
+    # Pattern 3: Comma-separated values only
+    # e.g.: 5, "hello", true -> {"arg1": "5", "arg2": "hello", "arg3": "true"}
+    values = [v.strip() for v in input_str.split(',') if v.strip()]
+    return {f"arg{i+1}": v for i, v in enumerate(values)}
+
+
+
+def c_parse_log_2(log_path: str, c_flow_path: str) -> Dict:
+    log_text = read_file(log_path)
+    
+    def parse_function_call(line, log_line) -> Optional[Dict]:  # Parse a single function call line into structured data with named arguments
+        # Get execution order number
+        order_match = re.match(r'<(\d+)>\s+(.+)', line)
+        if not order_match:
+            return None
+        
+        order_num = int(order_match.group(1))
+        line = order_match.group(2)
+        
+        # Parse basic information
+        basic_match = re.match(r'([^:]+):\s*(\d+):\s*([^:]+):', line)
+        if not basic_match:
+            return None
+        
+        file_path, line_number, function_name = basic_match.groups()
+        
+        found_data = {
+            "oder" : order_num,
+            "name": function_name.strip(),
+            "def_file_path": file_path.strip(),
+            "line_number": int(line_number),
+            "call_type": None,  # Align with Rust log format
+            "function": function_name.strip()  # Keep function name duplicated (to align with Rust format)
+        }
+        
+        # Extract input arguments and convert to named arguments
+        input_match = re.search(r'input:\s*(.*?)(?=\s*output:|$)', line)
+        if input_match:
+            input_str = input_match.group(1).strip()
+            found_data["arguments"] = parse_arguments(input_str)
+            found_data["call_type"] = "input"
+        else:
+            found_data["arguments"] = {}
+        
+        # Extract output value
+        output_match = re.search(r'output:\s*(.*?)$', line)
+        if output_match:
+            output_str = output_match.group(1).strip()
+            if output_str == "null":
+                found_data["return_value"] = None
+            else:
+                found_data["return_value"] = output_str
+
+            found_data["call_type"] = "output"
+        
+        return found_data
+
+    function_calls = []
+    
+    for line in log_text.split('\n'):
+        line = line.strip()
+        if not line or line.startswith("Fuzzing ID:"):
+            continue
+        
+        parsed_data = parse_function_call(line, log_line)
+        if parsed_data:
+            function_calls.append(parsed_data)
+    
+    # Sort by execution order (optional)
+    function_calls.sort(key=lambda x: x["line_number"])
+    
+    write_json(c_flow_path, function_calls)  #write_json(output_json_path, all_entries)
+
+    return function_calls
+
+
+
+def extract_struct_values(struct_str):
+    """
+    Extract values from a structure string like {name:John, age:30}
+    Returns the values only, without the keys
+    """
+    # Remove curly braces
+    content = struct_str.strip('{}')
+    if not content:
+        return []
+    
+    # Split key-value pairs
+    pairs = content.split(',')
+    values = []
+    for pair in pairs:
+        if ':' in pair:
+            # Get only the value part after the colon
+            value = pair.split(':')[1].strip()
+            values.append(value)
+    return values
+
+def parse_input(input_part):
+    """
+    Extract input values from log string, including values inside structures.
+    
+    Args:
+        input_str (str): Input string containing "input: (...)" format
+        
+    Returns:
+        list: List of extracted values
+    
+    Example:
+        >>> extract_input_values('input: (123, {name:John, age:30})')
+        ['123', 'John', '30']
+    """
+
+    # Get the contents inside parentheses
+    if '(' not in input_part or ')' not in input_part:
+        return []
+    
+    bracket_content = input_part[input_part.find('(') + 1:input_part.find(')')]
+    
+    # Return empty list for empty parentheses
+    if not bracket_content.strip():
+        return []
+    
+    # Split by comma and get each value
+    values = []
+    current_value = ''
+    in_quotes = False
+    brace_count = 0
+    
+    for char in bracket_content:
+        if char == '"' or char == "'":
+            in_quotes = not in_quotes
+            current_value += char
+        elif char == '{':
+            brace_count += 1
+            current_value += char
+        elif char == '}':
+            brace_count -= 1
+            current_value += char
+        elif char == ',' and not in_quotes and brace_count == 0:
+            values.append(current_value.strip())
+            current_value = ''
+        else:
+            current_value += char
+    
+    if current_value:
+        values.append(current_value.strip())
+    
+    # List to store the final values
+    final_values = []
+    
+    # Process each value
+    for value in values:
+        # If it's a struct
+        if value.startswith('{') and value.endswith('}'):
+            struct_values = extract_struct_values(value)
+            final_values.extend(struct_values)
+        else:
+            # Remove quotes for strings
+            if (value.startswith('"') and value.endswith('"')) or \
+               (value.startswith("'") and value.endswith("'")):
+                value = value[1:-1]
+            final_values.append(value)
+    
+    return final_values
+
+
+def get_var_name_list(meta_dir, file_path, def_start_line, name):
+    var_name_list = []
+    meta_data, meta_path = get_metadata(file_path, meta_dir, None)
+
+    print(meta_path)
+    for item in meta_data:
+        if def_start_line == item['def_start_line'] and name == item['name']:
+            if 'arguments' not in item:
+                continue
+            arguments = item['arguments']
+            for arg in arguments:
+                var_name_list.append(arg['var_name'])
+
+    return var_name_list
+
+
+def check_script_state(script_path: str, timeout: int = 5) -> Tuple[bool, str]:
+    absolute_path = os.path.abspath(script_path)
+    print(f"Absolute path of script: {absolute_path}")
+
+    if not os.path.exists(absolute_path):
+        return False, f"Script does not exist: {absolute_path}"
+
+    if not os.access(absolute_path, os.X_OK):
+        return False, f"Script does not have execute permission: {absolute_path}"
+
+    try:
+        # Execute the script
+        process = subprocess.Popen(
+            [absolute_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            # Execute through the shell
+            shell=True
+        )
+
+        # Monitor the process state
+        psutil_process = psutil.Process(process.pid)
+        start_time = time.time()
+
+        while time.time() - start_time < timeout:
+            # Check the process state
+            if process.poll() is not None:
+                stdout, stderr = process.communicate()
+                return False, f"Script has terminated. Exit code: {process.returncode}"
+
+            # Get the process state (output more detailed information)
+            status = psutil_process.status()
+            cpu_percent = psutil_process.cpu_percent(interval=0.1)
+            #print(f"Status: {status}, CPU: {cpu_percent}%")  # Debug output
+
+            # Check characteristics of waiting-for-input state
+            if (status == 'sleeping' and 
+                cpu_percent < 0.1):
+                
+                # Terminate the process
+                process.terminate()
+                return True, "Likely in a waiting-for-arguments state"
+
+            time.sleep(0.1)
+
+        # If timed out
+        process.terminate()
+        return False, "Processing in progress or unknown state (timed out)"
+
+    except Exception as e:
+        return False, f"An error occurred: {str(e)}"
+
+
+
+#sudo ln -s $(pwd)/shell_runner/target/release/shell_runner /usr/local/bin/
+def run_script_flow(script_path, timeout, dir_move_flag, execute_log_path, option, rust_log_path, golden_flow_path): # -> Union[str, None]:
+    
+    error_output = None
+    std_output = None
+    try:
+        # Check if file exists
+        if not os.path.exists(script_path):
+            raise FileNotFoundError(f"Script not found: {script_path}")
+            
+        # Check if file is executable
+        if not os.access(script_path, os.X_OK):
+            # Try to make it executable
+            try:
+                os.chmod(script_path, 0o755)
+            except Exception as e:
+                raise PermissionError(f"Cannot make script executable: {e}")
+        
+        if dir_move_flag is True:
+            execute_dir = os.path.dirname(os.path.normpath(script_path))
+            script_path = os.path.basename(os.path.normpath(script_path))
+        else:
+            execute_dir = None
+
+        """
+        # Check permission information and output detailed logs
+        file_stat = os.stat(script_path)
+        current_user = os.getlogin()
+        
+        try:
+            owner = pwd.getpwuid(file_stat.st_uid).pw_name
+            group = grp.getgrgid(file_stat.st_gid).gr_name
+        except KeyError:
+            owner = str(file_stat.st_uid)
+            group = str(file_stat.st_gid)
+            
+        print(f"File permissions: {oct(file_stat.st_mode)}")
+        print(f"File owner: {owner}, group: {group}")
+        print(f"Current user: {current_user}")
+
+        # Check and set execute permission
+        if not os.access(script_path, os.X_OK):
+            print("Script is not executable. Attempting to set execute permission...")
+            
+            try:
+                # Change permissions using sudo (if necessary)
+                if owner != current_user:
+                    result = subprocess.run(['sudo', 'chmod', '+x', script_path], 
+                                            capture_output=True, text=True)
+                    if result.returncode != 0:
+                        print(f"sudo chmod failed: {result.stderr}")
+                        # If sudo fails, try regular chmod
+                        os.chmod(script_path, 
+                                file_stat.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+                else:
+                    # If the owner is the current user, chmod directly
+                    os.chmod(script_path, 
+                            file_stat.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+                
+                print("Execute permission set successfully")
+            except Exception as e:
+                print(f"Failed to set execute permission: {e}")
+                # Even if permission setting fails, still attempt to execute the script
+        """
+
+        """
+        if option == "compile":
+            script_path = f"./{script_path} --build"
+        elif option == "run":
+            script_path = f"./{script_path} --run"
+        else:
+            script_path = f"./{script_path}"
+
+        """
+        cmd = ["bash"]
+        
+        if script_path.startswith("./"):
+            cmd.append(script_path)
+        else:
+            cmd.append(f"./{script_path}")
+
+        if option == "compile":
+            cmd.append("--build")
+        elif option == "run":
+            cmd.append("--run")
+        
+        print(f"Execute run_script: {script_path} at {execute_dir}")
+
+        # Execute the script
+        if execute_dir is None:
+            print("Run with None execute_dir")
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                shell=False #shell=True  # Required for shell scripts
+            )
+        else:
+            #print("Run with some execute_dir")
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                cwd=execute_dir,
+                text=True,
+                timeout=timeout,
+                shell=False #shell=True  # Required for shell scripts
+            )
+
+        # Write execution results to the log
+        if execute_log_path is not None:
+            print(f"before ({execute_log_path})")
+            create_file(execute_log_path)
+            with open(execute_log_path, 'w', encoding='utf-8') as f:
+                if result.stdout:
+                    f.write(result.stdout)
+                    #print(result.stdout)
+                if result.stderr:
+                    f.write(result.stderr)
+                    #print(result.stderr)
+            print(f"Wrote log file ({execute_log_path})")
+
+        # else:
+        #     if result.stdout:
+        #         print(result.stdout)
+        #     if result.stderr:
+        #         print(result.stderr)
+        #     print("Without log file")
+        # print(f"execute_log_path: {execute_log_path}")
+
+
+        # Check for errors
+        std_output = result.stdout if result.stdout is not None and result.stdout != "" else None
+        error_output = result.stderr if result.stderr is not None and result.stderr != "" else None
+        return_code = result.returncode  # Get return_code here
+
+        print(f"type(result.stdout): {type(result.stdout)}") 
+        print(f"type(result.stderr): {type(result.stderr)}") 
+        
+        # if result.stdout:
+        #     std_output = result.stdout
+        # if result.stdout:
+        #     error_output = result.stderr
+
+        # added the realtime output
+        #pty_output = run_script_pty(script_path)
+        #std_output = pty_output
+
+        """
+        if result.stdout.strip():
+            std_output = f"{result.stdout.strip()}"
+        if result.stdout: #result.returncode != 0:
+            # Combine stderr and stdout if there's an error
+            error_output = result.stderr.strip()
+            # if result.stdout.strip():
+                #error_output += f"\nStdout: {result.stdout.strip()}"
+                #std_output += f"\nStdout: {result.stdout.strip()}"
+
+            print("-------- error_output start ---------")
+            print(result.stderr)
+            print("-------- error_output end ---------")
+            #return error_output
+            return error_output, std_output
+
+        return None, None
+        """
+        if process_type == "explore":
+            moment_flow_path = 'flow_moment.txt'
+            std_output = separate_output_files(std_output, moment_flow_path)
+
+        
+        if error_output and return_code == 0:
+            #print("\nBuild information:")
+            if std_output is None:
+                std_output = error_output
+            else:
+                std_output += "\n" + error_output  # Append with a newline
+            error_output = None
+        
+        if error_output is None and return_code == 1: # Mainly for "translation_testcase"
+            error_output = "Return code is 1, indicating abnormal termination."
+
+        
+        # if std_output is not None and isinstance(std_output, str):
+        #     std_output = std_output.split('\n') if std_output else None
+        
+        # if error_output is not None and isinstance(error_output, str):
+        #     error_output = error_output.split('\n') if error_output else None
+
+        # Insert here to be able to retrieve the flow text
+        #save_flow_text(rust_log_path, golden_flow_path) # flow_sum_path, 
+        
+        """
+        # Skip for now
+        # get_flow_data(rust_log_path, rust_flow_path, golden_flow_path)
+        """
+        
+        return error_output, std_output
+
+    except subprocess.TimeoutExpired:
+        return f"Script execution of {script_path} timed out after {timeout} seconds", std_output
+        
+    except subprocess.SubprocessError as e:
+        return f"Failed to execute script: {str(e)}", std_output
+        
+    except Exception as e:
+        return f"Unexpected error: {str(e)}", std_output
+
+
+def get_golden_only(c_log_path, c_flow_path, golden_flow_path, o_meta_dir):
+    c_parse_log(c_log_path, c_flow_path, o_meta_dir, False) #, func_name, func_path, func_line) #, func_name, func_path, func_line)
+
+    copy_file(c_flow_path, golden_flow_path)
+
+    golden_flow, file_data = show_flow(golden_flow_path)
+    os.makedirs('golden', exist_ok=True)
+    for test_name, line_data in file_data.items():
+        with open(f"golden/{test_name}.txt", 'w', encoding='utf-8') as f:  # write_file(f"golden/{test_name}.txt")
+            for line in line_data:
+                f.write(line + '\n')
+
+    print(f"Saved golden flows at {golden_flow_path}")
+
+
+def get_golden_flows(c_io_dir, o_run_path, run_test_path, c_flow_path, c_log_path, o_meta_dir, golden_flow_path):
+
+    delete_file(c_flow_path)
+    delete_file(c_log_path)
+    error, std_out = run_script(o_run_path, given_time, True, None, "both")
+
+    error, std_out = run_script(run_test_path, given_time, True, None, "both") #(run_test_path, given_time, True, c_log_path, "both")
+    test_run_dir = os.path.dirname(os.path.normpath(run_test_path))
+
+    # This was written with absolute paths, so it's no longer needed
+    obtained_c_log_path = f"{test_run_dir}/{c_log_path}"
+    #copy_file(obtained_c_log_path, c_log_path)
+    #print(f"{obtained_c_log_path} -> {c_log_path}")
+
+    # Remove c_flow_path from c_log_path  # filter the result
+
+    # Get and display data related to the adjust_opacity function
+    solo_path = None # Not sure what this is
+    if solo_path is not None:
+        filter_cloned_target_logs(solo_path, c_log_path)
+    
+    print(f"o_run_path: {o_run_path}")
+    print(f"run_test_path: {run_test_path}")
+    c_parse_log(c_log_path, c_flow_path, o_meta_dir, True) #, func_name, func_path, func_line) #, func_name, func_path, func_line)
+
+    copy_file(c_flow_path, golden_flow_path)
+
+    golden_flow, file_data = show_flow(golden_flow_path)
+    os.makedirs('golden', exist_ok=True)
+    for test_name, line_data in file_data.items():
+        with open(f"golden/{test_name}.txt", 'w', encoding='utf-8') as f:  # write_file(f"golden/{test_name}_golden_flow.txt")
+            for line in line_data:
+                f.write(line + '\n')
+
+    print(f"Saved golden flows at {golden_flow_path}")
+
+
+
+def obtain_impl_name(file_path, method_name, method_start_line):
+    implementations = {}
+    methods = []
+
+    # Read the file content
+    with open(file_path, 'r') as file:
+        for line in file:
+            parts = line.strip().split()
+            if len(parts) < 4:
+                continue
+            kind = parts[1]
+            element_name = parts[0]
+            start_line = int(parts[2])
+        
+            if kind == 'implementation':
+                implementations[start_line] = element_name
+
+            elif kind == 'method':
+                method_start_line = start_line
+                methods.append((element_name, method_start_line))
+        
+    # Extract the implementation name for the given method
+    impl_name = None
+    impl_lines = sorted(implementations.keys())
+
+    for impl_line in reversed(impl_lines):
+        if method_start_line > impl_line:
+            impl_name = implementations[impl_line]
+            break
+    
+    return impl_name # , impl_line #method_start_line
+
+
+def rust_find_struct_end(file_path, start_line): # , end_line
+    rust_code = read_file(file_path) #, start_line, end_line)
+
+    struct_bounds = []
+    lines = rust_code.split('\n')
+    struct_start_stack = []
+    outermost_struct_start = None
+
+    # Regex to match struct start and end lines
+    #struct_start_pattern = re.compile(r'^\s*pub\s+struct\s+\w+\s*\{')
+    #struct_end_pattern = re.compile(r'^\s*\}')
+
+    #struct_start_pattern = re.compile(r'^\s*(pub\s+)?struct\s+\w+\s*\{')
+    struct_start_pattern = re.compile(r'^\s*(pub\s+)?(struct|enum|type)\s+\w+\s*(\{|\()')
+    struct_end_pattern = re.compile(r'^\s*\}')
+    
+    for i, line in enumerate(lines):
+        if struct_start_pattern.match(line):
+            struct_start_stack.append(i + 1)  # Line numbers are 1-based
+            if outermost_struct_start is None:
+                outermost_struct_start = i + 1
+        elif struct_end_pattern.match(line) and struct_start_stack:
+            struct_start_stack.pop()
+            if not struct_start_stack and outermost_struct_start is not None:
+                struct_bounds.append((outermost_struct_start, i + 1))
+                outermost_struct_start = None
+    
+    for start, end in struct_bounds:
+        if start == start_line:
+            return end
+    return None
+
+    #return struct_bounds
+
+
+def obtain_rust_interface(rust_source_file): #generate_tags_rust(rust_source_file):
+    tags_file = "rust_tags"
+    delete_file(tags_file)
+
+    command = f"ctags --languages=Rust --rust-kinds=fn -x -f {tags_file} {rust_source_file}"
+    #command = f"ctags --languages=Rust --rust-kinds=fn -x -f {tags_file} {rust_source_file}"
+    #command = f"ctags --fields=+n -x --c-kinds=+stfp -o {tags_file} {source_file}" # "--c-kinds=+st"
+    #command = f"ctags --languages=Rust --rust-kinds=fn -x -o {tags_file} {rust_source_file}"
+    #command = f"ctags --languages=Rust --rust-kinds=fn -f - --format=2 --excmd=number --fields=+n -o {tags_file} {rust_source_file}"
+    subprocess.run(command, shell=True, capture_output=True, text=True)
+    
+    ctags_output = read_file(tags_file)
+    functions = {}
+
+    if ctags_output is None:
+        return functions
+
+    for line in ctags_output.split('\n'): 
+        parts = line.split()  # Using split() without arguments to split by any whitespace
+        if len(parts) >= 4:  # Ensure it's a function tag with sufficient parts
+            func_name = parts[0]
+            file_name = parts[1]
+            line_number = parts[2]
+            func_signature = ' '.join(parts[4:])  # Reconstruct the function signature
+            func_signature = re.sub(r'\s*\{', '', func_signature)
+            functions[func_name] = func_signature
+            
+            """
+            # Extract the full signature
+            match = re.search(r'/\^(.*?)\$/', func_pattern)
+            if match:
+                full_signature = match.group(1).strip()
+                print(full_signature)
+            """
+         
+    # Print the functions list for debugging
+    #print(json.dumps(functions, indent=2, ensure_ascii=False))
+    
+    delete_file(tags_file)
+
+    return functions
+
+
+def extract_function_arguments(file_path, start_line):
+    """Extract function arguments from a Rust function definition."""
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        
+    # Get the function definition line
+    func_line = lines[start_line - 1].strip()
+    
+    # Find the opening parenthesis
+    start_paren = func_line.find('(')
+    if start_paren == -1:
+        return []
+        
+    # Handle multi-line function signatures
+    if ')' not in func_line:
+        end_line = start_line
+        while end_line < len(lines) and ')' not in lines[end_line - 1]:
+            end_line += 1
+        func_def = ''.join(lines[start_line - 1:end_line]).strip()
+    else:
+        func_def = func_line
+    
+    # Extract the content between parentheses
+    try:
+        args_str = func_def[func_def.find('(') + 1:func_def.find(')')].strip()
+    except ValueError:
+        return []
+    
+    if not args_str:
+        return []
+    
+    # Parse the arguments
+    args = []
+    for arg in args_str.split(','):
+        arg = arg.strip()
+        if arg:
+            # Extract just the parameter name (before the colon)
+            param_name = arg.split(':')[0].strip()
+            if param_name != 'self' and param_name != '&self':  # Exclude self parameter
+                args.append(param_name)
+    
+    return args
+
+
+def rust_find_variable_end(file_path: str, start_line: int) -> int:
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    
+    brace_count = 0
+    in_block = False
+    
+    for i, line in enumerate(lines[start_line - 1:], start=start_line):
+        stripped_line = line.strip()
+        
+        # Detect the start of a block
+        if '{' in stripped_line:
+            in_block = True
+            brace_count += stripped_line.count('{')
+        
+        # Detect the end of a block
+        if '}' in stripped_line:
+            brace_count -= stripped_line.count('}')
+        
+        # Detect the end of a variable definition
+        if not in_block and (stripped_line.endswith(';') or stripped_line.endswith('}')):
+            return i
+        
+        # Detect the end of a block
+        if in_block and brace_count == 0:
+            return i
+    
+    # If the end line is not found, return the last line of the file
+    return len(lines)
+
+# flag_file
+def rust_parse_functions(rust_path, meta_dir): # , flag_file  # c_path, raw_dir, #def c_insert_bank_unit(file, full_path, meta_dir, flag_file):
+    
+    print(f"************** start parse_files for rust at {rust_path} **************")
+
+    #meta_path_rust = obtain_metadata(c_path, meta_dir, True, True, "def")
+    meta_path_rust = get_metadata(rust_path, meta_dir, True)
+
+    tags_file = 'tags_output.txt'    #delete_file(tags_file) 
+    delete_file(tags_file)
+
+    #ctags --fields=+n -x --c-kinds=+stfp -o tags_output.txt -R rust_sampmle/src/calculator.rs --languages=Rust
+    command = f"ctags --fields=+n -x --c-kinds=+stfp -o {tags_file} -R {rust_path} --languages=Rust" # "--c-kinds=+st"
+    print(command)
+    subprocess.run(command, shell=True, capture_output=True, text=True)
+    #command = f"ctags --languages=Rust --rust-kinds=f -f rust_tags {rust_source_file}"
+    #subprocess.run(["ctags", "--fields=+n", "-x", "--c-kinds=+stfp", "-o", tags_file, "-R", source_file]) # "--c-kinds=+st"
+    
+    categories = {}  # Initialize a dictionary to hold categories and their elements
+    meta_data = []
+    with open(rust_path, 'r') as file:
+        file_lines = file.readlines()
+    
+    impl_name = None
+    arguments = []
+    if not os.path.exists(tags_file):
+        return
+
+    with open(tags_file, 'r') as file:
+        for line in file:
+            parts = line.strip().split()
+            if len(parts) < 4:
+                continue
+            kind = parts[1]
+            element_name = parts[0]
+            """
+            if name == "main": # except main function
+                continue
+            """
+            start_line = int(parts[2])
+            context = parts[4]
+
+            category = None
+            end_line = None # initial value
+            if kind == 'macro': # <- 'macro_func' 
+                category = 'macro_func'
+                #category, end_line = categorize_macros(rust_path, start_line)
+            
+            elif kind in ['static', 'constant', 'variable']: # 'variable' comes from robot. What is this?
+                category = 'global_var'
+                if kind == 'variable':
+                    end_line = rust_find_variable_end(rust_path, start_line)
+                else: 
+                    end_line = rust_find_global_var_end(rust_path, start_line)
+
+            elif kind in ['struct', 'enum', 'type']:
+                category = 'data_type' # <- 'data_type' 
+                end_line = rust_find_struct_end(rust_path, start_line)
+
+            elif kind == 'function': #in ['function', 'method']:
+                category = 'function' # <- 'function' 
+                arguments = extract_function_arguments(rust_path, start_line)
+                #end_line = find_function_end(rust_path, start_line)
+
+            elif kind == 'method': #in ['function', 'method']:
+                category = 'function'
+                impl_name = obtain_impl_name(tags_file, element_name, start_line)
+                arguments = extract_function_arguments(rust_path, start_line)
+
+            #else:
+            #    category = 'undefined'
+            """
+            module
+            function
+            struct
+            enum
+            trait
+            impl
+            constant
+            static
+            macro
+            """
+            
+            if category is None:
+                continue
+
+            if category not in categories:
+                categories[category] = []
+            
+            if category is not None: #chosen_list = ['data_type', 'function', 'macro_func']
+                #if category in chosen_list: # if category in chosen_list:
+                    #item_content = retrieve_content(category, rust_path, start_line, end_line)
+                
+                item_data = {
+                    "category": category,
+                    "name": element_name,
+                    "file_path": rust_path,
+                    "start_line": start_line,
+                    "end_line": end_line,
+                }
+                if category == "function":
+                    item_data['arguments'] = arguments
+            
+                if impl_name is not None:
+                    item_data['impl_name'] = impl_name
+                
+                meta_data.append(item_data)
+
+            
+    delete_file(tags_file)
+    
+    rust_interface_list = {}
+    rust_interface_list = obtain_rust_interface(rust_path) # Actually, it might be okay to unify tags_file here
+
+    """
+    # Now, adjust the structure for the expected JSON output format
+    structured_output = {}
+    for category, elements in categories.items():
+        structured_output[category] = elements  # Assign the list of elements to their respective category key
+    """
+    # Get the directory path of the output file
+    output_dir = os.path.dirname(meta_path_rust)
+
+    # Create the directory if it does not exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    write_json(meta_path_rust, meta_data) #structured_output)
+
+    """
+    # Work to insert Rust counterparts of cflow functions in c meta_data into Rust meta_data
+    c_meta_data, c_meta_path = obtain_metadata(c_path, meta_dir, False, None, "def")
+    # Rust meta data is not unified into blocks, but is a flat structure
+    # Note: For C, meta data is structured by blocks, so we need to consider functions inside conditionals
+    rust_meta_data = obtain_metadata(c_path, meta_dir, True, False, "def")
+
+    # Insert corresponding items (this is more complex; later used to store Rust function interfaces for other files)
+    for c_item in c_meta_data:
+        if c_item['block_type'] == 'function':
+            #if c_item['category'] in ['function', 'macro_func']:  # simplified category check
+            rust_flows = []
+            if 'function' in rust_meta_data:
+                for rust_item in rust_meta_data['function']:
+                    if c_item['name'] == rust_item['name']:
+                        #print(f"rust_interface_list: {rust_interface_list}")
+                        c_item['rust_interface'] = rust_interface_list[rust_item['name']]
+                        break  # exit loop once a match is found (efficient)
+            
+        elif c_item['block_type'] == 'conventional':
+            if 'function' in c_item or 'macro_func' in c_item:
+                for func in c_item['function']: 
+                    if 'function' in rust_meta_data:
+                        for rust_item in rust_meta_data['function']:
+                            if func['name'] == rust_item['name']:
+                                #print(rust_interface_list)
+                                c_item['rust_interface'] = rust_interface_list[rust_item['name']]
+                                break  # exit loop once a match is found (efficient)
+                    
+                for func in c_item['macro_func']: 
+                    if 'function' in rust_meta_data:
+                        for rust_item in rust_meta_data['function']:
+                            if func['name'] == rust_item['name']:
+                                #print(rust_interface_list)
+                                c_item['rust_interface'] = rust_interface_list[rust_item['name']]
+                                break  # exit loop once a match is found (efficient)
+
+    write_json(c_meta_path, c_meta_data)
+    """
+    print("************** end parse_files for rust **************")
+
+
+
+
+def create_trace_macros(project_path):
+    """
+    Create a trace_macros.rs file that defines trace macros
+    
+    Args:
+        project_path (str): Root path of the Rust project
+    """
+    # Create src directory if it does not exist
+    target = os.path.join(project_path, 'src')
+    os.makedirs(target, exist_ok=True)
+    
+    macro_content = '''#[macro_export]
+macro_rules! trace {
+    ($file:expr, $line:expr, $fn_name:expr, $($arg:expr),*) => {
+        println!(concat!("ENTER [{}, line:{}] {} with args: "), $file, $line, $fn_name);
+        $(
+            print!("{:?} ", $arg);
+        )*
+        println!();
+    };
+}
+
+#[macro_export]
+macro_rules! trace_return {
+    ($file:expr, $line:expr, $fn_name:expr, $ret:expr) => {
+        println!(concat!("EXIT  [{}, line:{}] {} returned: {:?}"), $file, $line, $fn_name, $ret);
+        $ret
+    };
+}'''
+    
+    # Write to trace_macros.rs file
+    macro_file_path = os.path.join(target, 'trace_macros.rs')
+    with open(macro_file_path, 'w') as f:
+        f.write(macro_content)
+    
+    print(f"Created trace macros at: {macro_file_path}")
+
+
+def is_target_func(item, target_funcs):
+    key = f"{item['name']}"  #::{item['def_file_path']}"
+    if key in target_funcs:
+        return True
+    return False
+
+
+# // Changed to record all span events
+
+initialize_tracing_fn = '''use std::fs::File;
+use std::fs::OpenOptions;
+
+pub fn initialize_tracing() {
+    let file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open("/home/ubuntu/portable/out_flow_rust.log")
+        .unwrap();
+    
+    tracing_subscriber::fmt()
+        .with_ansi(false)
+        .with_max_level(tracing::Level::DEBUG)
+        .with_file(true)
+        .with_line_number(true)
+        .with_level(true)
+        .with_span_events(tracing_subscriber::fmt::format::FmtSpan::NEW | 
+                         tracing_subscriber::fmt::format::FmtSpan::ENTER | 
+                         tracing_subscriber::fmt::format::FmtSpan::EXIT |
+                         tracing_subscriber::fmt::format::FmtSpan::CLOSE)
+        .with_writer(file)
+        .init();
+}
+'''
+
+def insert_trace_macros(target_funcs, file_path, meta_dir):
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+        
+    modified_lines = lines.copy()
+        
+    # Add use statement at the beginning
+    #use_statement = "use function_inspector::trace_all;\n\n"
+    #use_statement = "use function_inspector::trace_all;\nuse function_inspector_core::StructDisplay;\n"
+    #use_statement = "use function_inspector::trace_all;\nuse function_inspector_core::StructDisplay;\nuse tracing::{info, instrument};\n"
+    #use_statement = "use tracing::{info, instrument};\n"
+    use_statement = "use tracing::instrument;\n"
+    modified_lines.insert(0, use_statement)
+        
+    relative_path = file_path.split('/')[-1]
+    meta_data, meta_path = get_metadata(file_path, meta_dir, None)
+    
+    if meta_data is None:
+        return
+
+    # Sort in descending order by start_line
+    sorted_meta_data = sorted(meta_data, key=lambda x: x['start_line'], reverse=True)
+
+    # Process from the back
+    for item in sorted_meta_data:
+        #if item['category'] != 'function':
+        #    continue
+        # if not is_target_func(item, target_funcs):
+        #     continue
+
+        if item['category'] == "function":
+            name = item['name']
+            start_line = item['start_line']
+            rust_path = item['file_path']
+                    
+            # Get indentation of the function line
+            function_line = modified_lines[start_line]
+            indent = len(function_line) - len(function_line.lstrip())
+                    
+            # Analyze function definition line to determine modifiers
+            is_pub = 'pub' in function_line
+            is_extern_c = 'extern "C"' in function_line
+                    
+            # Generate trace and no_mangle macros on separate lines
+            #trace_macro = " " * indent + "#[trace_all]\n"
+            #trace_macro = " " * indent + f"#[instrument(name = \"7GqX9B2:::{name}:::{rust_path}:::{start_line}:::\", ret)]\n"
+            trace_macro = " " * indent + f"#[instrument(name = \"7GqX9B2:::{name}:::{rust_path}:::{start_line}:::\", skip_all)]\n"
+            no_mangle_macro = " " * indent + "#[no_mangle]\n" # "#[no_mangle]\n"
+            
+
+            # If function name is main, rename to rust_main
+            if FFI_ON:
+                if name == 'main':
+                    function_line = function_line.replace('fn main', 'fn rust_main')
+
+            if is_pub and is_extern_c:
+                print("Is this unnecessary?")
+                # Case of existing pub extern "C" fn
+                #modified_lines.insert(start_line, no_mangle_macro)
+                #modified_lines.insert(start_line, trace_macro)
+            elif is_pub:
+                print("May skipping")
+                if FFI_ON:
+                    # Case of pub only
+                    if item['name'] == "rust_main":
+                        new_function_line = function_line.replace('pub fn', 'pub extern "C" fn')
+                        modified_lines[start_line] = new_function_line
+                        
+                        ########## Insert here
+                        body_start = start_line + 1
+                        modified_lines.insert(body_start, " " * (indent + 4) + "initialize_tracing();\n")
+                        modified_lines.insert(body_start + 1, " " * (indent + 4) + "let _span = tracing::info_span!(\"rust_main\").entered();\n\n")
+                        
+                        ##########
+
+                        modified_lines.insert(start_line, no_mangle_macro)
+                        modified_lines.insert(start_line, trace_macro)
+
+                        # Insert initialize_tracing function before rust_main
+                        modified_lines.insert(start_line, "\n" + initialize_tracing_fn)  # added Is this the right place?
+                    
+                    else:
+                        new_function_line = function_line.replace('pub fn', 'pub fn')  #function_line.replace('pub fn', 'pub extern "C" fn')
+                        modified_lines[start_line] = new_function_line
+                        #modified_lines.insert(start_line, no_mangle_macro)
+                        modified_lines.insert(start_line, trace_macro)
+                
+                ########### From here onward
+                else:
+                    # Case of pub only
+                    if item['name'] == "rust_main":
+                        new_function_line = function_line #function_line.replace('pub fn', 'pub extern "C" fn')
+                        modified_lines[start_line] = new_function_line
+                        
+                        ########## Insert here
+                        body_start = start_line + 1
+                        modified_lines.insert(body_start, " " * (indent + 4) + "initialize_tracing();\n")
+                        modified_lines.insert(body_start + 1, " " * (indent + 4) + "let _span = tracing::info_span!(\"rust_main\").entered();\n\n")
+                        
+                        ##########
+
+                        modified_lines.insert(start_line, no_mangle_macro)
+                        modified_lines.insert(start_line, trace_macro)
+
+                        # Insert initialize_tracing function before rust_main
+                        modified_lines.insert(start_line, "\n" + initialize_tracing_fn)  # added Is this the right place?
+                    
+
+            else:
+                # Case of a normal function
+                new_function_line = function_line.replace('fn', 'fn')  #function_line.replace('fn', 'pub extern "C" fn')
+                modified_lines[start_line] = new_function_line
+                #modified_lines.insert(start_line, no_mangle_macro)
+                modified_lines.insert(start_line, trace_macro)
+                    
+            print(f"Modified function: {name}")
+            #print(f"New function line: {new_function_line.strip()}")
+        
+        if item['category'] == "data_type":
+            name = item['name']
+            start_line = item['start_line']
+                    
+            # Get indentation of the function line
+            function_line = modified_lines[start_line]
+            indent = len(function_line) - len(function_line.lstrip())
+
+
+            # Generate trace and no_mangle macros on separate lines
+            # trace_macro = " " * indent + "#[derive(function_inspector::StructDisplay)]\n"
+            #trace_macro = " " * indent + "#[derive(Debug)]\n"
+            trace_macro = " " * indent + "" #"#[derive(Debug)]\n"
+
+            modified_lines.insert(start_line, trace_macro)
+
+
+    # Write the modified content back to the file
+    with open(file_path, 'w') as f:
+        f.writelines(modified_lines)
+
+
+def rust_filter_flow_log(log_path, out_json_path):
+    function_calls = []
+    
+    # Definition of regex patterns
+    input_pattern = re.compile(r"7GqX9B2: (\w+) @ ([^:]+):(\d+) input: (\w+) = (.+)")
+    input_null_pattern = re.compile(r"7GqX9B2: (\w+) @ ([^:]+):(\d+) input: null")
+    output_pattern = re.compile(r"7GqX9B2: (\w+) @ ([^:]+):(\d+) output = (.+)")
+    
+    # Read log file
+    with open(log_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            
+            # Match input pattern (with arguments)
+            match = input_pattern.match(line)
+            if match:
+                function_calls.append({
+                    "function_name": match.group(1),
+                    "file_path": match.group(2),
+                    "line_number": int(match.group(3)),
+                    "call_type": "input",
+                    "value": f"{match.group(4)} = {match.group(5)}"
+                })
+                continue
+            
+            # Match input pattern (no arguments)
+            match = input_null_pattern.match(line)
+            if match:
+                function_calls.append({
+                    "function_name": match.group(1),
+                    "file_path": match.group(2),
+                    "line_number": int(match.group(3)),
+                    "call_type": "input",
+                    "value": "null"
+                })
+                continue
+            
+            # Match output pattern
+            match = output_pattern.match(line)
+            if match:
+                function_calls.append({
+                    "function_name": match.group(1),
+                    "file_path": match.group(2),
+                    "line_number": int(match.group(3)),
+                    "call_type": "output",
+                    "value": match.group(4)
+                })
+    
+    # Write to JSON file
+    with open(out_json_path, 'w', encoding='utf-8') as f:
+        json.dump(function_calls, f, indent=4, ensure_ascii=False)
+
+    print(f"Wrote out to {out_json_path}")
+
+
+
+
+
+def modify_cargo(rust_io_dir, inspect_dir, inspect_core_dir):
+    print(f"rust_io_dir: {rust_io_dir}")
+    print(f"inspect_dir: {inspect_dir}")
+    lib_name = os.path.basename(inspect_dir)
+    core_lib_name = os.path.basename(inspect_core_dir)
+    toml_path = f"{rust_io_dir}/Cargo.toml"
+    
+    # Read Cargo.toml
+    with open(toml_path, 'r') as f:
+        content = f.read()
+    
+    # Add [lib] section
+    if '[lib]' not in content:
+        # If [lib] section does not exist, add it
+        lib_section = '\n[lib]\nname = "trans_rust"\ncrate-type = ["cdylib"]\n'
+        # Add [lib] section after package section
+        if '[package]' in content:
+            parts = content.split('[package]')
+            package_parts = parts[1].split('[', 1)
+            content = '[package]' + package_parts[0] + lib_section + ('[' + package_parts[1] if len(package_parts) > 1 else '')
+
+    # Find [dependencies] section
+    if '[dependencies]' not in content:
+        # If [dependencies] section does not exist, add it
+        content += '\n[dependencies]\n'
+    
+    # Add function_inspector dependency
+    #dependency_line = f'{lib_name} = {{ path = "../{lib_name}" }}\n{core_lib_name} = {{ path = "../{core_lib_name}" }}'
+#     dependency_line = f'''{lib_name} = {{ path = "../{lib_name}" }}
+# {core_lib_name} = {{ path = "../{core_lib_name}" }}
+# tracing = "0.1"
+# tracing-subscriber = {{ version = "0.3", features = ["env-filter", "json"] }}'''
+
+    dependency_line = ""
+    #f'''tracing = "0.1"
+#tracing-subscriber = {{ version = "0.3", features = ["env-filter", "json"] }}'''
+
+
+    # Check if dependency already exists
+    if f'{lib_name}' not in content:
+        # Add after [dependencies] section
+        parts = content.split('[dependencies]')
+        content = parts[0] + '[dependencies]\n' + dependency_line + (parts[1] if len(parts) > 1 else '')
+    
+    # Write changes back
+    if FFI_ON:
+        with open(toml_path, 'w') as f:
+            f.write(content)
+
+
+def insert_func_inspector_lib(rust_io_dir, inspect_dir, inspect_core_dir):
+    print(f"rust_io_dir: {rust_io_dir}")
+    print(f"inspect_dir: {inspect_dir}")
+    lib_name = os.path.basename(inspect_dir)
+    core_lib_name = os.path.basename(inspect_core_dir)
+    toml_path = f"{rust_io_dir}/Cargo.toml"
+    
+    # Read Cargo.toml
+    with open(toml_path, 'r') as f:
+        content = f.read()
+    
+    # Add [lib] section
+    if '[lib]' not in content:
+        # If [lib] section does not exist, add it
+        lib_section = '\n[lib]\nname = "trans_rust"\ncrate-type = ["cdylib"]\n'
+        # Add [lib] section after package section
+        if '[package]' in content:
+            parts = content.split('[package]')
+            package_parts = parts[1].split('[', 1)
+            content = '[package]' + package_parts[0] + lib_section + ('[' + package_parts[1] if len(package_parts) > 1 else '')
+
+    # Find [dependencies] section
+    if '[dependencies]' not in content:
+        # If [dependencies] section does not exist, add it
+        content += '\n[dependencies]\n'
+    
+    # Add function_inspector dependency
+    dependency_line = f'{lib_name} = {{ path = "../{lib_name}" }}\n{core_lib_name} = {{ path = "../{core_lib_name}" }}'
+    
+    # Check if dependency already exists
+    if f'{lib_name}' not in content:
+        # Add after [dependencies] section
+        parts = content.split('[dependencies]')
+        content = parts[0] + '[dependencies]\n' + dependency_line + (parts[1] if len(parts) > 1 else '')
+    
+    # Write changes back
+    with open(toml_path, 'w') as f:
+        f.write(content)
+
+
+####################################################
+########## repair
+####################################################
+
+def get_called_data(rust_flow_path):
+    rust_flow = read_json(rust_flow_path)
+    
+    moment_c_flows = []
+    moment_rust_flows = []
+    if rust_flow is None:
+        return []
+
+    for item in rust_flow:
+        if item['lang'] == "C":
+            moment_c_flows.append(item)
+        
+        elif item['lang'] == "Rust":
+            moment_rust_flows.append(item)
+    
+    return moment_c_flows
+
+
+report_template = f"""
+{{
+    "answer" : [
+        {{
+            "test_number" : 1 or 2 ... or 20,
+            "error_log" : (log of the failed testcase),
+            "need_function_flow" : True or False,
+            "need_arg_return" : True or False,
+            "need_module_deps" : True or False,
+        }},
+        {{
+            "test_number" : 1 or 2 ... or 20,
+            "error_log" : (log of the failed testcase),
+            "need_function_flow" : True or False,
+            "need_arg_return" : True or False,
+            "need_module_deps" : True or False,
+        }},...
+    ],
+    "ongoing" : true or false,
+}}
+"""
+
+def ask_tetscase_report(error):
+    
+    prompt = []
+    prompt.extend(["The following execution log was output when running 20 testcases.",
+                   "Please follow the response rules and respond with JSON data summarizing the logs for the failing testcases."])
+
+    prompt.extend(["", f"## Response rules:",
+                  "- Insert one failing testcase number from 1-20 into the \"test_number\" key.",
+                  "- Place the log output section for that test number into the \"error_log\" key value.",
+                  "- For the following key values, set True if that information is needed for error fixing, or False if it is not needed.",
+                  "    - \"need_function_flow\": Function call order",
+                  "    - \"need_arg_return\": Argument and return values of called functions",
+                  "    - \"need_module_deps\": Dependencies between modules",
+                  f"- To avoid hitting the output token limit, please keep the JSON data in a single response to {output_max} tokens or less.", # For long responses,
+                    #f"When responding in multiple parts, if there is more JSON data remaining, set the 'ongoing_in_mode' key to a boolean True. If the JSON data is the final portion, set the 'ongoing_in_mode' key to a boolean False.",  
+                    "- If the JSON data in a single response is about to exceed the token limit, please split it across multiple responses.",
+                    "- If the JSON data is the final portion, set the 'ongoing' key to a boolean False. If there is more JSON data remaining, set the 'ongoing' key to a boolean True.",
+                  ])
+    prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"])
+    prompt.extend([report_template])
+
+    prompt.extend(["", "## Execution log:", error])
+
+    exp_data = {}
+    exp_data['experiment_path'] = "ask_report.c"  #experiment_path
+    exp_data['file_path'] = "ask_report.c" 
+    exp_data['repair_count'] = 0
+    exp_data['average'] = 0
+
+    ongoing_flag = None
+    sum_modified_list = []
+    while (1):
+        if ongoing_flag is True:
+            print("Keep going to receive report.")
+
+            prompt = []
+            prompt.extend(["Please continue responding with JSON data summarizing the logs for the failing testcases."])
+
+            prompt.extend(["",
+                          "\n## Response format", 
+                           "In summary, please respond in the following JSON format:"])
+            prompt.extend([report_template])
+
+            prompt.extend(["", "## Execution log:", error])
+            
+        rsp_json = ask_llm(prompt, "continue", llm_interface)
+
+        if 'answer' in rsp_json:
+            modified_list = rsp_json['answer']
+            if not isinstance(modified_list, list):
+                modified_list = [modified_list]
+            sum_modified_list.extend(modified_list)
+            
+        if 'ongoing' in rsp_json:
+            ongoing_flag = rsp_json['ongoing']
+        else:
+            print("Should include ongoing flag") 
+
+        if not ongoing_flag:
+            break
+    
+    if isinstance(sum_modified_list, (list, dict)):
+        json_content = sum_modified_list  # Already a Python object, so loads is not needed
+    else:
+        json_content = json.loads(sum_modified_list)  # Use loads if it's a string
+
+    return sum_modified_list
+
+
+
+functional_template = f"""
+# In "read_data" mode
+{{
+    "mode" : "read_data",
+    "target_files" : [path/to/file1, path/to/file2, ..., path/to/fileN], 
+    "file_slices" : (if necessary, otherwise None) [
+        {{
+            "file_path" : (file path),
+            "start_line" : (start_line of the scope),
+            "end_line" : (end_line of the scope),
+        }},...
+    ]
+    "ongoing_in_mode" : true if the "answer" response in "read_data" mode is long and will continue in subsequent responses. false otherwise,
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "ready_to_execute" : True if modifications are complete and ready to execute for verification. False otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
+}}
+
+
+# In "modify_data" mode
+{{
+    "mode" : "modify_data",
+    "answer" : [
+        {{
+            "file_path" : (file path),
+            "start_line" : (start line of the original code to be deleted; must reflect the original range to be replaced),
+            "end_line" : (end line of the original code to be deleted; must reflect the original range to be replaced),
+        }},
+        {{
+            "file_path" : (file path),
+            "start_line" : (start line of the original code to be deleted; must reflect the original range to be replaced),
+            "end_line" : (end line of the original code to be deleted; must reflect the original range to be replaced),
+        }},...
+    ],
+    "ongoing_in_mode" : true if the "answer" response in "modify_data" mode is long and will continue in subsequent responses. false otherwise,
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "ready_to_execute" : True if modifications are complete and ready to execute for verification. False otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
+}}
+
+
+# In "execute_command" mode
+{{
+    "mode" : "execute_command",
+    "answer" : shell script content to be executed,
+    "ongoing_in_mode" : true if the "answer" response in "execute_command" mode is long and will continue in subsequent responses. false otherwise,
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "ready_to_execute" : True if modifications are complete and ready to execute for verification. False otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
+}}
+"""
+
+
+functional_modify_template = f"""
+{{
+    "mode" : "modify_data",
+    "answer" : [
+        {{
+            "file_path" : (file path),
+            "start_line" : (start line of the original code to be deleted; must reflect the original range to be replaced),
+            "end_line" : (end line of the original code to be deleted; must reflect the original range to be replaced),
+            "is_deletion" : True for deletion only, False for modification,
+            "no_simplification" : true if all original intended features are fully preserved, without any omissions or simplifications. false otherwise,
+            "is_JSON" :If the file_path is a JSON file, then True, otherwise False,
+            "modified_data" : (Content of the corrected code without any omission. Content of the corrected code as a string if is_JSON is false, or as a direct JSON object if is_JSON is true.),
+            "modification_part": (the number of the current part),
+        }},
+        {{
+            "file_path" : (file path),
+            "start_line" : (start line of the original code to be deleted; must reflect the original range to be replaced),
+            "end_line" : (end line of the original code to be deleted; must reflect the original range to be replaced),
+            "is_deletion" : True for deletion only, False for modification,
+            "no_simplification" : true if all original intended features are fully preserved, without any omissions or simplifications. false otherwise,
+            "is_JSON" :If the file_path is a JSON file, then True, otherwise False,
+            "modified_data" : (Content of the corrected code without any omission. Content of the corrected code as a string if is_JSON is false, or as a direct JSON object if is_JSON is true.),
+            "modification_part": (the number of the current part),
+        }},...
+    ],
+    "ongoing_in_mode" : true if the "answer" response in "modify_data" mode is long and will continue in subsequent responses. false otherwise,
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "ready_to_execute" : True if modifications are complete and ready to execute for verification. False otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
+}}
+"""
+
+# "overwrite_all" : Flag for full file modification. If true, overwrites the whole file; if false, modifies only the specified lines. To minimize the number of tokens used, please basically write specific lines with this flag 'false'.
+
+
+summary_dict = {}
+called_count = 0
+
+
+# Proposed fix
+def trim_code(target_path, file_code, given_limit, model="gpt-4"):
+    if not os.path.isfile(target_path):
+        return
+    
+    # Handle the case where file_code is None or is not a string
+    if file_code is None:
+        return
+    
+    # Convert to string type
+    if not isinstance(file_code, str):
+        file_code = str(file_code)
+    
+    encoder = tiktoken.encoding_for_model(model)
+    full_tokens = len(encoder.encode(file_code))
+    
+    # The following is the same as the original code
+    if full_tokens <= given_limit: # If it is already within the limit, return the whole thing
+        print("Within limit")
+        return file_code
+    
+    # Use binary search to find the largest portion that fits within the limit
+    left, right = 0, len(file_code)
+    best_length = 0
+    
+    while left <= right:
+        mid = (left + right) // 2
+        # Get the candidate substring
+        candidate = file_code[:mid]
+        # Calculate the number of tokens in that portion
+        tokens = len(encoder.encode(candidate))
+        
+        if tokens <= given_limit - 50:  # Leave some margin for the omission message
+            best_length = mid
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    # Cut at the last complete line
+    trimmed = file_code[:best_length]
+    last_newline = trimmed.rfind('\n')
+    if last_newline != -1:
+        trimmed = trimmed[:last_newline + 1]
+    
+    # Add omission message (token-count based)
+    remaining_tokens = full_tokens - len(encoder.encode(trimmed))
+    trimmed += f"\n... ( remaining_tokens is {remaining_tokens}.) Exceeding token limit, content truncated. To view the complete content of {target_path}, please use read_data mode and set file_slice (specified range) to read each section separately."
+    
+    print("trimmed")
+    return trimmed
+
+
+def repair_semantics(repair_target, interface):  #target_dir, entry, original_run_path, original_execute_path, meta_dir, dep_json_path, exp_data, repair_count): # div_start_line, 
+
+    llm_interface = interface.llm_interface
+    output_max = llm_interface.output_max  #3000
+
+    mix_io_dir = interface.mix_io_dir
+    exp_data = interface.exp_data
+    c_io_dir = interface.c_io_dir
+    rust_io_dir = interface.rust_io_dir
+    repair_count = interface.repair_count
+    work_dir = interface.work_dir
+    database_dir = interface.database_dir
+    #rust_path = interface.rust_path
+
+    target = interface.target
+
+    meta_dir = interface.meta_dir
+    dep_json_path = interface.dep_json_path
+    
+    rust_build_path = interface.rust_build_path
+    build_path = interface.build_path
+    run_test_path = interface.run_test_path # これは、run_test_pathのこと
+    run_all_path = interface.run_all_path
+
+    rust_c_path = interface.rust_c_path
+    c_rust_path = interface.c_rust_path
+
+    #rust_log_path = interface.rust_log_path
+    #golden_flow_path = interface.golden_flow_path
+    #o_run_path = interface.o_run_path
+
+    test_number = interface.test_number
+    error_log = interface.error_log
+    #log_choice = interface.log_choice
+    flow_path = interface.flow_path
+
+    error = interface.error
+    std_out = interface.std_out
+
+    run_path = run_all_path
+
+    rust_c_map = read_json(rust_c_path)
+    c_rust_path = read_json(c_rust_path)
+
+    execute_path = f"{mix_io_dir}/execute.sh" #get_execute_path(run_path) #interface.execute_path
+    if not os.path.exists(execute_path):
+        #create_rust_build_path(run_path, c_io_dir)
+        #create_file(run_path)
+        create_permissioned_file(execute_path)
+    execute_dir = os.path.dirname(os.path.normpath(execute_path))
+
+
+    modified_c_keys = set()
+    modified_rust_lines = []
+    editied_files = []
+    judge_count = 0
+
+    mode = None
+    execute_error = None
+    execute_out = None
+    read_prompt = None
+
+    #error = True # Assuming there is an error
+    ongoing_flag = None #False
+    mode = None
+
+    ready_to_execute = None
+
+    modified_files = set()
+
+    while (1):
+
+        if exp_data['repair_count'] == REPAIR_MAX:
+            print(f"Force to finish. Hit the REPAIR_MAX ({REPAIR_MAX}).")
+            iteration_dict[repair_target] = repair_count
+            sys.exit(1)  #return True
+
+        """
+        if mode != "read_data":
+            if (repair_count != 1): #if (repair_count != 1 and (repair_target == "build" or repair_target == "compile")): # これは、repair_count != 1じゃないよね？
+                error, std_out, repair_count = run_script(run_path, 100, True, None, "both", None, repair_count, None, None, mode)
+                judge_count += 1
+                print(f"Judging at run_script: error: {error}")
+
+        print(f"Judging at {repair_count}: run_path: {run_path} mode: {mode}, ongoing_flag: {ongoing_flag}, error: {error}")
+        if error is None and mode != "read_data":  # This feels like a big change though  # if error is None and mode != "read_data" and ongoing_flag is False:
+            break
+        """
+
+        #"""
+        print(f"Judging at {repair_count}: mode: {mode}, ongoing_flag: {ongoing_flag}") #, error: {error}")
+        if mode != "read_data" and ready_to_execute is True: #ongoing_flag is False: # error is None and 
+            break
+        #"""
+
+        # if mode == "execute_command" and execute_error is None: #added # koko?
+        #     break
+
+        if repair_target == "semantics":
+            if repair_count == 1:
+
+                prompt = []
+                if error_log is not None:
+
+                    if FFI_ON:
+                        prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                    f"To ensure equivalence between the pre- and post-translation code, I called the Rust main function via FFI from C test cases, but test{test_number} is not passing.",
+                                    f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the error and make test{test_number} pass.",
+                                    f"For incremental fixes, please provide a solution specifically for test{test_number} at this time.",
+                                    "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",
+                                ])  
+                    else:
+                         prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                    f"To ensure equivalence between the pre- and post-translation code, I conducted the same testcases for both C and Rust programs, but test{test_number} is not passing.",
+                                    f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the error and make test{test_number} pass.",
+                                    f"For incremental fixes, please provide a solution specifically for test{test_number} at this time.",
+                                    "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",
+                                ])                   
+                else:
+                    if FFI_ON:
+                        prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                        "To ensure equivalence between the pre- and post-translation code, I called the Rust main function via FFI from C test cases, but errors are occurring.",
+                                        f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the errors.",
+                                        "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",                               
+                                        ])
+                    else:
+                        prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                        f"To ensure equivalence between the pre- and post-translation code, I conducted the same testcases for both C and Rust programs, but test{test_number} is not passing.",
+                                        f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the errors.",
+                                        "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",                               
+                                        ])
+                if FFI_ON:
+                    prompt.extend(["",
+                                "## Response rules:",
+                                "- Before making any modifications, please check the original C program to ensure all functionality is properly implemented. If any features have been simplified or are missing, please modify the Rust program to faithfully implement all the original functionality from the C code.",
+                                "- Please do NOT create function Rust implementations based on your own assumptions, without knowing its C implementaion. Always find and reference the corresponding function in the original C code before writing its Rust equivalent.",
+                                "- To identify the problematic areas, first thoroughly understand the target program.",
+                                "- Afterwards, please identify and fix the root cause of the error according to the following rules:",
+                                #"- Please identify and fix the root cause of the error according to the following principles:",
+                                #"- Please use the "
+                                f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
+                                f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:", #f"    - Otherwise, to clear the root cause, please use the following info as needed and identify the cause code.", #f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                #f"        -  Please debug by yourself.",
+                                f"        - Please refer to the flow_results directory, which contains information about function execution flows for the current Rust implementations for each testcase.", #, arguments, and return values for both the original C and current Rust implementations for each testcase.",
+                                #f"        - Please refer to the {mix_io_dir}/flows directory, which contains information about function execution flows, arguments, and return values for both the original C and current Rust implementations for each testcase.",
+                                #f"        - This flow information is updated whenever the Rust program is modified. So, please check the current status as needed.",
+                                f"        - For your reference, the test{test_number}_golden_flow.txt file contains only the expected execution flows of the C implementation for each testcase.", 
+                                #f"- The entry point in the Rust program is in workspace_io/trans_rust/src/which_2_21/module4_h/unit0.rs.",
+                                f"- When fixing the Rust program, please aim to understand the original C program's intent and functionality accurately, and implement an equivalent code, rather than creating special handling or hacky fixes for specific test cases.",
+                                f"- The purpose of converting from C to Rust is to replace memory-vulnerable code with memory-safe code. When modifying the Rust program ({rust_io_dir}), please suggest safe modifications that avoid using unsafe blocks and raw pointers whenever possible.",
+                                f"- The {rust_build_path} shell file contains code for building the Rust program.",
+                                f"- The {build_path} shell file contains code for building the C program.",
+                                f"- The {run_test_path} shell file contains code for executing the C program's test cases.",
+                                f"- The {run_all_path} shell file contains code that executes {rust_build_path}, {build_path} and {run_test_path} together.",
+                                f"- When making modifications, please consider the directory structure where the Rust program ({rust_io_dir}) is located.",
+                                f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
+                            ])
+                else:
+                    prompt.extend(["",
+                                "## Response rules:",
+                                "- Before making any modifications, please check the original C program to ensure all functionality is properly implemented. If any features have been simplified or are missing, please modify the Rust program to faithfully implement all the original functionality from the C code.",
+                                "- Please do NOT create function Rust implementations based on your own assumptions, without knowing its C implementaion. Always find and reference the corresponding function in the original C code before writing its Rust equivalent.",
+                                "- To identify the problematic areas, first thoroughly understand the target program.",
+                                "- Afterwards, please identify and fix the root cause of the error according to the following rules:",
+                                #"- Please identify and fix the root cause of the error according to the following principles:",
+                                #"- Please use the "
+                                f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
+                                f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:", #f"    - Otherwise, to clear the root cause, please use the following info as needed and identify the cause code.", #f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                #f"        -  Please debug by yourself.",
+                                f"        - Please refer to the flow_results directory, which contains information about function execution flows for the current Rust implementations for each testcase.", #, arguments, and return values for both the original C and current Rust implementations for each testcase.",
+                                #f"        - This flow information is updated whenever the Rust program is modified. So, please check the current status as needed.",
+                                f"        - For your reference, the test{test_number}_golden_flow.txt file contains only the expected execution flows of the C implementation for each testcase.", 
+                                #f"- The entry point in the Rust program is in workspace_io/trans_rust/src/which_2_21/module4_h/unit0.rs.",
+                                f"- When fixing the Rust program, please aim to understand the original C program's intent and functionality accurately, and implement an equivalent code, rather than creating special handling or hacky fixes for specific test cases.",
+                                f"- The purpose of converting from C to Rust is to replace memory-vulnerable code with memory-safe code. When modifying the Rust program ({rust_io_dir}), please suggest safe modifications that avoid using unsafe blocks and raw pointers whenever possible.",
+                                f"- The {rust_build_path} shell file contains code for building the Rust program.",
+                                #f"- The {o_run_path} shell file contains code for building the C program.",
+                                f"- The {run_test_path} shell file contains code for executing the test cases.",
+                                f"- The {run_all_path} shell file contains code that executes {rust_build_path} and {run_test_path} together.",
+                                f"- When making modifications, please consider the directory structure where the Rust program ({rust_io_dir}) is located.",
+                                f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
+                            ])
+
+                prompt.extend(["- When encountering errors with backslashes in byte literals, you need to escape the backslash in both the source code and within the byte literal. Therefore, use three backslashes (double backslash).",
+                            "- When encountering errors with backslashes in character literals, you need to escape the backslash in both the source code and within the character literal. Therefore, use two backslashes.",
+                            f"- To avoid output token limitations, please keep JSON data within {output_max} tokens in a single response",
+                            "- If a single mode response might exceed the token limit, please split the response into multiple parts.",
+                            "- If this JSON data is the final part, set the 'ongoing_in_mode' key to False. If there is more JSON data remaining, set the 'ongoing_in_mode' key to True.",
+                            "- Always generate responses using only one mode ('read_data', 'modify_data', or 'execute_command'), and use 'ongoing_in_mode' only when further interaction is needed within that single mode.",
+                            "- If you want to switch modes, end the current mode by setting ongoing_in_mode to false",
+                            #"- When responding in 'modify_data' mode, the modified_code content must not contain any omissions as it will be copied directly.",
+                        ])
+
+            else:
+                # important
+                if ongoing_flag is True:
+                    if error_log is not None:
+                        prompt = [f"Please continue with the modifications to the Rust program ({rust_io_dir}) to make test case {test_number} pass.",
+                                  "Please continue to follow the provided response rules."                                ]
+                            
+                    else:
+                        prompt = [f"Please continue with the modifications to the Rust program ({rust_io_dir}) to make it executable with the test cases.",
+                                  "Please continue to follow the provided response rules."
+                                ]
+
+                else:
+                    print(f"Ongoing_flag here: {ongoing_flag}")
+                    if error_log is not None:
+                        prompt = [f"Test case execution of the Rust program ({rust_io_dir}) shows that case {test_number} is not passing.",
+                                f"Please continue to fundamentally resolve the errors and modify the Rust program ({rust_io_dir}) to make test case {test_number} pass.",
+                                f"For incremental fixes, please provide a solution specifically for test{test_number} at this time.",
+                                "When answering, please follow the response rules below and generate a response using only one of the following three response modes.",
+                            ]
+                    else:
+                        prompt = [f"Test case execution of the Rust program ({rust_io_dir}) is resulting in errors.",
+                                f"Please continue to fundamentally resolve the errors and modify the Rust program ({rust_io_dir}) to make it executable with the test cases.",
+                                "If multiple test cases are failing, focus on fixing the first failing test case first before moving on to the others.",
+                                "When answering, please follow the response rules below and generate a response using only one of the following three response modes.",
+                            ]
+
+                    if FFI_ON:
+                        prompt.extend(["",
+                                "## Response rules:",
+                                "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
+                                "- Please identify and fix the root cause of the error according to the following rules:",
+                                f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
+                                f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                f"        -  Please debug by yourself.",
+                                f"    - Otherwise, to clear the root cause, please use the following info as needed and identify the cause code.", #f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                f"        - Please refer to the {flow_path} file, which contains information about function execution flow for both the original C and current Rust implementations.",
+                                #f"        - Please refer to the {flow_path} file, which contains information about function execution flow, arguments, and return values for both the original C and current Rust implementations.",
+                                f"        - This flow information is updated whenever the Rust program is modified. So, please check the current status as needed.",
+                                f"        - For your reference, the golden/test{test_number}_golden_flow.txt file contains the expected execution flow of the C implementation.",  #  the {c_io_dir}/{target}/golden/test{test_number}_golden_flow.txt file contains only the expected execution flow of the C implementation.", 
+                                #f"- The entry point in the Rust program is in workspace_io/trans_rust/src/which_2_21/module4_h/unit0.rs",
+                                f"- When fixing the Rust program, please aim to understand the original C program's intent and functionality accurately, and implement an equivalent code, rather than creating special handling or hacky fixes for specific test cases.",
+                                f"- The purpose of converting from C to Rust is to replace memory-vulnerable code with memory-safe code. When modifying the Rust program ({rust_io_dir}), please suggest safe modifications that avoid using unsafe blocks and raw pointers whenever possible.",
+                                f"- The {rust_build_path} shell file contains code for building the Rust program.",
+                                f"- The {build_path} shell file contains code for building the C program.",
+                                f"- The {run_test_path} shell file contains code for executing the C program's test cases.",
+                                f"- The {run_all_path} shell file contains code that executes {rust_build_path}, {build_path} and {run_test_path} together.",
+                                f"- When making modifications, please consider the directory structure where the Rust program ({rust_io_dir}) is located.",
+                                f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
+                            ])
+                    else:
+                        prompt.extend(["",
+                                "## Response rules:",
+                                "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
+                                "- Please identify and fix the root cause of the error according to the following rules:",
+                                f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
+                                f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                f"        -  Please debug by yourself.",
+                                f"    - Otherwise, to clear the root cause, please use the following info as needed and identify the cause code.", #f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                f"        - Please refer to the {flow_path} file, which contains information about function execution flow for both the original C and current Rust implementations.",
+                                #f"        - Please refer to the {flow_path} file, which contains information about function execution flow, arguments, and return values for both the original C and current Rust implementations.",
+                                f"        - This flow information is updated whenever the Rust program is modified. So, please check the current status as needed.",
+                                f"        - For your reference, the golden/test{test_number}_golden_flow.txt file contains the expected execution flow of the C implementation.",  #  the {c_io_dir}/{target}/golden/test{test_number}_golden_flow.txt file contains only the expected execution flow of the C implementation.", 
+                                #f"- The entry point in the Rust program is in workspace_io/trans_rust/src/which_2_21/module4_h/unit0.rs",
+                                f"- When fixing the Rust program, please aim to understand the original C program's intent and functionality accurately, and implement an equivalent code, rather than creating special handling or hacky fixes for specific test cases.",
+                                f"- The purpose of converting from C to Rust is to replace memory-vulnerable code with memory-safe code. When modifying the Rust program ({rust_io_dir}), please suggest safe modifications that avoid using unsafe blocks and raw pointers whenever possible.",
+                                f"- The {rust_build_path} shell file contains code for building the Rust program.",
+                                #f"- The {build_path} shell file contains code for building the C program.",
+                                f"- The {run_test_path} shell file contains code for executing the test cases.",
+                                f"- The {run_all_path} shell file contains code that executes {rust_build_path}, {build_path} and {run_test_path} together.",
+                                f"- When making modifications, please consider the directory structure where the Rust program ({rust_io_dir}) is located.",
+                                f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
+                            ])
+
+                    prompt.extend(["- When encountering errors with backslashes in byte literals, you need to escape the backslash in both the source code and within the byte literal. Therefore, use three backslashes (double backslash).",
+                            "- When encountering errors with backslashes in character literals, you need to escape the backslash in both the source code and within the character literal. Therefore, use two backslashes.",
+                            f"- To avoid output token limitations, please keep JSON data within {output_max} tokens in a single response",
+                            "- If a single mode response might exceed the token limit, please split the response into multiple parts.",
+                            "- If this JSON data is the final part, set the 'ongoing_in_mode' key to False. If there is more JSON data remaining, set the 'ongoing_in_mode' key to True.",
+                            "- Always generate responses using only one mode ('read_data', 'modify_data', or 'execute_command'), and use 'ongoing_in_mode' only when further interaction is needed within that single mode.",
+                            "- If you want to switch modes, end the current mode by setting ongoing_in_mode to false",
+                            #"- When responding in 'modify_data' mode, the modified_code content must not contain any omissions as it will be copied directly.",
+                        ])
+                            
+                prompt.extend(["Please select only one of the three modes when responding and generate your response accordingly."]) 
+        
+
+        if execute_error is not None or execute_out is not None:
+            #prompt.extend(["", "- The result executed in execute_command mode is as follows:"])
+
+            if execute_out is not None:
+                write_file(f"{database_dir}/execute_out.txt", execute_out)
+                execute_out = trim_code(f"{database_dir}/execute_out.txt", execute_out, 8000) #10000)
+                prompt.extend(["\n## Execution result:",
+                            "The result executed in execute_command mode is as follows:"
+                            f"{execute_out}",
+                            ""])
+                execute_out = None
+
+            if execute_error is not None:
+                prompt.extend(["\n## Execution result error: ",
+                            "The result error executed in execute_command mode is as follows:"
+                            f"{execute_error}"])
+                execute_error = None # Initialization
+        
+        if read_prompt is not None:
+            #prompt.extend(["", "## Response to the previous request:"])
+            prompt.extend(read_prompt)
+            read_prompt = None # Initialization
+
+        #prompt = get_auto_prompt(prompt, execute_path)
+        print(f"ongoing_flag is {ongoing_flag}")
+
+        if ongoing_flag is False or ongoing_flag is None:
+            prompt.extend(["",
+                        "## Response modes:",
+                        "1. In 'read_data' mode:",
+                        "### Purpose:",
+                        "- Returns the content of the specified file as it is.",
+                        "### Format:",
+                        "- Include the file path you want to read inside the \"target_files\" key in the JSON data.",
+                        "- If the number of lines in the file you want to read is too large and cannot be viewed due to context window limitations, you can specify \"start_line\" and \"end_line\" along with file_path in \"file_slices\" to know about that specific range of lines.",
+                        "",
+                        "2. In 'modify_data' mode:",
+                        "### Purpose:",
+                        "- Allows modifying an existing file at the specified file path.",
+                        "### Format:",
+                        "- Insert the filename, start line, and end line of the change location to be inserted into the values of the \"file_path\", \"start_line\", and \"end_line\" keys in JSON format data.",
+                        f"- For file_path, write a relative path in the format '{work_dir}/path/to/file'", #f"- For file_path, write a relative path starting from {work_dir}.",
+                        "- Since I will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification. Do not write \"modified_data\".",
+                        "",
+                        "3. In 'execute_command' mode:",
+                        "### Purpose:",
+                        "- Executes the provided shell script code.",
+                        "### Format:",
+                        #f"- This executes separately from {run_path}. If not necessary beyond {run_path}, you do not need to include it in the response.",
+                        "- Put the shell script code to be executed in the \"answer\" field of the JSON format data.",
+                        f"- The answered shell script code will be saved in the shell script file at {execute_path} and runs from the {execute_dir} directory automatically, therefore:",
+                        f"    - You don't need to include the command to move to the {execute_dir} directory like \"cd {execute_dir}\".",
+                        f".   - All the path written in {execute_path} should be relative to that."
+                        "- The execution of ./execute.sh should not have any arguments.",
+                        "- The shell script can include multiple commands."
+                    ])       
+            
+            prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
+            prompt.extend([functional_template]) #compile_template])
+
+            test_code = get_lined_code(run_test_path, mix_io_dir)
+            prompt.extend(["", f"## Executed test case ({run_test_path}):", f"{test_code}"])
+
+            prompt.extend(["", f"## Error in test{test_number}:", f"{error_log}"]) # error])
+
+            if error is not None:
+                prompt.extend(["", "## Execution error:",
+                                f"{error}"])
+                
+                write_file(f"{database_dir}/std_out.txt", std_out)
+                std_out = trim_code(f"{database_dir}/std_out.txt", std_out, 8000) #10000)
+                prompt.extend(["", "## Standard output of execution:", 
+                                    f"{std_out}"])
+                std_out = None # Initialize
+                error = None
+
+            """
+            if log_choice['need_function_flow'] is True and log_choice['need_arg_return'] is False:
+                flow_path = f"{mix_io_dir}/flows/test{test_number}.txt"
+                if os.path.exists(flow_path):
+                    prompt.extend(["", f"## Function execution flow:"]) #f"## 関数の実行順序:"])
+                    flow_code = read_file(flow_path)
+                    prompt.extend([flow_code])
+            
+            elif log_choice['need_arg_return'] is True:
+                value_path = f"{mix_io_dir}/analysis/test{test_number}.json"
+                if os.path.exists(value_path):
+                    prompt.extend(["", f"## Function arguments and return values:"]) #f"## 関数の引数と返り値の値:"])
+                    value_code = read_file(value_path)
+                    prompt.extend([value_code])
+            
+            if log_choice['need_module_deps'] is True:
+                prompt.extend(["", f"## Module structure of the target Rust program ({rust_io_dir}):"]) #f"## 対象のRustプログラム({rust_io_dir})のmodule構造:"])
+                structure = get_cargo_modules(rust_io_dir)
+                prompt.extend([structure])
+            """
+
+            prompt.extend(["", f"## Directory structure of C program ({c_io_dir}) using functions from Rust program ({rust_io_dir}):"])  #f"## Rustのプログラム（{rust_io_dir}）の関数を使用するCのプログラム（{c_io_dir}）のディレクトリ構造:"])
+            directory_structure = get_dir_struct('s_repair', mix_io_dir, None)  #c_io_dir)
+            prompt.extend([directory_structure])
+            
+
+        ################################################
+
+        prompt = adjust_prompt(prompt)
+        print("-------------------------")
+
+        print(f"repair_target: {repair_target}")
+        exp_data['repair_count'] =  repair_count
+
+        if repair_count == 1:
+            rsp_json = ask_llm(prompt, "init", llm_interface)
+        else:
+            delete_file(execute_path)
+            create_permissioned_file(execute_path)
+            rsp_json = ask_llm(prompt, "continue", llm_interface)
+
+
+        ################################################
+        #ongoing_flag = False
+        ongoing_in_mode_flag = False
+
+        sum_target_list = []
+        sum_modified_list = []
+        sum_deleted_list = []
+
+        sum_slice_list = []
+
+        while (1):
+            prompt = []
+            execute_error = None
+
+            print(f"ongoing_flag is {ongoing_flag}")
+            if 'ongoing' in rsp_json:
+                ongoing_flag = rsp_json['ongoing']
+
+            if 'ongoing_in_mode' in rsp_json:
+                ongoing_in_mode_flag = rsp_json['ongoing_in_mode']
+
+            if 'ready_to_execute' in rsp_json:
+                ready_to_execute = rsp_json['ready_to_execute']
+
+            if 'mode' in rsp_json:
+                mode = rsp_json['mode']
+
+                if mode == 'modify_data':
+                    if 'answer' in rsp_json:
+                        modified_list = rsp_json['answer'] # Maybe it's okay to put the individually converted ones here
+                        if not isinstance(modified_list, list):
+                            modified_list = [modified_list]
+                        sum_modified_list.extend(modified_list)
+
+                        #if ongoing_in_mode_flag is False:
+                        sequences = []
+                        seen_sequences = set()
+                        for mod in sum_modified_list: #modified_list:
+                            if mod['file_path'] not in seen_sequences:
+                                sequences.append(mod['file_path'])
+                                seen_sequences.add(mod['file_path'])
+
+                        # continuation
+                        seq_string = ""
+                        i = 0
+                        for seq_path in sequences:
+                            if i != 0:
+                                seq_string += ", "
+                            seq_string += seq_path
+                            i += 1
+
+
+                        prompt = []
+                        prompt.extend([f"Please write the actual modifications for the file {seq_string} in modify_data mode.", #prompt.extend([f"引き続き、modified_dataのモードで、{seq_string}のファイルの実際の修正の内容を書いてください。",
+                                        "",
+                                        "## Response rules:", 
+                                        "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
+                                        "- Then, insert the new content that should be inserted at that [start_line] into the value of the \"modified_data\" key.",
+                                        "- Detailed modification process is as follows. Please carefully write start_line, end_line and modified_data considering the process:",
+                                        "    1. All code in the specified range (from [start_line] to [end_line]) will be completely deleted.",
+                                        "    2. The content you provide in \"modified_data\" will be inserted at [start_line].",
+                                        "    3. All code from [end_line + 1] onwards will remain unchanged and be appended after your modified_data.",
+                                        #"- Please use the exact line numbers shown on the left side of the code (Line X) for start_line and end_line.",
+                                        "- Please use the exact line numbers and indentation levels shown on the left side of the code (Line X [Y], where X is the line number and Y is the indentation level) for start_line, end_line and modified_data.",
+                                        "- In case the modification content (modified_data) for a single range (start_line-end_line) is too long to include in one entry:",
+                                        "    - Please split it across multiple answer entries.",
+                                        "    - Each of these answer entries should maintain the same file_path, start_line, and end_line values",
+                                        "    - Include modification_part representing the number of the current part in each entry to track the split.",
+                                        #"    - Include modification_part information in each entry to track the split:",
+                                        #"        - current: the number of the current part:",
+                                        #"        - total: the total number of parts",
+                                        "    - please remain ongoing_in_mode and ongoing flags true until all parts are delivered",       
+                                        #"- Please insert the filename, start line, and end line of the section to be deleted and modified into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
+                                        #"- Then, insert the new content that should be inserted at that modification location into the value of the \"modified_data\" key.",
+                                        f"- For file_path, write the relative path starting from {work_dir}.",
+                                        "- Insert appropriate indentation in modified_data so that it can be executed correctly when copied and pasted into the original code's location from start_line to end_line.",
+                                        "- \"modified_data\" must not contain any omissions, as it will be directly inserted and executed in the original code.",
+                                        "- If you want to only perform deletion without inserting into a specific location in the existing specified file path, set the value of 'is_deletion' to True.",
+                                        "- If you want to overwrite the entire file rather than just modifying the specified line range, set the value of 'overwrite_all' to True.",
+                                        "- Set the value of \"no_simplification\" to True if the functionality intended before modification exists completely without omission or simplification. Set it to False otherwise.",
+                                        "- If the target file for editing is a JSON file, set the \"is_JSON\" flag to True and insert the modified JSON data into \"modified_data\"",
+                                        "- In modifications, please avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
+                                        "- When representing backslashes as byte literals, escape the backslash twice in the source code, and also escape it again in the byte literal, resulting in four backslashes (double backslashes).",
+                                        "- When representing backslashes as character literals, escape the backslash once in the source code and again in the character literal, resulting in two backslashes.",
+                                        "- Please ensure that the prefix to all function names in the Rust program is \"rust_\".",
+                                        ])
+
+                        prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"])
+                        prompt.extend([functional_modify_template]) # modify_template])
+
+                        for seq_path in sequences:
+                            seq_code = get_lined_code(seq_path, mix_io_dir)  #read_file(seq_path)
+                            prompt.extend(["", f"## Code in {seq_path}:", seq_code])
+
+                        if error_log is not None:
+                            prompt.extend(["", f"## Error:", error_log])
+
+                        sum_modified_list = []
+                        mod_count = 1
+                        while(1):
+
+                            child_rsp_json = ask_llm(prompt, "continue", llm_interface)
+
+                            # 'ongoing' needs to be updated here
+                            if 'ongoing' in child_rsp_json:
+                                ongoing_flag = child_rsp_json['ongoing']
+
+                            if 'ongoing_in_mode' in child_rsp_json:
+                                ongoing_in_mode_flag = child_rsp_json['ongoing_in_mode']
+                            
+                            if 'ready_to_execute' in child_rsp_json:
+                                ready_to_execute = child_rsp_json['ready_to_execute']
+
+                            print(f"ongoing_flag at location 2 is {ongoing_flag}")
+                            print(f"ongoing_in_mode_flag at location 2 is {ongoing_in_mode_flag}")
+
+                            if 'mode' in child_rsp_json:
+                                mode = child_rsp_json['mode']
+
+                                if mode == 'modify_data':
+                                    if 'answer' in child_rsp_json:
+                                        modified_list = child_rsp_json['answer'] # Maybe it's okay to put the individually converted ones here
+                                        if not isinstance(modified_list, list):
+                                            modified_list = [modified_list]
+                                        sum_modified_list.extend(modified_list)
+
+                                else: # Do we need this?
+                                    rsp_json = child_rsp_json
+
+                            ready_to_execute = False
+                            if 'ready_to_execute' in child_rsp_json:
+                                ready_to_execute = child_rsp_json['ready_to_execute']
+
+                            if ready_to_execute is True or ongoing_in_mode_flag is False: #if ongoing_in_mode_flag is False:
+                                print("Breaking in child modifying loop") 
+                                break
+
+                            prompt = []
+
+                            prompt.extend([f"Continue writing the actual modifications for the file {seq_string} in modify_data mode.",
+                                    "",
+                                    "## Response rules:", 
+                                    "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
+                                    "- Then, insert the new content that should be inserted at that [start_line] into the value of the \"modified_data\" key.",
+                                    "- Detailed modification process is as follows. Please carefully write start_line, end_line and modified_data considering the process:",
+                                    "    1. All code in the specified range (from [start_line] to [end_line]) will be completely deleted.",
+                                    "    2. The content you provide in \"modified_data\" will be inserted at [start_line].",
+                                    "    3. All code from [end_line + 1] onwards will remain unchanged and be appended after your modified_data.",
+                                    #"- Please use the exact line numbers shown on the left side of the code (Line X) for start_line and end_line.",
+                                    "- Please use the exact line numbers and indentation levels shown on the left side of the code (Line X [Y], where X is the line number and Y is the indentation level) for start_line, end_line and modified_data.",
+                                    "- In case the modification content (modified_data) for a single range (start_line-end_line) is too long to include in one entry:",
+                                    "    - Please split it across multiple answer entries.",
+                                    "    - Each of these answer entries should maintain the same file_path, start_line, and end_line values",
+                                    "    - Include modification_part representing the number of the current part in each entry to track the split.",
+                                    #"    - Include modification_part information in each entry to track the split:",
+                                    #"        - current: the number of the current part:",
+                                    #"        - total: the total number of parts",
+                                    "    - please remain ongoing_in_mode and ongoing flags true until all parts are delivered",                      
+                                    #"- Please insert the filename, start line, and end line of the section to be deleted and modified into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
+                                    #"- Then, insert the new content that should be inserted at that modification location into the value of the \"modified_data\" key.",
+                                    f"- For file_path, write the relative path starting from {work_dir}.",
+                                    "- Insert appropriate indentation in modified_data so that it can be executed correctly when copied and pasted into the original code's location from start_line to end_line.",
+                                    "- \"modified_data\" must not contain any omissions, as it will be directly inserted and executed in the original code.",
+                                    "- If you want to only perform deletion without inserting into a specific location in the existing specified file path, set the value of 'is_deletion' to True.",
+                                    "- If you want to overwrite the entire file rather than just modifying the specified line range, set the value of 'overwrite_all' to True.",
+                                    "- Set the value of \"no_simplification\" to True if the functionality intended before modification exists completely without omission or simplification. Set it to False otherwise.",
+                                    "- If the target file for editing is a JSON file, set the \"is_JSON\" flag to True and insert the modified JSON data into \"modified_data\"",
+                                    "- In modifications, please avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
+                                    "- When representing backslashes as byte literals, escape the backslash twice in the source code, and also escape it again in the byte literal, resulting in four backslashes (double backslashes).",
+                                    "- When representing backslashes as character literals, escape the backslash once in the source code and again in the character literal, resulting in two backslashes.",
+                                    "- Please ensure that the prefix to all function names in the Rust program is \"rust_\".",
+                                    ])
+
+                            prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
+                            prompt.extend([functional_modify_template]) # modify_template])
+                        
+                            mod_count += 1
+
+                        prompt = []
+                        ongoing_in_mode_flag = False # added
+                        ongoing_flag = False # added
+            
+
+                if mode == 'read_data':
+                    # if 'answer' in rsp_json:
+                    #     code = rsp_json['answer']
+                    #     append_file(execute_path, code)
+
+                    if 'target_files' in rsp_json:
+                        target_list = rsp_json['target_files']
+                        if not isinstance(target_list, list):
+                            target_list = [target_list]
+                        sum_target_list.extend(target_list)
+
+                    if 'file_slices' in rsp_json and rsp_json['file_slices'] is not None:
+                        slice_list = rsp_json['file_slices']
+                        if not isinstance(slice_list, list):
+                            slice_list = [slice_list]
+                        sum_slice_list.extend(slice_list)
+
+                if mode == 'execute_command':
+                    if 'answer' in rsp_json:
+                        code = rsp_json['answer']
+                        append_file(execute_path, code)
+        
+
+            if ongoing_in_mode_flag is False:
+                break
+
+            print("Keep going to receive Rust code in modifying.")
+                        
+            prompt = [f"Please continue with the JSON data response to resolve the error in test{test_number}."] 
+
+            prompt.extend(["## Response rules:", 
+                        f"- To avoid hitting the token limit, keep the JSON data included in one response within {output_max} tokens.", 
+                        "- If the JSON data for a single mode response is likely to exceed the token limit, split the response into multiple parts.",
+                        "- If the JSON data is the last part, set the `ongoing_in_mode` key to `False`. If there are remaining JSON data parts, set the `ongoing_in_mode` key to `True`.",
+                        "- Each response should always be in a single mode (`read_data`, `modify_data`, `execute_command`), and `ongoing_in_mode` should only be used when further interaction is needed within that mode.",
+                        "- If you want to switch modes, end the current mode by setting ongoing_in_mode to false",
+                        "- The `modified_data` content in `modify_data` mode must be directly executable without any omissions.",                        
+                        ])
+                
+            rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+
+
+        ######################## Advance file by file ########################
+
+        print(f"Running program for the mode: {mode}")
+        if mode == 'modify_data':
+            print(f"In mode: {mode}")
+            part_editied_files = reflect_line_modification(sum_modified_list, rust_io_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            #modified_c_keys = update_modified_keys(modified_c_keys, meta_dir, rust_c_map, part_editied_files)
+            editied_files.extend(part_editied_files)
+
+            #if not reflect_success:
+            #    return repair_count, error
+
+        elif mode == 'read_data':
+            print(f"In mode: {mode}")
+            #output = run_read_script(execute_path, 20, True, None, "both")
+            read_prompt = ["\n## Read data result", "The content obtained in read_data mode is as follows.", ""] 
+
+            for see_path in sum_target_list:
+                file_code = get_lined_code(see_path, mix_io_dir)
+                read_prompt.extend([f"- Content of the file {see_path}:"]) 
+                #file_code = trimmed_code(see_path, file_code, 100000)
+                #write_file()
+                file_code = trim_code(see_path, file_code, 100000)
+                read_prompt.extend([f'{file_code}\n'])
+
+            for see_item in sum_slice_list:
+                file_code = get_lined_specific_code(see_item['file_path'], see_item['start_line'], see_item['end_line'], mix_io_dir)
+                read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"])
+                read_prompt.extend([f'{file_code}\n'])
+
+            #rsp_json = ask_llm(prompt, "continue", llm_interface)
+
+            #print(rsp_json)
+            print("End of rsp_json")
+        
+        elif mode == 'execute_command':
+            #if ready_to_execute is False: # turned this off
+            print(f"In mode: {mode}")
+            execute_error, execute_out = run_script_wo_log(execute_path, given_time, True, None, "both")
+            #execute_out = run_script_pty(run_path, given_time)
+            if target != 'yank':
+                execute_out = run_script_pty(execute_path, given_time)
+
+            print(f"Stop here: {execute_error}")
+            print(f"Stop here: {execute_out}")
+            
+            """
+            if process_type == "explore":
+                is_covered = get_is_covered(entry, cov_detail_path, target_dir, cov_dir) # target_lineがカバーされているかどうかを検知する
+            """
+
+        elif mode == 'gdb_execute': # added
+            
+            print(f"In mode: {mode}")
+            breakpoints = None
+            use_breakpoints = False
+        
+            if 'breakpoints' in rsp_json:
+                breakpoints = rsp_json['breakpoints']
+            if 'use_breakpoints' in rsp_json:
+                use_breakpoints = rsp_json['use_breakpoints']
+
+            debug_with_pexpect(c_run_script, target_dir, breakpoints, use_breakpoints)
+
+            """
+            # gdb
+            child_exp_data = {}
+            child_repair_count = 1
+            child_exp_data['repair_count'] = child_repair_count
+            child_exp_data['experiment_path'] = "gdb_shell.c"
+            child_exp_data['file_path'] = "gdb_shell.c"
+            child_exp_data['average'] = 0
+            
+            run_gdb_path = f"{target_dir}/run_gdb.sh"
+            create_permissioned_file(run_gdb_path)
+
+            interface = {
+                "run_gdb_path" : run_gdb_path,
+                "run_test_path" : run_test_path, #run_gdb_path,
+                "run_path" : run_path,
+                "target_dir" : None, 
+                "meta_dir" : None,
+                "dep_json_path" : dep_json_path,
+                "exp_data" : exp_data,
+                "repair_count" : child_repair_count,
+                "execute_path" : execute_path,
+                "target_dir" : target_dir,
+                "test_path" : None,
+                "file_path" : None,
+                "test_id" : None,
+                "name" : None,
+                "main_flag" : None,
+                "cmd_list" : cmd_list,
+            }
+            repair_execute("gdb", interface)  # gdb_out_path = 
+            gdb_done = True
+
+            # Valgrind and Callgrind
+            child_exp_data = {}
+            child_repair_count = 1
+            child_exp_data['repair_count'] = child_repair_count
+            child_exp_data['experiment_path'] = "val_shell.c"
+            child_exp_data['file_path'] = "val_shell.c"
+            child_exp_data['average'] = 0
+            
+            run_val_path = f"{target_dir}/run_val.sh"
+            create_permissioned_file(run_val_path)
+
+            interface = {
+                "run_val_path" : run_val_path,
+                "run_test_path" : run_test_path, #run_val_path,
+                "run_path" : run_path,
+                "target_dir" : None, 
+                "meta_dir" : None,
+                "dep_json_path" : dep_json_path,
+                "exp_data" : exp_data,
+                "repair_count" : child_repair_count,
+                "execute_path" : execute_path,
+                "target_dir" : target_dir,
+                "test_path" : None,
+                "file_path" : None,
+                "test_id" : None,
+                "name" : None,
+                "main_flag" : None,
+                "cmd_list" : cmd_list,
+            }
+            repair_execute("val", interface) # val_out_path = 
+            val_done = True
+            """
+
+        """
+        elif mode == 'delete_data':
+            print(f"In mode: {mode}")
+            reflect_line_deletion(sum_deleted_list, rust_io_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+        """
+
+        repair_count += 1
+
+    # This is on hold for now
+    #check_dif(target_dir)
+
+    iteration_dict[repair_target] = repair_count
+
+    summary_dict = {}
+    if os.path.exists(f"{database_dir}/inner_repair.json"):
+        summary_dict = read_json(f"{database_dir}/inner_repair.json")
+    
+    global called_count
+    summary_dict[str(called_count)] = repair_count
+    write_json(f"{database_dir}/inner_repair.json", summary_dict)
+
+    called_count += 1
+
+    return repair_count, modified_c_keys
+
+
+"""
+[C言語側]
+main() ─→ first_level_func() ─→ second_level_func() ─→ third_level_func()
+                └─→ another_first_level_func()
+
+[Rust移行後]
+main() ─→ ffi::first_level_func() ─→ rust_second_level_func() ─→ rust_third_level_func()
+                └─→ rust_another_first_level_func()
+"""
+
+
+def get_equivalent(modifications):
+    print("Getting equivalency...")
+
+    if not isinstance(modifications, list):
+        modifications = [modifications]
+
+    is_equivalent = True
+    for item in modifications:
+        if 'is_JSON' in item and item['is_JSON'] is True: # If modified_data is a list or dict, convert it to a string with json.dumps and then load it
+            if isinstance(item['modified_data'], (list, dict)):
+                json_content = item['modified_data']  # Loads are not necessary as it is already a Python object
+            else:
+                json_content = json.loads(item['modified_data'])  # loads for strings
+            
+            #write_json(item['file_path'], json_content)
+            for entry in json_content:
+                if 'equivalent' in entry:
+                    if entry['equivalent'] is False:
+                        is_equivalent = False
+
+    return is_equivalent
+
+
+
+def reformat_flow(repair_target, interface):  #target_dir, entry, original_run_path, original_execute_path, meta_dir, dep_json_path, exp_data, repair_count): # div_start_line, 
+
+    mix_io_dir = interface['mix_io_dir']
+    exp_data = interface['exp_data']
+    c_io_dir = interface['c_io_dir']
+    rust_io_dir = interface['rust_io_dir']
+    repair_count = interface['repair_count']
+    #rust_path = interface['rust_path']
+    llm_interface = interface['llm_interface']
+    
+    if repair_target == "get_analysis":
+        execute_path = f"{mix_io_dir}/execute.sh"
+        execute_dir = os.path.dirname(os.path.normpath(execute_path))
+
+        c_flow = interface['c_flow']
+        rust_flow = interface['rust_flow']
+        flow_path = interface['flow_path']
+
+    if repair_target != "get_analysis":
+        # This should be fine, right?
+        run_path = run_all_path
+        print(f"run_path is {run_path}")
+
+    execute_path = f"{mix_io_dir}/execute.sh" #get_execute_path(run_path) #interface['execute_path']
+    if not os.path.exists(execute_path):
+        #create_rust_build_path(run_path, c_io_dir)
+        #create_file(run_path)
+        create_permissioned_file(execute_path)
+    execute_dir = os.path.dirname(os.path.normpath(execute_path))
+
+
+    mode = None
+    execute_error = None
+    execute_out = None
+    read_prompt = None
+
+    error = True # Assume there is an error
+    ongoing_flag = True #False
+    mode = None
+
+    modified_files = set()
+    receive_count = 0
+    is_equivalent = True
+    equivalent_count = 0
+
+    while (1):
+
+        if exp_data['repair_count'] == REPAIR_MAX:
+            print(f"Force to finish. Hit the REPAIR_MAX ({REPAIR_MAX}).")
+            iteration_dict[repair_target] = repair_count
+            sys.exit(1)  #return True
+        
+        print(f"Judging at {repair_count}: mode: {mode}, ongoing_flag: {ongoing_flag}, error: {error}")
+        if (mode != "read_data" and ongoing_flag is False) or is_equivalent is False:  # error is None and 
+            break
+            
+        if repair_target == "get_analysis":
+            if repair_count == 1:
+                prompt = []
+                prompt.extend(["Below is information about the function flow from executing testcases of a C program and its Rust-converted counterpart.",
+                            "Assuming the C execution results are the correct ideal values, determine the corresponding Rust function names, compare them with the converted Rust execution flow, and create JSON data summarizing whether the argument and return values match for every C function call (call_order).",
+                            "Please follow the response rules and response rules below when answering.",
+                            "",
+                            "## Response rules:",
+                            "- The Rust program executes by calling the Rust main function, rust_main(), from the C program's main function via FFI.",
+                            f"- Please respond with JSON data in the following format to {flow_path}, using the modify_data mode.",
+                            f"- This time, since we will keep updating {flow_path}, please set the \"start_line\" to 1 and \"end_line\" to -1 for the modification target in {flow_path} in modify_data mode.",    
+                            f"- Please write the C function call order in \"call_order\".",
+                            "- Not all C functions are converted 1-to-1 to Rust functions, so if there is no corresponding Rust function for a given C call_order, set \"found_correspondence\" to False and set the \"function_name\" value inside \"rust_call\" to None. Also, set \"equivalent\" to True.",
+                            "- For \"equivalent\", judge whether the values of each argument and return variable match between the C and Rust call_order, and write True if they match, or False otherwise.",
+                            #f"- To avoid exceeding the token limit of the output, limit the JSON data in a single response to {output_max} tokens or less. If necessary, provide the answer in multiple responses, but for now, respond with only the first portion of the JSON data with a clear delimiter.",
+                            #f"- When responding in multiple parts, if there is more JSON data remaining, set the value of the 'ongoing' key, on the same level as the 'answer' key, to a boolean value of True. If the JSON data is the final portion, set the 'ongoing' key to a boolean value of False.",      
+                            f"- To avoid hitting the output token limit, please keep the JSON data in a single response to {output_max} tokens or less.", # For long responses,
+                            #f"When responding in multiple parts, if there is more JSON data remaining, set the value of the 'ongoing' key to a boolean True. If the JSON data is the final portion, set the 'ongoing' key to a boolean False.",  
+                            #"- The modified code will be directly copy-pasted and executed, so absolutely do not include any omitted sections. If the JSON data in a single response is about to exceed the token limit, please split it across multiple responses.",
+                            #"- If the JSON data is the final portion, set the 'ongoing' key to a boolean False. If there is more JSON data remaining, set the 'ongoing' key to a boolean True.",
+                            "- If the JSON data in a single mode response is about to exceed the token limit, please split it across multiple responses.",
+                            "- If the JSON data is the final portion, set the 'ongoing_in_mode' key to a boolean False. If there is more JSON data remaining, set the 'ongoing_in_mode' key to a boolean True.",
+                            "- Always create a response using a single mode (`read_data`, `modify_data`, `execute_command`), and use `ongoing_in_mode` only when further exchanges are needed within that single mode.",
+                            #"- When switching modes, end the response by requesting a new request.",
+                            "- The content of modified_code in `modify_data` mode responses will be directly copy-pasted, so absolutely do not include any omitted sections.",  
+                            ])
+
+                prompt.extend(["", f"## Content to write to {flow_path}:"])
+                prompt.extend([compare_template])
+
+
+                prompt.extend([f"", "## Original correct C execution flow:"])
+                prompt.extend([c_flow])
+
+                prompt.extend([f"", "## Converted Rust execution flow:"])
+                prompt.extend([rust_flow])
+            
+
+
+                prompt.extend([#"To resolve this, select exactly one of the following three modes and generate a response.", #The response must select exactly one mode.",
+                        "",
+                        "## Response types:",
+                        "1. For 'read_data' mode:",
+                        "## Purpose:",
+                        #"- The execution result of the shell script code you responded with will be sent back to you, so you can see it.", #(cat, less, tree etc...)
+                        "- The contents of the specified file name will be sent back as-is.",
+                        "## How to respond:",
+                        #"- Place the shell script code to execute inside the \"answer\" key of the JSON data.",
+                        "- Place the file path you want to see inside the \"target_files\" key of the JSON data.",
+                        #f"- The shell script code you respond with will be saved to the shell script file at {execute_path} and will be executed in the directory where {execute_path} is located.",
+                        #"- If you want to see multiple files, write multiple commands in a single shell script code response.",
+                        #f"- The shell script can contain multiple commands.",
+                        #"- For example, if the code contains cat /path/to/test.c, the contents of /path/to/test.c will be sent back to you in the subsequent request prompt.",
+                        "",
+                        "2. For 'modify_data' mode:",
+                        "## Purpose:",
+                        "- You can modify existing files at specified file paths.",
+                        "## How to respond:",
+                        f"- Delete the original code and insert the file name, start line, and end line of the section to be changed into the \"file_path\", \"start_line\", and \"end_line\" key values of the JSON data respectively.",
+                        "- Then, place the new content to be inserted at that modification point into the \"modified_code\" key value.",
+                        "- modified_code will be directly copy-pasted into the original code from start_line to end_line, so please include appropriate indentation so it executes correctly when copy-pasted.",
+                        "- modified_code will be directly copy-pasted into the original code, so absolutely do not include any omitted sections.",
+                        "- If you want to only delete without inserting at a specific location in the specified file path, set the \"is_deletion\" value to True.",
+                        "- If you want to overwrite the entire file rather than modifying only the specified line range, set the \"overwrite_all\" value to True.",
+                        "- If you are not sure about the exact start_line and end_line, executing 'read_data' mode first will show the file's code contents with line numbers.",
+                        "",
+                        "3. For 'execute_command' mode:",
+                        "## Purpose:",
+                        "- You can execute the shell script code you respond with.",
+                        "## How to respond:",
+                        ])
+                if repair_target != "get_analysis":
+                    prompt.extend([f"- This runs separately from {run_path}. If it is not needed apart from {run_path}, you do not need to respond with this."])
+
+                prompt.extend(["- Place the shell script code to execute inside the \"answer\" key of the JSON data.",
+                            f"- The shell script code you respond with will be saved to the shell script file at {execute_path} and executed in the {execute_dir} directory.",
+                            f"- Please ensure that ./execute.sh is executed without arguments.",
+                            f"- The shell script can contain multiple commands.",
+                            ])
+            
+                        
+                
+                prompt.extend(["\n## Response format", f"In summary, please respond in the following JSON format:"])
+                prompt.extend([autonomous_template])
+
+                
+            else:
+                prompt = []
+                prompt.extend([#"There is information about function flows from executing testcases of a C program and its Rust-converted counterpart.",
+                            "Please continue responding with JSON data summarizing whether the argument and return values match between C and Rust calls for all C function calls (call_order).",
+                            "Please follow the response rules and response rules when answering.",
+                            ])
+                
+            receive_count += 1  # For some reason it seems better to have it here  # Since run_script is not called, it's slightly different
+              
+
+        if execute_error is not None or execute_out is not None:
+            #prompt.extend(["", "- The result of the execute_command mode execution is as follows."])
+
+            if execute_out is not None:
+                prompt.extend(["\n## Execution result:",
+                            "The result executed in execute_command mode is as follows:"
+                            f"{execute_out}",
+                            ""])
+
+            if execute_error is not None:
+                prompt.extend(["\n## Execution result error: ",
+                            "The result error executed in execute_command mode is as follows:"
+                            f"{execute_error}"])
+            execute_error = None # Initialize
+            execute_out = None
+        
+        if read_prompt is not None:
+            prompt.extend(["", "Previous response:"])
+            prompt.extend(read_prompt)
+            read_prompt = None # Initialize
+
+        #prompt = get_auto_prompt(prompt, execute_path)
+        print(f"ongoing_flag is {ongoing_flag}")
+
+        if ongoing_flag is False:
+            prompt.extend([#"To resolve this, select exactly one of the following three modes and generate a response.", #The response must select exactly one mode.",
+                        "",
+                        "## Response types:",
+                        "1. For 'read_data' mode:",
+                        "## Purpose:",
+                        #"- The execution result of the shell script code you responded with will be sent back to you, so you can see it.", #(cat, less, tree etc...)
+                        "- The contents of the specified file name will be sent back as-is.",
+                        "## How to respond:",
+                        #"- Place the shell script code to execute inside the \"answer\" key of the JSON data.",
+                        "- Place the file path you want to see inside the \"target_files\" key of the JSON data.",
+                        #f"- The shell script code you respond with will be saved to the shell script file at {execute_path} and will be executed in the directory where {execute_path} is located.",
+                        #"- If you want to see multiple files, write multiple commands in a single shell script code response.",
+                        #f"- The shell script can contain multiple commands.",
+                        #"- For example, if the code contains cat /path/to/test.c, the contents of /path/to/test.c will be sent back to you in the subsequent request prompt.",
+                        "",
+                        "2. For 'modify_data' mode:",
+                        "## Purpose:",
+                        "- You can modify existing files at specified file paths.",
+                        "## How to respond:",
+                        f"- Delete the original code and insert the file name, start line, and end line of the section to be changed into the \"file_path\", \"start_line\", and \"end_line\" key values of the JSON data respectively.",
+                        "- Then, place the new content to be inserted at that modification point into the \"modified_code\" key value.",
+                        "- modified_code will be directly copy-pasted into the original code from start_line to end_line, so please include appropriate indentation so it executes correctly when copy-pasted.",
+                        "- modified_code will be directly copy-pasted into the original code, so absolutely do not include any omitted sections.",
+                        "- If you want to only delete without inserting at a specific location in the specified file path, set the \"is_deletion\" value to True.",
+                        "- If you want to overwrite the entire file rather than modifying only the specified line range, set the \"overwrite_all\" value to True.",
+                        "- If you are not sure about the exact start_line and end_line, executing 'read_data' mode first will show the file's code contents with line numbers.",
+                        "",
+                        "3. For 'execute_command' mode:",
+                        "## Purpose:",
+                        "- You can execute the shell script code you respond with.",
+                        "## How to respond:",
+                        ])
+
+            if repair_target != "get_analysis":
+                prompt.extend([f"- This runs separately from {run_path}. If it is not needed apart from {run_path}, you do not need to respond with this."])
+
+            prompt.extend(["- Place the shell script code to execute inside the \"answer\" key of the JSON data.",
+                        f"- The shell script code you respond with will be saved to the shell script file at {execute_path} and executed in the {execute_dir} directory.",
+                        f"- Please ensure that ./execute.sh is executed without arguments.",
+                        f"- The shell script can contain multiple commands.",
+                        ])
+        
+                    
+            
+            prompt.extend(["\n## Response format", f"In summary, please respond in the following JSON format:"])
+            prompt.extend([autonomous_template])
+            #prompt.extend([see_template])
+
+            # if error is not None and error is not True:
+            #     prompt.extend(["", "## Error:", error])
+
+            if error is not None and error is not True:
+                prompt.extend(["", f"## Error from {run_path}:", f"{error}"]) # error])
+                #prompt.extend(error)
+
+                prompt.extend([f"\n## Execution result of {run_path}:", f"{std_out}"]) #, std_out]) #, std_out]) # std_out])
+                #prompt.extend(std_out)
+                std_out = ""
+
+
+        ################################################
+
+        prompt = adjust_prompt(prompt)
+        print("-------------------------")
+
+        print(f"repair_target: {repair_target}")
+        exp_data['repair_count'] =  repair_count
+
+        if repair_count == 1:
+            rsp_json = ask_llm(prompt, "init", llm_interface)
+        else:
+            delete_file(execute_path)
+            create_permissioned_file(execute_path)
+            rsp_json = ask_llm(prompt, "continue", llm_interface)
+
+
+        ################################################
+        #ongoing_flag = False
+        ongoing_in_mode_flag = False
+
+        sum_target_list = []
+        sum_modified_list = []
+        sum_deleted_list = []
+
+        while (1):
+            execute_error = None
+            if 'mode' in rsp_json:
+                mode = rsp_json['mode']
+
+                if mode == 'read_data':
+                    if 'answer' in rsp_json:
+                        code = rsp_json['answer']
+                        append_file(execute_path, code)
+
+                    if 'target_files' in rsp_json:
+                        target_list = rsp_json['target_files']
+                        if not isinstance(target_list, list):
+                            target_list = [target_list]
+                        sum_target_list.extend(target_list)
+
+                if mode == 'modify_data':
+                    if 'answer' in rsp_json:
+                        modified_list = rsp_json['answer'] # Maybe we could put individually converted items here
+                        if not isinstance(modified_list, list):
+                            modified_list = [modified_list]
+                        sum_modified_list.extend(modified_list)
+
+                        # It might be faster to find false here without waiting for sum_modified_list
+                        is_equivalent = get_equivalent(modified_list)
+                        if is_equivalent is False:
+                            equivalent_count += 1
+                        
+                        if equivalent_count < 2:
+                            is_equivalent is True
+
+                if mode == 'execute_command':
+                    if 'answer' in rsp_json:
+                        code = rsp_json['answer']
+                        append_file(execute_path, code)
+        
+
+            print(f"ongoing_flag is {ongoing_flag}")
+            if 'ongoing' in rsp_json:
+                ongoing_flag = rsp_json['ongoing']
+
+            if 'ongoing_in_mode' in rsp_json:
+                ongoing_in_mode_flag = rsp_json['ongoing_in_mode']
+
+            if ongoing_in_mode_flag is False:
+                break
+
+            if is_equivalent is False:  # Distinctive
+                break
+
+            print("Keep going to receive Rust code in modifying.")
+            
+            prompt = []
+            prompt.extend(["Please continue responding with JSON data summarizing whether the argument and return values match between C and Rust calls for all C function calls (call_order).",
+                          "Please follow the response rules and response rules when answering."])
+
+            prompt.extend(["", "## Response rules:",
+                        "- If there is an error when representing a backslash as a byte literal, you need to escape the backslash in the source code and also escape it within the byte literal, so please use three backslashes (double backslash).",
+                        "- If there is an error when representing a backslash as a character literal, you need to escape the backslash in the source code and also escape it within the character literal, so please use two backslashes.",
+                        f"- To avoid hitting the output token limit, please keep the JSON data in a single response to {output_max} tokens or less.", # For long responses,
+                        #f"When responding in multiple parts, if there is more JSON data remaining, set the 'ongoing' key to a boolean True. If the JSON data is the final portion, set the 'ongoing' key to a boolean False.",  
+                        #"- The modified code will be directly copy-pasted and executed, so absolutely do not include any omitted sections. If the JSON data in a single response is about to exceed the token limit, please split it across multiple responses.",
+                        #"- If the JSON data is the final portion, set the 'ongoing' key to a boolean False. If there is more JSON data remaining, set the 'ongoing' key to a boolean True.",
+                        "- If the JSON data in a single mode response is about to exceed the token limit, please split it across multiple responses.",
+                        "- If the JSON data is the final portion, set the 'ongoing_in_mode' key to a boolean False. If there is more JSON data remaining, set the 'ongoing_in_mode' key to a boolean True.",
+                        "- Always create a response using a single mode (`read_data`, `modify_data`, `execute_command`), and use `ongoing_in_mode` only when further exchanges are needed within that single mode.",
+                        #"- When switching modes, end the response by requesting a new request.",
+                        "- The content of modified_code in `modify_data` mode responses will be directly copy-pasted, so absolutely do not include any omitted sections.",
+                        ])
+
+            rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+
+        ######################## Proceed per file ########################
+
+        print(f"Running program for the mode: {mode}")
+        if mode == 'modify_data':
+            print(f"In mode: {mode}")
+            print(f"sum_modified_list at reformate_flow: {sum_modified_list}")
+            reflect_line_modification(sum_modified_list, rust_io_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+
+        elif mode == 'read_data':
+            print(f"In mode: {mode}")
+            #output = run_read_script(execute_path, given_time, True, None, "both")
+            read_prompt = ["- The information obtained via read_data mode is as follows.", ""] #Even if you had a response with the 'ongoing' flag set to true before this, please make sure to respond once with None in the \"answer\" key of the JSON data for this reply.", 
+                      #"If the 'ongoing' flag is true, after returning None once, please continue responding."]
+            #prompt.extend([none_format])
+
+                        #"Command execution result: ",
+                        #f"{output}", ""]
+            
+            for see_path in sum_target_list:
+                file_code = get_lined_code(see_path, mix_io_dir)
+                read_prompt.extend([f'Contents of the file {see_path}:'])
+                read_prompt.extend([f'{file_code}\n'])
+
+            #rsp_json = ask_llm(prompt, "continue", llm_interface)
+
+            #print(rsp_json)
+            print("End of rsp_json")
+        
+        elif mode == 'execute_command':
+            print(f"In mode: {mode}")
+            execute_error, execute_out = run_script(execute_path, given_time, True, None, "both")
+            #execute_out = run_script_pty(run_path, given_time)
+            if target != 'yank':
+                execute_out = run_script_pty(execute_path, given_time)
+            
+        repair_count += 1
+
+    # Put this on hold for now
+    #check_dif(target_dir)
+
+    iteration_dict[repair_target] = repair_count
+
+
+compare_template = f"""
+[
+    {{
+        "call_order": 1,
+        "c_call": {{
+            "function_name": (function name),
+            "file_path": (file containing the call),
+            "line_number" : (line number within file_path),
+            "args": {{
+                "(argument name 1)": (value of argument 1),
+                "(argument name 2)": (value of argument 2),
+                ...
+            }},
+            "return_value": {{
+                "(return value variable name)": (value of the return value),
+            }}
+            "in_out": IN or OUT
+        }},
+        "rust_call": {{
+            "function_name": (function name),
+            "file_path": (file containing the call),
+            "line_number" : (line number within file_path),
+            "args": {{
+                "(argument name 1)": (value of argument 1),
+                "(argument name 2)": (value of argument 2),
+                ...
+            }},
+            "return_value": {{
+                "(return value variable name)": (value of the return value),
+            }}
+            "in_out": IN or OUT,
+            "found_correspondence" : True or False, 
+        }},
+        "equivalent": True or False,
+        "reason" : (reason or explanatory text for why "equivalent" was judged as True or False)
+    }},
+    {{ 
+        "call_order": 2,
+        ...
+    }}, ...
+]
+"""
+
+def print_function_flow(language_key, call_data, pre_lange, post_lange):
+    print(f"\nFunction Call Flow for {language_key.upper()}:")
+    result = []
+    current_depth = 0
+    
+    # We only keep the index of the last non-equivalent call. Is that okay?
+    target_count = 0
+    i = 0
+    for call in call_data:
+        i += 1
+        if call["equivalent"] is False:
+            target_count = i        
+
+    print(f"target_count: {target_count}")
+    print(f"target_count - pre_lange: {target_count - pre_lange}")
+    print(f"target_count + post_lange: {target_count + post_lange}")
+
+    i = 0
+    for call in call_data:
+        i += 1
+
+        call_info = call[f"{language_key}_call"]
+        if not call_info:
+            continue
+
+        if not(target_count - pre_lange <= i and i <= target_count + post_lange):
+            continue
+        
+        print(i)
+        # Calculate indentation
+        indent = "    " * call_info.get("depth", current_depth)
+        
+        # Print arrow for function entry/exit
+        arrow = "➤" if call_info["in_out"] == "IN" else "←"
+        
+        # Get function information
+        func_name = call_info["function_name"]
+        file_path = call_info["file_path"]
+        line_number = call_info["line_number"]
+        
+        # Format arguments and return value
+        args_str = format_args(call_info.get("args", {}))
+        return_str = format_args(call_info.get("return_value", {}))
+        
+        # Add difference marker for non-equivalent calls
+        diff_marker = ""
+        if language_key == "rust":
+            if not call["equivalent"]:
+                #diff_marker = " [DIFFERENT]" if not call["equivalent"] else ""
+                diff_marker = " ⚠ NON-EQUIVALENT CALL ⚠ "
+
+        # Construct the output line
+        if call_info["in_out"] == "IN":
+            print(f"{indent}{arrow} {func_name} @ {file_path}:{line_number}{diff_marker}")
+            print(f"{indent}    IN  → {args_str}")
+
+            result.append(f"{indent}{arrow} {func_name} @ {file_path}:{line_number}{diff_marker}")
+            result.append(f"{indent}    IN  → {args_str}")
+
+        else:
+            print(f"{indent}    OUT {arrow} {return_str}")
+            result.append(f"{indent}    OUT {arrow} {return_str}")
+    
+    return result 
+
+
+
+def get_tree_flow_not(language_key, flow_path):
+    call_data = read_json(flow_path)
+
+    print(f"\nFunction Call Flow for {language_key.upper()}:")
+    result = {}
+    current_depth = 0
+    
+
+    i = 0
+    for call_info in call_data:
+        test_name = call_info['test_name']
+        if test_name not in result:
+            result[test_name] = []
+        i += 1
+
+        if "input" in call_info:
+            call_info['call_type'] = "input"
+        
+        if "output" in call_info:
+            call_info['call_type'] = "output"
+
+        # call_info = call[f"{language_key}_call"]
+        # if not call_info:
+        #     continue
+
+        # if not(target_count - pre_lange <= i and i <= target_count + post_lange):
+        #     continue
+        
+        # Calculate indentation
+        indent = "    " * call_info.get("depth", current_depth)
+        
+        # Print arrow for function entry/exit
+        arrow = "➤" if call_info["call_type"] == "input" else "←"
+        
+        # Get function information
+        func_name = call_info["name"]
+        file_path = call_info["file_path"]
+        line_number = call_info["def_start_line"]
+        #def_start_line = call_info["def_start_line"]
+        #line_number = call_info["line_number"]
+        
+        # Format arguments and return value
+        args_str = format_args(call_info.get("arguments", {}))
+        return_str = format_args(call_info.get("return_value", {}))
+        
+        # Add difference marker for non-equivalent calls
+        diff_marker = ""
+
+        # Construct the output line
+        if call_info["call_type"] == "input":
+            print(f"{indent}{arrow} {func_name} @ {file_path}:{line_number}{diff_marker}")
+            print(f"{indent}    IN  → {args_str}")
+
+            result[test_name].append(f"{indent}{arrow} {func_name} @ {file_path}:{line_number}{diff_marker}")
+            result[test_name].append(f"{indent}    IN  → {args_str}")
+
+        else:
+            print(f"{indent}    OUT {arrow} {return_str}")
+            result[test_name].append(f"{indent}    OUT {arrow} {return_str}")
+    
+    return result 
+
+
+def scope_flow(flow_path):
+    if not os.path.exists(flow_path):
+        return [], []
+
+    flow_data = read_json(flow_path)
+    pre_lange = 3
+    post_lange = 3
+
+    # Print flow for C code
+    c_flow = print_function_flow("c", flow_data, pre_lange, post_lange)
+    
+    # Print flow for Rust code
+    rust_flow = print_function_flow("rust", flow_data, pre_lange, post_lange)
+
+    return c_flow, rust_flow
+
+# It would be better to narrow it down to only the incorrect test cases
+def get_flow_data(rust_log_path, rust_flow_path, golden_flow_path):
+
+    print("Getting flow data at get_flow_data()")
+
+    rust_parse_log(rust_log_path, rust_flow_path)
+    rust_flow, file_data = show_flow(rust_flow_path)
+
+    os.makedirs(f"{mix_io_dir}/flows", exist_ok=True)
+
+    for test_name, line_data in file_data.items():
+        rust_flow_data = ""
+
+        output_file = f"{mix_io_dir}/flows/{test_name}.txt"
+
+        golden_path = f"golden/{test_name}_golden_flow.txt"
+        golden_flow = read_file(golden_path)
+
+        # Write comparison to file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            # Write C program section
+            f.write("[Expected correct flow of initial C program]\n")
+            f.write(golden_flow)
+            f.write("\n")  # Add separator
+            
+            # Write Rust program section
+            f.write("[Current flow of translated Rust Program]\n")
+            f.write(f"{test_name}" + '\n')
+            for line in line_data:
+                f.write(str(line) + '\n')
+                rust_flow_data += str(line) + '\n'
+
+        os.makedirs(f"{mix_io_dir}/analysis", exist_ok=True)
+
+        flow_path = f"{mix_io_dir}/analysis/{test_name}.json"  #answer_{test_name}.json"
+    
+        exp_data = {}
+        exp_data['experiment_path'] = "reformat.c"  #experiment_path
+        exp_data['file_path'] = "reformat.c" 
+        exp_data['repair_count'] = 0
+        exp_data['average'] = 0
+        
+
+        repair_count = 1
+        interface = {
+            "c_flow" : golden_flow,
+            "rust_flow" : rust_flow_data,
+            "flow_path" : flow_path,
+            "c_io_dir" : c_io_dir,
+            "rust_io_dir" : rust_io_dir,
+            "mix_io_dir" : mix_io_dir,
+            "exp_data" : exp_data,
+            "repair_count" : repair_count,
+
+        }
+
+        if test_name == "test11":
+            reformat_flow("get_analysis", interface)
+        ##repair_execute("get_analysis", interface)
+
+    # Put spots for incorrect parts in the answers directory.
+    for test_name, line_data in file_data.items():
+        test_name = "test5"
+        flow_path = f"{mix_io_dir}/analysis/{test_name}.json"
+
+        c_flow, rust_flow = scope_flow(flow_path)
+        output_file = f"{mix_io_dir}/flows/{test_name}.txt"
+
+        # Write comparison to file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write("[Expected correct flow of initial C program]\n")
+            for line in c_flow:
+                f.write(str(line) + '\n')
+            
+            f.write("[Current flow of translated Rust Program]\n")
+            f.write(f"{test_name}" + '\n')
+            for line in rust_flow:
+                f.write(str(line) + '\n')
+
+
+# I think it would be better to ask about correspondence. It will probably become broad, though. After narrowing the scope first
+def compare_io(rust_log_path, c_flow_path, rust_flow_path, o_meta_dir, golden_flow_path):
+
+    #rust_filter_flow_log(rust_log_path, rust_flow_path)
+    rust_parse_log(rust_log_path, rust_flow_path)
+
+    result = {}
+    result['entire'] = False
+
+    moment_c_flows = []
+    moment_c_flows = read_json(c_flow_path)  # c_flow = read_json(c_flow_path)
+
+    moment_rust_flows = []
+    moment_rust_flows = read_json(rust_flow_path) #rust_flow = read_json(rust_flow_path)
+
+    golden_flows = []
+    golden_flows = read_json(golden_flow_path) 
+
+    """
+    # rust_flow_path probably contains a mixture of C and Rust output
+    for item in rust_flow:
+        if item['lang'] == "C":
+            moment_c_flows.append(item)
+        
+        elif item['lang'] == "Rust":
+            moment_rust_flows.append(item)
+    """
+    # Check whether the final output is the same
+    all_success = True
+    for item in moment_c_flows:
+        #file_path = item['file_path']
+        for glod_item in golden_flows:
+            if (glod_item['file_path'] == item['file_path']
+                and glod_item['def_start_line'] == item['def_start_line']
+                and glod_item['name'] == item['name']):
+                
+                item['result'] = "success"
+            else:
+                item['result'] = "fail"
+                all_success = False
+
+            print(f"- Result for {item['name']} at line {item['def_start_line']} in {item['file_path']}: {item['result']}")
+            print(f"      C side: {glod_item['file_path']} <-> Rust side: {item['file_path']}")
+
+    # pending
+    # On the other hand, also look at intermediate progress (for this, correspondence needs to be checked)
+    # I feel like it is difficult to define this part precisely. It might be better to extract function names and measure the (relative) call order in the logs
+    for item in moment_rust_flows:
+        file_path = item['file_path']
+        #start_line = item['start_line']  # this may cause a key_error
+        #name = item['name']
+
+        #for c_item in c_flow:
+
+    #return all_success, moment_c_flows, moment_rust_flows
+    return moment_c_flows, moment_rust_flows
+
+
+
+# get_flow_data(rust_log_path, rust_flow_path, golden_flow_path):
+def get_fail_flow_old(test_report, test_number, rust_log_path, rust_flow_path, golden_flow_path):
+    print("Getting flow data")
+
+    fail_numbers = []
+    fail_numbers.append(f"test{str(test_number)}")
+
+    rust_parse_log(rust_log_path, rust_flow_path)
+    #rust_flow, file_data = show_flow(rust_flow_path)
+    if not os.path.exists(rust_flow_path):
+        print("rust_flow_path does not exist. Maybe compilation errors?")
+        return
+
+    file_data = get_tree_flow("Rust", rust_flow_path)
+
+    os.makedirs(f"{mix_io_dir}/flows", exist_ok=True)
+    os.makedirs(f"{mix_io_dir}/analysis", exist_ok=True)
+    os.makedirs(f"{mix_io_dir}/scope", exist_ok=True)
+
+
+    #c_line_data = get_tree_flow("C", golden_flow_path)
+
+    for test_name, line_data in file_data.items():
+        #print(test_name)
+        if test_name not in fail_numbers:
+            continue
+
+        rust_flow_data = ""
+        golden_flow = ""
+
+        output_file = f"{mix_io_dir}/flows/{test_name}.txt"
+
+        golden_path = f"golden/{test_name}_golden_flow.txt"
+        golden_flow = read_file(golden_path)
+
+        # Write comparison to file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            # Write C program section
+            f.write("[Expected correct flow of initial C program]\n")
+            if golden_flow is not None:
+                f.write(golden_flow)
+                f.write("\n")  # Add separator
+                # for line in c_line_data[test_name]:
+                #     f.write(str(line) + '\n')
+                #     golden_flow += str(line) + '\n'
+                # f.write("\n")
+            
+            # Write Rust program section
+            f.write("[Current flow of translated Rust Program]\n")
+            f.write(f"{test_name}" + '\n')
+            for line in line_data:
+                f.write(str(line) + '\n')
+                rust_flow_data += str(line) + '\n'
+
+        flow_path = f"{mix_io_dir}/analysis/{test_name}.json"  #answer_{test_name}.json"
+    
+        exp_data = {}
+        exp_data['experiment_path'] = "reformat.c"  #experiment_path
+        exp_data['file_path'] = "reformat.c" 
+        exp_data['repair_count'] = 0
+        exp_data['average'] = 0
+        
+
+        repair_count = 1
+        interface = {
+            "c_flow" : golden_flow,
+            "rust_flow" : rust_flow_data,
+            "flow_path" : flow_path,
+            "c_io_dir" : c_io_dir,
+            "rust_io_dir" : rust_io_dir,
+            "mix_io_dir" : mix_io_dir,
+            "exp_data" : exp_data,
+            "repair_count" : repair_count,
+
+        }
+
+        # temporarily put on hold
+        #reformat_flow("get_analysis", interface)  ##repair_execute("get_analysis", interface)
+
+
+def find_rust_log_path(work_dir, base_name):
+    """Search under work_dir to find the trace log file matching base_name"""
+    for root, dirs, files in os.walk(work_dir):
+        candidate = os.path.join(root, base_name)
+        if os.path.exists(candidate):
+            full_path = os.path.abspath(candidate)
+            log_dir = os.path.dirname(full_path)
+            return full_path, log_dir
+    
+    return None, None
+
+
+def get_fail_flow(work_dir, test_number):  #  golden_flow_path, rust_flow_path, rust_log_path
+    print("Getting flow data")
+
+    test_number = str(test_number)
+
+    base_name = f"flow_results/test{test_number}_trace.log"
+
+    rust_log_path, rust_log_dir = find_rust_log_path(work_dir, base_name) #"/home/ubuntu/macrust/trans_re_0000/bst/flow_results/test1_trace.log"
+    if rust_log_path is None:
+        return None
+
+    #base_dir = "/home/ubuntu/macrust/trans_re_0000"
+    #call_tree_path = f"call_tree.txt"
+
+    rust_flow_path = f"{rust_log_dir}/test{test_number}_flow.txt"
+
+    parse_trace(rust_log_path, None, rust_flow_path, True) # binary_path: str, 
+
+    return rust_flow_path
+
+
+def clear_rust_flow(rust_log_path, rust_flow_path):
+    delete_file(rust_log_path)
+    delete_file(rust_flow_path)
+
+    print("Cleared rust_flows")
+
+
+def get_given_num(c_io_dir):
+
+    flow_dir = f"{c_io_dir}/flow_results"
+    
+    if not os.path.exists(flow_dir):
+        return 0
+    
+    test_numbers = []
+    for filename in os.listdir(flow_dir):
+        match = re.match(r'test(\d+)_(success|fail)\.log', filename)
+        if match:
+            test_numbers.append(int(match.group(1)))
+    
+    if test_numbers:
+        return max(test_numbers)
+    
+    raise ValueError("Did not find any test_number.")
+
+
+def get_given_num_original(run_test_path):
+
+    print(f"For {run_test_path}...")
+    
+    test_numbers = []
+    
+    with open(run_test_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+        
+    # Find all "Test X started" patterns
+    started_pattern = r'echo\s+"Test\s+(\d+)\s+started"'
+    ended_pattern = r'echo\s+"Test\s+(\d+)\s+ended"'
+    
+    started_matches = re.findall(started_pattern, content)
+    ended_matches = re.findall(ended_pattern, content)
+    
+    # Verify that started and ended matches are consistent
+    if started_matches == ended_matches:
+        test_numbers = [int(num) for num in started_matches]
+        print(f"  Found {len(test_numbers)} test(s): {test_numbers}")
+    else:
+        print(f"  Warning: Mismatch between started ({started_matches}) and ended ({ended_matches}) markers")
+        # Use the union of both
+        all_nums = set(started_matches) | set(ended_matches)
+        test_numbers = sorted([int(num) for num in all_nums])
+        print(f"  Found test numbers: {test_numbers}")
+
+    # Return the maximum test number
+    if test_numbers:
+        max_num = max(test_numbers)
+        print(f"  Maximum test number: {max_num}")
+        return max_num
+    else:
+        print(f"  No test numbers found")
+        return 0
+
+
+def delete_all_log(given_test_number, c_io_dir):
+
+    for test_number in range(1, given_test_number+1):
+        success_path = f"{c_io_dir}/flow_results/test{test_number}_success.log"
+        fail_path = f"{c_io_dir}/flow_results/test{test_number}_fail.log"
+        delete_file(success_path)
+        delete_file(fail_path)
+
+        # print(success_path)
+        # print(fail_path)
+    
+
+def get_smallest_fail_id(given_test_number, c_io_dir, error):
+
+    test_number = None
+    for test_id in range(1, given_test_number+1):
+        success_path = f"{c_io_dir}/flow_results/test{str(test_id)}_success.log"
+        fail_path = f"{c_io_dir}/flow_results/test{str(test_id)}_fail.log"
+
+        # print(success_path)
+        # print(fail_path)
+        if os.path.exists(fail_path):
+            test_number = test_id
+            break
+
+    if test_number is not None:
+        return test_number
+
+    #"""
+    if error is not None:
+        test_number = 1
+        return test_number
+    #"""
+
+    return None
+
+
+def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+                    raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
+                    dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
+                    llm_interface, progress_queue, max_iterations
+                    ): # c_flow_path, rust_flow_path, rust_log_path, golden_flow_path, 
+
+    print("Repairing functional errors")
+
+    # change run_all.sh
+    generate_run_all_path(run_all_path, run_all_template_path, target)
+
+    # check semantics
+    exp_data = {}
+    exp_data['experiment_path'] = "whole.rs"  #experiment_path
+    exp_data['file_path'] = "whole.rs" 
+    exp_data['repair_count'] = 0
+    exp_data['average'] = 0
+
+    repair_count = 1
+    interface = {
+        'convert_element': "semantics",
+        #'c_path': div_c_path,
+        #'rust_path': div_rust_path,
+        #'div_start_line': div_start_line,
+        'mix_io_dir' : mix_io_dir,
+        'meta_dir': meta_dir,
+        'dep_json_path': dep_json_path,
+        'exp_data': exp_data,
+        'repair_count': repair_count,
+        'run_test_path' : run_test_path,
+        #'c_flow_path' : c_flow_path,
+        #'rust_flow_path' : rust_flow_path,
+        #'rust_log_path' : rust_log_path,
+        'c_io_dir' : c_io_dir,
+        'rust_io_dir' : rust_io_dir,
+        #'golden_flow_path' : golden_flow_path,
+        'run_all_path' : run_all_path,
+        #'o_run_path' : o_run_path,
+        'rust_build_path' : rust_build_path,
+        #'called_data' : called_data
+    }
+
+    interface = SemConfig(
+        #rust_path=rust_path,
+        mix_io_dir=mix_io_dir,
+        c_io_dir=c_io_dir,
+        rust_io_dir=rust_io_dir,
+        build_path=build_path,
+        rust_build_path=rust_build_path,
+        run_test_path=run_test_path,
+        run_all_path=run_all_path,
+        rust_c_path=rust_c_path,
+        c_rust_path=c_rust_path,
+        raw_dir=raw_dir,
+        select=False,
+        #test_type=test_type,
+        #llm_choice=llm_choice,
+        llm_interface=llm_interface,
+        target=target,
+        target_dir=target_dir,
+        chat_dir=chat_dir,
+        database_dir=database_dir,
+        cov_target="function",
+        time_path=time_path,
+        work_dir=work_dir,
+        token_path=token_path,
+        original_target_dir=None, #original_dir,
+        meta_dir=meta_dir,
+        dep_json_path=dep_json_path,
+        exp_data=exp_data,
+        repair_count=repair_count,
+        execute_path=execute_path,
+        #cmd_list=cmd_list,
+        test_path=None,
+        file_path=None,
+        test_id=None,
+        function_name=None,
+        main_flag=None,
+        explore_time=explore_time,
+        #cmd_exe=cmd_exe,
+        notes=notes,
+        progress_queue=progress_queue,
+        log_dir=log_dir,
+        max_iterations=max_iterations
+    )
+
+    run_path = run_all_path
+    print(f"run_path is {run_path}")
+
+    given_test_number = get_given_num(c_io_dir)
+    print(given_test_number)
+    #sys.exit(0)
+
+    """
+    test_report = []
+    for i in range(1, given_test_number + 1):
+        test_report.append({
+            "test_number" : i,
+            #"need_function_flow" : True,
+            #"need_arg_return" : True,
+            #"need_module_deps" : False,
+        })
+
+    # Preparation
+    for item in test_report:
+        success_path = f"flow_results/test{item['test_number']}_success.log"
+        fail_path = f"flow_results/test{item['test_number']}_fail.log"
+        delete_file(success_path)
+        delete_file(fail_path)
+    """
+
+    # Run first
+    error = None
+    std_out = None
+    mode = None
+    ongoing_flag = None
+    part_modify_count = 1
+    
+    print("Crearing log paths")
+    delete_all_log(given_test_number, c_io_dir)
+    error, std_out = run_script_wo_log(run_all_path, given_time, True, None, "both") #, rust_log_path, golden_flow_path) # #run_script(run_path, given_time, True, None, "both")
+    """
+    clear_rust_flow(rust_log_path, rust_flow_path)
+    error, std_out = run_script_flow(run_path, given_time, True, None, "both", rust_log_path, golden_flow_path) # #run_script(run_path, given_time, True, None, "both")
+    print("run_script_flow in the first step")
+
+    clear_rust_flow(rust_log_path, rust_flow_path)
+    if target != 'yank':
+        std_out = run_script_pty(run_path, given_time)
+    print("run_script_pty in the first step")
+    # Should I prepare a repair specifically for timeout here?
+    # If you have flow_path, it will be very useful
+    """
+
+    print("======= error =======")
+    print(error)
+    print("\n======= std_out =======")
+    print(std_out)
+
+    check_count = 1 
+    judge_count = 0
+
+    test_number = get_smallest_fail_id(given_test_number, c_io_dir, error)
+
+    #for item in test_report:
+    while (1):
+        # print(test_number)
+        # sys.exit(0)
+        if test_number is None:
+            break
+
+        success_path = f"{c_io_dir}/flow_results/test{test_number}_success.log" # success_path = f"results/test{test_number}_success.log"
+        fail_path = f"{c_io_dir}/flow_results/test{test_number}_fail.log" # fail_path = f"results/test{test_number}_fail.log"
+        
+        interface.repair_count = 1
+
+        # error = True
+        # part_modify_count = 1
+
+        #while (1):
+        # delete_file(success_path)
+        # delete_file(fail_path)
+
+        ###############################
+        ## Repair semantics
+        ###############################
+
+        print(f"Repairing for {test_number} at count {part_modify_count}...")
+        # Difficult to separate living here
+        error_log = None
+        if os.path.exists(fail_path):
+            # Fix specific testcase
+            error_log = read_file(fail_path)
+        else:
+            # Correct compilation errors to generall
+            print("Fixing general error")
+
+        if os.path.exists(success_path) is True: 
+            break
+
+        # fail flow acquisition
+        if WITH_FLOW:
+            # get_fail_flow(test_report, test_number, rust_log_path, rust_flow_path, golden_flow_path)
+            rust_flow_path = get_fail_flow(work_dir, test_number) #, rust_flow_path) # , golden_flow_path
+
+        # ready for repair and repair
+        interface.test_number = test_number
+        interface.error_log = error_log #item['error_log']
+        interface.error = error
+        interface.std_out = std_out
+
+        interface.repair_count = repair_count
+        interface.flow_path =  rust_flow_path
+
+        """
+        flow_path = f"{mix_io_dir}/flows/test{test_number}.txt"
+        # Repair work
+        if not WITH_FLOW:
+            write_file(flow_path, "")
+        """
+
+        modified_c_keys = set()
+        repair_count, modified_c_keys = repair_semantics("semantics", interface)
+
+        delete_all_log(given_test_number, c_io_dir)
+        error, std_out, repair_count = run_script(run_path, 100, True, None, "both", None, repair_count, None, None, mode)
+        judge_count += 1
+        print(f"Judging at {repair_count}: run_path: {run_path} mode: {mode}, ongoing_flag: {ongoing_flag}, error: {error}")
+        """
+        if error is None: # and mode != "read_data":  # This feels like a big change though  # if error is None and mode != "read_data" and ongoing_flag is False:
+            break
+        """
+        test_number = get_smallest_fail_id(given_test_number, c_io_dir, error)
+
+        """
+        modified_rust_lines = get_modified_rust_lines(modified_c_keys, c_rust_path, meta_dir)
+
+        c_mod_files = []
+        rust_mod_files = []
+
+        ###############################
+        ## Correspondence mapping
+        ###############################
+
+        sum_answer_data = {}
+        grouped_c_keys = get_grouped_c_keys(modified_c_keys, 10)
+        for c_key_json in grouped_c_keys:
+            #prompt.extend(c_code)
+            #prompt.extend(modified_lines) 
+            
+            repair_count = 1
+            interface = {
+                'convert_element': 'divided_type',
+                #'c_path': mod_c_path,
+                #'rust_path': mod_rust_path,
+                'meta_dir': meta_dir,
+                'dep_json_path': dep_json_path,
+                #'div_start_line': div_start_line,
+                'exp_data': exp_data,
+                #'modified_files': modified_files,
+                'target_dir': rust_output_dir,
+                'raw_dir' : raw_dir,
+                'rust_build_path' : rust_build_path,
+                'label' : label,
+                'repair_count' : repair_count,
+                'answer_path' : answer_path
+            }
+            
+            interface = CorConfig(
+                modified_lines=modified_lines,
+                key_json=c_key_json,
+                rust_path=rust_path,
+                raw_dir=raw_dir,
+                select=False,
+                #llm_choice=llm_choice,
+                llm_interface=llm_interface,
+                target_dir=target_dir,
+                chat_dir=chat_dir,
+                database_dir=database_dir,
+                cov_target="function",
+                time_path=time_path,
+                work_dir=work_dir,
+                token_path=token_path,
+                original_target_dir=original_dir,
+                build_path=build_path,
+                run_test_path=run_test_path,
+                run_all_path=run_all_path,
+                #run_gdb_path=run_gdb_path,
+                #run_val_path=run_val_path,
+                meta_dir=meta_dir,
+                dep_json_path=dep_json_path,
+                exp_data=exp_data,
+                repair_count=repair_count,
+                execute_path=execute_path,
+                #cmd_list=cmd_list,
+                explore_time=explore_time,
+                #cmd_exe=cmd_exe,
+                notes=notes,
+                progress_queue=progress_queue,
+                log_dir=log_dir,
+                max_iterations=max_iterations
+            )
+
+            delete_file(answer_path)
+
+            print(f"------ Start asking about the correspondence of {label} ------")
+            ask_correspondence("ask_correspondence", interface) #repair_execute("ask_correspondence", interface) #ask_correspondence("divided", interface)
+            print(f"------ End of asking about the correspondence of {label} ------")
+
+            # reverse answer_data
+            #if label != "function":
+            reverse_tmp(answer_path, mod_rust_path, label)
+
+            # I want sum_answer_data to merge the data of answer_path.
+            answer_data = read_json(answer_path)
+            merge_json(sum_answer_data, answer_data)
+
+        # update c rust metadata
+        #update_c_rust_metadata(sum_answer_data, c_rust_path, rust_c_path) # mod_files, 
+        update_c_rust_metadata(rust_output_dir, meta_dir, database_dir, sum_answer_data, c_rust_path, rust_c_path)
+        """
+        
+        """
+        print("Running...")
+        clear_rust_flow(rust_log_path, rust_flow_path)
+        error, std_out = run_script_flow(run_path, given_time, True, None, "both", rust_log_path, golden_flow_path) # #run_script(run_path, given_time, True, None, "both")
+        print("run_script_flow in a loop")
+
+        clear_rust_flow(rust_log_path, rust_flow_path)
+        if target != 'yank':
+            std_out = run_script_pty(run_path, given_time)
+        print("In a loop")
+
+        write_file("repair_count.txt", str(judge_count))
+        """
+        part_modify_count += 1
+        if part_modify_count > 50:
+            break
+        judge_count += 1
+
+    print(f"Finished of functional_check, judge count: {judge_count}, given_test_number: {given_test_number}")
+
+
+def rename_one_path(file_path, raw_dir, c_io_dir):
+    file_path = remove_base_path(file_path, f"{raw_dir}")
+    file_path = f"{c_io_dir}/{file_path}"
+    print(f"file_path at rename_one_path(): {file_path}")
+
+    return file_path
+
+
+def rename_paths(c_run_path, run_test_path, run_all_path, created_paths, target_funcs, raw_dir, c_io_dir):
+    c_run_path = rename_one_path(c_run_path, raw_dir, c_io_dir)
+    run_test_path = rename_one_path(run_test_path, raw_dir, c_io_dir)
+    run_all_path = rename_one_path(run_all_path, raw_dir, c_io_dir)
+
+    new_files = []
+    for file_path in created_paths:
+        new_path = rename_one_path(file_path, raw_dir, c_io_dir)
+        new_files.append(new_path)
+
+    target_new_files = []
+    for item in target_funcs:
+        file_path = item['def_file_path']
+        item['def_file_path'] = rename_one_path(file_path, raw_dir, c_io_dir)
+        target_new_files.append(item)
+
+
+    return c_run_path, run_test_path, run_all_path, new_files, target_new_files  #created_paths
+
+
+def initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path):  # c_io_dir, rust_io_dir, o_meta_dir, o_dep_json_path, io_list_path, c_flow_path, c_log_path, rust_flow_path, rust_log_path, 
+    
+    delete_directory(chat_dir)  # chats_s_repair
+    create_directory(chat_dir)  # chats_s_repair
+
+    data = read_json(logging_path)
+    data["prompt_id"] = str(0).zfill(4)
+    write_json(logging_path, data)
+    
+    #delete_directory("golden")
+    delete_directory(f"{mix_io_dir}/flows")
+    delete_directory(f"{mix_io_dir}/analysis")
+
+    delete_directory(f"{mix_io_dir}/flow_results") 
+
+    delete_file(f"{database_dir}/repair_count.txt")
+    delete_file(f"{database_dir}/inner_repair.json")
+    delete_file(token_path)
+
+
+keyboard_interrupt_occurred = False
+def signal_handler(signum, frame):
+    global keyboard_interrupt_occurred
+    keyboard_interrupt_occurred = True
+    raise KeyboardInterrupt
+
+
+def get_report():
+    print(f"iteration_counts")
+    for rust_path in iteration_dict:
+        print(f"{rust_path}: {iteration_dict[rust_path]}")
+    
+    end_time = time.time()
+    #exec_time = 9257.932838916779
+    exec_time = end_time - start_time
+    print(f"Execution Time: {exec_time} seconds")
+
+    print("----------- Translation finished -----------")
+
+    #if not keyboard_interrupt_occurred:    
+    save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, exec_time)
+
+
+def set_s_repair_dir(compile_dir, target, work_dir):
+    print("Set s_repair...")
+
+    compile_dir = compile_dir.replace(f"/{target}", "")
+
+    # Delete work_dir if it already exists
+    if os.path.exists(work_dir):
+        shutil.rmtree(work_dir)
+    
+    # Copy the contents of compile_dir directly to work_dir
+    shutil.copytree(compile_dir, work_dir)
+    
+    print(f"Copied: {compile_dir} → {work_dir}")
+    
+    return work_dir
+
+
+
+def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude_api_key, azure_endpoint):
+
+    ################################
+    #### Configuraion
+    ################################
+
+    occupy_path = "/home/ubuntu/llm_tool/llm_api/instances.json"
+    given_time = 60
+
+    run_all_template_path = f"/home/ubuntu/allrust/template/run_all_s_repair.sh"
+
+    # Create PathConfig
+    paths = create_path_config(
+        user_id=user_id,
+        original_dir=compile_dir, #original_dir,
+        process_type=process_type,
+        work_dir=None, #work_dir,
+        #def_json_path=def_json_path,
+    )
+
+    (target,
+    build_path, 
+    rust_build_path,
+    rust_lib_h_path,
+    run_test_path,
+    run_all_path,
+    raw_dir,  #
+    target_dir, 
+    work_dir, 
+    c_code_dir,
+    rust_output_dir, 
+    execute_path,
+    ecute_path,
+
+    meta_dir, 
+    div_meta_dir,
+    chat_dir, 
+    chat_macro_dir, 
+    log_dir, 
+    exp_dir,
+    archive_dir, 
+
+    macro_finder, 
+    database_dir, 
+    #lib_path, 
+
+    dep_json_path, 
+    list_path, 
+    result_path, 
+    moment_path,
+    line_path, 
+    logging_path,
+    
+    guards_path, 
+    guarded_macros_path,
+    taken_macros_path,
+    all_macros_path,
+    taken_directive_path,
+    all_directive_path,
+    cfg_path,
+    independent_path,
+    flag_path,
+    const_path,
+    conflict_path,
+    global_path,
+    is_program_path,
+    build_config_path,
+    
+    custom_headers_dir,
+    custom_json_path,
+    custom_header_path,
+
+    block_path, 
+    block_group_path,
+    rust_c_path,
+    c_rust_path,
+
+    map_path, 
+    call_path, 
+    persistent_dir, 
+    #build_rs_path, 
+
+    chat_dir,
+    history_path,
+    token_path,
+    count_path, 
+    time_path,
+    output_dir,
+
+    independent_const_build_path, 
+    flag_build_path) = extract_all_paths(paths)
+
+
+    mix_io_dir = work_dir #get_last_directory(work_dir) #f"workspace_io"  #_{target}"  #"io_mix"
+    c_io_dir = f"{work_dir}/{target}" # "io_c"
+    rust_io_dir = f"{work_dir}/trans_rust" #"trans_rust"
+
+
+    ################################
+    #### Semantics repiar
+    ################################
+
+    created_paths = []  # Temporary workaround
+
+    if process_type == "s_repair":
+
+        # create_backup_directory(work_dir)
+        set_s_repair_dir(compile_dir, target, work_dir)
+
+        signal.signal(signal.SIGINT, signal_handler)
+        start_time = time.time()
+        log_file_path = set_log(log_dir, llm_choice, target, logging_path, 's_repair', DEBUG_LLM)
+        
+        # atexit.register(get_report)
+        setup_rust_trace(work_dir)
+
+        init_prompt_count(count_path)
+
+        llm_interface = LLMInterface(
+            project_id=target,
+            occupy_path=occupy_path,
+            llm_choice=llm_choice,
+            full_regions=full_regions,
+            llm_model=None,
+            output_max=128000, # 4000,
+            context_window=1000000,
+            temperature=0,
+            api_key=None,
+            timeout=300,
+            history_path=history_path,
+            token_path=token_path,
+            database_dir=database_dir,
+            chat_dir=chat_dir,
+            count_path=count_path,
+            exp_data={},
+        )
+
+        if TEST_MODE:
+            llm_interface = occupy_llm(llm_interface)
+        else:
+            llm_model = get_claude_model(llm_choice)
+            llm_interface = configure_llm(
+                llm_interface,
+                claude_api_key,
+                azure_endpoint,
+                llm_model
+            )
+
+        if TEST_MODE:
+            atexit.register(lambda: shutdown_llm(llm_interface))
+
+        #if FFI_ON:
+        # out = run_script_pty("workspace_io/io_c/which_2_21/run_all.sh", given_time)
+        # print(out)
+
+        # save
+        # copy_directory(f"chats", f"/home/ubuntu/rust_code/{target}")
+        # copy_file(f"{token_path}", f"/home/ubuntu/rust_code/{target}")
+        # copy_file("repair_count.txt", f"/home/ubuntu/rust_code/{target}")
+        # copy_directory(f"/home/ubuntu/portable/{mix_io_dir}", f"/home/ubuntu/rust_code/{target}")
+
+        progress_queue = []
+        max_iterations = 5
+        explore_time = 0
+        notes = []
+
+        # initialize
+        print(mix_io_dir)
+        print(rust_build_path)
+        print(run_all_path)
+        print(run_test_path)
+
+        #delete_directory(mix_io_dir) #copy_directory(f"/home/ubuntu/mid_code/{target}/{mix_io_dir}", "/home/ubuntu/portable")
+        #copy_directory(f"{original_dir}", f"{mix_io_dir}")
+
+        initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) #c_io_dir, rust_io_dir, o_meta_dir, o_dep_json_path, io_list_path, c_flow_path, c_log_path, rust_flow_path, rust_log_path, mix_io_dir)
+
+        """
+        delete_file(f"/home/{user_name}/portable/out_flow_rust.log")
+
+        if WITH_FLOW:
+            if not os.path.exists(f"../programs/{target}/golden"):
+                print("Does not found golden dir.")
+                #raise ValueError("Does not found golden dir.")
+            else:
+                copy_directory(f"../programs/{target}/golden", "./")
+        else:
+            create_directory("golden")
+            delete_directory(f"workspace_io/io_c/{target}/golden")
+        """
+
+        # delete_file("file_data.json")
+        # get_flow_data(rust_log_path, rust_flow_path, golden_flow_path)
+
+        # repair function errors #if process_type == "s_repair": # or process_type == "whole":
+        check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+                        raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
+                        dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
+                        llm_interface, progress_queue, max_iterations
+                        )  
+        # c_flow_path, rust_flow_path, rust_log_path, golden_flow_path, 
+        # I think it's enough to just check here if only the function mappings have changed
+        # Might need a Rust io_checker tool?
+
+        output = {
+            'work_dir' : work_dir
+        }
+        print("--------- End of s_repair process ---------")
+
+
+if __name__ == "__main__":
+    
+    # rust_parse_log(rust_log_path, rust_flow_path)
+
+    #####################################################################
+    ##### Input
+    #####################################################################
+    
+    # setup
+    #original_dir = str(sys.argv[1])
+    compile_dir = str(sys.argv[1])
+    #work_dir = str(sys.argv[2])
+    process_type = str(sys.argv[2])
+    # target = str(sys.argv[1])
+
+    user_id = "0000"
+    config_path = "/home/ubuntu/allrust/config.json"  # This is being affected
+    config_data = read_json(config_path)
+    #target_path = f"/home/ubuntu/macrust/benchmark/{target}/targets_actual.txt" # Should change this
+    llm_choice = config_data["llm_choice"]
+    claude_api_key = config_data["claude_api_key"]
+    azure_endpoint = config_data["azure_endpoint"]
+    TEST_MODE = config_data["test_mode"] 
+
+    
+    allrust_semantics_main(process_type, user_id, compile_dir, llm_choice, claude_api_key, azure_endpoint)
+
+

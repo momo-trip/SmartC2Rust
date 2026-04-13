@@ -1,0 +1,10 @@
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopflipng.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/zopfli.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/zopflipng.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/edit_cache.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/rebuild_cache.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/list_install_components.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/install.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/install/local.dir
+/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/install/strip.dir

@@ -1,0 +1,16 @@
+[16/17] Testing test_buffer_trim()
+
+  expected: 'Hello'
+    actual: 'Hello'
+
+
+  expected: 'Hello
+
+ '
+    actual: 'Hello
+
+ '
+
+
+  expected: '  Hello'
+    actual: '  Hello'

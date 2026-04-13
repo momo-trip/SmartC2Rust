@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar qc libQsort.a CMakeFiles/Qsort.dir/qsort.c.o
+/usr/bin/llvm-ranlib libQsort.a

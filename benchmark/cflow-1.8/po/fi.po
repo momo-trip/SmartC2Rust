@@ -1,0 +1,940 @@
+# Finnish messages for cflow.
+# Copyright © 2009, 2011, 2016 Free Software Foundation, Inc.
+# This file is distributed under the same license as the cflow package.
+# Jorma Karvonen <karvonen.jorma@gmail.com>, 2009-2011, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU cflow 1.4.90\n"
+"Report-Msgid-Bugs-To: bug-cflow@gnu.org\n"
+"POT-Creation-Date: 2025-07-30 11:49+0300\n"
+"PO-Revision-Date: 2016-03-25 16:48+0200\n"
+"Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
+"Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/c.l:153
+msgid "unterminated string?"
+msgstr "päättämätön merkkijono?"
+
+#: src/c.l:341
+#, c-format
+msgid "Command line: %s\n"
+msgstr "Komentorivi: %s\n"
+
+#: src/c.l:344
+#, c-format
+msgid "cannot execute `%s'"
+msgstr "kohdetta ”%s” ei voi suorittaa"
+
+#: src/c.l:399
+#, c-format
+msgid "cannot open `%s'"
+msgstr "kohdetta ”%s” ei voi avata"
+
+#: src/c.l:480
+#, c-format
+msgid "New location: %s:%d\n"
+msgstr "Uusi sijainti: %s:%d\n"
+
+#: src/main.c:147
+#, c-format
+msgid "%s: no symbol type supplied"
+msgstr "%s: symbolityyppiä ei ole annettu"
+
+#: src/main.c:157
+#, c-format
+msgid "cyclic alias: %s -> %s"
+msgstr ""
+
+#: src/main.c:163
+#, c-format
+msgid "cyclic alias: %s -> %s -> %s"
+msgstr ""
+
+#: src/main.c:181
+#, c-format
+msgid "unknown symbol type: %s"
+msgstr "tuntematon symbolityyppi: %s"
+
+#: src/main.c:310 src/main.c:317
+#, c-format
+msgid "level indent string is too long"
+msgstr "tasosisennysmerkkijono on liian pitkä"
+
+#: src/main.c:343
+#, c-format
+msgid "level-indent syntax"
+msgstr "tasosisennyssyntaksi"
+
+#: src/main.c:365
+#, c-format
+msgid "unknown level indent option: %s"
+msgstr "tuntematon tasosisennysvalitsin: %s"
+
+#: src/main.c:395
+#, c-format
+msgid "Unknown symbol class: %c"
+msgstr "Tuntematon symboliluokka: %c"
+
+#: src/main.c:407
+#, c-format
+msgid "%s: No such output driver"
+msgstr "%s: Ei tulosteajuria"
+
+#: src/main.c:511
+msgid "General options:"
+msgstr "Yleiset valitsimet:"
+
+#: src/main.c:515 src/main.c:662 src/main.c:881
+msgid "NUMBER"
+msgstr "NUMERO"
+
+#: src/main.c:516
+#, fuzzy
+msgid "set the depth at which the flowgraph is cut off"
+msgstr "Aseta syvyys, jossa rakennekaavio katkaistaan"
+
+#: src/main.c:527
+msgid "CLASSES"
+msgstr "LUOKAT"
+
+#: src/main.c:528
+#, fuzzy
+msgid ""
+"include specified classes of symbols (see below); prepend CLASSES with ^ or "
+"- to exclude them from the output"
+msgstr ""
+"Sisällytä määritellyt symboliluokat (katso alla). LUOKAT voidaan poistaa "
+"tulosteesta lisäämällä eteen ^ tai -"
+
+#: src/main.c:540
+msgid "all data symbols, both external and static"
+msgstr "kaikki datasymbolit, sekä ulkoiset että staattiset"
+
+#: src/main.c:545
+msgid "symbols whose names begin with an underscore"
+msgstr "symbolit, joiden nimi alkaa alaviivalla"
+
+#: src/main.c:550
+msgid "static symbols"
+msgstr "staattiset symbolit"
+
+#: src/main.c:555
+msgid "typedefs (for cross-references only)"
+msgstr "typedef-määrittelyt (vain ristiviitteitä varten)"
+
+#: src/main.c:560 src/main.c:701 src/main.c:835 src/main.c:858
+msgid "NAME"
+msgstr "NIMI"
+
+#. TRANSLATORS: Don't translate quoted names.
+#: src/main.c:562
+#, fuzzy
+msgid ""
+"use given output format NAME; valid names are `gnu' (default), `posix', and "
+"`dot'"
+msgstr ""
+"Käytä annettua tulostemuotoa NIMI. Käypiä NIMI-arvoja voi olla joko "
+"”gnu” (oletus) tai ”posix”"
+
+#: src/main.c:573
+#, fuzzy
+msgid "print reverse call tree"
+msgstr "* Tulosta käänteinen kutsupuu"
+
+#: src/main.c:584
+#, fuzzy
+msgid "produce cross-reference listing only"
+msgstr "Tee vain ristiviiteluettelo"
+
+#: src/main.c:594 src/main.c:610
+msgid "FILE"
+msgstr "TIEDOSTO"
+
+#: src/main.c:595
+#, fuzzy
+msgid "set output file name (default -, meaning stdout)"
+msgstr "Aseta tulostetiedoston nimi (oletus -, tarkoittaa vakiotulostetta)"
+
+#: src/main.c:606
+msgid "Program initialization:"
+msgstr ""
+
+#: src/main.c:611
+msgid "read options from FILE"
+msgstr ""
+
+#: src/main.c:616 src/main.c:712
+msgid "DIR"
+msgstr "DIR"
+
+#: src/main.c:617
+msgid "prepend DIR to the profile search path"
+msgstr ""
+
+#: src/main.c:628
+msgid "don't load default profile"
+msgstr ""
+
+#: src/main.c:636
+msgid "Parser control:"
+msgstr "Jäsentimen asetukset:"
+
+#: src/main.c:640
+#, fuzzy
+msgid "rely on indentation"
+msgstr "* Luota sisennykseen"
+
+#: src/main.c:651
+#, fuzzy
+msgid "accept only sources in ANSI C"
+msgstr "* Hyväksy vain ANSI C -lähteet"
+
+#: src/main.c:663
+#, fuzzy
+msgid "set initial token stack size to NUMBER"
+msgstr "Aseta vuoromerkkipinon koon alkuarvoksi NUMERO"
+
+#: src/main.c:674
+msgid "SYMBOL:[=]TYPE"
+msgstr "SYMBOLI:[=]TYYPPI"
+
+#. TRANSLATORS: Don't translate type names.
+#: src/main.c:677
+#, fuzzy
+msgid ""
+"register SYMBOL with given TYPE, or define an alias (if := is used); valid "
+"types are: keyword (or kw), modifier, qualifier, identifier, type, wrapper, "
+"or any unambiguous abbreviation thereof"
+msgstr ""
+"Registeröi SYMBOLI annetun TYYPPIsenä, tai määritä se aliaksena (jos := on "
+"käytössä). Käyvät tyypit ovat: keyword (tai kw), modifier, identifier, type, "
+"wrapper. Kaikki niiden yksiselitteiset lyhennykset ovat myös hyväksyttyjä."
+
+#: src/main.c:690
+msgid "NAME[=DEFN]"
+msgstr "NIMI[=DEFN]"
+
+#: src/main.c:691
+#, fuzzy
+msgid "predefine NAME as a macro"
+msgstr "Määrittele NIMI ennakolta makrona"
+
+#: src/main.c:702
+#, fuzzy
+msgid "cancel any previous definition of NAME"
+msgstr "Peru aiemmat NIMI-määrittelyt"
+
+#: src/main.c:713
+#, fuzzy
+msgid ""
+"add the directory DIR to the list of directories to be searched for header "
+"files"
+msgstr ""
+"Lisää hakemisto DIR otsaketiedostoissa haettavien hakemistojen luetteloon."
+
+#: src/main.c:724
+msgid "COMMAND"
+msgstr "KOMENTO"
+
+#: src/main.c:726
+#, fuzzy
+msgid "run the specified preprocessor command"
+msgstr "* Suorita määritellyt esikääntäjäkäskyt"
+
+#: src/main.c:736
+msgid "disable preprocessor"
+msgstr ""
+
+#: src/main.c:747
+msgid "Output control:"
+msgstr "Tulosteohjaus:"
+
+#: src/main.c:751
+msgid "show all functions, not only those reachable from main"
+msgstr ""
+
+#: src/main.c:763
+#, fuzzy
+msgid "print line numbers"
+msgstr "* Tulosta rivinumerot"
+
+#: src/main.c:774
+#, fuzzy
+msgid "print nesting level along with the call tree"
+msgstr "* Tulosta sisennystaso kutsupuun oheen"
+
+#: src/main.c:785
+msgid "ELEMENT"
+msgstr ""
+
+#: src/main.c:786
+#, fuzzy
+msgid "control graph appearance; see [1] for details"
+msgstr "Ohjaa kaavion ulkonäköä"
+
+#: src/main.c:792
+#, fuzzy
+msgid "draw ASCII art tree"
+msgstr "* Piirrä puu ASCII-merkeillä"
+
+#: src/main.c:803
+#, fuzzy
+msgid "brief output"
+msgstr "* Suppea tuloste"
+
+#: src/main.c:814
+#, fuzzy
+msgid "additionally format output for use with GNU Emacs"
+msgstr "* Lisätulostemuoto käytettäväksi GNU Emacs -ohjelman kanssa"
+
+#: src/main.c:821
+#, fuzzy
+msgid "don't print argument lists in function declarations"
+msgstr "* Älä tulosta argumenttiluetteloja funktioesittelyihin"
+
+#: src/main.c:828
+#, fuzzy
+msgid "don't print symbol names in declaration strings"
+msgstr "* Älä tulosta symbolinimiä esittelymerkkijonoihin"
+
+#: src/main.c:836
+#, fuzzy
+msgid "start graph at this function; multiple options are allowed"
+msgstr "Oleta pääfunktion nimeksi NIMI"
+
+#: src/main.c:851
+msgid "there's no main function; print graphs for all functions in the program"
+msgstr ""
+
+#: src/main.c:859
+msgid ""
+"show only graphs leading from start symbols to this function; multiple "
+"options are allowed"
+msgstr ""
+
+#: src/main.c:866
+msgid "Informational options:"
+msgstr "Lisätietovalitsimet:"
+
+#: src/main.c:870
+#, fuzzy
+msgid "verbose error diagnostics"
+msgstr "* Lavea virhediagnostiikka"
+
+#: src/main.c:883
+#, fuzzy
+msgid "set debugging level"
+msgstr "Aseta virheenjäljitystaso"
+
+#: src/main.c:892
+msgid ""
+"\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+msgstr ""
+
+#: src/main.c:906
+msgid "(C)"
+msgstr ""
+
+#: src/main.c:909
+#, c-format
+msgid "Written by %s."
+msgstr ""
+
+#: src/main.c:916
+msgid "References:"
+msgstr ""
+
+#: src/main.c:919
+#, c-format
+msgid "Profile search path: %s\n"
+msgstr ""
+
+#: src/main.c:925
+#, fuzzy
+msgid "generate program flowgraph"
+msgstr "tee ohjelman rakennekaavio"
+
+#: src/main.c:931
+msgid "General help using GNU software: <https://www.gnu.org/gethelp/>"
+msgstr ""
+
+#: src/main.c:976 src/main.c:1434
+#, c-format
+msgid "parseopt_getopt failed"
+msgstr ""
+
+#: src/main.c:1043
+#, c-format
+msgid "error splitting line: %s"
+msgstr ""
+
+#: src/main.c:1064
+#, c-format
+msgid "file read error: %s"
+msgstr ""
+
+#: src/main.c:1158 src/main.c:1264
+#, fuzzy, c-format
+msgid "can't open option file %s: %s"
+msgstr "kohdetta ”%s” ei voi avata"
+
+#: src/main.c:1180
+#, fuzzy, c-format
+msgid "can't open directory %s"
+msgstr "kohdetta ”%s” ei voi avata"
+
+#: src/main.c:1186
+#, fuzzy, c-format
+msgid "can't open file %s/%s"
+msgstr "kohdetta ”%s” ei voi avata"
+
+#: src/main.c:1202
+#, c-format
+msgid "can't stat %s/%s"
+msgstr ""
+
+#: src/main.c:1234
+#, fuzzy, c-format
+msgid "no such profile: %s"
+msgstr "ei syötetiedostoja"
+
+#: src/main.c:1302
+#, c-format
+msgid "warning: processing obsolete %s file"
+msgstr ""
+
+#: src/main.c:1308
+#, c-format
+msgid "warning: consider renaming it to %*.*s/%s%s"
+msgstr ""
+
+#: src/main.c:1383
+#, c-format
+msgid "Exiting"
+msgstr "Poistutaan"
+
+#: src/main.c:1423
+#, c-format
+msgid "INTERNAL ERROR: %s: No such output driver"
+msgstr "SISÄINEN VIRHE: %s: Ei tulosteajuria"
+
+#: src/main.c:1438
+#, c-format
+msgid "argument to -p cannot be 0"
+msgstr ""
+
+#: src/main.c:1466
+#, c-format
+msgid "no input files"
+msgstr "ei syötetiedostoja"
+
+#: src/parser.c:210
+#, c-format
+msgid " near "
+msgstr " near "
+
+#: src/parser.c:313
+#, c-format
+msgid "INTERNAL ERROR: cannot return token to stream"
+msgstr "SISÄINEN VIRHE: vuoromerkkiä ei voida palauttaa merkkijonoon"
+
+#: src/parser.c:404
+msgid "unrecognized definition"
+msgstr "tunnistamaton määrittely"
+
+#: src/parser.c:626 src/parser.c:656 src/parser.c:791 src/parser.c:911
+#: src/parser.c:1127
+msgid "unexpected end of file in declaration"
+msgstr "odottamaton tiedoston loppu määrittelyssä"
+
+#: src/parser.c:675 src/parser.c:693 src/parser.c:726 src/parser.c:732
+msgid "unexpected end of file in expression"
+msgstr "odottamaton tiedoston loppu lausekkeessa"
+
+#: src/parser.c:771 src/parser.c:874
+msgid "expected `;'"
+msgstr "odotettiin ”;”-merkkiä"
+
+#: src/parser.c:823
+msgid "missing `;' after struct declaration"
+msgstr "merkki ”;” puuttuu struct-määrittelyn perästä"
+
+#: src/parser.c:896
+#, fuzzy
+msgid "expected expression"
+msgstr "odottamaton tiedoston loppu lausekkeessa"
+
+#: src/parser.c:933
+msgid "unexpected end of file in initializer list"
+msgstr "odottamaton tiedoston loppu alustusluettelossa"
+
+#: src/parser.c:963 src/parser.c:970
+msgid "unexpected end of file in struct"
+msgstr "odottamaton tiedoston loppu struct-rakenteessa"
+
+#: src/parser.c:1019 src/parser.c:1144
+msgid "unexpected end of file in function declaration"
+msgstr "odottamaton tiedoston loppu funktioesittelyssä"
+
+#: src/parser.c:1054 src/parser.c:1066
+#, fuzzy
+msgid "unexpected end of file"
+msgstr "odottamaton tiedoston loppu struct-rakenteessa"
+
+#: src/parser.c:1105 src/parser.c:1134
+msgid "expected `)'"
+msgstr "odotettiin ”)”-merkkiä"
+
+#: src/parser.c:1206
+msgid "unexpected token in parameter list"
+msgstr "odottamaton vuoromerkki parametriluettelossa"
+
+#: src/parser.c:1222
+msgid "unexpected end of file in parameter list"
+msgstr "odottamaton tiedoston loppu parametriluettelossa"
+
+#: src/parser.c:1260
+msgid "forced function body close"
+msgstr "pakotettu funktiorungon sulkeminen"
+
+#: src/parser.c:1274
+msgid "unexpected end of file in function body"
+msgstr "odottamaton tiedoston loppu funktiorungossa"
+
+#: src/parser.c:1374
+#, c-format
+msgid "%s/%d redefined"
+msgstr "%s/%d määritelty uudelleen"
+
+#: src/parser.c:1378
+#, c-format
+msgid "%s redefined"
+msgstr "%s määritelty uudelleen"
+
+#: src/parser.c:1381
+#, c-format
+msgid "this is the place of previous definition"
+msgstr "aiemman määrittelyn paikka"
+
+#: src/parser.c:1395
+#, c-format
+msgid "%s:%d: %s/%d defined to %s\n"
+msgstr "%s:%d: %s/%d määritelty kohteeksi %s\n"
+
+#: src/parser.c:1420
+#, c-format
+msgid "%s:%d: type %s\n"
+msgstr "%s:%d: tyyppi %s\n"
+
+#: src/output.c:432
+#, fuzzy, c-format
+msgid "cannot open file `%s'"
+msgstr "kohdetta ”%s” ei voi avata"
+
+#: src/posix.c:59
+#, c-format
+msgid "--format=posix is not compatible with --emacs"
+msgstr ""
+
+#: gnu/error.c:196
+msgid "Unknown system error"
+msgstr "Tuntematon järjestelmävirhe"
+
+#: gnu/obstack.c:319 gnu/obstack.c:321 gnu/xalloc-die.c:36
+#: src/wordsplit/wordsplit.c:78 src/wordsplit/wordsplit.c:2851
+msgid "memory exhausted"
+msgstr "muistin varaus ei onnistunut"
+
+#: src/wordsplit/wordsplit.c:132
+msgid "memory exhausted while trying to store error context"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:873
+msgid "Restarting"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:1599
+#, c-format
+msgid "%.*s: variable null or not set"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:1629
+#, c-format
+msgid "warning: undefined variable `%.*s'"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2130
+#, c-format
+msgid "no files match pattern %s"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2595
+msgid "WS trimming"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2597
+msgid "command substitution"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2599 src/wordsplit/wordsplit.c:2607
+msgid "coalesce list"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2601
+msgid "tilde expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2603
+msgid "variable expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2605
+msgid "quote removal"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2609
+msgid "path expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2634
+#, c-format
+msgid "(%02d) Input:%.*s;"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2660
+msgid "Initial list:"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2675
+msgid "Coalesced list:"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2849
+msgid "no error"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2850
+msgid "missing closing quote"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2852
+msgid "invalid wordsplit usage"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2853
+msgid "unbalanced curly brace"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2854
+msgid "undefined variable"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2855
+#, fuzzy
+msgid "input exhausted"
+msgstr "muistin varaus ei onnistunut"
+
+#: src/wordsplit/wordsplit.c:2856
+msgid "unbalanced parenthesis"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2857
+msgid "globbing error"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2858
+#, fuzzy
+msgid "user-defined error"
+msgstr "%s määritelty uudelleen"
+
+#: src/wordsplit/wordsplit.c:2859
+msgid "invalid parameter number in assignment"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2871
+#, fuzzy
+msgid "unknown error"
+msgstr "Tuntematon järjestelmävirhe"
+
+#: src/wordsplit/wordsplit.c:2880
+#, c-format
+msgid "missing closing %c (start near #%lu)"
+msgstr ""
+
+#: src/parseopt/help.c:91
+#, c-format
+msgid "error in ARGP_HELP_FMT: improper usage of [no-]%s"
+msgstr ""
+
+#: src/parseopt/help.c:104
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: bad value for %s (near %s)"
+msgstr "ARGP_HELP_FMT: %s-arvo on pienempi tai yhtäsuuri kuin %s"
+
+#: src/parseopt/help.c:110
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: %s value is out of range"
+msgstr "ARGP_HELP_FMT: %s-arvo on pienempi tai yhtäsuuri kuin %s"
+
+#: src/parseopt/help.c:117
+#, fuzzy, c-format
+msgid "%s: ARGP_HELP_FMT parameter requires a value"
+msgstr "%.*s: ARGP_HELP_FMT-parametri vaatii arvon"
+
+#: src/parseopt/help.c:123
+#, fuzzy, c-format
+msgid "%s: unknown ARGP_HELP_FMT parameter"
+msgstr "%.*s: Tuntematon ARGP_HELP_FMT-parametri"
+
+#: src/parseopt/help.c:149
+#, c-format
+msgid "ARGP_HELP_FMT: missing delimiter near %s"
+msgstr ""
+
+#: src/parseopt/help.c:300
+msgid "Usage:"
+msgstr "Käyttö:"
+
+#: src/parseopt/help.c:319
+#, fuzzy, c-format
+msgid "or: %s [OPTIONS...] %s\n"
+msgstr " [VALITSIN...]"
+
+#: src/parseopt/help.c:582
+msgid ""
+"Mandatory or optional arguments to long options are also mandatory or "
+"optional for any corresponding short options."
+msgstr ""
+"Pakolliset tai valinnaiset argumentit pitkille valitsimille ovat pakollisia "
+"tai valinnaisia myös vastaaville lyhyille valitsimille."
+
+#: src/parseopt/help.c:584
+msgid ""
+"If an option has several forms, mandatory or optional argument is listed "
+"only once, after the last form."
+msgstr ""
+
+#: src/parseopt/help.c:740
+#, fuzzy, c-format
+msgid "usage: %s"
+msgstr "Käyttö:"
+
+#: src/parseopt/help.c:746
+#, fuzzy
+msgid "[OPTIONS...]"
+msgstr " [VALITSIN...]"
+
+#: src/parseopt/help.c:757
+#, c-format
+msgid "or: %s %s\n"
+msgstr ""
+
+#: src/parseopt/help.c:802
+#, fuzzy, c-format
+msgid "Report bugs and suggestions to <%s>\n"
+msgstr ""
+"Ilmoita virheistä (englanniksi) osoitteeseen %s.\n"
+"Ilmoita käännösvirheestä osoitteeseen <translation-team-fi@lists.sourceforge."
+"net>.\n"
+
+#: src/parseopt/help.c:806
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr ""
+
+#: src/parseopt/optset.c:120 src/parseopt/optset.c:136
+msgid "memory allocation error"
+msgstr ""
+
+#: src/parseopt/parseopt.c:71
+#, fuzzy, c-format
+msgid "unrecognized option '-%c'"
+msgstr "%s: tunnistamaton valitsin ’--%s’\n"
+
+#: src/parseopt/parseopt.c:142
+#, fuzzy, c-format
+msgid "option '%s%*.*s' is ambiguous; possibilities:"
+msgstr "%s: valitsin ’%s’ ei ole yksiselitteinen; vaihtoehdot:"
+
+#: src/parseopt/parseopt.c:174
+#, fuzzy, c-format
+msgid "unrecognized option '%s%*.*s'"
+msgstr "%s: tunnistamaton valitsin ’%c%s’\n"
+
+#: src/parseopt/parseopt.c:337
+#, fuzzy, c-format
+msgid "option '%s%s' requires argument"
+msgstr "%s: valitsin ’--%s’ vaatii argumentin\n"
+
+#: src/parseopt/parseopt.c:351
+#, fuzzy, c-format
+msgid "option '%s%s' does not take argument"
+msgstr "%s: valitsin ’%c%s’ ei salli argumenttia\n"
+
+#: src/parseopt/parseopt.c:369
+#, fuzzy, c-format
+msgid "bad value for option '%s%s'"
+msgstr "%s: tunnistamaton valitsin ’%c%s’\n"
+
+#: src/parseopt/parseopt.c:395
+#, c-format
+msgid "invalid argument '%s'"
+msgstr ""
+
+#: src/parseopt/parseopt.c:580
+#, fuzzy
+msgid "Informative options"
+msgstr "Lisätietovalitsimet:"
+
+#: src/parseopt/parseopt.c:585
+#, fuzzy
+msgid "produce this help text"
+msgstr "näytä tämä opasteluettelo"
+
+#: src/parseopt/parseopt.c:594
+msgid "give a short usage message"
+msgstr "näytä lyhyt käyttöohje"
+
+#: src/parseopt/parseopt.c:604 src/parseopt/parseopt.c:613
+msgid "print program version"
+msgstr "tulosta ohjelman versio"
+
+#, c-format
+#~ msgid "Garbage in ARGP_HELP_FMT: %s"
+#~ msgstr "Roskaa kohteessa ARGP_HELP_FMT: %s"
+
+#~ msgid "  or: "
+#~ msgstr "  tai: "
+
+#, c-format
+#~ msgid "Try '%s --help' or '%s --usage' for more information.\n"
+#~ msgstr "Lisätietoja ’%s --help’ tai ’%s --usage’ -komennoilla.\n"
+
+#, c-format
+#~ msgid "Report bugs to %s.\n"
+#~ msgstr ""
+#~ "Ilmoita virheistä (englanniksi) osoitteeseen %s.\n"
+#~ "Ilmoita käännösvirheestä osoitteeseen <translation-team-fi@lists."
+#~ "sourceforge.net>.\n"
+
+#~ msgid "set the program name"
+#~ msgstr "aseta ohjelman nimi"
+
+#~ msgid "SECS"
+#~ msgstr "S"
+
+#~ msgid "hang for SECS seconds (default 3600)"
+#~ msgstr "odota SECS sekuntia (oletus 3600)"
+
+#~ msgid "(PROGRAM ERROR) No version known!?"
+#~ msgstr "(OHJELMAVIRHE) Tuntematon versio!?"
+
+#, c-format
+#~ msgid "%s: Too many arguments\n"
+#~ msgstr "%s: Liian monta argumenttia\n"
+
+#~ msgid "(PROGRAM ERROR) Option should have been recognized!?"
+#~ msgstr "(OHJELMAVIRHE) Valitsin olisi pitänyt tunnistaa!?"
+
+#, fuzzy, c-format
+#~ msgid "%s: option '%s%s' is ambiguous\n"
+#~ msgstr "%s: valitsin ’-W %s’ ei ole yksiselitteinen\n"
+
+#, c-format
+#~ msgid "%s: invalid option -- '%c'\n"
+#~ msgstr "%s: virheellinen valitsin -- ’%c’\n"
+
+#, c-format
+#~ msgid "%s: option requires an argument -- '%c'\n"
+#~ msgstr "%s: valitsin vaatii argumentin -- ’%c’\n"
+
+#, fuzzy, c-format
+#~ msgid "Report bugs to: %s\n"
+#~ msgstr ""
+#~ "Ilmoita virheistä (englanniksi) osoitteeseen %s.\n"
+#~ "Ilmoita käännösvirheestä osoitteeseen <translation-team-fi@lists."
+#~ "sourceforge.net>.\n"
+
+#, fuzzy
+#~ msgid "Symbol classes for --include argument"
+#~ msgstr "Symboliluokat ”--include”-argumentille"
+
+#, fuzzy
+#~ msgid "don't rely on indentation (default)"
+#~ msgstr "* Luota sisennykseen"
+
+#, fuzzy
+#~ msgid "don't print line numbers (default)"
+#~ msgstr "* Tulosta rivinumerot"
+
+#, fuzzy
+#~ msgid "don't draw ASCII art tree (default)"
+#~ msgstr "* Piirrä puu ASCII-merkeillä"
+
+#, fuzzy
+#~ msgid "don't format output for Emacs (default)"
+#~ msgstr "* Lisätulostemuoto käytettäväksi GNU Emacs -ohjelman kanssa"
+
+#, fuzzy
+#~ msgid "print argument lists in function declarations (default)"
+#~ msgstr "* Älä tulosta argumenttiluetteloja funktioesittelyihin"
+
+#, fuzzy
+#~ msgid "print symbol names in declaration strings (default)"
+#~ msgstr "* Älä tulosta symbolinimiä esittelymerkkijonoihin"
+
+#~ msgid "[FILE]..."
+#~ msgstr "[TIEDOSTO]..."
+
+#~ msgid ""
+#~ "* The effect of each option marked with an asterisk is reversed if the "
+#~ "option's long name is prefixed with `no-'. For example, --no-cpp cancels "
+#~ "--cpp."
+#~ msgstr ""
+#~ "* Jokaisen tähdellä merkityn valitsimen vaikutus on päinvastainen, jos "
+#~ "valitsimen pitkän nimen edellä on ”no-”. Esimerkiksi, ”--no-cpp” peruu ”--"
+#~ "cpp”-valitsimen."
+
+#~ msgid "OPT"
+#~ msgstr "VALITSIN"
+
+#~ msgid ""
+#~ "Set printing option to OPT. Valid OPT values are: xref (or cross-ref), "
+#~ "tree. Any unambiguous abbreviation of the above is also accepted"
+#~ msgstr ""
+#~ "Aseta tulostusvalitsimeksi OPT. Mahdolliset OPT-arvot ovat: xref (tai "
+#~ "cross-ref), tree. Kaikki yksiselitteiset edellisten lyhennykset "
+#~ "hyväksytään myös"
+
+#~ msgid "unknown print option: %s"
+#~ msgstr "tuntematon tulostusvalitsin: %s"
+
+#~ msgid "%.*s: ARGP_HELP_FMT parameter must be positive"
+#~ msgstr "%.*s: ARGP_HELP_FMT-parametrin on oltava positiivinen"
+
+#~ msgid "%s: option '--%s' doesn't allow an argument\n"
+#~ msgstr "%s: valitsin ’--%s’ ei salli argumenttia\n"
+
+#~ msgid "%s: option '-W %s' doesn't allow an argument\n"
+#~ msgstr "%s: valitsin ’-W %s’ ei salli argumenttia\n"
+
+#~ msgid "%s: option '-W %s' requires an argument\n"
+#~ msgstr "%s: valitsin ’-w %s’ vaatii argumentin\n"
+
+#~ msgid "not enough memory to process rc file"
+#~ msgstr "muistia ei ole tarpeeksi rc-tiedoston käsittelyyn"
+
+#~ msgid "%s: illegal option -- %c\n"
+#~ msgstr "%s: virheellinen valitsin -- %c\n"

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<suppressions>
+  <!-- nofile -->
+  <suppress>
+    <id>checkersReport</id>
+  </suppress>
+  <suppress>
+    <id>missingIncludeSystem</id>
+  </suppress>
+  <suppress>
+    <id>redundantContinue</id>
+  </suppress>
+</suppressions>

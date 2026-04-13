@@ -1,0 +1,8 @@
+[15/17] Testing test_buffer_clear()
+
+  expected: '5'
+    actual: '5'
+
+
+  expected: '0'
+    actual: '0'

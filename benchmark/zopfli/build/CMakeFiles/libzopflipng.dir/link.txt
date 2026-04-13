@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar qc libzopflipng.a CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o
+/usr/bin/llvm-ranlib libzopflipng.a

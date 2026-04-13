@@ -1,0 +1,8 @@
+[1/17] Testing test_buffer_new()
+
+  expected: '64'
+    actual: '64'
+
+
+  expected: '0'
+    actual: '0'

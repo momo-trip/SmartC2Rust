@@ -1,0 +1,933 @@
+# Danish translations of the cflow message strings
+# Copyright (C) 2016 Free Software Foundation, Inc.
+# This file is distributed under the same license as the cflow package.
+# Morten Bo Johansen <mbj@spamcop.net>, 2005-2011.
+# Joe Hansen <joedalton2@yahoo.dk>, 2015, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cflow 1.4.90\n"
+"Report-Msgid-Bugs-To: bug-cflow@gnu.org\n"
+"POT-Creation-Date: 2025-07-30 11:49+0300\n"
+"PO-Revision-Date: 2016-03-24 21:09+0100\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/c.l:153
+msgid "unterminated string?"
+msgstr "uafsluttet streng?"
+
+#: src/c.l:341
+#, c-format
+msgid "Command line: %s\n"
+msgstr "Kommandolinje: %s\n"
+
+#: src/c.l:344
+#, c-format
+msgid "cannot execute `%s'"
+msgstr "kan ikke udføre »%s«"
+
+#: src/c.l:399
+#, c-format
+msgid "cannot open `%s'"
+msgstr "kan ikke åbne »%s«"
+
+#: src/c.l:480
+#, c-format
+msgid "New location: %s:%d\n"
+msgstr "Ny placering: %s:%d\n"
+
+#: src/main.c:147
+#, c-format
+msgid "%s: no symbol type supplied"
+msgstr "%s: symboltype ikke angivet"
+
+#: src/main.c:157
+#, c-format
+msgid "cyclic alias: %s -> %s"
+msgstr ""
+
+#: src/main.c:163
+#, c-format
+msgid "cyclic alias: %s -> %s -> %s"
+msgstr ""
+
+#: src/main.c:181
+#, c-format
+msgid "unknown symbol type: %s"
+msgstr "ukendt symboltype: %s"
+
+#: src/main.c:310 src/main.c:317
+#, c-format
+msgid "level indent string is too long"
+msgstr "streng for indrykningsniveau er for lang"
+
+#: src/main.c:343
+#, c-format
+msgid "level-indent syntax"
+msgstr "syntaks for indrykningsniveau"
+
+#: src/main.c:365
+#, c-format
+msgid "unknown level indent option: %s"
+msgstr "ukendt tilvalg for indrykningsniveau: %s"
+
+#: src/main.c:395
+#, c-format
+msgid "Unknown symbol class: %c"
+msgstr "Ukendt symbolklasse: %c"
+
+#: src/main.c:407
+#, c-format
+msgid "%s: No such output driver"
+msgstr "%s: Ingen uddata-driver med det navn"
+
+#: src/main.c:511
+msgid "General options:"
+msgstr "Generelle tilvalg:"
+
+#: src/main.c:515 src/main.c:662 src/main.c:881
+msgid "NUMBER"
+msgstr "ANTAL"
+
+#: src/main.c:516
+#, fuzzy
+msgid "set the depth at which the flowgraph is cut off"
+msgstr "Angiv den dybde hvor flowdiagrammet skæres af"
+
+#: src/main.c:527
+msgid "CLASSES"
+msgstr "KLASSER"
+
+#: src/main.c:528
+#, fuzzy
+msgid ""
+"include specified classes of symbols (see below); prepend CLASSES with ^ or "
+"- to exclude them from the output"
+msgstr ""
+"Medtag de anførte symbolklasser (se nedenfor). Lad KLASSER begynde med ^ "
+"eller - for at fjerne dem fra uddata"
+
+#: src/main.c:540
+msgid "all data symbols, both external and static"
+msgstr "alle datasymboler, både eksterne og statiske"
+
+#: src/main.c:545
+msgid "symbols whose names begin with an underscore"
+msgstr "symboler hvis navne begynder med et understregningstegn"
+
+#: src/main.c:550
+msgid "static symbols"
+msgstr "statiske symboler"
+
+#: src/main.c:555
+msgid "typedefs (for cross-references only)"
+msgstr "typedefinitioner (kun til krydsreferencer)"
+
+#: src/main.c:560 src/main.c:701 src/main.c:835 src/main.c:858
+msgid "NAME"
+msgstr "NAVN"
+
+#. TRANSLATORS: Don't translate quoted names.
+#: src/main.c:562
+#, fuzzy
+msgid ""
+"use given output format NAME; valid names are `gnu' (default), `posix', and "
+"`dot'"
+msgstr ""
+"Brug det anførte navn for format på uddata: Gyldige navne er "
+"»gnu« (standard) og »posix«"
+
+#: src/main.c:573
+#, fuzzy
+msgid "print reverse call tree"
+msgstr "* Udskriv træstruktur over kald i omvendt orden"
+
+#: src/main.c:584
+#, fuzzy
+msgid "produce cross-reference listing only"
+msgstr "Lav kun en liste over krydsreferencer"
+
+#: src/main.c:594 src/main.c:610
+msgid "FILE"
+msgstr "FIL"
+
+#: src/main.c:595
+#, fuzzy
+msgid "set output file name (default -, meaning stdout)"
+msgstr "Angiv navn på uddatafil (standard er -, som betyder standardud)"
+
+#: src/main.c:606
+msgid "Program initialization:"
+msgstr ""
+
+#: src/main.c:611
+msgid "read options from FILE"
+msgstr ""
+
+#: src/main.c:616 src/main.c:712
+msgid "DIR"
+msgstr "KATALOG"
+
+#: src/main.c:617
+msgid "prepend DIR to the profile search path"
+msgstr ""
+
+#: src/main.c:628
+msgid "don't load default profile"
+msgstr ""
+
+#: src/main.c:636
+msgid "Parser control:"
+msgstr "Kontrol over syntaksanalysator:"
+
+#: src/main.c:640
+#, fuzzy
+msgid "rely on indentation"
+msgstr "* Lad indrykning være bestemmende"
+
+#: src/main.c:651
+#, fuzzy
+msgid "accept only sources in ANSI C"
+msgstr "* Godkend kun kildekode i ANSI C"
+
+#: src/main.c:663
+#, fuzzy
+msgid "set initial token stack size to NUMBER"
+msgstr "Sæt størrelse på elementstakken til ANTAL"
+
+#: src/main.c:674
+msgid "SYMBOL:[=]TYPE"
+msgstr "SYMBOL:[=]TYPE"
+
+#. TRANSLATORS: Don't translate type names.
+#: src/main.c:677
+#, fuzzy
+msgid ""
+"register SYMBOL with given TYPE, or define an alias (if := is used); valid "
+"types are: keyword (or kw), modifier, qualifier, identifier, type, wrapper, "
+"or any unambiguous abbreviation thereof"
+msgstr ""
+"Registrér SYMBOL for angiven TYPE eller definer et alias (hvis := anvendes). "
+"Gyldige typer er: keyword (eller kw), modifier, identifier, type, wrapper. "
+"Enhver entydig forkortelse af disse typer accepteres også"
+
+#: src/main.c:690
+msgid "NAME[=DEFN]"
+msgstr "NAVN[=DEFN]"
+
+#: src/main.c:691
+#, fuzzy
+msgid "predefine NAME as a macro"
+msgstr "Prædefinér NAVN som en makro"
+
+#: src/main.c:702
+#, fuzzy
+msgid "cancel any previous definition of NAME"
+msgstr "Annullér alle tidligere definitioner af NAVN"
+
+#: src/main.c:713
+#, fuzzy
+msgid ""
+"add the directory DIR to the list of directories to be searched for header "
+"files"
+msgstr ""
+"Tilføj kataloget KATALOG til listen over kataloger der skal gennemsøges for "
+"inkluderingsfiler."
+
+#: src/main.c:724
+msgid "COMMAND"
+msgstr "KOMMANDO"
+
+#: src/main.c:726
+#, fuzzy
+msgid "run the specified preprocessor command"
+msgstr "* Kør den anførte præprocessor-kommando"
+
+#: src/main.c:736
+msgid "disable preprocessor"
+msgstr ""
+
+#: src/main.c:747
+msgid "Output control:"
+msgstr "Udskriftskontrol:"
+
+#: src/main.c:751
+msgid "show all functions, not only those reachable from main"
+msgstr ""
+
+#: src/main.c:763
+#, fuzzy
+msgid "print line numbers"
+msgstr "* Udskriv linjenumre"
+
+#: src/main.c:774
+#, fuzzy
+msgid "print nesting level along with the call tree"
+msgstr "* Udskriv indlejringsniveau sammen med træstruktur over kald"
+
+#: src/main.c:785
+msgid "ELEMENT"
+msgstr ""
+
+#: src/main.c:786
+#, fuzzy
+msgid "control graph appearance; see [1] for details"
+msgstr "Udseende på graf"
+
+#: src/main.c:792
+#, fuzzy
+msgid "draw ASCII art tree"
+msgstr "* Tegn en træstruktur med ASCII-tegn"
+
+#: src/main.c:803
+#, fuzzy
+msgid "brief output"
+msgstr "* Korte uddata"
+
+#: src/main.c:814
+#, fuzzy
+msgid "additionally format output for use with GNU Emacs"
+msgstr "* Formatér også uddata så de kan bruges med GNU Emacs"
+
+#: src/main.c:821
+#, fuzzy
+msgid "don't print argument lists in function declarations"
+msgstr "* Udskriv ikke liste over argumenter i funktionserklæringer"
+
+#: src/main.c:828
+#, fuzzy
+msgid "don't print symbol names in declaration strings"
+msgstr "* Udskriv ikke liste over symboler i erklæringer"
+
+#: src/main.c:836
+#, fuzzy
+msgid "start graph at this function; multiple options are allowed"
+msgstr "Antag at hovedfunktionen hedder NAVN"
+
+#: src/main.c:851
+msgid "there's no main function; print graphs for all functions in the program"
+msgstr ""
+
+#: src/main.c:859
+msgid ""
+"show only graphs leading from start symbols to this function; multiple "
+"options are allowed"
+msgstr ""
+
+#: src/main.c:866
+msgid "Informational options:"
+msgstr "Imformative tilvalg:"
+
+#: src/main.c:870
+#, fuzzy
+msgid "verbose error diagnostics"
+msgstr "Udførlig fejldiagnostik"
+
+#: src/main.c:883
+#, fuzzy
+msgid "set debugging level"
+msgstr "Angiv niveau for fejlfinding"
+
+#: src/main.c:892
+msgid ""
+"\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+msgstr ""
+
+#: src/main.c:906
+msgid "(C)"
+msgstr ""
+
+#: src/main.c:909
+#, c-format
+msgid "Written by %s."
+msgstr ""
+
+#: src/main.c:916
+msgid "References:"
+msgstr ""
+
+#: src/main.c:919
+#, c-format
+msgid "Profile search path: %s\n"
+msgstr ""
+
+#: src/main.c:925
+#, fuzzy
+msgid "generate program flowgraph"
+msgstr "generér et flowdiagram"
+
+#: src/main.c:931
+msgid "General help using GNU software: <https://www.gnu.org/gethelp/>"
+msgstr ""
+
+#: src/main.c:976 src/main.c:1434
+#, c-format
+msgid "parseopt_getopt failed"
+msgstr ""
+
+#: src/main.c:1043
+#, c-format
+msgid "error splitting line: %s"
+msgstr ""
+
+#: src/main.c:1064
+#, c-format
+msgid "file read error: %s"
+msgstr ""
+
+#: src/main.c:1158 src/main.c:1264
+#, fuzzy, c-format
+msgid "can't open option file %s: %s"
+msgstr "kan ikke åbne »%s«"
+
+#: src/main.c:1180
+#, fuzzy, c-format
+msgid "can't open directory %s"
+msgstr "kan ikke åbne »%s«"
+
+#: src/main.c:1186
+#, fuzzy, c-format
+msgid "can't open file %s/%s"
+msgstr "kan ikke åbne »%s«"
+
+#: src/main.c:1202
+#, c-format
+msgid "can't stat %s/%s"
+msgstr ""
+
+#: src/main.c:1234
+#, fuzzy, c-format
+msgid "no such profile: %s"
+msgstr "ingen inddatafiler"
+
+#: src/main.c:1302
+#, c-format
+msgid "warning: processing obsolete %s file"
+msgstr ""
+
+#: src/main.c:1308
+#, c-format
+msgid "warning: consider renaming it to %*.*s/%s%s"
+msgstr ""
+
+#: src/main.c:1383
+#, c-format
+msgid "Exiting"
+msgstr "Afslutter"
+
+#: src/main.c:1423
+#, c-format
+msgid "INTERNAL ERROR: %s: No such output driver"
+msgstr "INTERN FEJL: %s: Ingen uddata-driver med det navn"
+
+#: src/main.c:1438
+#, c-format
+msgid "argument to -p cannot be 0"
+msgstr ""
+
+#: src/main.c:1466
+#, c-format
+msgid "no input files"
+msgstr "ingen inddatafiler"
+
+#: src/parser.c:210
+#, c-format
+msgid " near "
+msgstr " nær "
+
+#: src/parser.c:313
+#, c-format
+msgid "INTERNAL ERROR: cannot return token to stream"
+msgstr "INTERN FEJL: kan ikke returnere element til datastrøm"
+
+#: src/parser.c:404
+msgid "unrecognized definition"
+msgstr "ukendt definition"
+
+#: src/parser.c:626 src/parser.c:656 src/parser.c:791 src/parser.c:911
+#: src/parser.c:1127
+msgid "unexpected end of file in declaration"
+msgstr "uventet filafslutning i erklæring"
+
+#: src/parser.c:675 src/parser.c:693 src/parser.c:726 src/parser.c:732
+msgid "unexpected end of file in expression"
+msgstr "uventet filafslutning i udtryk"
+
+#: src/parser.c:771 src/parser.c:874
+msgid "expected `;'"
+msgstr "forventede ';'"
+
+#: src/parser.c:823
+msgid "missing `;' after struct declaration"
+msgstr "manglende ';' efter struct-erklæring"
+
+#: src/parser.c:896
+#, fuzzy
+msgid "expected expression"
+msgstr "uventet filafslutning i udtryk"
+
+#: src/parser.c:933
+msgid "unexpected end of file in initializer list"
+msgstr "uventet filafslutning i liste over startværdier"
+
+#: src/parser.c:963 src/parser.c:970
+msgid "unexpected end of file in struct"
+msgstr "uventet filafslutning i struct"
+
+#: src/parser.c:1019 src/parser.c:1144
+msgid "unexpected end of file in function declaration"
+msgstr "uventet filafslutning i funktionserklæring"
+
+#: src/parser.c:1054 src/parser.c:1066
+#, fuzzy
+msgid "unexpected end of file"
+msgstr "uventet filafslutning i struct"
+
+#: src/parser.c:1105 src/parser.c:1134
+msgid "expected `)'"
+msgstr "forventede ')'"
+
+#: src/parser.c:1206
+msgid "unexpected token in parameter list"
+msgstr "uventet element i parameterliste"
+
+#: src/parser.c:1222
+msgid "unexpected end of file in parameter list"
+msgstr "uventet filafslutning i parameterliste"
+
+#: src/parser.c:1260
+msgid "forced function body close"
+msgstr "gennemtvang afslutning af funktionens krop"
+
+#: src/parser.c:1274
+msgid "unexpected end of file in function body"
+msgstr "uventet filafslutning i funktionens krop"
+
+#: src/parser.c:1374
+#, c-format
+msgid "%s/%d redefined"
+msgstr "%s/%d omdefineret"
+
+#: src/parser.c:1378
+#, c-format
+msgid "%s redefined"
+msgstr "%s omdefineret"
+
+#: src/parser.c:1381
+#, c-format
+msgid "this is the place of previous definition"
+msgstr "her er den forrige definition"
+
+#: src/parser.c:1395
+#, c-format
+msgid "%s:%d: %s/%d defined to %s\n"
+msgstr "%s:%d: %s/%d defineret til %s\n"
+
+#: src/parser.c:1420
+#, c-format
+msgid "%s:%d: type %s\n"
+msgstr "%s:%d: type %s\n"
+
+#: src/output.c:432
+#, fuzzy, c-format
+msgid "cannot open file `%s'"
+msgstr "kan ikke åbne »%s«"
+
+#: src/posix.c:59
+#, c-format
+msgid "--format=posix is not compatible with --emacs"
+msgstr ""
+
+#: gnu/error.c:196
+msgid "Unknown system error"
+msgstr "Ukendt systemfejl"
+
+#: gnu/obstack.c:319 gnu/obstack.c:321 gnu/xalloc-die.c:36
+#: src/wordsplit/wordsplit.c:78 src/wordsplit/wordsplit.c:2851
+msgid "memory exhausted"
+msgstr "hukommelsen opbrugt"
+
+#: src/wordsplit/wordsplit.c:132
+msgid "memory exhausted while trying to store error context"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:873
+msgid "Restarting"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:1599
+#, c-format
+msgid "%.*s: variable null or not set"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:1629
+#, c-format
+msgid "warning: undefined variable `%.*s'"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2130
+#, c-format
+msgid "no files match pattern %s"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2595
+msgid "WS trimming"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2597
+msgid "command substitution"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2599 src/wordsplit/wordsplit.c:2607
+msgid "coalesce list"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2601
+msgid "tilde expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2603
+msgid "variable expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2605
+msgid "quote removal"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2609
+msgid "path expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2634
+#, c-format
+msgid "(%02d) Input:%.*s;"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2660
+msgid "Initial list:"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2675
+msgid "Coalesced list:"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2849
+msgid "no error"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2850
+msgid "missing closing quote"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2852
+msgid "invalid wordsplit usage"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2853
+msgid "unbalanced curly brace"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2854
+msgid "undefined variable"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2855
+#, fuzzy
+msgid "input exhausted"
+msgstr "hukommelsen opbrugt"
+
+#: src/wordsplit/wordsplit.c:2856
+msgid "unbalanced parenthesis"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2857
+msgid "globbing error"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2858
+#, fuzzy
+msgid "user-defined error"
+msgstr "%s omdefineret"
+
+#: src/wordsplit/wordsplit.c:2859
+msgid "invalid parameter number in assignment"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2871
+#, fuzzy
+msgid "unknown error"
+msgstr "Ukendt systemfejl"
+
+#: src/wordsplit/wordsplit.c:2880
+#, c-format
+msgid "missing closing %c (start near #%lu)"
+msgstr ""
+
+#: src/parseopt/help.c:91
+#, c-format
+msgid "error in ARGP_HELP_FMT: improper usage of [no-]%s"
+msgstr ""
+
+#: src/parseopt/help.c:104
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: bad value for %s (near %s)"
+msgstr "ARGP_HELP_FMT: værdien af %s er mindre end eller lig med %s"
+
+#: src/parseopt/help.c:110
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: %s value is out of range"
+msgstr "ARGP_HELP_FMT: værdien af %s er mindre end eller lig med %s"
+
+#: src/parseopt/help.c:117
+#, fuzzy, c-format
+msgid "%s: ARGP_HELP_FMT parameter requires a value"
+msgstr "%.*s: ARGP_HELP_FMT-parameteren kræver en værdi"
+
+#: src/parseopt/help.c:123
+#, fuzzy, c-format
+msgid "%s: unknown ARGP_HELP_FMT parameter"
+msgstr "%.*s: Ukendt ARGP_HELP_FMT-parameter"
+
+#: src/parseopt/help.c:149
+#, c-format
+msgid "ARGP_HELP_FMT: missing delimiter near %s"
+msgstr ""
+
+#: src/parseopt/help.c:300
+msgid "Usage:"
+msgstr "Brug:"
+
+#: src/parseopt/help.c:319
+#, fuzzy, c-format
+msgid "or: %s [OPTIONS...] %s\n"
+msgstr " [TILVALG ...]"
+
+#: src/parseopt/help.c:582
+msgid ""
+"Mandatory or optional arguments to long options are also mandatory or "
+"optional for any corresponding short options."
+msgstr ""
+"Obligatoriske eller frivillige argumenter til lange tilvalg er også "
+"obligatoriske eller frivillige for tilsvarende korte tilvalg."
+
+#: src/parseopt/help.c:584
+msgid ""
+"If an option has several forms, mandatory or optional argument is listed "
+"only once, after the last form."
+msgstr ""
+
+#: src/parseopt/help.c:740
+#, fuzzy, c-format
+msgid "usage: %s"
+msgstr "Brug:"
+
+#: src/parseopt/help.c:746
+#, fuzzy
+msgid "[OPTIONS...]"
+msgstr " [TILVALG ...]"
+
+#: src/parseopt/help.c:757
+#, c-format
+msgid "or: %s %s\n"
+msgstr ""
+
+#: src/parseopt/help.c:802
+#, fuzzy, c-format
+msgid "Report bugs and suggestions to <%s>\n"
+msgstr ""
+"Rapportér fejl til %s.\n"
+"Rapportér fejl i oversættelsen til dansk@dansk-gruppen.dk.\n"
+
+#: src/parseopt/help.c:806
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr ""
+
+#: src/parseopt/optset.c:120 src/parseopt/optset.c:136
+msgid "memory allocation error"
+msgstr ""
+
+#: src/parseopt/parseopt.c:71
+#, fuzzy, c-format
+msgid "unrecognized option '-%c'"
+msgstr "%s: ukendt tilvalg »--%s«\n"
+
+#: src/parseopt/parseopt.c:142
+#, fuzzy, c-format
+msgid "option '%s%*.*s' is ambiguous; possibilities:"
+msgstr "%s: tilvalget »%s« er ikke entydigt; muligheder:"
+
+#: src/parseopt/parseopt.c:174
+#, fuzzy, c-format
+msgid "unrecognized option '%s%*.*s'"
+msgstr "%s: ukendt tilvalg »%c%s«\n"
+
+#: src/parseopt/parseopt.c:337
+#, fuzzy, c-format
+msgid "option '%s%s' requires argument"
+msgstr "%s: tilvalget »%s« skal have et argument\n"
+
+#: src/parseopt/parseopt.c:351
+#, fuzzy, c-format
+msgid "option '%s%s' does not take argument"
+msgstr "%s: tilvalget »%c%s« tillader ikke argumenter\n"
+
+#: src/parseopt/parseopt.c:369
+#, fuzzy, c-format
+msgid "bad value for option '%s%s'"
+msgstr "%s: ukendt tilvalg »%c%s«\n"
+
+#: src/parseopt/parseopt.c:395
+#, c-format
+msgid "invalid argument '%s'"
+msgstr ""
+
+#: src/parseopt/parseopt.c:580
+#, fuzzy
+msgid "Informative options"
+msgstr "Imformative tilvalg:"
+
+#: src/parseopt/parseopt.c:585
+#, fuzzy
+msgid "produce this help text"
+msgstr "vis denne hjælpeliste"
+
+#: src/parseopt/parseopt.c:594
+msgid "give a short usage message"
+msgstr "vis en kort brugsmeddelelse"
+
+#: src/parseopt/parseopt.c:604 src/parseopt/parseopt.c:613
+msgid "print program version"
+msgstr "skriv programversion"
+
+#, c-format
+#~ msgid "Garbage in ARGP_HELP_FMT: %s"
+#~ msgstr "Snavs i ARGP_HELP_FMT: %s"
+
+#~ msgid "  or: "
+#~ msgstr "  eller: "
+
+#, c-format
+#~ msgid "Try '%s --help' or '%s --usage' for more information.\n"
+#~ msgstr "Prøv »%s --help« eller »%s --usage« for mere information.\n"
+
+#, c-format
+#~ msgid "Report bugs to %s.\n"
+#~ msgstr ""
+#~ "Rapportér fejl til %s.\n"
+#~ "Rapportér fejl i oversættelsen til dansk@dansk-gruppen.dk.\n"
+
+#~ msgid "set the program name"
+#~ msgstr "angiv programnavnet"
+
+#~ msgid "SECS"
+#~ msgstr "SEK"
+
+#~ msgid "hang for SECS seconds (default 3600)"
+#~ msgstr "hæng i SEK sekunder (standard, 3600)"
+
+#~ msgid "(PROGRAM ERROR) No version known!?"
+#~ msgstr "(PROGRAMFEJL) Ingen kendt version!?"
+
+#, c-format
+#~ msgid "%s: Too many arguments\n"
+#~ msgstr "%s: For mange argumenter\n"
+
+#~ msgid "(PROGRAM ERROR) Option should have been recognized!?"
+#~ msgstr "(PROGRAMFEJL) Tilvalg burde have været genkendt!?"
+
+#, fuzzy, c-format
+#~ msgid "%s: option '%s%s' is ambiguous\n"
+#~ msgstr "%s: tilvalget »-W %s« er ikke entydigt\n"
+
+#, c-format
+#~ msgid "%s: invalid option -- '%c'\n"
+#~ msgstr "%s: ugyldigt tilvalg -- »%c«\n"
+
+#, c-format
+#~ msgid "%s: option requires an argument -- '%c'\n"
+#~ msgstr "%s: tilvalget skal have et argument -- »%c«\n"
+
+#, fuzzy, c-format
+#~ msgid "Report bugs to: %s\n"
+#~ msgstr ""
+#~ "Rapportér fejl til %s.\n"
+#~ "Rapportér fejl i oversættelsen til dansk@dansk-gruppen.dk.\n"
+
+#, fuzzy
+#~ msgid "Symbol classes for --include argument"
+#~ msgstr "Symbolklasser til argumentet --include"
+
+#, fuzzy
+#~ msgid "don't rely on indentation (default)"
+#~ msgstr "* Lad indrykning være bestemmende"
+
+#, fuzzy
+#~ msgid "don't print line numbers (default)"
+#~ msgstr "* Udskriv linjenumre"
+
+#, fuzzy
+#~ msgid "don't draw ASCII art tree (default)"
+#~ msgstr "* Tegn en træstruktur med ASCII-tegn"
+
+#, fuzzy
+#~ msgid "don't format output for Emacs (default)"
+#~ msgstr "* Formatér også uddata så de kan bruges med GNU Emacs"
+
+#, fuzzy
+#~ msgid "print argument lists in function declarations (default)"
+#~ msgstr "* Udskriv ikke liste over argumenter i funktionserklæringer"
+
+#, fuzzy
+#~ msgid "print symbol names in declaration strings (default)"
+#~ msgstr "* Udskriv ikke liste over symboler i erklæringer"
+
+#~ msgid "[FILE]..."
+#~ msgstr "[FIL] ..."
+
+#~ msgid ""
+#~ "* The effect of each option marked with an asterisk is reversed if the "
+#~ "option's long name is prefixed with `no-'. For example, --no-cpp cancels "
+#~ "--cpp."
+#~ msgstr ""
+#~ "* Virkningen af hvert asterisk-markerede tilvalg bliver modsat hvis "
+#~ "langforms-tilvalget får »no-« som præfiks. F.eks.: ophæves --cpp af --no-"
+#~ "cpp."
+
+#~ msgid "OPT"
+#~ msgstr "TILVALG"
+
+#~ msgid ""
+#~ "Set printing option to OPT. Valid OPT values are: xref (or cross-ref), "
+#~ "tree. Any unambiguous abbreviation of the above is also accepted"
+#~ msgstr ""
+#~ "Sæt tilvalg for udskrivning til TILVALG. Gyldige værdier for TILVALG er: "
+#~ "xref (eller cross-xref), tree. Enhver entydig forkortelse af disse "
+#~ "værdier accepteres også"
+
+#~ msgid "unknown print option: %s"
+#~ msgstr "ukendt tilvalg for udskrivning: %s"
+
+#~ msgid "%.*s: ARGP_HELP_FMT parameter must be positive"
+#~ msgstr "%.*s: ARGP_HELP_FMT-parameteren skal være positiv"
+
+#~ msgid "%s: option '--%s' doesn't allow an argument\n"
+#~ msgstr "%s: tilvalget »--%s« tillader ikke argumenter\n"
+
+#~ msgid "%s: option '-W %s' doesn't allow an argument\n"
+#~ msgstr "%s: tilvalget »-W %s« tillader ikke argument\n"
+
+#~ msgid "%s: option '-W %s' requires an argument\n"
+#~ msgstr "%s: tilvalget »%s« skal have et argument\n"

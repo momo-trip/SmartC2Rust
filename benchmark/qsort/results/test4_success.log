@@ -1,0 +1,7 @@
+Command: ./bin/qsort_test 4 42
+Output: === Test 4 ===
+Before sorting: 42 
+After sorting: 42 
+Expected sorted array: 42 
+Actual sorted array: 42 
+Exit code: 0

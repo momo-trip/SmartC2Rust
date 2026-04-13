@@ -1,0 +1,49 @@
+name: Build su-exec
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-ubuntu:
+    name: Ubuntu build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Build
+        run: make
+
+      - name: Show binary info
+        run: |
+          ls -l su-exec
+          file su-exec
+
+  build-alpine:
+    name: Alpine build
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:3.22
+    steps:
+      - name: Install tools needed for checkout
+        run: |
+          apk add --no-cache git ca-certificates build-base
+  
+      - name: Checkout
+        uses: actions/checkout@v4
+  
+      - name: Build
+        run: make su-exec su-exec-static && strip su-exec su-exec-static
+  
+      - name: Show binary info
+        run: |
+          ls -l su-exec su-exec-static
+          file su-exec su-exec-static
+          ldd su-exec su-exec-static
+

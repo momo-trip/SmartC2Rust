@@ -1,0 +1,16 @@
+[5/17] Testing test_buffer_append_n()
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '9'
+    actual: '9'
+
+
+  expected: 'submarine'
+    actual: 'submarine'

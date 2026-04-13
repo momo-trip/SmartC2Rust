@@ -1,0 +1,8 @@
+[2/17] Testing test_buffer_new_with_size()
+
+  expected: '1024'
+    actual: '1024'
+
+
+  expected: '0'
+    actual: '0'

@@ -1,0 +1,36 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Wall",
+      "-Os",
+      "-c",
+      "-finstrument-functions",
+      "-g",
+      "-DAES192=1",
+      "-o",
+      "aes.o",
+      "aes.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/aes.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/aes.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Wall",
+      "-Os",
+      "-c",
+      "-finstrument-functions",
+      "-g",
+      "-DAES192=1",
+      "-o",
+      "test.o",
+      "test.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/test.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/test.o"
+  }
+]

@@ -1,0 +1,16 @@
+[12/17] Testing test_buffer_formatting()
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '3 cow'
+    actual: '3 cow'
+
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '3 cow - 0xDEADBEEF'
+    actual: '3 cow - 0xDEADBEEF'

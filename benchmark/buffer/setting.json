@@ -1,0 +1,6 @@
+{
+    "build_path": "buffer/c_build.sh",
+    "test_run_path": "buffer/run_test.sh",
+    "all_run_path": "buffer/run_all.sh",
+    "target_funcs": []
+}

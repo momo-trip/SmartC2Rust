@@ -1,0 +1,24 @@
+[17/17] Testing test_buffer_compact()
+
+  expected: '5'
+    actual: '5'
+
+
+  expected: '10'
+    actual: '10'
+
+
+  expected: '5'
+    actual: '5'
+
+
+  expected: '5'
+    actual: '5'
+
+
+  expected: '5'
+    actual: '5'
+
+
+  expected: 'Hello'
+    actual: 'Hello'

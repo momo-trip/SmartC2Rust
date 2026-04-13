@@ -1,0 +1,12 @@
+# Cflow support for C11 keywords
+
+--symbol _Alignas:wrapper
+--symbol _Alignof:keyword
+--symbol _Atomic:qualifier
+--symbol _Bool:type
+--symbol _Complex:type
+--symbol _Generic:wrapper
+--symbol _Imaginary:qualifier
+--symbol _Noreturn:qualifier
+--symbol _Static_assert:declaration
+--symbol _Thread_local:type

@@ -1,0 +1,1014 @@
+# Serbian translation of cflow.
+# Copyright © 2012 Free Software Foundation, Inc.
+# This file is distributed under the same license as the cflow package.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2012–2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: cflow-1.7\n"
+"Report-Msgid-Bugs-To: bug-cflow@gnu.org\n"
+"POT-Creation-Date: 2025-07-30 11:49+0300\n"
+"PO-Revision-Date: 2022-02-16 06:13+0200\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"Language-Team: Serbian <(nothing)>\n"
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+
+#: src/c.l:153
+msgid "unterminated string?"
+msgstr "ниска без краја?"
+
+#: src/c.l:341
+#, c-format
+msgid "Command line: %s\n"
+msgstr "Линија наредби: %s\n"
+
+#: src/c.l:344
+#, c-format
+msgid "cannot execute `%s'"
+msgstr "не могу да извршим „%s“"
+
+#: src/c.l:399
+#, c-format
+msgid "cannot open `%s'"
+msgstr "не могу да отворим „%s“"
+
+#: src/c.l:480
+#, c-format
+msgid "New location: %s:%d\n"
+msgstr "Ново место: %s:%d\n"
+
+#: src/main.c:147
+#, c-format
+msgid "%s: no symbol type supplied"
+msgstr "%s: није достављена врста симбола"
+
+#: src/main.c:157
+#, c-format
+msgid "cyclic alias: %s -> %s"
+msgstr "циклични алијас: %s → %s"
+
+#: src/main.c:163
+#, c-format
+msgid "cyclic alias: %s -> %s -> %s"
+msgstr "циклични алијас: %s → %s → %s"
+
+#: src/main.c:181
+#, c-format
+msgid "unknown symbol type: %s"
+msgstr "непозната врста симбола: %s"
+
+#: src/main.c:310 src/main.c:317
+#, c-format
+msgid "level indent string is too long"
+msgstr "ниска нивоа увлачења је предуга"
+
+#: src/main.c:343
+#, c-format
+msgid "level-indent syntax"
+msgstr "синтакса нивоа увлачења"
+
+#: src/main.c:365
+#, c-format
+msgid "unknown level indent option: %s"
+msgstr "непозната опција нивоа увлачења: %s"
+
+#: src/main.c:395
+#, c-format
+msgid "Unknown symbol class: %c"
+msgstr "Непознат разред симбола: %c"
+
+#: src/main.c:407
+#, c-format
+msgid "%s: No such output driver"
+msgstr "%s: Не постоји такав излазни управљачки програм"
+
+#: src/main.c:511
+msgid "General options:"
+msgstr "Опште опције:"
+
+#: src/main.c:515 src/main.c:662 src/main.c:881
+msgid "NUMBER"
+msgstr "БРОЈ"
+
+#: src/main.c:516
+msgid "set the depth at which the flowgraph is cut off"
+msgstr "подешава дубину на којој се одсеца график протока"
+
+#: src/main.c:527
+msgid "CLASSES"
+msgstr "РАЗРЕДИ"
+
+#: src/main.c:528
+msgid ""
+"include specified classes of symbols (see below); prepend CLASSES with ^ or "
+"- to exclude them from the output"
+msgstr ""
+"обухвата наведене разреде симбола (види испод); додајте ^ или - на почетак "
+"РАЗРЕДА да их искључите из излаза"
+
+#: src/main.c:540
+msgid "all data symbols, both external and static"
+msgstr "симболи свих података, и спољних и статичких"
+
+#: src/main.c:545
+msgid "symbols whose names begin with an underscore"
+msgstr "симболи чији називи почињу подвлаком (_)"
+
+#: src/main.c:550
+msgid "static symbols"
+msgstr "статички симболи"
+
+#: src/main.c:555
+msgid "typedefs (for cross-references only)"
+msgstr "одреднице врсте (само за унакрсне референце)"
+
+#: src/main.c:560 src/main.c:701 src/main.c:835 src/main.c:858
+msgid "NAME"
+msgstr "НАЗИВ"
+
+#. TRANSLATORS: Don't translate quoted names.
+#: src/main.c:562
+msgid ""
+"use given output format NAME; valid names are `gnu' (default), `posix', and "
+"`dot'"
+msgstr ""
+"користи дати НАЗИВ излазног формата; важећи називи су „gnu“ (основни), "
+"„posix“ и „dot“"
+
+#: src/main.c:573
+msgid "print reverse call tree"
+msgstr "штампа стабло повратног позива"
+
+#: src/main.c:584
+msgid "produce cross-reference listing only"
+msgstr "производи само списак унакрсне референце"
+
+#: src/main.c:594 src/main.c:610
+msgid "FILE"
+msgstr "ДАТОТЕКА"
+
+#: src/main.c:595
+msgid "set output file name (default -, meaning stdout)"
+msgstr "поставља назив излазне датотеке (основно је -, значи стандардни излаз)"
+
+#: src/main.c:606
+msgid "Program initialization:"
+msgstr ""
+
+#: src/main.c:611
+msgid "read options from FILE"
+msgstr ""
+
+#: src/main.c:616 src/main.c:712
+msgid "DIR"
+msgstr "ДИР"
+
+#: src/main.c:617
+msgid "prepend DIR to the profile search path"
+msgstr ""
+
+#: src/main.c:628
+msgid "don't load default profile"
+msgstr ""
+
+#: src/main.c:636
+msgid "Parser control:"
+msgstr "Управљање анализатором:"
+
+#: src/main.c:640
+msgid "rely on indentation"
+msgstr "засновано на поравнању"
+
+#: src/main.c:651
+msgid "accept only sources in ANSI C"
+msgstr "прихвата само изворе у АНСИ Ц-у"
+
+#: src/main.c:663
+msgid "set initial token stack size to NUMBER"
+msgstr "поставља величину стека почетног симбола на БРОЈ"
+
+#: src/main.c:674
+msgid "SYMBOL:[=]TYPE"
+msgstr "СИМБОЛ:[=]ВРСТА"
+
+#. TRANSLATORS: Don't translate type names.
+#: src/main.c:677
+msgid ""
+"register SYMBOL with given TYPE, or define an alias (if := is used); valid "
+"types are: keyword (or kw), modifier, qualifier, identifier, type, wrapper, "
+"or any unambiguous abbreviation thereof"
+msgstr ""
+"бележи СИМБОЛ датом ВРСТОМ, или одређује алијаса (ако се користи „:=“); "
+"важеће врсте су: „keyword (или kw), modifier, qualifier, identifier, type, "
+"wrapper“ или свака нејасна скраћеница"
+
+#: src/main.c:690
+msgid "NAME[=DEFN]"
+msgstr "НАЗИВ[=ДЕФН]"
+
+#: src/main.c:691
+msgid "predefine NAME as a macro"
+msgstr "унапред одређује НАЗИВ као макро"
+
+#: src/main.c:702
+msgid "cancel any previous definition of NAME"
+msgstr "брише све претходне одреднице за НАЗИВ"
+
+#: src/main.c:713
+msgid ""
+"add the directory DIR to the list of directories to be searched for header "
+"files"
+msgstr ""
+"додаје фасциклу ДИР на списак фасцикли у којима ће бити тражене датотеке "
+"заглавља"
+
+#: src/main.c:724
+msgid "COMMAND"
+msgstr "НАРЕДБА"
+
+#: src/main.c:726
+msgid "run the specified preprocessor command"
+msgstr "покређе наведену наредбу препроцесора"
+
+#: src/main.c:736
+msgid "disable preprocessor"
+msgstr "искључује препроцесор"
+
+#: src/main.c:747
+msgid "Output control:"
+msgstr "Управљање излазом:"
+
+#: src/main.c:751
+msgid "show all functions, not only those reachable from main"
+msgstr "приказује све функције, не само оне доступне из главне"
+
+#: src/main.c:763
+msgid "print line numbers"
+msgstr "штампа бројеве редова"
+
+#: src/main.c:774
+msgid "print nesting level along with the call tree"
+msgstr "штампа ниво гнезда уз стабло позива"
+
+#: src/main.c:785
+msgid "ELEMENT"
+msgstr ""
+
+#: src/main.c:786
+msgid "control graph appearance; see [1] for details"
+msgstr "управља изгледом графика; видите [1] за детаље"
+
+#: src/main.c:792
+msgid "draw ASCII art tree"
+msgstr "исцртава АСКРИ стабло"
+
+#: src/main.c:803
+msgid "brief output"
+msgstr "кратак излаз"
+
+#: src/main.c:814
+msgid "additionally format output for use with GNU Emacs"
+msgstr "додатно форматира излаз за коришћење са Гну Емаксом"
+
+#: src/main.c:821
+msgid "don't print argument lists in function declarations"
+msgstr "не штампа спискове аргумената у објавама функције"
+
+#: src/main.c:828
+msgid "don't print symbol names in declaration strings"
+msgstr "не штампа називе симбола у објавама ниски"
+
+#: src/main.c:836
+msgid "start graph at this function; multiple options are allowed"
+msgstr "започиње график на овој функцији; више опција је дозвољено"
+
+#: src/main.c:851
+msgid "there's no main function; print graphs for all functions in the program"
+msgstr "нема главне функције; исписује графике за све функције у програму"
+
+#: src/main.c:859
+msgid ""
+"show only graphs leading from start symbols to this function; multiple "
+"options are allowed"
+msgstr ""
+"приказује само графике који воде из симбола очетка ка овој функцији; више "
+"опција је дозвољено"
+
+#: src/main.c:866
+msgid "Informational options:"
+msgstr "Обавештајне опције:"
+
+#: src/main.c:870
+msgid "verbose error diagnostics"
+msgstr "опширна дијагностика грешке"
+
+#: src/main.c:883
+msgid "set debugging level"
+msgstr "поставља ниво прочишћавања"
+
+#: src/main.c:892
+#, fuzzy
+msgid ""
+"\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+msgstr ""
+"Дозвола ОЈЛи3+: Гну ОЈЛ издање 3 или новије <%s>.\n"
+"Ово је слободан софтвер: можете да га мењате и расподељујете.\n"
+"Нема НИКАКВЕ ГАРАНЦИЈЕ, у складу са законом.\n"
+
+#: src/main.c:906
+msgid "(C)"
+msgstr "©"
+
+#: src/main.c:909
+#, fuzzy, c-format
+msgid "Written by %s."
+msgstr "Написао је %s.\n"
+
+#: src/main.c:916
+msgid "References:"
+msgstr "Упуте:"
+
+#: src/main.c:919
+#, fuzzy, c-format
+msgid "Profile search path: %s\n"
+msgstr "нема датотека које одговарају обрасцу „%s“"
+
+#: src/main.c:925
+#, fuzzy
+msgid "generate program flowgraph"
+msgstr "ствара график протока програма"
+
+#: src/main.c:931
+#, fuzzy
+msgid "General help using GNU software: <https://www.gnu.org/gethelp/>"
+msgstr "Општа помоћ при коришћењу Гну софтвера: <%s>\n"
+
+#: src/main.c:976 src/main.c:1434
+#, c-format
+msgid "parseopt_getopt failed"
+msgstr ""
+
+#: src/main.c:1043
+#, c-format
+msgid "error splitting line: %s"
+msgstr ""
+
+#: src/main.c:1064
+#, c-format
+msgid "file read error: %s"
+msgstr ""
+
+#: src/main.c:1158 src/main.c:1264
+#, fuzzy, c-format
+msgid "can't open option file %s: %s"
+msgstr "не могу да отворим датотеку „%s“"
+
+#: src/main.c:1180
+#, fuzzy, c-format
+msgid "can't open directory %s"
+msgstr "не могу да отворим датотеку „%s“"
+
+#: src/main.c:1186
+#, fuzzy, c-format
+msgid "can't open file %s/%s"
+msgstr "не могу да отворим датотеку „%s“"
+
+#: src/main.c:1202
+#, c-format
+msgid "can't stat %s/%s"
+msgstr ""
+
+#: src/main.c:1234
+#, fuzzy, c-format
+msgid "no such profile: %s"
+msgstr "нема улазне датотеке"
+
+#: src/main.c:1302
+#, c-format
+msgid "warning: processing obsolete %s file"
+msgstr ""
+
+#: src/main.c:1308
+#, c-format
+msgid "warning: consider renaming it to %*.*s/%s%s"
+msgstr ""
+
+#: src/main.c:1383
+#, c-format
+msgid "Exiting"
+msgstr "Излазим"
+
+#: src/main.c:1423
+#, c-format
+msgid "INTERNAL ERROR: %s: No such output driver"
+msgstr "УНУТРАШЊА ГРЕШКА: %s: Не постоји такав излазни управљачки програм"
+
+#: src/main.c:1438
+#, c-format
+msgid "argument to -p cannot be 0"
+msgstr ""
+
+#: src/main.c:1466
+#, c-format
+msgid "no input files"
+msgstr "нема улазне датотеке"
+
+#: src/parser.c:210
+#, c-format
+msgid " near "
+msgstr " близу "
+
+#: src/parser.c:313
+#, c-format
+msgid "INTERNAL ERROR: cannot return token to stream"
+msgstr "УНУТРАШЊА ГРЕШКА: не могу да вратим симбол у ток"
+
+#: src/parser.c:404
+msgid "unrecognized definition"
+msgstr "непозната одредница"
+
+#: src/parser.c:626 src/parser.c:656 src/parser.c:791 src/parser.c:911
+#: src/parser.c:1127
+msgid "unexpected end of file in declaration"
+msgstr "неочекивани крај датотеке у објави"
+
+#: src/parser.c:675 src/parser.c:693 src/parser.c:726 src/parser.c:732
+msgid "unexpected end of file in expression"
+msgstr "неочекивани крај датотеке у изразу"
+
+#: src/parser.c:771 src/parser.c:874
+msgid "expected `;'"
+msgstr "очекивах „;“"
+
+#: src/parser.c:823
+msgid "missing `;' after struct declaration"
+msgstr "недостаје „;“ након објаве структуре"
+
+#: src/parser.c:896
+#, fuzzy
+msgid "expected expression"
+msgstr "неочекивани крај датотеке у изразу"
+
+#: src/parser.c:933
+msgid "unexpected end of file in initializer list"
+msgstr "неочекивани крај датотеке у списку покретача"
+
+#: src/parser.c:963 src/parser.c:970
+msgid "unexpected end of file in struct"
+msgstr "неочекивани крај датотеке у структури"
+
+#: src/parser.c:1019 src/parser.c:1144
+msgid "unexpected end of file in function declaration"
+msgstr "неочекивани крај датотеке у објави функције"
+
+#: src/parser.c:1054 src/parser.c:1066
+#, fuzzy
+msgid "unexpected end of file"
+msgstr "неочекивани крај датотеке у структури"
+
+#: src/parser.c:1105 src/parser.c:1134
+msgid "expected `)'"
+msgstr "очекивах „)“"
+
+#: src/parser.c:1206
+msgid "unexpected token in parameter list"
+msgstr "неочекивани симбол у списку параметара"
+
+#: src/parser.c:1222
+msgid "unexpected end of file in parameter list"
+msgstr "неочекивани крај датотеке у списку параметра"
+
+#: src/parser.c:1260
+msgid "forced function body close"
+msgstr "присилно затварање тела функције"
+
+#: src/parser.c:1274
+msgid "unexpected end of file in function body"
+msgstr "неочекивани крај датотеке у телу функције"
+
+#: src/parser.c:1374
+#, c-format
+msgid "%s/%d redefined"
+msgstr "%s/%d је поново одређено"
+
+#: src/parser.c:1378
+#, c-format
+msgid "%s redefined"
+msgstr "%s је поново одређено"
+
+#: src/parser.c:1381
+#, c-format
+msgid "this is the place of previous definition"
+msgstr "ово је место претходне одреднице"
+
+#: src/parser.c:1395
+#, c-format
+msgid "%s:%d: %s/%d defined to %s\n"
+msgstr "%s:%d: %s/%d је одређено у %s\n"
+
+#: src/parser.c:1420
+#, c-format
+msgid "%s:%d: type %s\n"
+msgstr "%s:%d: врста %s\n"
+
+#: src/output.c:432
+#, c-format
+msgid "cannot open file `%s'"
+msgstr "не могу да отворим датотеку „%s“"
+
+#: src/posix.c:59
+#, c-format
+msgid "--format=posix is not compatible with --emacs"
+msgstr "„--format=posix“ није сагласно са опцијом „--emacs“"
+
+#: gnu/error.c:196
+msgid "Unknown system error"
+msgstr "Непозната системска грешка"
+
+#: gnu/obstack.c:319 gnu/obstack.c:321 gnu/xalloc-die.c:36
+#: src/wordsplit/wordsplit.c:78 src/wordsplit/wordsplit.c:2851
+msgid "memory exhausted"
+msgstr "меморија је потрошена"
+
+#: src/wordsplit/wordsplit.c:132
+msgid "memory exhausted while trying to store error context"
+msgstr "нестало је меморије док сам окушавао да сместим садржај грешке"
+
+#: src/wordsplit/wordsplit.c:873
+msgid "Restarting"
+msgstr "Поновно покрећем"
+
+#: src/wordsplit/wordsplit.c:1599
+#, c-format
+msgid "%.*s: variable null or not set"
+msgstr "%.*s: променљива је ништавна или није постављена"
+
+#: src/wordsplit/wordsplit.c:1629
+#, c-format
+msgid "warning: undefined variable `%.*s'"
+msgstr "упозорење: неодређена променљива „%.*s“"
+
+#: src/wordsplit/wordsplit.c:2130
+#, c-format
+msgid "no files match pattern %s"
+msgstr "нема датотека које одговарају обрасцу „%s“"
+
+#: src/wordsplit/wordsplit.c:2595
+msgid "WS trimming"
+msgstr "Краћење поделе речи"
+
+#: src/wordsplit/wordsplit.c:2597
+msgid "command substitution"
+msgstr "замена наредбе"
+
+#: src/wordsplit/wordsplit.c:2599 src/wordsplit/wordsplit.c:2607
+msgid "coalesce list"
+msgstr "списак спајања"
+
+#: src/wordsplit/wordsplit.c:2601
+msgid "tilde expansion"
+msgstr "ширење тилде"
+
+#: src/wordsplit/wordsplit.c:2603
+msgid "variable expansion"
+msgstr "ширење променљиве"
+
+#: src/wordsplit/wordsplit.c:2605
+msgid "quote removal"
+msgstr "уклањање наводника"
+
+#: src/wordsplit/wordsplit.c:2609
+msgid "path expansion"
+msgstr "ширење путање"
+
+#: src/wordsplit/wordsplit.c:2634
+#, c-format
+msgid "(%02d) Input:%.*s;"
+msgstr "(%02d) Улаз:%.*s;"
+
+#: src/wordsplit/wordsplit.c:2660
+msgid "Initial list:"
+msgstr "Почетни списак:"
+
+#: src/wordsplit/wordsplit.c:2675
+msgid "Coalesced list:"
+msgstr "Списак спајања:"
+
+#: src/wordsplit/wordsplit.c:2849
+msgid "no error"
+msgstr "нема грешке"
+
+#: src/wordsplit/wordsplit.c:2850
+msgid "missing closing quote"
+msgstr "недостају затварајући наводници"
+
+#: src/wordsplit/wordsplit.c:2852
+msgid "invalid wordsplit usage"
+msgstr "неисправна употреба поделе речи"
+
+#: src/wordsplit/wordsplit.c:2853
+msgid "unbalanced curly brace"
+msgstr "неуравнотежена витичаста заграда"
+
+#: src/wordsplit/wordsplit.c:2854
+msgid "undefined variable"
+msgstr "недефинисана променљива"
+
+#: src/wordsplit/wordsplit.c:2855
+msgid "input exhausted"
+msgstr "нема више улаза"
+
+#: src/wordsplit/wordsplit.c:2856
+msgid "unbalanced parenthesis"
+msgstr "неуравнотежене заграде"
+
+#: src/wordsplit/wordsplit.c:2857
+msgid "globbing error"
+msgstr "грешка шаблонирања"
+
+#: src/wordsplit/wordsplit.c:2858
+msgid "user-defined error"
+msgstr "кориснички дефинисана грешка"
+
+#: src/wordsplit/wordsplit.c:2859
+msgid "invalid parameter number in assignment"
+msgstr "неисраван број параметра у додељивању"
+
+#: src/wordsplit/wordsplit.c:2871
+msgid "unknown error"
+msgstr "непозната грешка"
+
+#: src/wordsplit/wordsplit.c:2880
+#, c-format
+msgid "missing closing %c (start near #%lu)"
+msgstr "недостаје затварајуће „%c“ (почиње близу #%lu)"
+
+#: src/parseopt/help.c:91
+#, c-format
+msgid "error in ARGP_HELP_FMT: improper usage of [no-]%s"
+msgstr ""
+
+#: src/parseopt/help.c:104
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: bad value for %s (near %s)"
+msgstr "ARGP_HELP_FMT: %s вредност је мања од или једнака са %s"
+
+#: src/parseopt/help.c:110
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: %s value is out of range"
+msgstr "ARGP_HELP_FMT: %s вредност је мања од или једнака са %s"
+
+#: src/parseopt/help.c:117
+#, fuzzy, c-format
+msgid "%s: ARGP_HELP_FMT parameter requires a value"
+msgstr "%.*s: ARGP_HELP_FMT параметар захтева вредност"
+
+#: src/parseopt/help.c:123
+#, fuzzy, c-format
+msgid "%s: unknown ARGP_HELP_FMT parameter"
+msgstr "%.*s: Непознат ARGP_HELP_FMT параметар"
+
+#: src/parseopt/help.c:149
+#, c-format
+msgid "ARGP_HELP_FMT: missing delimiter near %s"
+msgstr ""
+
+#: src/parseopt/help.c:300
+msgid "Usage:"
+msgstr "Употреба:"
+
+#: src/parseopt/help.c:319
+#, fuzzy, c-format
+msgid "or: %s [OPTIONS...] %s\n"
+msgstr " [ОПЦИЈА...]"
+
+#: src/parseopt/help.c:582
+msgid ""
+"Mandatory or optional arguments to long options are also mandatory or "
+"optional for any corresponding short options."
+msgstr ""
+"Обавезни или опционални аргументи за дуге опције су такође обавезни или "
+"опционални за све одговарајуће кратке опције."
+
+#: src/parseopt/help.c:584
+msgid ""
+"If an option has several forms, mandatory or optional argument is listed "
+"only once, after the last form."
+msgstr ""
+
+#: src/parseopt/help.c:740
+#, fuzzy, c-format
+msgid "usage: %s"
+msgstr "Употреба:"
+
+#: src/parseopt/help.c:746
+#, fuzzy
+msgid "[OPTIONS...]"
+msgstr " [ОПЦИЈА...]"
+
+#: src/parseopt/help.c:757
+#, c-format
+msgid "or: %s %s\n"
+msgstr ""
+
+#: src/parseopt/help.c:802
+#, fuzzy, c-format
+msgid "Report bugs and suggestions to <%s>\n"
+msgstr "Грешке програма „%s“ пријавите на: %s\n"
+
+#: src/parseopt/help.c:806
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr "Матична страница „%s“: <%s>\n"
+
+#: src/parseopt/optset.c:120 src/parseopt/optset.c:136
+msgid "memory allocation error"
+msgstr ""
+
+#: src/parseopt/parseopt.c:71
+#, fuzzy, c-format
+msgid "unrecognized option '-%c'"
+msgstr "%s: непозната опција „--%s“\n"
+
+#: src/parseopt/parseopt.c:142
+#, fuzzy, c-format
+msgid "option '%s%*.*s' is ambiguous; possibilities:"
+msgstr "%s: опција „%s%s“ је нејасна; могућности:"
+
+#: src/parseopt/parseopt.c:174
+#, fuzzy, c-format
+msgid "unrecognized option '%s%*.*s'"
+msgstr "%s: непозната опција „%s%s“\n"
+
+#: src/parseopt/parseopt.c:337
+#, fuzzy, c-format
+msgid "option '%s%s' requires argument"
+msgstr "%s: опција „%s%s“ захтева аргумент\n"
+
+#: src/parseopt/parseopt.c:351
+#, fuzzy, c-format
+msgid "option '%s%s' does not take argument"
+msgstr "%s: опција „%s%s“ не дозвољава аргумент\n"
+
+#: src/parseopt/parseopt.c:369
+#, fuzzy, c-format
+msgid "bad value for option '%s%s'"
+msgstr "%s: непозната опција „%s%s“\n"
+
+#: src/parseopt/parseopt.c:395
+#, c-format
+msgid "invalid argument '%s'"
+msgstr ""
+
+#: src/parseopt/parseopt.c:580
+#, fuzzy
+msgid "Informative options"
+msgstr "Обавештајне опције:"
+
+#: src/parseopt/parseopt.c:585
+#, fuzzy
+msgid "produce this help text"
+msgstr "приказује овај списак помоћи"
+
+#: src/parseopt/parseopt.c:594
+msgid "give a short usage message"
+msgstr "приказује кратку поруку коришћења"
+
+#: src/parseopt/parseopt.c:604 src/parseopt/parseopt.c:613
+msgid "print program version"
+msgstr "исписује издање програма"
+
+#, c-format
+#~ msgid "Garbage in ARGP_HELP_FMT: %s"
+#~ msgstr "Ђубре у ARGP_HELP_FMT: %s"
+
+#~ msgid "  or: "
+#~ msgstr "  или: "
+
+#, c-format
+#~ msgid "Try '%s --help' or '%s --usage' for more information.\n"
+#~ msgstr "Покушајте „%s --help“ или „%s --usage“ за више информација.\n"
+
+#, c-format
+#~ msgid "Report bugs to %s.\n"
+#~ msgstr "Грешке пријавите на %s.\n"
+
+#~ msgid "set the program name"
+#~ msgstr "поставља назив програма"
+
+#~ msgid "SECS"
+#~ msgstr "СЕКУНДИ"
+
+#~ msgid "hang for SECS seconds (default 3600)"
+#~ msgstr "стаје за СЕКУНДЕ секунде (основно је 3600)"
+
+#~ msgid "(PROGRAM ERROR) No version known!?"
+#~ msgstr "(ГРЕШКА ПРОГРАМА) Није познато издање!?"
+
+#, c-format
+#~ msgid "%s: Too many arguments\n"
+#~ msgstr "%s: Превише аргумената\n"
+
+#~ msgid "(PROGRAM ERROR) Option should have been recognized!?"
+#~ msgstr "(ГРЕШКА ПРОГРАМА) Опција треба да буде препозната!?"
+
+#, c-format
+#~ msgid "%s: option '%s%s' is ambiguous\n"
+#~ msgstr "%s: опција „%s%s“ је нејасна\n"
+
+#, c-format
+#~ msgid "%s: invalid option -- '%c'\n"
+#~ msgstr "%s: неисправна опција —— „%c“\n"
+
+#, c-format
+#~ msgid "%s: option requires an argument -- '%c'\n"
+#~ msgstr "%s: опција захтева аргумент —— „%c“\n"
+
+#, c-format
+#~ msgid "Packaged by %s (%s)\n"
+#~ msgstr "Запаковао %s (%s)\n"
+
+#, c-format
+#~ msgid "Packaged by %s\n"
+#~ msgstr "Запаковао %s\n"
+
+#, c-format
+#~ msgid ""
+#~ "License GPLv3+: GNU GPL version 3 or later <%s>.\n"
+#~ "This is free software: you are free to change and redistribute it.\n"
+#~ "There is NO WARRANTY, to the extent permitted by law.\n"
+#~ msgstr ""
+#~ "Дозвола ОЈЛи3+: Гну ОЈЛ издање 3 или новије <%s>.\n"
+#~ "Ово је слободан софтвер: можете да га мењате и расподељујете.\n"
+#~ "Нема НИКАКВЕ ГАРАНЦИЈЕ, у складу са законом.\n"
+
+#, c-format
+#~ msgid "Written by %s.\n"
+#~ msgstr "Написао је %s.\n"
+
+#, c-format
+#~ msgid "Written by %s and %s.\n"
+#~ msgstr "Написали су %s и %s.\n"
+
+#, c-format
+#~ msgid "Written by %s, %s, and %s.\n"
+#~ msgstr "Написали су %s, %s и %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "and %s.\n"
+#~ msgstr ""
+#~ "Написали су %s, %s, %s.\n"
+#~ "и %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, and %s.\n"
+#~ msgstr ""
+#~ "Написали су %s, %s, %s.\n"
+#~ "%s и %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, and %s.\n"
+#~ msgstr ""
+#~ "Написали су %s, %s, %s.\n"
+#~ "%s, %s и %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, and %s.\n"
+#~ msgstr ""
+#~ "Написали су %s, %s, %s.\n"
+#~ "%s, %s, %s и %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "and %s.\n"
+#~ msgstr ""
+#~ "Написали су %s, %s, %s.\n"
+#~ "%s, %s, %s, %s.\n"
+#~ "и %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "%s, and %s.\n"
+#~ msgstr ""
+#~ "Написали су %s, %s, %s.\n"
+#~ "%s, %s, %s, %s.\n"
+#~ "%s и %s.\n"
+
+#, c-format
+#~ msgid ""
+#~ "Written by %s, %s, %s,\n"
+#~ "%s, %s, %s, %s,\n"
+#~ "%s, %s, and others.\n"
+#~ msgstr ""
+#~ "Написали су %s, %s, %s.\n"
+#~ "%s, %s, %s, %s.\n"
+#~ "%s, %s и други.\n"
+
+#, c-format
+#~ msgid "Report bugs to: %s\n"
+#~ msgstr "Грешке пријавите на: %s\n"
+
+#, c-format
+#~ msgid "General help using GNU software: <%s>\n"
+#~ msgstr "Општа помоћ при коришћењу Гну софтвера: <%s>\n"
+
+#~ msgid "Symbol classes for --include argument"
+#~ msgstr "Разреди симбола за аргумент „--include“"
+
+#~ msgid "don't rely on indentation (default)"
+#~ msgstr "није засновано на поравнању (основно)"
+
+#~ msgid "accept both ANSI and K&R C (default)"
+#~ msgstr "прихвата и АНСИ и К&Р Ц (основно)"
+
+#~ msgid "don't print line numbers (default)"
+#~ msgstr "не штампа бројеве редова (основно)"
+
+#~ msgid "don't print nesting levels (default)"
+#~ msgstr "не штампа нивое гнезда (основно)"
+
+#~ msgid "don't draw ASCII art tree (default)"
+#~ msgstr "не исцртава АСКРИ стабло (основно)"
+
+#~ msgid "full output (default)"
+#~ msgstr "пун излаз (основно)"
+
+#~ msgid "don't format output for Emacs (default)"
+#~ msgstr "не форматира излаз за Емакс (основно)"
+
+#~ msgid "print argument lists in function declarations (default)"
+#~ msgstr "штампа спискове аргумената у објавама функције (основно)"
+
+#~ msgid "print symbol names in declaration strings (default)"
+#~ msgstr "штампа називе симбола у објавама ниски (основно)"
+
+#~ msgid "disable verbose diagnostics (default)"
+#~ msgstr "искључује опширну дијагностику (основно)"
+
+#~ msgid "[FILE]..."
+#~ msgstr "[ДАТОТЕКА]..."
+
+#~ msgid "assume main function to be called NAME; multiple options are allowed"
+#~ msgstr ""
+#~ "Подразумева да главна функција бива звана НАЗИВ; више опција је дозвољено"
+
+#~ msgid ""
+#~ "* The effect of each option marked with an asterisk is reversed if the "
+#~ "option's long name is prefixed with `no-'. For example, --no-cpp cancels "
+#~ "--cpp."
+#~ msgstr ""
+#~ "* Дејство сваке опције означене звездицом је повраћено ако је дуги назив "
+#~ "опције префиксиран са „no-“. На пример, „--no-cpp“ брише „--cpp“."
+
+#~ msgid "OPT"
+#~ msgstr "ОПЦ"
+
+#~ msgid ""
+#~ "Set printing option to OPT. Valid OPT values are: xref (or cross-ref), "
+#~ "tree. Any unambiguous abbreviation of the above is also accepted"
+#~ msgstr ""
+#~ "Подешава опцију штампања на ОПЦ. Важеће вредности за ОПЦ су: „xref“ (или "
+#~ "„cross-ref“), „tree“. Свака нејасна скраћеница горњих је такође прихваћена"
+
+#~ msgid "unknown print option: %s"
+#~ msgstr "непозната опција штампања: %s"
+
+#~ msgid "%.*s: ARGP_HELP_FMT parameter must be positive"
+#~ msgstr "%.*s: ARGP_HELP_FMT параметар мора бити позитиван"
+
+#~ msgid "%s: option '--%s' doesn't allow an argument\n"
+#~ msgstr "%s: опција „--%s“ не дозвољава аргумент\n"
+
+#~ msgid "%s: option '-W %s' doesn't allow an argument\n"
+#~ msgstr "%s: опција „-W %s“ не дозвољава аргумент\n"
+
+#~ msgid "%s: option '-W %s' requires an argument\n"
+#~ msgstr "%s: опција „-W %s“ захтева аргумент\n"
+
+#~ msgid "not enough memory to process rc file"
+#~ msgstr "нема довољно меморије обраду рц датотеке"
+
+#~ msgid "%s: illegal option -- %c\n"
+#~ msgstr "%s: недозвољена опција -- %c\n"

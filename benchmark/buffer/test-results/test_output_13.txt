@@ -1,0 +1,12 @@
+[13/17] Testing test_buffer_indexof()
+
+  expected: '5'
+    actual: '5'
+
+
+  expected: '8'
+    actual: '8'
+
+
+  expected: '-1'
+    actual: '-1'

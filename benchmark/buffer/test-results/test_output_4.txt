@@ -1,0 +1,28 @@
+[4/17] Testing test_buffer_append__grow()
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: 'Hello tobi was here'
+    actual: 'Hello tobi was here'
+
+
+  expected: '1024'
+    actual: '1024'
+
+
+  expected: '19'
+    actual: '19'

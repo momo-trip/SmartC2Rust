@@ -1,0 +1,8 @@
+Running: ./lsearch_t1
+Exit code: 127
+Output: ./run_test.sh: line 24: ./lsearch_t1: No such file or directory
+ERROR: lsearch_t1 exited with non-zero status 127
+ERROR: Output mismatch.
+Expected: linear_search: value of 'bob' is 11
+Got: ./run_test.sh: line 24: ./lsearch_t1: No such file or directory
+

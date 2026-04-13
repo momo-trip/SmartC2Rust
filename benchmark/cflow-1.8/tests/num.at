@@ -1,0 +1,113 @@
+# Process this file with autom4te to create testsuite. -*- Autotest -*-
+# Copyright (C) 2025 Sergey Poznyakoff
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 3, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+CFLOW_OPT([-i x],
+[CFLOW_TEST([numeric constants],
+[num],
+[int                u1 = 10;
+ unsigned           u2 = 10u;
+ unsigned long      u3 = 10ul;
+ unsigned long long u4 = 10ull;
+ long               u5 = 10l;
+ unsigned long      u6 = 10lu;
+ unsigned long long u7 = 10llu;
+ 
+ unsigned           U2 = 10U;
+ unsigned long      U3 = 10UL;
+ unsigned long long U4 = 10ULL;
+ long               U5 = 10L;
+ unsigned long      U6 = 10LU;
+ unsigned long long U7 = 10LLU;	
+
+ long               s1 = -10l;
+ long               s2 = -10ll;
+ long               S1 = -10L;
+ long               S2 = -10LL;
+
+ int                o1 = 010;
+ unsigned           o2 = 010u;
+ unsigned long      o3 = 010ul;
+ unsigned long long o4 = 010ull;
+ long               o5 = 010l;
+ unsigned long      o6 = 010lu;
+ unsigned long long o7 = 010llu;
+ 
+ unsigned           O2 = 010U;
+ unsigned long      O3 = 010UL;
+ unsigned long long O4 = 010ULL;
+ long               O5 = 010L;
+ unsigned long      O6 = 010LU;
+ unsigned long long O7 = 010LLU;
+
+
+ unsigned           x2 = 0x10u;
+ unsigned long      x3 = 0x10ul;
+ unsigned long long x4 = 0x10ull;
+ long               x5 = 0x10l;
+ unsigned long      x6 = 0x10lu;
+ unsigned long long x7 = 0x10llu;
+ 
+ unsigned           X2 = 0x10U;
+ unsigned long      X3 = 0x10UL;
+ unsigned long long X4 = 0x10ULL;
+ long               X5 = 0x10L;
+ unsigned long      X6 = 0x10LU;
+ unsigned long long X7 = 0x10LLU;	
+],
+[O2 <unsigned O2 at prog:29>
+O3 <unsigned long O3 at prog:30>
+O4 <unsigned long long O4 at prog:31>
+O5 <long O5 at prog:32>
+O6 <unsigned long O6 at prog:33>
+O7 <unsigned long long O7 at prog:34>
+S1 <long S1 at prog:18>
+S2 <long S2 at prog:19>
+U2 <unsigned U2 at prog:9>
+U3 <unsigned long U3 at prog:10>
+U4 <unsigned long long U4 at prog:11>
+U5 <long U5 at prog:12>
+U6 <unsigned long U6 at prog:13>
+U7 <unsigned long long U7 at prog:14>
+X2 <unsigned X2 at prog:44>
+X3 <unsigned long X3 at prog:45>
+X4 <unsigned long long X4 at prog:46>
+X5 <long X5 at prog:47>
+X6 <unsigned long X6 at prog:48>
+X7 <unsigned long long X7 at prog:49>
+o1 <int o1 at prog:21>
+o2 <unsigned o2 at prog:22>
+o3 <unsigned long o3 at prog:23>
+o4 <unsigned long long o4 at prog:24>
+o5 <long o5 at prog:25>
+o6 <unsigned long o6 at prog:26>
+o7 <unsigned long long o7 at prog:27>
+s1 <long s1 at prog:16>
+s2 <long s2 at prog:17>
+u1 <int u1 at prog:1>
+u2 <unsigned u2 at prog:2>
+u3 <unsigned long u3 at prog:3>
+u4 <unsigned long long u4 at prog:4>
+u5 <long u5 at prog:5>
+u6 <unsigned long u6 at prog:6>
+u7 <unsigned long long u7 at prog:7>
+x2 <unsigned x2 at prog:37>
+x3 <unsigned long x3 at prog:38>
+x4 <unsigned long long x4 at prog:39>
+x5 <long x5 at prog:40>
+x6 <unsigned long x6 at prog:41>
+x7 <unsigned long long x7 at prog:42>
+])
+])

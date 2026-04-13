@@ -1,0 +1,16 @@
+[6/17] Testing test_buffer_prepend()
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '0'
+    actual: '0'
+
+
+  expected: '11'
+    actual: '11'
+
+
+  expected: 'Hello World'
+    actual: 'Hello World'

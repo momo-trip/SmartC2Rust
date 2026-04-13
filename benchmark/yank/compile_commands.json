@@ -1,0 +1,18 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-DVERSION=\"1.3.0\"",
+      "-DYANKCMD=\"xsel\"",
+      "-c",
+      "-o",
+      "yank.o",
+      "yank.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/yank",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/yank/yank.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/yank/yank.o"
+  }
+]

@@ -1,0 +1,948 @@
+# Vietnamese translation for CFlow.
+# Copyright © 2012 Free Software Foundation, Inc.
+# This file is distributed under the same license as the cflow package.
+# Clytie Siddall <clytie@riverland.net.au>, 2006-2009.
+# Trần Ngọc Quân <vnwildman@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cflow-1.4\n"
+"Report-Msgid-Bugs-To: bug-cflow@gnu.org\n"
+"POT-Creation-Date: 2025-07-30 11:49+0300\n"
+"PO-Revision-Date: 2012-04-10 07:45+0700\n"
+"Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
+"Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: LocFactoryEditor 1.8\n"
+"X-Poedit-Language: Vietnamese\n"
+"X-Poedit-Country: VIET NAM\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: src/c.l:153
+msgid "unterminated string?"
+msgstr "chuỗi không được chấm dứt?"
+
+#: src/c.l:341
+#, c-format
+msgid "Command line: %s\n"
+msgstr "Dòng lệnh: %s\n"
+
+#: src/c.l:344
+#, c-format
+msgid "cannot execute `%s'"
+msgstr "không thể thực hiện « %s »"
+
+#: src/c.l:399
+#, c-format
+msgid "cannot open `%s'"
+msgstr "không thể mở « %s »"
+
+#: src/c.l:480
+#, c-format
+msgid "New location: %s:%d\n"
+msgstr "Địa điểm mới: %s:%d\n"
+
+#: src/main.c:147
+#, c-format
+msgid "%s: no symbol type supplied"
+msgstr "%s: chưa cung cấp kiểu ký hiệu"
+
+#: src/main.c:157
+#, c-format
+msgid "cyclic alias: %s -> %s"
+msgstr ""
+
+#: src/main.c:163
+#, c-format
+msgid "cyclic alias: %s -> %s -> %s"
+msgstr ""
+
+#: src/main.c:181
+#, c-format
+msgid "unknown symbol type: %s"
+msgstr "không rõ kiểu ký hiệu : %s"
+
+#: src/main.c:310 src/main.c:317
+#, c-format
+msgid "level indent string is too long"
+msgstr "chuỗi thụt lề cấp vẫn quá dài"
+
+#: src/main.c:343
+#, c-format
+msgid "level-indent syntax"
+msgstr "cú pháp thụt lề cấp"
+
+#: src/main.c:365
+#, c-format
+msgid "unknown level indent option: %s"
+msgstr "không rõ tùy chọn thụt lề cấp: %s"
+
+#: src/main.c:395
+#, c-format
+msgid "Unknown symbol class: %c"
+msgstr "Không rõ hạng ký hiệu : %c"
+
+#: src/main.c:407
+#, c-format
+msgid "%s: No such output driver"
+msgstr "%s: Không có trình điều khiển kết xuất như vậy"
+
+#: src/main.c:511
+msgid "General options:"
+msgstr "Tùy chọn chung:"
+
+#: src/main.c:515 src/main.c:662 src/main.c:881
+msgid "NUMBER"
+msgstr "SỐ"
+
+#: src/main.c:516
+#, fuzzy
+msgid "set the depth at which the flowgraph is cut off"
+msgstr "Lập độ sâu ở đó lưu đồ bị cắt ngắn"
+
+#: src/main.c:527
+msgid "CLASSES"
+msgstr "HẠNG"
+
+#: src/main.c:528
+#, fuzzy
+msgid ""
+"include specified classes of symbols (see below); prepend CLASSES with ^ or "
+"- to exclude them from the output"
+msgstr ""
+"Gồm một số hạng ký hiệu đã xác định (xem dưới). Them dấu mũ « ^ » hay dấu "
+"trừ « - » vào trước các hạng bạn muốn loại trừ khỏi kết xuất."
+
+#: src/main.c:540
+msgid "all data symbols, both external and static"
+msgstr "mọi ký hiệu dữ liệu, cả hai kiểu bên ngoài và tĩnh"
+
+#: src/main.c:545
+msgid "symbols whose names begin with an underscore"
+msgstr "ký hiệu có tên bắt đầu với dấu gạch dưới « _ »"
+
+#: src/main.c:550
+msgid "static symbols"
+msgstr "ký hiệu tĩnh"
+
+#: src/main.c:555
+msgid "typedefs (for cross-references only)"
+msgstr "typedef (lời định nghĩa loại: chỉ cho tham chiếu chéo)"
+
+#: src/main.c:560 src/main.c:701 src/main.c:835 src/main.c:858
+msgid "NAME"
+msgstr "TÊN"
+
+#. TRANSLATORS: Don't translate quoted names.
+#: src/main.c:562
+#, fuzzy
+msgid ""
+"use given output format NAME; valid names are `gnu' (default), `posix', and "
+"`dot'"
+msgstr ""
+"Dùng TÊN định dạng kết xuất đã cho. Tên hợp lệ là « gnu » (mặc định) và « "
+"posix »"
+
+#: src/main.c:573
+#, fuzzy
+msgid "print reverse call tree"
+msgstr "* In ra cây gọi đảo ngược"
+
+#: src/main.c:584
+#, fuzzy
+msgid "produce cross-reference listing only"
+msgstr "Cung cấp chỉ danh sách tham chiếu chéo"
+
+#: src/main.c:594 src/main.c:610
+msgid "FILE"
+msgstr "TẬP TIN"
+
+#: src/main.c:595
+#, fuzzy
+msgid "set output file name (default -, meaning stdout)"
+msgstr ""
+"Lập tên tập tin kết xuất (mặc định là « - » mà có nghĩa là đầu ra tiêu chuẩn)"
+
+#: src/main.c:606
+msgid "Program initialization:"
+msgstr ""
+
+#: src/main.c:611
+msgid "read options from FILE"
+msgstr ""
+
+#: src/main.c:616 src/main.c:712
+msgid "DIR"
+msgstr "TMỤC"
+
+#: src/main.c:617
+msgid "prepend DIR to the profile search path"
+msgstr ""
+
+#: src/main.c:628
+msgid "don't load default profile"
+msgstr ""
+
+#: src/main.c:636
+msgid "Parser control:"
+msgstr "Điều khiển hàm phân tích:"
+
+#: src/main.c:640
+#, fuzzy
+msgid "rely on indentation"
+msgstr "* Nhờ sự thụt lề"
+
+#: src/main.c:651
+#, fuzzy
+msgid "accept only sources in ANSI C"
+msgstr "* Chấp nhận chỉ mã nguồn theo ANSI C"
+
+#: src/main.c:663
+#, fuzzy
+msgid "set initial token stack size to NUMBER"
+msgstr "Lập kích cỡ đống hiệu bài đầu tiên là SỐ"
+
+#: src/main.c:674
+msgid "SYMBOL:[=]TYPE"
+msgstr "KÝ_HIỆU:[=]KIỂU"
+
+#. TRANSLATORS: Don't translate type names.
+#: src/main.c:677
+#, fuzzy
+msgid ""
+"register SYMBOL with given TYPE, or define an alias (if := is used); valid "
+"types are: keyword (or kw), modifier, qualifier, identifier, type, wrapper, "
+"or any unambiguous abbreviation thereof"
+msgstr ""
+"Đăng ký KÝ HIỆU với KIỂU đã cho, hay định nghĩa một bí danh (nếu := được sử "
+"dụng). Các kiểu hợp lệ là:\n"
+" • keyword (hay kw)\ttừ khóa\n"
+" • modifier\t\t\tbộ sửa đổi\n"
+" • identifier\t\t\tbộ nhận diện\n"
+" • type\t\t\t\tkiểu, loại\n"
+" • wrapper\t\t\tbộ bao bọc\n"
+"Cũng chấp nhận bất cứ từ viết tắt không rõ ràng nào của những kiểu ở trên."
+
+#: src/main.c:690
+msgid "NAME[=DEFN]"
+msgstr "TÊN[=LỜI_ĐN]"
+
+#: src/main.c:691
+#, fuzzy
+msgid "predefine NAME as a macro"
+msgstr "Định nghĩa sẵn TÊN là một vĩ lệnh"
+
+#: src/main.c:702
+#, fuzzy
+msgid "cancel any previous definition of NAME"
+msgstr "Hủy bất cứ lời định nghĩa trước nào của TÊN"
+
+#: src/main.c:713
+#, fuzzy
+msgid ""
+"add the directory DIR to the list of directories to be searched for header "
+"files"
+msgstr ""
+"Thêm thư mục TMỤC vào danh sách các thư mục qua đó cần quét tìm tập tin phần "
+"đầu."
+
+#: src/main.c:724
+msgid "COMMAND"
+msgstr "LỆNH"
+
+#: src/main.c:726
+#, fuzzy
+msgid "run the specified preprocessor command"
+msgstr "* Chạy câu lệnh bộ tiền xử lý đã ghi rõ"
+
+#: src/main.c:736
+msgid "disable preprocessor"
+msgstr ""
+
+#: src/main.c:747
+msgid "Output control:"
+msgstr "Điều khiển kết xuất:"
+
+#: src/main.c:751
+msgid "show all functions, not only those reachable from main"
+msgstr ""
+
+#: src/main.c:763
+#, fuzzy
+msgid "print line numbers"
+msgstr "* In ra số thứ tự dòng"
+
+#: src/main.c:774
+#, fuzzy
+msgid "print nesting level along with the call tree"
+msgstr "* In ra cấp lồng nhau cùng với cây lời gọi"
+
+#: src/main.c:785
+msgid "ELEMENT"
+msgstr ""
+
+#: src/main.c:786
+#, fuzzy
+msgid "control graph appearance; see [1] for details"
+msgstr "Điều khiển hình thức đồ thị"
+
+#: src/main.c:792
+#, fuzzy
+msgid "draw ASCII art tree"
+msgstr "* Vẽ cây nghệ thuật ASCII"
+
+#: src/main.c:803
+#, fuzzy
+msgid "brief output"
+msgstr "* Xuất ngắn"
+
+#: src/main.c:814
+#, fuzzy
+msgid "additionally format output for use with GNU Emacs"
+msgstr "* Cũng định dạng kết xuất để sử dụng với Emacs của GNU"
+
+#: src/main.c:821
+#, fuzzy
+msgid "don't print argument lists in function declarations"
+msgstr "* Đừng in ra danh sách đối số trong khai báo hàm"
+
+#: src/main.c:828
+#, fuzzy
+msgid "don't print symbol names in declaration strings"
+msgstr "* Đừng in ra tên ký hiệu trong chuỗi tuyên bố"
+
+#: src/main.c:836
+#, fuzzy
+msgid "start graph at this function; multiple options are allowed"
+msgstr "Giả sử hàm chính sẽ có tên TÊN."
+
+#: src/main.c:851
+msgid "there's no main function; print graphs for all functions in the program"
+msgstr ""
+
+#: src/main.c:859
+msgid ""
+"show only graphs leading from start symbols to this function; multiple "
+"options are allowed"
+msgstr ""
+
+#: src/main.c:866
+msgid "Informational options:"
+msgstr "Tùy chọn thông tin:"
+
+#: src/main.c:870
+#, fuzzy
+msgid "verbose error diagnostics"
+msgstr "* Chẩn đoán lỗi một cách chi tiết"
+
+#: src/main.c:883
+#, fuzzy
+msgid "set debugging level"
+msgstr "Đặt mức gỡ lỗi"
+
+#: src/main.c:892
+msgid ""
+"\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+msgstr ""
+
+#: src/main.c:906
+msgid "(C)"
+msgstr ""
+
+#: src/main.c:909
+#, c-format
+msgid "Written by %s."
+msgstr ""
+
+#: src/main.c:916
+msgid "References:"
+msgstr ""
+
+#: src/main.c:919
+#, c-format
+msgid "Profile search path: %s\n"
+msgstr ""
+
+#: src/main.c:925
+#, fuzzy
+msgid "generate program flowgraph"
+msgstr "tạo ra một lưu đồ chương trình"
+
+#: src/main.c:931
+msgid "General help using GNU software: <https://www.gnu.org/gethelp/>"
+msgstr ""
+
+#: src/main.c:976 src/main.c:1434
+#, c-format
+msgid "parseopt_getopt failed"
+msgstr ""
+
+#: src/main.c:1043
+#, c-format
+msgid "error splitting line: %s"
+msgstr ""
+
+#: src/main.c:1064
+#, c-format
+msgid "file read error: %s"
+msgstr ""
+
+#: src/main.c:1158 src/main.c:1264
+#, fuzzy, c-format
+msgid "can't open option file %s: %s"
+msgstr "không thể mở « %s »"
+
+#: src/main.c:1180
+#, fuzzy, c-format
+msgid "can't open directory %s"
+msgstr "không thể mở « %s »"
+
+#: src/main.c:1186
+#, fuzzy, c-format
+msgid "can't open file %s/%s"
+msgstr "không thể mở « %s »"
+
+#: src/main.c:1202
+#, c-format
+msgid "can't stat %s/%s"
+msgstr ""
+
+#: src/main.c:1234
+#, fuzzy, c-format
+msgid "no such profile: %s"
+msgstr "không có tập tin nhập vào"
+
+#: src/main.c:1302
+#, c-format
+msgid "warning: processing obsolete %s file"
+msgstr ""
+
+#: src/main.c:1308
+#, c-format
+msgid "warning: consider renaming it to %*.*s/%s%s"
+msgstr ""
+
+#: src/main.c:1383
+#, c-format
+msgid "Exiting"
+msgstr "Đang thoát"
+
+#: src/main.c:1423
+#, fuzzy, c-format
+msgid "INTERNAL ERROR: %s: No such output driver"
+msgstr "%s: Không có trình điều khiển kết xuất như vậy"
+
+#: src/main.c:1438
+#, c-format
+msgid "argument to -p cannot be 0"
+msgstr ""
+
+#: src/main.c:1466
+#, c-format
+msgid "no input files"
+msgstr "không có tập tin nhập vào"
+
+#: src/parser.c:210
+#, c-format
+msgid " near "
+msgstr " gần "
+
+#: src/parser.c:313
+#, c-format
+msgid "INTERNAL ERROR: cannot return token to stream"
+msgstr "LỖI NỘI BỘ : không thể trả lại hiệu bài về luồng"
+
+#: src/parser.c:404
+msgid "unrecognized definition"
+msgstr "định nghĩa không được thừa nhận"
+
+#: src/parser.c:626 src/parser.c:656 src/parser.c:791 src/parser.c:911
+#: src/parser.c:1127
+msgid "unexpected end of file in declaration"
+msgstr "kết thức tập tin bất thường trong khai báo"
+
+#: src/parser.c:675 src/parser.c:693 src/parser.c:726 src/parser.c:732
+msgid "unexpected end of file in expression"
+msgstr "kết thúc tập tin bất thường trong biểu thức"
+
+#: src/parser.c:771 src/parser.c:874
+msgid "expected `;'"
+msgstr "mong đợi dấu chấm phẩy « ; »"
+
+#: src/parser.c:823
+msgid "missing `;' after struct declaration"
+msgstr "thiếu dấu chấm phẩy « ; » đằng sau khai báo cấu trúc"
+
+#: src/parser.c:896
+#, fuzzy
+msgid "expected expression"
+msgstr "kết thúc tập tin bất thường trong biểu thức"
+
+#: src/parser.c:933
+msgid "unexpected end of file in initializer list"
+msgstr "kết thức tập tin bất thường trong danh sách sơ khởi"
+
+#: src/parser.c:963 src/parser.c:970
+msgid "unexpected end of file in struct"
+msgstr "kết thúc tập tin bất thường trong cấu trúc"
+
+#: src/parser.c:1019 src/parser.c:1144
+msgid "unexpected end of file in function declaration"
+msgstr "kết thúc tập tin bất thường trong khai báo hàm"
+
+#: src/parser.c:1054 src/parser.c:1066
+#, fuzzy
+msgid "unexpected end of file"
+msgstr "kết thúc tập tin bất thường trong cấu trúc"
+
+#: src/parser.c:1105 src/parser.c:1134
+msgid "expected `)'"
+msgstr "mong đợi dấu ngoặc đóng « ) »"
+
+#: src/parser.c:1206
+msgid "unexpected token in parameter list"
+msgstr "hiệu bài bất thường trong danh sách tham số"
+
+#: src/parser.c:1222
+msgid "unexpected end of file in parameter list"
+msgstr "kết thúc tập tin bất thường trong danh sách tham số"
+
+#: src/parser.c:1260
+msgid "forced function body close"
+msgstr "sự đóng thân hàm bị ép buộc"
+
+#: src/parser.c:1274
+msgid "unexpected end of file in function body"
+msgstr "kết thúc tập tin bất thường trong thân hàm"
+
+#: src/parser.c:1374
+#, c-format
+msgid "%s/%d redefined"
+msgstr "%s/%d đã định nghĩa lại"
+
+#: src/parser.c:1378
+#, c-format
+msgid "%s redefined"
+msgstr "%s đã định nghĩa lại"
+
+#: src/parser.c:1381
+#, c-format
+msgid "this is the place of previous definition"
+msgstr "đây là vị trí của lời định nghĩa trước"
+
+#: src/parser.c:1395
+#, c-format
+msgid "%s:%d: %s/%d defined to %s\n"
+msgstr "%s:%d: %s/%d đã định nghĩa thành %s\n"
+
+#: src/parser.c:1420
+#, c-format
+msgid "%s:%d: type %s\n"
+msgstr "%s:%d: loại %s\n"
+
+#: src/output.c:432
+#, fuzzy, c-format
+msgid "cannot open file `%s'"
+msgstr "không thể mở « %s »"
+
+#: src/posix.c:59
+#, c-format
+msgid "--format=posix is not compatible with --emacs"
+msgstr ""
+
+#: gnu/error.c:196
+msgid "Unknown system error"
+msgstr "Gặp lỗi hệ thống không rõ"
+
+#: gnu/obstack.c:319 gnu/obstack.c:321 gnu/xalloc-die.c:36
+#: src/wordsplit/wordsplit.c:78 src/wordsplit/wordsplit.c:2851
+msgid "memory exhausted"
+msgstr "cạn bộ nhớ"
+
+#: src/wordsplit/wordsplit.c:132
+msgid "memory exhausted while trying to store error context"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:873
+msgid "Restarting"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:1599
+#, c-format
+msgid "%.*s: variable null or not set"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:1629
+#, c-format
+msgid "warning: undefined variable `%.*s'"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2130
+#, c-format
+msgid "no files match pattern %s"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2595
+msgid "WS trimming"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2597
+msgid "command substitution"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2599 src/wordsplit/wordsplit.c:2607
+msgid "coalesce list"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2601
+msgid "tilde expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2603
+msgid "variable expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2605
+msgid "quote removal"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2609
+msgid "path expansion"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2634
+#, c-format
+msgid "(%02d) Input:%.*s;"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2660
+msgid "Initial list:"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2675
+msgid "Coalesced list:"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2849
+msgid "no error"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2850
+msgid "missing closing quote"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2852
+msgid "invalid wordsplit usage"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2853
+msgid "unbalanced curly brace"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2854
+msgid "undefined variable"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2855
+#, fuzzy
+msgid "input exhausted"
+msgstr "cạn bộ nhớ"
+
+#: src/wordsplit/wordsplit.c:2856
+msgid "unbalanced parenthesis"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2857
+msgid "globbing error"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2858
+#, fuzzy
+msgid "user-defined error"
+msgstr "%s đã định nghĩa lại"
+
+#: src/wordsplit/wordsplit.c:2859
+msgid "invalid parameter number in assignment"
+msgstr ""
+
+#: src/wordsplit/wordsplit.c:2871
+#, fuzzy
+msgid "unknown error"
+msgstr "Gặp lỗi hệ thống không rõ"
+
+#: src/wordsplit/wordsplit.c:2880
+#, c-format
+msgid "missing closing %c (start near #%lu)"
+msgstr ""
+
+#: src/parseopt/help.c:91
+#, c-format
+msgid "error in ARGP_HELP_FMT: improper usage of [no-]%s"
+msgstr ""
+
+#: src/parseopt/help.c:104
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: bad value for %s (near %s)"
+msgstr "ARGP_HELP_FMT: giá trị %s nhỏ hơn hay bằng %s"
+
+#: src/parseopt/help.c:110
+#, fuzzy, c-format
+msgid "error in ARGP_HELP_FMT: %s value is out of range"
+msgstr "ARGP_HELP_FMT: giá trị %s nhỏ hơn hay bằng %s"
+
+#: src/parseopt/help.c:117
+#, fuzzy, c-format
+msgid "%s: ARGP_HELP_FMT parameter requires a value"
+msgstr "%.*s: tham số « ARGP_HELP_FMT » yêu cầu một giá trị"
+
+#: src/parseopt/help.c:123
+#, fuzzy, c-format
+msgid "%s: unknown ARGP_HELP_FMT parameter"
+msgstr "%.*s: không nhận ra tham số « ARGP_HELP_FMT »"
+
+#: src/parseopt/help.c:149
+#, c-format
+msgid "ARGP_HELP_FMT: missing delimiter near %s"
+msgstr ""
+
+#: src/parseopt/help.c:300
+msgid "Usage:"
+msgstr "Sử dụng:"
+
+#: src/parseopt/help.c:319
+#, fuzzy, c-format
+msgid "or: %s [OPTIONS...] %s\n"
+msgstr " [TÙY_CHỌN...]"
+
+#: src/parseopt/help.c:582
+msgid ""
+"Mandatory or optional arguments to long options are also mandatory or "
+"optional for any corresponding short options."
+msgstr ""
+"Tất cả đối số bắt buộc phải sử dụng hoặc sử dụng tùy ý với tùy chọn dài cũng "
+"bắt buộc hoặc sử dụng tùy ý với tùy chọn ngắn tương ứng."
+
+#: src/parseopt/help.c:584
+msgid ""
+"If an option has several forms, mandatory or optional argument is listed "
+"only once, after the last form."
+msgstr ""
+
+#: src/parseopt/help.c:740
+#, fuzzy, c-format
+msgid "usage: %s"
+msgstr "Sử dụng:"
+
+#: src/parseopt/help.c:746
+#, fuzzy
+msgid "[OPTIONS...]"
+msgstr " [TÙY_CHỌN...]"
+
+#: src/parseopt/help.c:757
+#, c-format
+msgid "or: %s %s\n"
+msgstr ""
+
+#: src/parseopt/help.c:802
+#, fuzzy, c-format
+msgid "Report bugs and suggestions to <%s>\n"
+msgstr "Hãy thông báo lỗi nào cho %s.\n"
+
+#: src/parseopt/help.c:806
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr ""
+
+#: src/parseopt/optset.c:120 src/parseopt/optset.c:136
+msgid "memory allocation error"
+msgstr ""
+
+#: src/parseopt/parseopt.c:71
+#, fuzzy, c-format
+msgid "unrecognized option '-%c'"
+msgstr "%s: không nhận ra tùy chọn « %c%s »\n"
+
+#: src/parseopt/parseopt.c:142
+#, fuzzy, c-format
+msgid "option '%s%*.*s' is ambiguous; possibilities:"
+msgstr "%s: tùy chọn « %s » vẫn mơ hồ\n"
+
+#: src/parseopt/parseopt.c:174
+#, fuzzy, c-format
+msgid "unrecognized option '%s%*.*s'"
+msgstr "%s: không nhận ra tùy chọn « %c%s »\n"
+
+#: src/parseopt/parseopt.c:337
+#, fuzzy, c-format
+msgid "option '%s%s' requires argument"
+msgstr "%s: tùy chọn « %s » yêu cầu một đối số\n"
+
+#: src/parseopt/parseopt.c:351
+#, fuzzy, c-format
+msgid "option '%s%s' does not take argument"
+msgstr "%s: tùy chọn « %c%s » không cho phép đối số\n"
+
+#: src/parseopt/parseopt.c:369
+#, fuzzy, c-format
+msgid "bad value for option '%s%s'"
+msgstr "%s: không nhận ra tùy chọn « %c%s »\n"
+
+#: src/parseopt/parseopt.c:395
+#, c-format
+msgid "invalid argument '%s'"
+msgstr ""
+
+#: src/parseopt/parseopt.c:580
+#, fuzzy
+msgid "Informative options"
+msgstr "Tùy chọn thông tin:"
+
+#: src/parseopt/parseopt.c:585
+#, fuzzy
+msgid "produce this help text"
+msgstr "hiển thị trợ giúp này"
+
+#: src/parseopt/parseopt.c:594
+msgid "give a short usage message"
+msgstr "hiển thị thông điệp cách sử dụng ngắn"
+
+#: src/parseopt/parseopt.c:604 src/parseopt/parseopt.c:613
+msgid "print program version"
+msgstr "in ra phiên bản chương trình"
+
+#, c-format
+#~ msgid "Garbage in ARGP_HELP_FMT: %s"
+#~ msgstr "Gặp rác trong « ARGP_HELP_FMT »: %s"
+
+#~ msgid "  or: "
+#~ msgstr "  hoặc: "
+
+#, fuzzy, c-format
+#~ msgid "Try '%s --help' or '%s --usage' for more information.\n"
+#~ msgstr ""
+#~ "Hãy thử câu lệnh « %s --help » (trợ giúp) hoặc « %s --usage » (cách sử "
+#~ "dụng) để xem thêm thông tin.\n"
+
+#, c-format
+#~ msgid "Report bugs to %s.\n"
+#~ msgstr "Hãy thông báo lỗi nào cho %s.\n"
+
+#~ msgid "set the program name"
+#~ msgstr "đặt tên chương trình"
+
+#~ msgid "SECS"
+#~ msgstr "GIÂY"
+
+#~ msgid "hang for SECS seconds (default 3600)"
+#~ msgstr "treo trong vòng GIÂY giây (mặc định là 3600)"
+
+#~ msgid "(PROGRAM ERROR) No version known!?"
+#~ msgstr "(LỖI CHƯƠNG TRÌNH) Không có phiên bản nào được biết!?"
+
+#, c-format
+#~ msgid "%s: Too many arguments\n"
+#~ msgstr "%s: Quá nhiều đối số\n"
+
+#~ msgid "(PROGRAM ERROR) Option should have been recognized!?"
+#~ msgstr "(LỖI CHƯƠNG TRÌNH) Nên nhận diện tùy chọn mà chưa!?"
+
+#, fuzzy, c-format
+#~ msgid "%s: option '%s%s' is ambiguous\n"
+#~ msgstr "%s: tùy chọn « %s » vẫn mơ hồ\n"
+
+#, fuzzy, c-format
+#~ msgid "%s: invalid option -- '%c'\n"
+#~ msgstr "%s: tùy chọn không hợp lệ « -- %c »\n"
+
+#, fuzzy, c-format
+#~ msgid "%s: option requires an argument -- '%c'\n"
+#~ msgstr "%s: tùy chọn yêu cầu một đối số « -- %c »\n"
+
+#, fuzzy, c-format
+#~ msgid "Report bugs to: %s\n"
+#~ msgstr "Hãy thông báo lỗi nào cho %s.\n"
+
+#, fuzzy
+#~ msgid "Symbol classes for --include argument"
+#~ msgstr "Hạng ký hiệu cho đối số « --include » (bao gồm)"
+
+#, fuzzy
+#~ msgid "don't rely on indentation (default)"
+#~ msgstr "* Nhờ sự thụt lề"
+
+#, fuzzy
+#~ msgid "don't print line numbers (default)"
+#~ msgstr "* In ra số thứ tự dòng"
+
+#, fuzzy
+#~ msgid "don't draw ASCII art tree (default)"
+#~ msgstr "* Vẽ cây nghệ thuật ASCII"
+
+#, fuzzy
+#~ msgid "don't format output for Emacs (default)"
+#~ msgstr "* Cũng định dạng kết xuất để sử dụng với Emacs của GNU"
+
+#, fuzzy
+#~ msgid "print argument lists in function declarations (default)"
+#~ msgstr "* Đừng in ra danh sách đối số trong khai báo hàm"
+
+#, fuzzy
+#~ msgid "print symbol names in declaration strings (default)"
+#~ msgstr "* Đừng in ra tên ký hiệu trong chuỗi tuyên bố"
+
+#~ msgid "[FILE]..."
+#~ msgstr "[TẬP_TIN]..."
+
+#~ msgid ""
+#~ "* The effect of each option marked with an asterisk is reversed if the "
+#~ "option's long name is prefixed with `no-'. For example, --no-cpp cancels "
+#~ "--cpp."
+#~ msgstr ""
+#~ "* Hiệu ứng của mỗi tùy chọn có dấu sao bị đảo ngược nếu tên của tùy chọn "
+#~ "dài có tiền tố « no- » (không có). Lấy thí dụ, tùy chọn « --no-cpp » hủy "
+#~ "« --cpp »."
+
+#~ msgid "OPT"
+#~ msgstr "TCH"
+
+#~ msgid ""
+#~ "Set printing option to OPT. Valid OPT values are: xref (or cross-ref), "
+#~ "tree. Any unambiguous abbreviation of the above is also accepted"
+#~ msgstr ""
+#~ "Lập tùy chọn in thành TCH. Giá trị TCH hợp lệ là « xref » (tham chiếu "
+#~ "chéo) và « tree » (cây). Cũng chấp nhận được bất cứ từ viết tắt rõ ràng "
+#~ "nào của chúng."
+
+#~ msgid "unknown print option: %s"
+#~ msgstr "không hiểu tùy chọn in: %s"
+
+#~ msgid "not enough memory to process rc file"
+#~ msgstr "không đủ bộ nhớ để xử lý tập tin tài nguyên (rc)"
+
+#~ msgid "%.*s: ARGP_HELP_FMT parameter must be positive"
+#~ msgstr "%.*s: tham số « ARGP_HELP_FMT » phải là số dương"
+
+#~ msgid "%s: option `--%s' doesn't allow an argument\n"
+#~ msgstr "%s: tùy chọn « --%s » không cho phép đối số\n"
+
+#~ msgid "%s: unrecognized option `--%s'\n"
+#~ msgstr "%s: không nhận ra tùy chọn « --%s »\n"
+
+#~ msgid "%s: illegal option -- %c\n"
+#~ msgstr "%s: không cho phép tùy chọn « -- %c »\n"
+
+#~ msgid "%s: option `-W %s' is ambiguous\n"
+#~ msgstr "%s: tùy chọn « -W %s » vẫn mơ hồ\n"
+
+#~ msgid "%s: option `-W %s' doesn't allow an argument\n"
+#~ msgstr "%s: tùy chọn « -W %s » không cho phép đối số\n"

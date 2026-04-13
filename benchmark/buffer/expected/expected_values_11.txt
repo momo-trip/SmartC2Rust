@@ -1,0 +1,8 @@
+[11/17] Testing test_buffer_equals()
+
+  expected: '1'
+    actual: '1'
+
+
+  expected: '0'
+    actual: '0'

@@ -1,0 +1,21 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-O2",
+      "-Wno-maybe-uninitialized",
+      "-Wno-format",
+      "-Wno-parentheses",
+      "-Wno-main",
+      "-o",
+      "c4",
+      "c4.c"
+    ],
+    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/c4",
+    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/c4/c4.c",
+    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/c4/c4"
+  }
+]
