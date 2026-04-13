@@ -98,7 +98,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
 - `<c_source_dir>/golden/`: directory for saving golden execution flows
 
 
-### Step 3: Macro pre-processing
+### Step 3: Pre-processing for parsing
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off /root/SmartC2Rust/macro/trans_re_0000/{program}/run_test.sh /root/SmartC2Rust/macro/benchmark/{program}/targets.txt
@@ -118,7 +118,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off
 - `macro/div_metadata_0000/{program}/`: per-block metadata for translation units
 
 
-### Step 4: Pre-processing for translation
+### Step 4: Pre-processing for segmentation
 ```bash
 cd /root/SmartC2Rust/trans
 python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root/SmartC2Rust/benchmark/{program}/targets.txt /root/SmartC2Rust/macro/metadata_0000/{program} /root/SmartC2Rust/macro/div_metadata_0000/{program} /root/SmartC2Rust/macro/trans_c_0000/{program}
@@ -193,8 +193,8 @@ The default model is Claude Opus 4.6 (Anthropic).
 ### SmartC2Rust
 ```
 SmartC2Rust/
-├── macro/                  # Step 1-3: Test reformatting, golden flow extraction, macro pre-processing
-│   └── pre_process.py
+├── macro/
+│   └── pre_process.py.     # Step 1-3: Test reformatting, golden flow extraction, macro pre-processing
 ├── trans/                 
 │   ├── pre_process.py      # Step 4: Static analysis
 │   ├── compile.py          # Step 5: Translation and compilation repair

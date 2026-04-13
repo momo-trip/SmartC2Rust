@@ -7472,7 +7472,7 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
         error = None
         return_path = f"{database_dir}/return.txt"  # What does this mean, exactly?
 
-        set_convert_type(moment_path, target, 'divided', llm_choice)
+        #set_convert_type(moment_path, target, 'divided', llm_choice)
         translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, original_dir,
                        target_path, chat_dir, token_path, time_path, progress_queue, log_dir, max_iterations,
                        meta_dir, div_meta_dir, dep_json_path, rust_output_dir, 
@@ -7889,7 +7889,7 @@ if __name__ == "__main__":
     azure_endpoint = config_data["azure_endpoint"]
     TEST_MODE = config_data["test_mode"]
     average = config_data["average"]
-    
+
     config = {
         "original_dir": original_dir,
         "c_code_dir" : c_code_dir,
