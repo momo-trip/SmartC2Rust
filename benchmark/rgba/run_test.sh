@@ -3,25 +3,25 @@
 
 # Reformed test cases
 failed=0
-mkdir -p genifai_results
+mkdir -p flow_results
 
 ##############################################
 # Test 1: Named colors (test_named assertion)
 ##############################################
 echo "Test 1 started"
 log=""
-ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test1_trace.log ./test_rgba_t1 2>&1)
+ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./test_rgba_t1 2>&1)
 test1_exit=$?
 log+="Exit code: ${test1_exit}\n"
 log+="Output:\n${ACTUAL_OUTPUT}\n"
 
 if [ $test1_exit -eq 0 ]; then
     echo "Test 1 passed"
-    echo -e "$log" > genifai_results/test1_success.log
+    echo -e "$log" > flow_results/test1_success.log
 else
     echo "Test 1 failed"
     echo "Test 1 failed" >&2
-    echo -e "$log" > genifai_results/test1_fail.log
+    echo -e "$log" > flow_results/test1_fail.log
     failed=1
 fi
 echo "Test 1 ended"
@@ -31,18 +31,18 @@ echo "Test 1 ended"
 ##############################################
 echo "Test 2 started"
 log=""
-ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test2_trace.log ./test_rgba_t2 2>&1)
+ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log ./test_rgba_t2 2>&1)
 test2_exit=$?
 log+="Exit code: ${test2_exit}\n"
 log+="Output:\n${ACTUAL_OUTPUT}\n"
 
 if [ $test2_exit -eq 0 ]; then
     echo "Test 2 passed"
-    echo -e "$log" > genifai_results/test2_success.log
+    echo -e "$log" > flow_results/test2_success.log
 else
     echo "Test 2 failed"
     echo "Test 2 failed" >&2
-    echo -e "$log" > genifai_results/test2_fail.log
+    echo -e "$log" > flow_results/test2_fail.log
     failed=1
 fi
 echo "Test 2 ended"
@@ -52,18 +52,18 @@ echo "Test 2 ended"
 ##############################################
 echo "Test 3 started"
 log=""
-ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test3_trace.log ./test_rgba_t3 2>&1)
+ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log ./test_rgba_t3 2>&1)
 test3_exit=$?
 log+="Exit code: ${test3_exit}\n"
 log+="Output:\n${ACTUAL_OUTPUT}\n"
 
 if [ $test3_exit -eq 0 ]; then
     echo "Test 3 passed"
-    echo -e "$log" > genifai_results/test3_success.log
+    echo -e "$log" > flow_results/test3_success.log
 else
     echo "Test 3 failed"
     echo "Test 3 failed" >&2
-    echo -e "$log" > genifai_results/test3_fail.log
+    echo -e "$log" > flow_results/test3_fail.log
     failed=1
 fi
 echo "Test 3 ended"
@@ -73,18 +73,18 @@ echo "Test 3 ended"
 ##############################################
 echo "Test 4 started"
 log=""
-ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test4_trace.log ./test_rgba_t4 2>&1)
+ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log ./test_rgba_t4 2>&1)
 test4_exit=$?
 log+="Exit code: ${test4_exit}\n"
 log+="Output:\n${ACTUAL_OUTPUT}\n"
 
 if [ $test4_exit -eq 0 ]; then
     echo "Test 4 passed"
-    echo -e "$log" > genifai_results/test4_success.log
+    echo -e "$log" > flow_results/test4_success.log
 else
     echo "Test 4 failed"
     echo "Test 4 failed" >&2
-    echo -e "$log" > genifai_results/test4_fail.log
+    echo -e "$log" > flow_results/test4_fail.log
     failed=1
 fi
 echo "Test 4 ended"
@@ -94,18 +94,18 @@ echo "Test 4 ended"
 ##############################################
 echo "Test 5 started"
 log=""
-ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test5_trace.log ./test_rgba_t5 2>&1)
+ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log ./test_rgba_t5 2>&1)
 test5_exit=$?
 log+="Exit code: ${test5_exit}\n"
 log+="Output:\n${ACTUAL_OUTPUT}\n"
 
 if [ $test5_exit -eq 0 ]; then
     echo "Test 5 passed"
-    echo -e "$log" > genifai_results/test5_success.log
+    echo -e "$log" > flow_results/test5_success.log
 else
     echo "Test 5 failed"
     echo "Test 5 failed" >&2
-    echo -e "$log" > genifai_results/test5_fail.log
+    echo -e "$log" > flow_results/test5_fail.log
     failed=1
 fi
 echo "Test 5 ended"

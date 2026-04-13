@@ -4,7 +4,7 @@
 # Reformed test cases
 failed=0
 
-mkdir -p genifai_results
+mkdir -p flow_results
 rm -rf samples/output
 mkdir -p samples/output
 
@@ -15,7 +15,7 @@ echo "Test 1 started"
 test1_log=""
 test1_pass=1
 
-test1_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test1_trace.log ./lsearch_t1 2>&1)
+test1_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./lsearch_t1 2>&1)
 if [ $? -ne 0 ]; then
     test1_pass=0
     test1_log+="lsearch_t1 execution failed\n"
@@ -36,11 +36,11 @@ fi
 
 if [ $test1_pass -eq 1 ]; then
     echo "Test 1 passed"
-    echo -e "Test 1 passed\nOutput:\n$test1_output" > genifai_results/test1_success.log
+    echo -e "Test 1 passed\nOutput:\n$test1_output" > flow_results/test1_success.log
 else
     echo "Test 1 failed"
     echo "Test 1 failed" >&2
-    echo -e "Test 1 failed\n$test1_log" > genifai_results/test1_fail.log
+    echo -e "Test 1 failed\n$test1_log" > flow_results/test1_fail.log
     failed=1
 fi
 echo "Test 1 ended"
@@ -52,7 +52,7 @@ echo "Test 2 started"
 test2_log=""
 test2_pass=1
 
-test2_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test2_trace.log ./bsearch_t2 2>&1)
+test2_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log ./bsearch_t2 2>&1)
 if [ $? -ne 0 ]; then
     test2_pass=0
     test2_log+="bsearch_t2 execution failed\n"
@@ -73,11 +73,11 @@ fi
 
 if [ $test2_pass -eq 1 ]; then
     echo "Test 2 passed"
-    echo -e "Test 2 passed\nOutput:\n$test2_output" > genifai_results/test2_success.log
+    echo -e "Test 2 passed\nOutput:\n$test2_output" > flow_results/test2_success.log
 else
     echo "Test 2 failed"
     echo "Test 2 failed" >&2
-    echo -e "Test 2 failed\n$test2_log" > genifai_results/test2_fail.log
+    echo -e "Test 2 failed\n$test2_log" > flow_results/test2_fail.log
     failed=1
 fi
 echo "Test 2 ended"
@@ -89,7 +89,7 @@ echo "Test 3 started"
 test3_log=""
 test3_pass=1
 
-test3_output=$(echo 'foo bar the bar bar bar the' | LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test3_trace.log ./demo_t3 2>&1)
+test3_output=$(echo 'foo bar the bar bar bar the' | LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log ./demo_t3 2>&1)
 if [ $? -ne 0 ]; then
     test3_pass=0
     test3_log+="demo_t3 execution failed\n"
@@ -110,11 +110,11 @@ fi
 
 if [ $test3_pass -eq 1 ]; then
     echo "Test 3 passed"
-    echo -e "Test 3 passed\nOutput:\n$test3_output" > genifai_results/test3_success.log
+    echo -e "Test 3 passed\nOutput:\n$test3_output" > flow_results/test3_success.log
 else
     echo "Test 3 failed"
     echo "Test 3 failed" >&2
-    echo -e "Test 3 failed\n$test3_log" > genifai_results/test3_fail.log
+    echo -e "Test 3 failed\n$test3_log" > flow_results/test3_fail.log
     failed=1
 fi
 echo "Test 3 ended"
@@ -126,7 +126,7 @@ echo "Test 4 started"
 test4_log=""
 test4_pass=1
 
-test4_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test4_trace.log ./dump_t4 2>&1)
+test4_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log ./dump_t4 2>&1)
 if [ $? -ne 0 ]; then
     test4_pass=0
     test4_log+="dump_t4 execution failed\n"
@@ -147,11 +147,11 @@ fi
 
 if [ $test4_pass -eq 1 ]; then
     echo "Test 4 passed"
-    echo -e "Test 4 passed\nOutput:\n$test4_output" > genifai_results/test4_success.log
+    echo -e "Test 4 passed\nOutput:\n$test4_output" > flow_results/test4_success.log
 else
     echo "Test 4 failed"
     echo "Test 4 failed" >&2
-    echo -e "Test 4 failed\n$test4_log" > genifai_results/test4_fail.log
+    echo -e "Test 4 failed\n$test4_log" > flow_results/test4_fail.log
     failed=1
 fi
 echo "Test 4 ended"
@@ -168,7 +168,7 @@ echo "Test 5 started"
 test5_log=""
 test5_pass=1
 
-test5_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test5_trace.log ./stats_t5 < samples/words.txt 2>&1)
+test5_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log ./stats_t5 < samples/words.txt 2>&1)
 if [ $? -ne 0 ]; then
     test5_pass=0
     test5_log+="stats_t5 execution failed\n"
@@ -189,11 +189,11 @@ fi
 
 if [ $test5_pass -eq 1 ]; then
     echo "Test 5 passed"
-    echo -e "Test 5 passed\nOutput:\n$test5_output" > genifai_results/test5_success.log
+    echo -e "Test 5 passed\nOutput:\n$test5_output" > flow_results/test5_success.log
 else
     echo "Test 5 failed"
     echo "Test 5 failed" >&2
-    echo -e "Test 5 failed\n$test5_log" > genifai_results/test5_fail.log
+    echo -e "Test 5 failed\n$test5_log" > flow_results/test5_fail.log
     failed=1
 fi
 echo "Test 5 ended"
@@ -205,7 +205,7 @@ echo "Test 6 started"
 test6_log=""
 test6_pass=1
 
-test6_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test6_trace.log ./stats_t6 < samples/similar.txt 2>&1)
+test6_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test6_trace.log ./stats_t6 < samples/similar.txt 2>&1)
 if [ $? -ne 0 ]; then
     test6_pass=0
     test6_log+="stats_t6 execution failed\n"
@@ -226,11 +226,11 @@ fi
 
 if [ $test6_pass -eq 1 ]; then
     echo "Test 6 passed"
-    echo -e "Test 6 passed\nOutput:\n$test6_output" > genifai_results/test6_success.log
+    echo -e "Test 6 passed\nOutput:\n$test6_output" > flow_results/test6_success.log
 else
     echo "Test 6 failed"
     echo "Test 6 failed" >&2
-    echo -e "Test 6 failed\n$test6_log" > genifai_results/test6_fail.log
+    echo -e "Test 6 failed\n$test6_log" > flow_results/test6_fail.log
     failed=1
 fi
 echo "Test 6 ended"

@@ -5,7 +5,7 @@
 
 failed=0
 
-RESULTS_DIR="genifai_results"
+RESULTS_DIR="flow_results"
 ACTUAL_DIR="actual"
 
 # Create directories
@@ -21,7 +21,7 @@ echo "Test 1 started"
 test1_log=""
 test1_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test1_trace.log ./su-exec_t1 > "$ACTUAL_DIR/t1_stdout.txt" 2> "$ACTUAL_DIR/t1_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./su-exec_t1 > "$ACTUAL_DIR/t1_stdout.txt" 2> "$ACTUAL_DIR/t1_stderr.txt"
 test1_exit=$?
 
 # Expect exit code 1 (usage error)
@@ -54,7 +54,7 @@ echo "Test 2 started"
 test2_log=""
 test2_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test2_trace.log ./su-exec_t2 root > "$ACTUAL_DIR/t2_stdout.txt" 2> "$ACTUAL_DIR/t2_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log ./su-exec_t2 root > "$ACTUAL_DIR/t2_stdout.txt" 2> "$ACTUAL_DIR/t2_stderr.txt"
 test2_exit=$?
 
 # Expect exit code 1 (usage error - argc < 3)
@@ -87,7 +87,7 @@ echo "Test 3 started"
 test3_log=""
 test3_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test3_trace.log ./su-exec_t3 --help > "$ACTUAL_DIR/t3_stdout.txt" 2> "$ACTUAL_DIR/t3_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log ./su-exec_t3 --help > "$ACTUAL_DIR/t3_stdout.txt" 2> "$ACTUAL_DIR/t3_stderr.txt"
 test3_exit=$?
 
 # --help is treated as a username with no command, argc < 3 => usage
@@ -120,7 +120,7 @@ echo "Test 4 started"
 test4_log=""
 test4_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test4_trace.log ./su-exec_t4 -h > "$ACTUAL_DIR/t4_stdout.txt" 2> "$ACTUAL_DIR/t4_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log ./su-exec_t4 -h > "$ACTUAL_DIR/t4_stdout.txt" 2> "$ACTUAL_DIR/t4_stderr.txt"
 test4_exit=$?
 
 if [ "$test4_exit" -ne 1 ]; then
@@ -154,7 +154,7 @@ echo "Test 5 started"
 test5_log=""
 test5_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test5_trace.log ./su-exec_t5 root echo "Hello World" > "$ACTUAL_DIR/t5_stdout.txt" 2> "$ACTUAL_DIR/t5_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log ./su-exec_t5 root echo "Hello World" > "$ACTUAL_DIR/t5_stdout.txt" 2> "$ACTUAL_DIR/t5_stderr.txt"
 test5_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -198,7 +198,7 @@ echo "Test 6 started"
 test6_log=""
 test6_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test6_trace.log ./su-exec_t6 nobody:nogroup echo "test" > "$ACTUAL_DIR/t6_stdout.txt" 2> "$ACTUAL_DIR/t6_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test6_trace.log ./su-exec_t6 nobody:nogroup echo "test" > "$ACTUAL_DIR/t6_stdout.txt" 2> "$ACTUAL_DIR/t6_stderr.txt"
 test6_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -248,7 +248,7 @@ echo "Test 7 started"
 test7_log=""
 test7_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test7_trace.log ./su-exec_t7 0 id -u > "$ACTUAL_DIR/t7_stdout.txt" 2> "$ACTUAL_DIR/t7_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test7_trace.log ./su-exec_t7 0 id -u > "$ACTUAL_DIR/t7_stdout.txt" 2> "$ACTUAL_DIR/t7_stderr.txt"
 test7_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -292,7 +292,7 @@ echo "Test 8 started"
 test8_log=""
 test8_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test8_trace.log ./su-exec_t8 0:0 id -g > "$ACTUAL_DIR/t8_stdout.txt" 2> "$ACTUAL_DIR/t8_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test8_trace.log ./su-exec_t8 0:0 id -g > "$ACTUAL_DIR/t8_stdout.txt" 2> "$ACTUAL_DIR/t8_stderr.txt"
 test8_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -335,7 +335,7 @@ echo "Test 9 started"
 test9_log=""
 test9_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test9_trace.log ./su-exec_t9 nonexistent_user_xyz echo "test" > "$ACTUAL_DIR/t9_stdout.txt" 2> "$ACTUAL_DIR/t9_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test9_trace.log ./su-exec_t9 nonexistent_user_xyz echo "test" > "$ACTUAL_DIR/t9_stdout.txt" 2> "$ACTUAL_DIR/t9_stderr.txt"
 test9_exit=$?
 
 # Non-existent user should cause getpwnam error (exit 1)
@@ -368,7 +368,7 @@ echo "Test 10 started"
 test10_log=""
 test10_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test10_trace.log ./su-exec_t10 root:nonexistent_group_xyz echo "test" > "$ACTUAL_DIR/t10_stdout.txt" 2> "$ACTUAL_DIR/t10_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test10_trace.log ./su-exec_t10 root:nonexistent_group_xyz echo "test" > "$ACTUAL_DIR/t10_stdout.txt" 2> "$ACTUAL_DIR/t10_stderr.txt"
 test10_exit=$?
 
 # Non-existent group should cause getgrnam error (exit 1)
@@ -402,7 +402,7 @@ echo "Test 11 started"
 test11_log=""
 test11_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test11_trace.log ./su-exec_t11 root:root echo "test" > "$ACTUAL_DIR/t11_stdout.txt" 2> "$ACTUAL_DIR/t11_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test11_trace.log ./su-exec_t11 root:root echo "test" > "$ACTUAL_DIR/t11_stdout.txt" 2> "$ACTUAL_DIR/t11_stderr.txt"
 test11_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -446,7 +446,7 @@ echo "Test 12 started"
 test12_log=""
 test12_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test12_trace.log ./su-exec_t12 root:0 id -g > "$ACTUAL_DIR/t12_stdout.txt" 2> "$ACTUAL_DIR/t12_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test12_trace.log ./su-exec_t12 root:0 id -g > "$ACTUAL_DIR/t12_stdout.txt" 2> "$ACTUAL_DIR/t12_stderr.txt"
 test12_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -491,7 +491,7 @@ echo "Test 13 started"
 test13_log=""
 test13_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test13_trace.log ./su-exec_t13 '' echo "test" > "$ACTUAL_DIR/t13_stdout.txt" 2> "$ACTUAL_DIR/t13_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test13_trace.log ./su-exec_t13 '' echo "test" > "$ACTUAL_DIR/t13_stdout.txt" 2> "$ACTUAL_DIR/t13_stderr.txt"
 test13_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -531,7 +531,7 @@ echo "Test 14 started"
 test14_log=""
 test14_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test14_trace.log ./su-exec_t14 0 id -u > "$ACTUAL_DIR/t14_stdout.txt" 2> "$ACTUAL_DIR/t14_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test14_trace.log ./su-exec_t14 0 id -u > "$ACTUAL_DIR/t14_stdout.txt" 2> "$ACTUAL_DIR/t14_stderr.txt"
 test14_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -575,7 +575,7 @@ echo "Test 15 started"
 test15_log=""
 test15_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test15_trace.log ./su-exec_t15 65534 id -u > "$ACTUAL_DIR/t15_stdout.txt" 2> "$ACTUAL_DIR/t15_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test15_trace.log ./su-exec_t15 65534 id -u > "$ACTUAL_DIR/t15_stdout.txt" 2> "$ACTUAL_DIR/t15_stderr.txt"
 test15_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -619,7 +619,7 @@ echo "Test 16 started"
 test16_log=""
 test16_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test16_trace.log ./su-exec_t16 root /nonexistent_binary_xyz > "$ACTUAL_DIR/t16_stdout.txt" 2> "$ACTUAL_DIR/t16_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test16_trace.log ./su-exec_t16 root /nonexistent_binary_xyz > "$ACTUAL_DIR/t16_stdout.txt" 2> "$ACTUAL_DIR/t16_stderr.txt"
 test16_exit=$?
 
 # Whether root or not, this should fail (exit 1)
@@ -654,7 +654,7 @@ echo "Test 17 started"
 test17_log=""
 test17_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test17_trace.log ./su-exec_t17 root id -u > "$ACTUAL_DIR/t17_stdout.txt" 2> "$ACTUAL_DIR/t17_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test17_trace.log ./su-exec_t17 root id -u > "$ACTUAL_DIR/t17_stdout.txt" 2> "$ACTUAL_DIR/t17_stderr.txt"
 test17_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -698,7 +698,7 @@ echo "Test 18 started"
 test18_log=""
 test18_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test18_trace.log ./su-exec_t18 root id -g > "$ACTUAL_DIR/t18_stdout.txt" 2> "$ACTUAL_DIR/t18_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test18_trace.log ./su-exec_t18 root id -g > "$ACTUAL_DIR/t18_stdout.txt" 2> "$ACTUAL_DIR/t18_stderr.txt"
 test18_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -745,7 +745,7 @@ echo "Test 19 started"
 test19_log=""
 test19_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test19_trace.log ./su-exec_t19 : echo "test" > "$ACTUAL_DIR/t19_stdout.txt" 2> "$ACTUAL_DIR/t19_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test19_trace.log ./su-exec_t19 : echo "test" > "$ACTUAL_DIR/t19_stdout.txt" 2> "$ACTUAL_DIR/t19_stderr.txt"
 test19_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then
@@ -785,7 +785,7 @@ echo "Test 20 started"
 test20_log=""
 test20_pass=true
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test20_trace.log ./su-exec_t20 root echo "arg1" "arg2" "arg3" > "$ACTUAL_DIR/t20_stdout.txt" 2> "$ACTUAL_DIR/t20_stderr.txt"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test20_trace.log ./su-exec_t20 root echo "arg1" "arg2" "arg3" > "$ACTUAL_DIR/t20_stdout.txt" 2> "$ACTUAL_DIR/t20_stderr.txt"
 test20_exit=$?
 
 if [ "$CURRENT_UID" -eq 0 ]; then

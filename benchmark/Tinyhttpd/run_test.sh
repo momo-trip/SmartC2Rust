@@ -5,8 +5,8 @@
 failed=0
 
 # Create results directory
-rm -rf genifai_results
-mkdir -p genifai_results
+rm -rf flow_results
+mkdir -p flow_results
 
 # Function to cleanup processes and ports
 cleanup() {
@@ -32,7 +32,7 @@ log=""
 
 # Start server in background
 log+="Starting HTTP server...\n"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test${test_num}_trace.log ./httpd_t1 &
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./httpd_t1 &
 server_pid=$!
 
 # Wait for server to start
@@ -46,11 +46,11 @@ if ps -p $server_pid > /dev/null 2>&1; then
     else
         log+="Warning: Server started but port 4000 is not bound\n"
     fi
-    echo -e "$log" > genifai_results/test${test_num}_success.log
+    echo -e "$log" > flow_results/test${test_num}_success.log
     echo "Test ${test_num} passed"
 else
     log+="Failed to start HTTP server\n"
-    echo -e "$log" > genifai_results/test${test_num}_fail.log
+    echo -e "$log" > flow_results/test${test_num}_fail.log
     echo "Test ${test_num} failed"
     echo "Test ${test_num} failed" >&2
     failed=1
@@ -72,7 +72,7 @@ echo "Test ${test_num} started"
 log=""
 
 # Start server for test 2
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test${test_num}_trace.log ./httpd_t2 &
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./httpd_t2 &
 server_pid=$!
 sleep 3
 
@@ -84,12 +84,12 @@ log+="Response: $response\n"
 
 if [[ $response == *"Welcome to J. David's webserver"* ]]; then
     log+="Successfully received HTTP response\n"
-    echo -e "$log" > genifai_results/test${test_num}_success.log
+    echo -e "$log" > flow_results/test${test_num}_success.log
     echo "Test ${test_num} passed"
 else
     log+="Did not receive expected HTTP response\n"
     log+="Actual response: $response\n"
-    echo -e "$log" > genifai_results/test${test_num}_fail.log
+    echo -e "$log" > flow_results/test${test_num}_fail.log
     echo "Test ${test_num} failed"
     echo "Test ${test_num} failed" >&2
     failed=1
@@ -111,7 +111,7 @@ echo "Test ${test_num} started"
 log=""
 
 # Start server for test 3
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test${test_num}_trace.log ./httpd_t3 &
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./httpd_t3 &
 server_pid=$!
 sleep 3
 
@@ -119,7 +119,7 @@ log+="Testing client communication with server...\n"
 
 if [ ! -f "./client_t3" ]; then
     log+="Client executable not found\n"
-    echo -e "$log" > genifai_results/test${test_num}_fail.log
+    echo -e "$log" > flow_results/test${test_num}_fail.log
     echo "Test ${test_num} failed"
     echo "Test ${test_num} failed" >&2
     failed=1
@@ -133,13 +133,13 @@ else
     if [ $client_exit_code -eq 0 ] && [[ $client_output == *"char from server = H"* ]]; then
         log+="Client successfully communicated with server\n"
         log+="Client received HTTP response header (H from 'HTTP/1.0')\n"
-        echo -e "$log" > genifai_results/test${test_num}_success.log
+        echo -e "$log" > flow_results/test${test_num}_success.log
         echo "Test ${test_num} passed"
     else
         log+="Client did not receive expected response\n"
         log+="Expected: 'char from server = H' (first character of HTTP response)\n"
         log+="Actual output: $client_output\n"
-        echo -e "$log" > genifai_results/test${test_num}_fail.log
+        echo -e "$log" > flow_results/test${test_num}_fail.log
         echo "Test ${test_num} failed"
         echo "Test ${test_num} failed" >&2
         failed=1

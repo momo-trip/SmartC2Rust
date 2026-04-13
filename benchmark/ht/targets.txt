@@ -1,0 +1,5 @@
+main:samples/lsearch.c:21:33
+main:samples/bsearch.c:49:68
+main:samples/demo.c:31:72
+main:samples/dump.c:50:77
+main:samples/stats.c:70:112

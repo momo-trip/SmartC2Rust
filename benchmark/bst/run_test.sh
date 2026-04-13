@@ -2,7 +2,7 @@
 #!/bin/bash
 
 failed=0
-mkdir -p genifai_results
+mkdir -p flow_results
 
 # Function to remove trailing whitespace
 trim_whitespace() {
@@ -26,7 +26,7 @@ Delete 50
 Inorder traversal of the modified tree 
 40 60 70 80"
 
-ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test1_trace.log ./bst_t1)
+ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./bst_t1)
 run_status=$?
 
 TRIMMED_EXPECTED=$(trim_whitespace "$EXPECTED_OUTPUT")
@@ -40,7 +40,7 @@ if [ $run_status -eq 0 ] && [ "$TRIMMED_EXPECTED" = "$TRIMMED_ACTUAL" ]; then
         echo "$TRIMMED_EXPECTED"
         echo "Actual output:"
         echo "$TRIMMED_ACTUAL"
-    } > genifai_results/test1_success.log
+    } > flow_results/test1_success.log
 else
     echo "Test 1 failed"
     echo "Test 1 failed" >&2
@@ -56,7 +56,7 @@ else
         echo ""
         echo "Differences:"
         diff <(echo "$TRIMMED_EXPECTED") <(echo "$TRIMMED_ACTUAL")
-    } > genifai_results/test1_fail.log 2>&1
+    } > flow_results/test1_fail.log 2>&1
 fi
 
 echo "Test 1 ended"

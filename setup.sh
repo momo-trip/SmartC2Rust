@@ -20,3 +20,37 @@ cd ../..
 cargo install rustfilt
 cargo install bindgen-cli
 cargo install cargo-modules
+
+
+# Macro parser
+cd kiso-parser-macro 
+./download_clang.sh
+
+cd macro_finder
+./build.sh
+cd ..
+
+cd macro_analyzer
+./build.sh
+cd ..
+
+cd ..
+
+# C parser
+cd kiso-parser-c
+./download_clang.sh
+
+cd include_finder
+./build.sh
+cd ..
+
+cd usage_analyzer
+./build.sh
+cd ..
+
+cd usage_macro_ref_analyzer
+./build.sh
+cd ..
+
+cd ..
+

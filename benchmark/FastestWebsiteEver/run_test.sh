@@ -4,7 +4,7 @@
 # Reformed test cases for FastestWebsiteEver
 failed=0
 
-mkdir -p genifai_results
+mkdir -p flow_results
 
 # Cleanup function to kill server processes and free port 80
 cleanup_port() {
@@ -32,7 +32,7 @@ cd server
 
 # Start the server in the background with tracing
 test1_log+="Starting server cpkthttp_t1...\n"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/../genifai_results/test1_trace.log sudo -E ./cpkthttp_t1 > server_log.txt 2>&1 &
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/../flow_results/test1_trace.log sudo -E ./cpkthttp_t1 > server_log.txt 2>&1 &
 SERVER_PID=$!
 
 # Wait for the server to start
@@ -66,11 +66,11 @@ cd ..
 
 if [ "$test1_pass" -eq 1 ]; then
     echo "Test 1 passed"
-    echo -e "$test1_log" > genifai_results/test1_success.log
+    echo -e "$test1_log" > flow_results/test1_success.log
 else
     echo "Test 1 failed"
     echo "Test 1 failed" >&2
-    echo -e "$test1_log" > genifai_results/test1_fail.log
+    echo -e "$test1_log" > flow_results/test1_fail.log
     failed=1
 fi
 echo "Test 1 ended"
@@ -123,11 +123,11 @@ rm -f "$OUTPUT_FILE"
 
 if [ "$test2_pass" -eq 1 ]; then
     echo "Test 2 passed"
-    echo -e "$test2_log" > genifai_results/test2_success.log
+    echo -e "$test2_log" > flow_results/test2_success.log
 else
     echo "Test 2 failed"
     echo "Test 2 failed" >&2
-    echo -e "$test2_log" > genifai_results/test2_fail.log
+    echo -e "$test2_log" > flow_results/test2_fail.log
     failed=1
 fi
 echo "Test 2 ended"
@@ -157,11 +157,11 @@ done
 
 if [ "$test3_pass" -eq 1 ]; then
     echo "Test 3 passed"
-    echo -e "$test3_log" > genifai_results/test3_success.log
+    echo -e "$test3_log" > flow_results/test3_success.log
 else
     echo "Test 3 failed"
     echo "Test 3 failed" >&2
-    echo -e "$test3_log" > genifai_results/test3_fail.log
+    echo -e "$test3_log" > flow_results/test3_fail.log
     failed=1
 fi
 echo "Test 3 ended"
@@ -204,11 +204,11 @@ rm -f server/server_log.txt
 
 if [ "$test4_pass" -eq 1 ]; then
     echo "Test 4 passed"
-    echo -e "$test4_log" > genifai_results/test4_success.log
+    echo -e "$test4_log" > flow_results/test4_success.log
 else
     echo "Test 4 failed"
     echo "Test 4 failed" >&2
-    echo -e "$test4_log" > genifai_results/test4_fail.log
+    echo -e "$test4_log" > flow_results/test4_fail.log
     failed=1
 fi
 echo "Test 4 ended"

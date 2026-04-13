@@ -5,7 +5,7 @@
 
 failed=0
 
-mkdir -p genifai_results
+mkdir -p flow_results
 
 # Create xsel mock to avoid clipboard errors
 cat > xsel << 'MOCKEOF'
@@ -43,11 +43,11 @@ expected="value"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 1 passed"
-    echo "Test 1: expected='$expected' actual='$actual' PASSED" > genifai_results/test1_success.log
+    echo "Test 1: expected='$expected' actual='$actual' PASSED" > flow_results/test1_success.log
 else
     echo "Test 1 failed"
     echo "Test 1 failed" >&2
-    echo "Test 1: expected='$expected' actual='$actual' FAILED" > genifai_results/test1_fail.log
+    echo "Test 1: expected='$expected' actual='$actual' FAILED" > flow_results/test1_fail.log
     failed=1
 fi
 echo "Test 1 ended"
@@ -66,11 +66,11 @@ expected="hello"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 2 passed"
-    echo "Test 2: expected='$expected' actual='$actual' PASSED" > genifai_results/test2_success.log
+    echo "Test 2: expected='$expected' actual='$actual' PASSED" > flow_results/test2_success.log
 else
     echo "Test 2 failed"
     echo "Test 2 failed" >&2
-    echo "Test 2: expected='$expected' actual='$actual' FAILED" > genifai_results/test2_fail.log
+    echo "Test 2: expected='$expected' actual='$actual' FAILED" > flow_results/test2_fail.log
     failed=1
 fi
 echo "Test 2 ended"
@@ -89,11 +89,11 @@ expected="line1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 3 passed"
-    echo "Test 3: expected='$expected' actual='$actual' PASSED" > genifai_results/test3_success.log
+    echo "Test 3: expected='$expected' actual='$actual' PASSED" > flow_results/test3_success.log
 else
     echo "Test 3 failed"
     echo "Test 3 failed" >&2
-    echo "Test 3: expected='$expected' actual='$actual' FAILED" > genifai_results/test3_fail.log
+    echo "Test 3: expected='$expected' actual='$actual' FAILED" > flow_results/test3_fail.log
     failed=1
 fi
 echo "Test 3 ended"
@@ -112,11 +112,11 @@ expected="word1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 4 passed"
-    echo "Test 4: expected='$expected' actual='$actual' PASSED" > genifai_results/test4_success.log
+    echo "Test 4: expected='$expected' actual='$actual' PASSED" > flow_results/test4_success.log
 else
     echo "Test 4 failed"
     echo "Test 4 failed" >&2
-    echo "Test 4: expected='$expected' actual='$actual' FAILED" > genifai_results/test4_fail.log
+    echo "Test 4: expected='$expected' actual='$actual' FAILED" > flow_results/test4_fail.log
     failed=1
 fi
 echo "Test 4 ended"
@@ -140,11 +140,11 @@ expected="word2"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 5 passed"
-    echo "Test 5: expected='$expected' actual='$actual' PASSED" > genifai_results/test5_success.log
+    echo "Test 5: expected='$expected' actual='$actual' PASSED" > flow_results/test5_success.log
 else
     echo "Test 5 failed"
     echo "Test 5 failed" >&2
-    echo "Test 5: expected='$expected' actual='$actual' FAILED" > genifai_results/test5_fail.log
+    echo "Test 5: expected='$expected' actual='$actual' FAILED" > flow_results/test5_fail.log
     failed=1
 fi
 echo "Test 5 ended"
@@ -170,11 +170,11 @@ expected="word1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 6 passed"
-    echo "Test 6: expected='$expected' actual='$actual' PASSED" > genifai_results/test6_success.log
+    echo "Test 6: expected='$expected' actual='$actual' PASSED" > flow_results/test6_success.log
 else
     echo "Test 6 failed"
     echo "Test 6 failed" >&2
-    echo "Test 6: expected='$expected' actual='$actual' FAILED" > genifai_results/test6_fail.log
+    echo "Test 6: expected='$expected' actual='$actual' FAILED" > flow_results/test6_fail.log
     failed=1
 fi
 echo "Test 6 ended"
@@ -198,11 +198,11 @@ expected="fourth"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 7 passed"
-    echo "Test 7: expected='$expected' actual='$actual' PASSED" > genifai_results/test7_success.log
+    echo "Test 7: expected='$expected' actual='$actual' PASSED" > flow_results/test7_success.log
 else
     echo "Test 7 failed"
     echo "Test 7 failed" >&2
-    echo "Test 7: expected='$expected' actual='$actual' FAILED" > genifai_results/test7_fail.log
+    echo "Test 7: expected='$expected' actual='$actual' FAILED" > flow_results/test7_fail.log
     failed=1
 fi
 echo "Test 7 ended"
@@ -228,11 +228,11 @@ expected="first"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 8 passed"
-    echo "Test 8: expected='$expected' actual='$actual' PASSED" > genifai_results/test8_success.log
+    echo "Test 8: expected='$expected' actual='$actual' PASSED" > flow_results/test8_success.log
 else
     echo "Test 8 failed"
     echo "Test 8 failed" >&2
-    echo "Test 8: expected='$expected' actual='$actual' FAILED" > genifai_results/test8_fail.log
+    echo "Test 8: expected='$expected' actual='$actual' FAILED" > flow_results/test8_fail.log
     failed=1
 fi
 echo "Test 8 ended"
@@ -256,11 +256,11 @@ expected="line2"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 9 passed"
-    echo "Test 9: expected='$expected' actual='$actual' PASSED" > genifai_results/test9_success.log
+    echo "Test 9: expected='$expected' actual='$actual' PASSED" > flow_results/test9_success.log
 else
     echo "Test 9 failed"
     echo "Test 9 failed" >&2
-    echo "Test 9: expected='$expected' actual='$actual' FAILED" > genifai_results/test9_fail.log
+    echo "Test 9: expected='$expected' actual='$actual' FAILED" > flow_results/test9_fail.log
     failed=1
 fi
 echo "Test 9 ended"
@@ -286,11 +286,11 @@ expected="line1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 10 passed"
-    echo "Test 10: expected='$expected' actual='$actual' PASSED" > genifai_results/test10_success.log
+    echo "Test 10: expected='$expected' actual='$actual' PASSED" > flow_results/test10_success.log
 else
     echo "Test 10 failed"
     echo "Test 10 failed" >&2
-    echo "Test 10: expected='$expected' actual='$actual' FAILED" > genifai_results/test10_fail.log
+    echo "Test 10: expected='$expected' actual='$actual' FAILED" > flow_results/test10_fail.log
     failed=1
 fi
 echo "Test 10 ended"
@@ -314,11 +314,11 @@ expected="word2"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 11 passed"
-    echo "Test 11: expected='$expected' actual='$actual' PASSED" > genifai_results/test11_success.log
+    echo "Test 11: expected='$expected' actual='$actual' PASSED" > flow_results/test11_success.log
 else
     echo "Test 11 failed"
     echo "Test 11 failed" >&2
-    echo "Test 11: expected='$expected' actual='$actual' FAILED" > genifai_results/test11_fail.log
+    echo "Test 11: expected='$expected' actual='$actual' FAILED" > flow_results/test11_fail.log
     failed=1
 fi
 echo "Test 11 ended"
@@ -346,11 +346,11 @@ expected="word1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 12 passed"
-    echo "Test 12: expected='$expected' actual='$actual' PASSED" > genifai_results/test12_success.log
+    echo "Test 12: expected='$expected' actual='$actual' PASSED" > flow_results/test12_success.log
 else
     echo "Test 12 failed"
     echo "Test 12 failed" >&2
-    echo "Test 12: expected='$expected' actual='$actual' FAILED" > genifai_results/test12_fail.log
+    echo "Test 12: expected='$expected' actual='$actual' FAILED" > flow_results/test12_fail.log
     failed=1
 fi
 echo "Test 12 ended"
@@ -374,11 +374,11 @@ expected="word4"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 13 passed"
-    echo "Test 13: expected='$expected' actual='$actual' PASSED" > genifai_results/test13_success.log
+    echo "Test 13: expected='$expected' actual='$actual' PASSED" > flow_results/test13_success.log
 else
     echo "Test 13 failed"
     echo "Test 13 failed" >&2
-    echo "Test 13: expected='$expected' actual='$actual' FAILED" > genifai_results/test13_fail.log
+    echo "Test 13: expected='$expected' actual='$actual' FAILED" > flow_results/test13_fail.log
     failed=1
 fi
 echo "Test 13 ended"
@@ -404,11 +404,11 @@ else
 fi
 if [ "$actual" = "$expected" ]; then
     echo "Test 14 passed"
-    echo "Test 14: expected='$expected' actual='$actual' PASSED" > genifai_results/test14_success.log
+    echo "Test 14: expected='$expected' actual='$actual' PASSED" > flow_results/test14_success.log
 else
     echo "Test 14 failed"
     echo "Test 14 failed" >&2
-    echo "Test 14: expected='$expected' actual='$actual' FAILED" > genifai_results/test14_fail.log
+    echo "Test 14: expected='$expected' actual='$actual' FAILED" > flow_results/test14_fail.log
     failed=1
 fi
 echo "Test 14 ended"
@@ -434,11 +434,11 @@ else
 fi
 if [ "$actual" = "$expected" ]; then
     echo "Test 15 passed"
-    echo "Test 15: expected='$expected' actual='$actual' PASSED" > genifai_results/test15_success.log
+    echo "Test 15: expected='$expected' actual='$actual' PASSED" > flow_results/test15_success.log
 else
     echo "Test 15 failed"
     echo "Test 15 failed" >&2
-    echo "Test 15: expected='$expected' actual='$actual' FAILED" > genifai_results/test15_fail.log
+    echo "Test 15: expected='$expected' actual='$actual' FAILED" > flow_results/test15_fail.log
     failed=1
 fi
 echo "Test 15 ended"
@@ -460,11 +460,11 @@ expected="very_long_word_that_might_exceed_terminal_width_and_cause_wrapping_iss
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 16 passed"
-    echo "Test 16: expected='$expected' actual='$actual' PASSED" > genifai_results/test16_success.log
+    echo "Test 16: expected='$expected' actual='$actual' PASSED" > flow_results/test16_success.log
 else
     echo "Test 16 failed"
     echo "Test 16 failed" >&2
-    echo "Test 16: expected='$expected' actual='$actual' FAILED" > genifai_results/test16_fail.log
+    echo "Test 16: expected='$expected' actual='$actual' FAILED" > flow_results/test16_fail.log
     failed=1
 fi
 echo "Test 16 ended"
@@ -486,11 +486,11 @@ expected=""
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 17 passed"
-    echo "Test 17: expected='$expected' actual='$actual' PASSED" > genifai_results/test17_success.log
+    echo "Test 17: expected='$expected' actual='$actual' PASSED" > flow_results/test17_success.log
 else
     echo "Test 17 failed"
     echo "Test 17 failed" >&2
-    echo "Test 17: expected='$expected' actual='$actual' FAILED" > genifai_results/test17_fail.log
+    echo "Test 17: expected='$expected' actual='$actual' FAILED" > flow_results/test17_fail.log
     failed=1
 fi
 echo "Test 17 ended"
@@ -512,11 +512,11 @@ expected="test@example.com"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 18 passed"
-    echo "Test 18: expected='$expected' actual='$actual' PASSED" > genifai_results/test18_success.log
+    echo "Test 18: expected='$expected' actual='$actual' PASSED" > flow_results/test18_success.log
 else
     echo "Test 18 failed"
     echo "Test 18 failed" >&2
-    echo "Test 18: expected='$expected' actual='$actual' FAILED" > genifai_results/test18_fail.log
+    echo "Test 18: expected='$expected' actual='$actual' FAILED" > flow_results/test18_fail.log
     failed=1
 fi
 echo "Test 18 ended"
@@ -538,11 +538,11 @@ expected="word1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 19 passed"
-    echo "Test 19: expected='$expected' actual='$actual' PASSED" > genifai_results/test19_success.log
+    echo "Test 19: expected='$expected' actual='$actual' PASSED" > flow_results/test19_success.log
 else
     echo "Test 19 failed"
     echo "Test 19 failed" >&2
-    echo "Test 19: expected='$expected' actual='$actual' FAILED" > genifai_results/test19_fail.log
+    echo "Test 19: expected='$expected' actual='$actual' FAILED" > flow_results/test19_fail.log
     failed=1
 fi
 echo "Test 19 ended"
@@ -564,11 +564,11 @@ expected="line1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 20 passed"
-    echo "Test 20: expected='$expected' actual='$actual' PASSED" > genifai_results/test20_success.log
+    echo "Test 20: expected='$expected' actual='$actual' PASSED" > flow_results/test20_success.log
 else
     echo "Test 20 failed"
     echo "Test 20 failed" >&2
-    echo "Test 20: expected='$expected' actual='$actual' FAILED" > genifai_results/test20_fail.log
+    echo "Test 20: expected='$expected' actual='$actual' FAILED" > flow_results/test20_fail.log
     failed=1
 fi
 echo "Test 20 ended"
@@ -590,11 +590,11 @@ expected="Word1"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 21 passed"
-    echo "Test 21: expected='$expected' actual='$actual' PASSED" > genifai_results/test21_success.log
+    echo "Test 21: expected='$expected' actual='$actual' PASSED" > flow_results/test21_success.log
 else
     echo "Test 21 failed"
     echo "Test 21 failed" >&2
-    echo "Test 21: expected='$expected' actual='$actual' FAILED" > genifai_results/test21_fail.log
+    echo "Test 21: expected='$expected' actual='$actual' FAILED" > flow_results/test21_fail.log
     failed=1
 fi
 echo "Test 21 ended"
@@ -616,11 +616,11 @@ expected="test"
 actual="$(cat /tmp/yank_clipboard 2>/dev/null)"
 if [ "$actual" = "$expected" ]; then
     echo "Test 22 passed"
-    echo "Test 22: expected='$expected' actual='$actual' PASSED" > genifai_results/test22_success.log
+    echo "Test 22: expected='$expected' actual='$actual' PASSED" > flow_results/test22_success.log
 else
     echo "Test 22 failed"
     echo "Test 22 failed" >&2
-    echo "Test 22: expected='$expected' actual='$actual' FAILED" > genifai_results/test22_fail.log
+    echo "Test 22: expected='$expected' actual='$actual' FAILED" > flow_results/test22_fail.log
     failed=1
 fi
 echo "Test 22 ended"
@@ -630,15 +630,15 @@ echo "Test 22 ended"
 ###############################################################################
 echo "Test 23 started"
 rm -f /tmp/yank_clipboard
-version_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test23_trace.log ./yank_t23 -v 2>&1)
+version_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test23_trace.log ./yank_t23 -v 2>&1)
 version_rc=$?
 if [ $version_rc -eq 0 ]; then
     echo "Test 23 passed"
-    echo "Test 23: Version display succeeded. Output: $version_output" > genifai_results/test23_success.log
+    echo "Test 23: Version display succeeded. Output: $version_output" > flow_results/test23_success.log
 else
     echo "Test 23 failed"
     echo "Test 23 failed" >&2
-    echo "Test 23: Version display failed with rc=$version_rc. Output: $version_output" > genifai_results/test23_fail.log
+    echo "Test 23: Version display failed with rc=$version_rc. Output: $version_output" > flow_results/test23_fail.log
     failed=1
 fi
 echo "Test 23 ended"
@@ -648,15 +648,15 @@ echo "Test 23 ended"
 ###############################################################################
 echo "Test 24 started"
 rm -f /tmp/yank_clipboard
-help_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test24_trace.log ./yank_t24 -h 2>&1)
+help_output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test24_trace.log ./yank_t24 -h 2>&1)
 help_rc=$?
 if [ $help_rc -ne 0 ]; then
     echo "Test 24 passed"
-    echo "Test 24: Invalid option correctly returned error. rc=$help_rc Output: $help_output" > genifai_results/test24_success.log
+    echo "Test 24: Invalid option correctly returned error. rc=$help_rc Output: $help_output" > flow_results/test24_success.log
 else
     echo "Test 24 failed"
     echo "Test 24 failed" >&2
-    echo "Test 24: Invalid option should have returned error but rc=$help_rc. Output: $help_output" > genifai_results/test24_fail.log
+    echo "Test 24: Invalid option should have returned error but rc=$help_rc. Output: $help_output" > flow_results/test24_fail.log
     failed=1
 fi
 echo "Test 24 ended"

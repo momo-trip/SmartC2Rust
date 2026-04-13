@@ -11,7 +11,7 @@ export VERSION="1.9"
 export srcdir="tests"
 export builddir="."
 
-mkdir -p genifai_results
+mkdir -p flow_results
 
 TIME_BIN="$SCRIPT_DIR/time"
 TIME_AUX_BIN="$SCRIPT_DIR/tests/time-aux"
@@ -24,7 +24,7 @@ test1_log=""
 test1_pass=1
 
 # Test --help
-help_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test1_trace.log $SCRIPT_DIR/time_t1 --help 2>&1)
+help_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log $SCRIPT_DIR/time_t1 --help 2>&1)
 rc=$?
 test1_log="${test1_log}--help exit code: $rc\n"
 test1_log="${test1_log}--help output: $help_out\n"
@@ -41,7 +41,7 @@ else
 fi
 
 # Test --version
-version_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test1_trace.log $SCRIPT_DIR/time_t1 --version 2>&1)
+version_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log $SCRIPT_DIR/time_t1 --version 2>&1)
 rc=$?
 test1_log="${test1_log}--version exit code: $rc\n"
 test1_log="${test1_log}--version output: $version_out\n"
@@ -59,11 +59,11 @@ fi
 
 if [ $test1_pass -eq 1 ]; then
     echo "Test 1 passed"
-    printf "%b" "$test1_log" > genifai_results/test1_success.log
+    printf "%b" "$test1_log" > flow_results/test1_success.log
 else
     echo "Test 1 failed"
     echo "Test 1 failed" >&2
-    printf "%b" "$test1_log" > genifai_results/test1_fail.log
+    printf "%b" "$test1_log" > flow_results/test1_fail.log
     failed=1
 fi
 echo "Test 1 ended"
@@ -81,7 +81,7 @@ if [ ! -x "$SCRIPT_DIR/tests/time-aux_t2" ]; then
     test2_pass=0
 else
     # Get baseline MAX-RSS
-    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test2_trace.log $SCRIPT_DIR/time_t2 -o /tmp/time_test2_mem_baseline -f "%M" $SCRIPT_DIR/tests/time-aux_t2 2>/dev/null
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log $SCRIPT_DIR/time_t2 -o /tmp/time_test2_mem_baseline -f "%M" $SCRIPT_DIR/tests/time-aux_t2 2>/dev/null
     rc=$?
     test2_log="${test2_log}baseline run exit code: $rc\n"
     if [ $rc -ne 0 ]; then
@@ -89,7 +89,7 @@ else
         test2_pass=0
     else
         # Allocate 5MB of RAM
-        LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test2_trace.log $SCRIPT_DIR/time_t2 -o /tmp/time_test2_mem_5MB -f "%M" $SCRIPT_DIR/tests/time-aux_t2 -m 5M 2>/dev/null
+        LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log $SCRIPT_DIR/time_t2 -o /tmp/time_test2_mem_5MB -f "%M" $SCRIPT_DIR/tests/time-aux_t2 -m 5M 2>/dev/null
         rc=$?
         test2_log="${test2_log}5MB run exit code: $rc\n"
         if [ $rc -ne 0 ]; then
@@ -121,11 +121,11 @@ fi
 
 if [ $test2_pass -eq 1 ]; then
     echo "Test 2 passed"
-    printf "%b" "$test2_log" > genifai_results/test2_success.log
+    printf "%b" "$test2_log" > flow_results/test2_success.log
 else
     echo "Test 2 failed"
     echo "Test 2 failed" >&2
-    printf "%b" "$test2_log" > genifai_results/test2_fail.log
+    printf "%b" "$test2_log" > flow_results/test2_fail.log
     failed=1
 fi
 echo "Test 2 ended"
@@ -139,7 +139,7 @@ test3_pass=1
 
 # Test that time returns the exit code of the child process
 # Exit code 0
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null true 2>/dev/null
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null true 2>/dev/null
 rc=$?
 test3_log="${test3_log}exit code for 'true': $rc (expected 0)\n"
 if [ $rc -ne 0 ]; then
@@ -148,7 +148,7 @@ if [ $rc -ne 0 ]; then
 fi
 
 # Exit code 1
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null false 2>/dev/null
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null false 2>/dev/null
 rc=$?
 test3_log="${test3_log}exit code for 'false': $rc (expected 1)\n"
 if [ $rc -ne 1 ]; then
@@ -158,7 +158,7 @@ fi
 
 # Exit code from time-aux with specific exit code
 if [ -x "$SCRIPT_DIR/tests/time-aux_t3" ]; then
-    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null $SCRIPT_DIR/tests/time-aux_t3 -e 42 2>/dev/null
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null $SCRIPT_DIR/tests/time-aux_t3 -e 42 2>/dev/null
     rc=$?
     test3_log="${test3_log}exit code for 'time-aux -e 42': $rc (expected 42)\n"
     if [ $rc -ne 42 ]; then
@@ -171,11 +171,11 @@ fi
 
 if [ $test3_pass -eq 1 ]; then
     echo "Test 3 passed"
-    printf "%b" "$test3_log" > genifai_results/test3_success.log
+    printf "%b" "$test3_log" > flow_results/test3_success.log
 else
     echo "Test 3 failed"
     echo "Test 3 failed" >&2
-    printf "%b" "$test3_log" > genifai_results/test3_fail.log
+    printf "%b" "$test3_log" > flow_results/test3_fail.log
     failed=1
 fi
 echo "Test 3 ended"
@@ -188,7 +188,7 @@ test4_log=""
 test4_pass=1
 
 # Test POSIX output format with -p flag
-posix_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test4_trace.log $SCRIPT_DIR/time_t4 -p true 2>&1)
+posix_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log $SCRIPT_DIR/time_t4 -p true 2>&1)
 rc=$?
 test4_log="${test4_log}-p true exit code: $rc\n"
 test4_log="${test4_log}-p true output: $posix_out\n"
@@ -218,7 +218,7 @@ else
 fi
 
 # Test quiet mode: -q should suppress output to stderr
-quiet_stderr=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test4_trace.log $SCRIPT_DIR/time_t4 -q true 2>&1 1>/dev/null)
+quiet_stderr=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log $SCRIPT_DIR/time_t4 -q true 2>&1 1>/dev/null)
 rc=$?
 test4_log="${test4_log}-q true exit code: $rc\n"
 test4_log="${test4_log}-q true stderr: '$quiet_stderr'\n"
@@ -229,7 +229,7 @@ fi
 
 # Test output to file with -o
 tmpfile=$(mktemp /tmp/time_test4_XXXXXX)
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/genifai_results/test4_trace.log $SCRIPT_DIR/time_t4 -o "$tmpfile" -f "%e" true 2>/dev/null
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log $SCRIPT_DIR/time_t4 -o "$tmpfile" -f "%e" true 2>/dev/null
 rc=$?
 test4_log="${test4_log}-o file exit code: $rc\n"
 if [ $rc -ne 0 ]; then
@@ -249,11 +249,11 @@ rm -f "$tmpfile"
 
 if [ $test4_pass -eq 1 ]; then
     echo "Test 4 passed"
-    printf "%b" "$test4_log" > genifai_results/test4_success.log
+    printf "%b" "$test4_log" > flow_results/test4_success.log
 else
     echo "Test 4 failed"
     echo "Test 4 failed" >&2
-    printf "%b" "$test4_log" > genifai_results/test4_fail.log
+    printf "%b" "$test4_log" > flow_results/test4_fail.log
     failed=1
 fi
 echo "Test 4 ended"
