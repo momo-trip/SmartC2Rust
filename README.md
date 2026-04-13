@@ -2,7 +2,7 @@
 
 Iterative, Feedback-Driven C-to-Rust Translation via Large Language Models for Safety and Equivalence
 
-## Start with Docker
+## Setup with Docker
 
 We prepared the pre-built Docker image, which contains the complete environment (Ubuntu 22.04, Python, Rust, Clang, and all dependencies) ready to run.
 
@@ -20,15 +20,62 @@ docker run --rm -it smartc2rust:v1.0
 
 This drops you into the container with all tools and source code pre-installed at `/root`.
 
-### Reproduce experiments
+## Configuration
 
-```bash
-docker run --rm smartc2rust:v1.0 python3 run.py --reproduce-all
+Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
+
+```json
+{
+    "llm_choice": "claude",
+    "claude_api_key": "<your-api-key>",
+    "azure_endpoint": "<your-endpoint-if-applicable>",
+    "test_mode": false
+}
 ```
 
-### LLM API Key
+| Field | Description |
+|-------|-------------|
+| `llm_choice` | LLM backend to use: `claude`, `claude_azure` |
+| `claude_api_key` | API key for the selected LLM provider |
+| `azure_endpoint` | Endpoint URL (required for `claude_azure` and `gpt_azure` backends, otherwise leave empty `""`) |
+| `test_mode` | Set `false` for normal use |
 
-TBA
+
+## Entry point selection
+
+Each benchmark program has a `targets.txt` file in `benchmark/{program}/targets.txt` that specifies which C functions to be the entry point. The file lists function names with their source locations in the format:
+
+`function_name:path/to/file.c:start_line`
+
+
+## Translation procedure
+### Step 1: Reformat test cases
+cd /root/SmartC2Rust/macro
+python3 pre_process.py /root/SmartC2Rust/benchmark/avl reformat base /root/SmartC2Rust/benchmark/avl/base_test.sh
+
+### Step 2: Get golden flows
+cd /root/SmartC2Rust/macro
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
+
+
+### Step 3: Macro pre-processing
+cd /root/SmartC2Rust/macro
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl golden
+
+### Step 4: Pre-processing
+cd /root/SmartC2Rust/trans
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
+
+### Step 5: Compilation-repair
+cd /root/SmartC2Rust/trans
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
+
+### Step 6: Compilation-repair
+cd /root/SmartC2Rust/trans
+
+
+### LLM model
+- claude
 
 ## Paper
 
