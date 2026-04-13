@@ -15,7 +15,7 @@ docker pull ghcr.io/momo-trip/smartc2rust
 ### Run
 
 ```bash
-docker run -it smartc2rust
+docker run -it ghcr.io/momo-trip/smartc2rust
 ```
 
 This drops you into the container with all tools and source code pre-installed at `/root`.
@@ -194,7 +194,7 @@ The default model is Claude Opus 4.6 (Anthropic).
 ```
 SmartC2Rust/
 ├── macro/
-│   └── pre_process.py.     # Step 1-3: Test reformatting, golden flow extraction, macro pre-processing
+│   └── pre_process.py      # Step 1-3: Test reformatting, golden flow extraction, macro pre-processing
 ├── trans/                 
 │   ├── pre_process.py      # Step 4: Static analysis
 │   ├── compile.py          # Step 5: Translation and compilation repair
