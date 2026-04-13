@@ -1,8 +1,8 @@
 ########################################################
-####    Reformat
+####    Step 1: Reformat test cases
 ########################################################
 
-cd macro
+cd /root/SmartC2Rust/macro
 
 # time-1.9
 python3 pre_process.py /root/SmartC2Rust/benchmark/time-1.9 reformat base /root/SmartC2Rust/benchmark/time-1.9/base_test.sh
@@ -66,76 +66,78 @@ python3 pre_process.py /root/SmartC2Rust/benchmark/su-exec reformat base /root/S
 
 
 ########################################################
-####    Golden
+####    Step 2: Get golden flows
 ########################################################
 
+cd /root/SmartC2Rust/macro
 
 # time-1.9
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/time-1.9 macro off /root/SmartC2Rust/macro/trans_re_0000/time-1.9/run_test.sh /root/SmartC2Rust/macro/benchmark/time-1.9/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/time-1.9 golden
 
-# avl 
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl macro off /root/SmartC2Rust/macro/trans_re_0000/avl/run_test.sh /root/SmartC2Rust/macro/benchmark/avl/targets.txt
+# avl
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/avl golden
 
 # which-2.21
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/which-2.21 macro off /root/SmartC2Rust/macro/trans_re_0000/which-2.21/run_test.sh /root/SmartC2Rust/macro/benchmark/which-2.21/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/which-2.21 golden
 
 # Tinyhttpd
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd macro off /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd/run_test.sh /root/SmartC2Rust/macro/benchmark/Tinyhttpd/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/Tinyhttpd golden
 
 # ht
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/ht macro off /root/SmartC2Rust/macro/trans_re_0000/ht/run_test.sh /root/SmartC2Rust/macro/benchmark/ht/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/ht golden
 
 # buffer
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/buffer macro off /root/SmartC2Rust/macro/trans_re_0000/buffer/run_test.sh /root/SmartC2Rust/macro/benchmark/buffer/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/buffer golden
 
 # qsort
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/qsort macro off /root/SmartC2Rust/macro/trans_re_0000/qsort/run_test.sh /root/SmartC2Rust/macro/benchmark/qsort/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/qsort golden
 
 # rgba
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/rgba macro off /root/SmartC2Rust/macro/trans_re_0000/rgba/run_test.sh /root/SmartC2Rust/macro/benchmark/rgba/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/rgba golden
 
 # bst
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/bst macro off /root/SmartC2Rust/macro/trans_re_0000/bst/run_test.sh /root/SmartC2Rust/macro/benchmark/bst/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/bst golden
 
 # zopfli
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/zopfli macro off /root/SmartC2Rust/macro/trans_re_0000/zopfli/run_test.sh /root/SmartC2Rust/macro/benchmark/zopfli/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/zopfli golden
 
 # FastestWebsiteEver
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver macro off /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver/run_test.sh /root/SmartC2Rust/macro/benchmark/FastestWebsiteEver/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/FastestWebsiteEver golden
 
 # mark-sweep
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mark-sweep macro off /root/SmartC2Rust/macro/trans_re_0000/mark-sweep/run_test.sh /root/SmartC2Rust/macro/benchmark/mark-sweep/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mark-sweep golden
 
 # sds
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/sds macro off /root/SmartC2Rust/macro/trans_re_0000/sds/run_test.sh /root/SmartC2Rust/macro/benchmark/sds/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/sds golden
 
 # yank
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/yank macro off /root/SmartC2Rust/macro/trans_re_0000/yank/run_test.sh /root/SmartC2Rust/macro/benchmark/yank/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/yank golden
 
 # tiny-AES-c
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c macro off /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c/run_test.sh /root/SmartC2Rust/macro/benchmark/tiny-AES-c/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/tiny-AES-c golden
 
 # SipHash
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/SipHash macro off /root/SmartC2Rust/macro/trans_re_0000/SipHash/run_test.sh /root/SmartC2Rust/macro/benchmark/SipHash/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/SipHash golden
 
 # c4
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/c4 macro off /root/SmartC2Rust/macro/trans_re_0000/c4/run_test.sh /root/SmartC2Rust/macro/benchmark/c4/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/c4 golden
 
 # urlparser
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/urlparser macro off /root/SmartC2Rust/macro/trans_re_0000/urlparser/run_test.sh /root/SmartC2Rust/macro/benchmark/urlparser/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/urlparser golden
 
 # mcrcon
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mcrcon macro off /root/SmartC2Rust/macro/trans_re_0000/mcrcon/run_test.sh /root/SmartC2Rust/macro/benchmark/mcrcon/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mcrcon golden
 
 # su-exec
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec macro off /root/SmartC2Rust/macro/trans_re_0000/su-exec/run_test.sh /root/SmartC2Rust/macro/benchmark/su-exec/targets.txt
-
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec golden
 
 
 
 ########################################################
-####    Translation
+####    Step 3: Pre-processing for parsing
 ########################################################
+
+cd /root/SmartC2Rust/macro
 
 # time-1.9
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/time-1.9 macro off /root/SmartC2Rust/macro/trans_re_0000/time-1.9/run_test.sh /root/SmartC2Rust/macro/benchmark/time-1.9/targets.txt
@@ -196,3 +198,204 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/mcrcon macro off /r
 
 # su-exec
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/su-exec macro off /root/SmartC2Rust/macro/trans_re_0000/su-exec/run_test.sh /root/SmartC2Rust/macro/benchmark/su-exec/targets.txt
+
+
+########################################################
+####    Step 4: Pre-processing for segmentation
+########################################################
+
+cd /root/SmartC2Rust/trans
+
+# time-1.9
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/time-1.9 meta /root/SmartC2Rust/benchmark/time-1.9/targets.txt /root/SmartC2Rust/macro/metadata_0000/time-1.9 /root/SmartC2Rust/macro/div_metadata_0000/time-1.9 /root/SmartC2Rust/macro/trans_c_0000/time-1.9
+
+# avl
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/avl meta /root/SmartC2Rust/benchmark/avl/targets.txt /root/SmartC2Rust/macro/metadata_0000/avl /root/SmartC2Rust/macro/div_metadata_0000/avl /root/SmartC2Rust/macro/trans_c_0000/avl
+
+# which-2.21
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/which-2.21 meta /root/SmartC2Rust/benchmark/which-2.21/targets.txt /root/SmartC2Rust/macro/metadata_0000/which-2.21 /root/SmartC2Rust/macro/div_metadata_0000/which-2.21 /root/SmartC2Rust/macro/trans_c_0000/which-2.21
+
+# Tinyhttpd
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/Tinyhttpd meta /root/SmartC2Rust/benchmark/Tinyhttpd/targets.txt /root/SmartC2Rust/macro/metadata_0000/Tinyhttpd /root/SmartC2Rust/macro/div_metadata_0000/Tinyhttpd /root/SmartC2Rust/macro/trans_c_0000/Tinyhttpd
+
+# ht
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/ht meta /root/SmartC2Rust/benchmark/ht/targets.txt /root/SmartC2Rust/macro/metadata_0000/ht /root/SmartC2Rust/macro/div_metadata_0000/ht /root/SmartC2Rust/macro/trans_c_0000/ht
+
+# buffer
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/buffer meta /root/SmartC2Rust/benchmark/buffer/targets.txt /root/SmartC2Rust/macro/metadata_0000/buffer /root/SmartC2Rust/macro/div_metadata_0000/buffer /root/SmartC2Rust/macro/trans_c_0000/buffer
+
+# qsort
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/qsort meta /root/SmartC2Rust/benchmark/qsort/targets.txt /root/SmartC2Rust/macro/metadata_0000/qsort /root/SmartC2Rust/macro/div_metadata_0000/qsort /root/SmartC2Rust/macro/trans_c_0000/qsort
+
+# rgba
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/rgba meta /root/SmartC2Rust/benchmark/rgba/targets.txt /root/SmartC2Rust/macro/metadata_0000/rgba /root/SmartC2Rust/macro/div_metadata_0000/rgba /root/SmartC2Rust/macro/trans_c_0000/rgba
+
+# bst
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/bst meta /root/SmartC2Rust/benchmark/bst/targets.txt /root/SmartC2Rust/macro/metadata_0000/bst /root/SmartC2Rust/macro/div_metadata_0000/bst /root/SmartC2Rust/macro/trans_c_0000/bst
+
+# zopfli
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/zopfli meta /root/SmartC2Rust/benchmark/zopfli/targets.txt /root/SmartC2Rust/macro/metadata_0000/zopfli /root/SmartC2Rust/macro/div_metadata_0000/zopfli /root/SmartC2Rust/macro/trans_c_0000/zopfli
+
+# FastestWebsiteEver
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/FastestWebsiteEver meta /root/SmartC2Rust/benchmark/FastestWebsiteEver/targets.txt /root/SmartC2Rust/macro/metadata_0000/FastestWebsiteEver /root/SmartC2Rust/macro/div_metadata_0000/FastestWebsiteEver /root/SmartC2Rust/macro/trans_c_0000/FastestWebsiteEver
+
+# mark-sweep
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/mark-sweep meta /root/SmartC2Rust/benchmark/mark-sweep/targets.txt /root/SmartC2Rust/macro/metadata_0000/mark-sweep /root/SmartC2Rust/macro/div_metadata_0000/mark-sweep /root/SmartC2Rust/macro/trans_c_0000/mark-sweep
+
+# sds
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/sds meta /root/SmartC2Rust/benchmark/sds/targets.txt /root/SmartC2Rust/macro/metadata_0000/sds /root/SmartC2Rust/macro/div_metadata_0000/sds /root/SmartC2Rust/macro/trans_c_0000/sds
+
+# yank
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/yank meta /root/SmartC2Rust/benchmark/yank/targets.txt /root/SmartC2Rust/macro/metadata_0000/yank /root/SmartC2Rust/macro/div_metadata_0000/yank /root/SmartC2Rust/macro/trans_c_0000/yank
+
+# tiny-AES-c
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/tiny-AES-c meta /root/SmartC2Rust/benchmark/tiny-AES-c/targets.txt /root/SmartC2Rust/macro/metadata_0000/tiny-AES-c /root/SmartC2Rust/macro/div_metadata_0000/tiny-AES-c /root/SmartC2Rust/macro/trans_c_0000/tiny-AES-c
+
+# SipHash
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/SipHash meta /root/SmartC2Rust/benchmark/SipHash/targets.txt /root/SmartC2Rust/macro/metadata_0000/SipHash /root/SmartC2Rust/macro/div_metadata_0000/SipHash /root/SmartC2Rust/macro/trans_c_0000/SipHash
+
+# c4
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/c4 meta /root/SmartC2Rust/benchmark/c4/targets.txt /root/SmartC2Rust/macro/metadata_0000/c4 /root/SmartC2Rust/macro/div_metadata_0000/c4 /root/SmartC2Rust/macro/trans_c_0000/c4
+
+# urlparser
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/urlparser meta /root/SmartC2Rust/benchmark/urlparser/targets.txt /root/SmartC2Rust/macro/metadata_0000/urlparser /root/SmartC2Rust/macro/div_metadata_0000/urlparser /root/SmartC2Rust/macro/trans_c_0000/urlparser
+
+# mcrcon
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/mcrcon meta /root/SmartC2Rust/benchmark/mcrcon/targets.txt /root/SmartC2Rust/macro/metadata_0000/mcrcon /root/SmartC2Rust/macro/div_metadata_0000/mcrcon /root/SmartC2Rust/macro/trans_c_0000/mcrcon
+
+# su-exec
+python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/su-exec meta /root/SmartC2Rust/benchmark/su-exec/targets.txt /root/SmartC2Rust/macro/metadata_0000/su-exec /root/SmartC2Rust/macro/div_metadata_0000/su-exec /root/SmartC2Rust/macro/trans_c_0000/su-exec
+
+
+########################################################
+####    Step 5: Compilation-repair
+########################################################
+
+cd /root/SmartC2Rust/trans
+
+# time-1.9
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/time-1.9 /root/SmartC2Rust/trans/trans_c_0000/time-1.9 /root/SmartC2Rust/benchmark/time-1.9/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/time-1.9 /root/SmartC2Rust/trans/div_metadata_0000/time-1.9 database_0000/time-1.9/block_output.txt off
+
+# avl
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/avl /root/SmartC2Rust/trans/trans_c_0000/avl /root/SmartC2Rust/benchmark/avl/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/avl /root/SmartC2Rust/trans/div_metadata_0000/avl database_0000/avl/block_output.txt off
+
+# which-2.21
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/which-2.21 /root/SmartC2Rust/trans/trans_c_0000/which-2.21 /root/SmartC2Rust/benchmark/which-2.21/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/which-2.21 /root/SmartC2Rust/trans/div_metadata_0000/which-2.21 database_0000/which-2.21/block_output.txt off
+
+# Tinyhttpd
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/Tinyhttpd /root/SmartC2Rust/trans/trans_c_0000/Tinyhttpd /root/SmartC2Rust/benchmark/Tinyhttpd/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/Tinyhttpd /root/SmartC2Rust/trans/div_metadata_0000/Tinyhttpd database_0000/Tinyhttpd/block_output.txt off
+
+# ht
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/ht /root/SmartC2Rust/trans/trans_c_0000/ht /root/SmartC2Rust/benchmark/ht/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/ht /root/SmartC2Rust/trans/div_metadata_0000/ht database_0000/ht/block_output.txt off
+
+# buffer
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/buffer /root/SmartC2Rust/trans/trans_c_0000/buffer /root/SmartC2Rust/benchmark/buffer/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/buffer /root/SmartC2Rust/trans/div_metadata_0000/buffer database_0000/buffer/block_output.txt off
+
+# qsort
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/qsort /root/SmartC2Rust/trans/trans_c_0000/qsort /root/SmartC2Rust/benchmark/qsort/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/qsort /root/SmartC2Rust/trans/div_metadata_0000/qsort database_0000/qsort/block_output.txt off
+
+# rgba
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/rgba /root/SmartC2Rust/trans/trans_c_0000/rgba /root/SmartC2Rust/benchmark/rgba/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/rgba /root/SmartC2Rust/trans/div_metadata_0000/rgba database_0000/rgba/block_output.txt off
+
+# bst
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/bst /root/SmartC2Rust/trans/trans_c_0000/bst /root/SmartC2Rust/benchmark/bst/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/bst /root/SmartC2Rust/trans/div_metadata_0000/bst database_0000/bst/block_output.txt off
+
+# zopfli
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/zopfli /root/SmartC2Rust/trans/trans_c_0000/zopfli /root/SmartC2Rust/benchmark/zopfli/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/zopfli /root/SmartC2Rust/trans/div_metadata_0000/zopfli database_0000/zopfli/block_output.txt off
+
+# FastestWebsiteEver
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/FastestWebsiteEver /root/SmartC2Rust/trans/trans_c_0000/FastestWebsiteEver /root/SmartC2Rust/benchmark/FastestWebsiteEver/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/FastestWebsiteEver /root/SmartC2Rust/trans/div_metadata_0000/FastestWebsiteEver database_0000/FastestWebsiteEver/block_output.txt off
+
+# mark-sweep
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/mark-sweep /root/SmartC2Rust/trans/trans_c_0000/mark-sweep /root/SmartC2Rust/benchmark/mark-sweep/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/mark-sweep /root/SmartC2Rust/trans/div_metadata_0000/mark-sweep database_0000/mark-sweep/block_output.txt off
+
+# sds
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/sds /root/SmartC2Rust/trans/trans_c_0000/sds /root/SmartC2Rust/benchmark/sds/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/sds /root/SmartC2Rust/trans/div_metadata_0000/sds database_0000/sds/block_output.txt off
+
+# yank
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/yank /root/SmartC2Rust/trans/trans_c_0000/yank /root/SmartC2Rust/benchmark/yank/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/yank /root/SmartC2Rust/trans/div_metadata_0000/yank database_0000/yank/block_output.txt off
+
+# tiny-AES-c
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/tiny-AES-c /root/SmartC2Rust/trans/trans_c_0000/tiny-AES-c /root/SmartC2Rust/benchmark/tiny-AES-c/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/tiny-AES-c /root/SmartC2Rust/trans/div_metadata_0000/tiny-AES-c database_0000/tiny-AES-c/block_output.txt off
+
+# SipHash
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/SipHash /root/SmartC2Rust/trans/trans_c_0000/SipHash /root/SmartC2Rust/benchmark/SipHash/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/SipHash /root/SmartC2Rust/trans/div_metadata_0000/SipHash database_0000/SipHash/block_output.txt off
+
+# c4
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/c4 /root/SmartC2Rust/trans/trans_c_0000/c4 /root/SmartC2Rust/benchmark/c4/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/c4 /root/SmartC2Rust/trans/div_metadata_0000/c4 database_0000/c4/block_output.txt off
+
+# urlparser
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/urlparser /root/SmartC2Rust/trans/trans_c_0000/urlparser /root/SmartC2Rust/benchmark/urlparser/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/urlparser /root/SmartC2Rust/trans/div_metadata_0000/urlparser database_0000/urlparser/block_output.txt off
+
+# mcrcon
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/mcrcon /root/SmartC2Rust/trans/trans_c_0000/mcrcon /root/SmartC2Rust/benchmark/mcrcon/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/mcrcon /root/SmartC2Rust/trans/div_metadata_0000/mcrcon database_0000/mcrcon/block_output.txt off
+
+# su-exec
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/su-exec /root/SmartC2Rust/trans/trans_c_0000/su-exec /root/SmartC2Rust/benchmark/su-exec/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/su-exec /root/SmartC2Rust/trans/div_metadata_0000/su-exec database_0000/su-exec/block_output.txt off
+
+
+########################################################
+####    Step 6: Semantics-repair
+########################################################
+
+cd /root/SmartC2Rust/trans
+
+# time-1.9
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_time-1.9/time-1.9 s_repair
+
+# avl
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_avl/avl s_repair
+
+# which-2.21
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_which-2.21/which-2.21 s_repair
+
+# Tinyhttpd
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_Tinyhttpd/Tinyhttpd s_repair
+
+# ht
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_ht/ht s_repair
+
+# buffer
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_buffer/buffer s_repair
+
+# qsort
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_qsort/qsort s_repair
+
+# rgba
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_rgba/rgba s_repair
+
+# bst
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_bst/bst s_repair
+
+# zopfli
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_zopfli/zopfli s_repair
+
+# FastestWebsiteEver
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_FastestWebsiteEver/FastestWebsiteEver s_repair
+
+# mark-sweep
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_mark-sweep/mark-sweep s_repair
+
+# sds
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_sds/sds s_repair
+
+# yank
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_yank/yank s_repair
+
+# tiny-AES-c
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_tiny-AES-c/tiny-AES-c s_repair
+
+# SipHash
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_SipHash/SipHash s_repair
+
+# c4
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_c4/c4 s_repair
+
+# urlparser
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_urlparser/urlparser s_repair
+
+# mcrcon
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_mcrcon/mcrcon s_repair
+
+# su-exec
+python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_su-exec/su-exec s_repair
