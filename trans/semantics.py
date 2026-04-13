@@ -181,6 +181,10 @@ from rust_parser_api import (
     setup_rust_trace,
 )
 
+MACRO_HOME = "/root/SmartC2Rust/macro"
+TRANS_HOME = "/root/SmartC2Rust/trans"
+C_PARSER_HOME = "/root/kiso-parser-c"
+
 
 full_regions = []
 
@@ -4309,11 +4313,11 @@ def get_fail_flow(work_dir, test_number):  #  golden_flow_path, rust_flow_path, 
 
     base_name = f"flow_results/test{test_number}_trace.log"
 
-    rust_log_path, rust_log_dir = find_rust_log_path(work_dir, base_name) #"/home/ubuntu/macrust/trans_re_0000/bst/flow_results/test1_trace.log"
+    rust_log_path, rust_log_dir = find_rust_log_path(work_dir, base_name) #f"{MACRO_HOME}/trans_re_0000/bst/flow_results/test1_trace.log"
     if rust_log_path is None:
         return None
 
-    #base_dir = "/home/ubuntu/macrust/trans_re_0000"
+    #base_dir = f"{MACRO_HOME}/trans_re_0000"
     #call_tree_path = f"call_tree.txt"
 
     rust_flow_path = f"{rust_log_dir}/test{test_number}_flow.txt"
@@ -4841,10 +4845,10 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     #### Configuraion
     ################################
 
-    occupy_path = "/home/ubuntu/llm_tool/llm_api/instances.json"
+    occupy_path = None
     given_time = 60
 
-    run_all_template_path = f"/home/ubuntu/allrust/template/run_all_s_repair.sh"
+    run_all_template_path = f"{TRANS_HOME}/template/run_all_s_repair.sh"
 
     # Create PathConfig
     paths = create_path_config(
@@ -4990,12 +4994,6 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         # out = run_script_pty("workspace_io/io_c/which_2_21/run_all.sh", given_time)
         # print(out)
 
-        # save
-        # copy_directory(f"chats", f"/home/ubuntu/rust_code/{target}")
-        # copy_file(f"{token_path}", f"/home/ubuntu/rust_code/{target}")
-        # copy_file("repair_count.txt", f"/home/ubuntu/rust_code/{target}")
-        # copy_directory(f"/home/ubuntu/portable/{mix_io_dir}", f"/home/ubuntu/rust_code/{target}")
-
         progress_queue = []
         max_iterations = 5
         explore_time = 0
@@ -5006,9 +5004,6 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         print(rust_build_path)
         print(run_all_path)
         print(run_test_path)
-
-        #delete_directory(mix_io_dir) #copy_directory(f"/home/ubuntu/mid_code/{target}/{mix_io_dir}", "/home/ubuntu/portable")
-        #copy_directory(f"{original_dir}", f"{mix_io_dir}")
 
         initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) #c_io_dir, rust_io_dir, o_meta_dir, o_dep_json_path, io_list_path, c_flow_path, c_log_path, rust_flow_path, rust_log_path, mix_io_dir)
 
@@ -5061,9 +5056,9 @@ if __name__ == "__main__":
     # target = str(sys.argv[1])
 
     user_id = "0000"
-    config_path = "/home/ubuntu/allrust/config.json"  # This is being affected
+    config_path = f"{TRANS_HOME}/config.json"  # This is being affected
     config_data = read_json(config_path)
-    #target_path = f"/home/ubuntu/macrust/benchmark/{target}/targets_actual.txt" # Should change this
+    #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"]

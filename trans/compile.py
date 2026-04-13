@@ -161,6 +161,11 @@ from rust_parser_api import (
     setup_rust_trace,
 )
 
+MACRO_HOME = "/root/SmartC2Rust/macro"
+TRANS_HOME = "/root/SmartC2Rust/trans"
+C_PARSER_HOME = "/root/kiso-parser-c"
+
+
 full_regions = []
 
 ####################################################
@@ -3181,7 +3186,6 @@ fi
 
 # cargo modules structure
 def get_cargo_modules(execute_dir) -> str:
-   # execute_dir = "/home/ubuntu/portable/my_workspace/trans_rust"
     """
     Executes cargo modules structure command and returns the output
     """
@@ -5939,7 +5943,7 @@ def parse_function_info(target_path, target_dir):
         parts = entry.split(':')
         
         file_path = f"{parts[1]}"
-        file_path = file_path.replace("/home/ubuntu/allrust/trans_c_0000/", "")
+        file_path = file_path.replace(f"{TRANS_HOME}/trans_c_0000/", "")
         file_path = f"{target_dir}/{file_path}"  #f"{target_dir}/{parts[1]}"
 
         if len(parts) >= 3: #4:
@@ -6582,7 +6586,7 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
         # print(is_program_path)
         # print(file_path)
 
-        file_path = f"/home/ubuntu/allrust/trans_c_0000/{file_path}"
+        file_path = f"{TRANS_HOME}/trans_c_0000/{file_path}"
 
         # print(file_path)
 
@@ -6675,7 +6679,7 @@ def update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_pa
         # print(is_program_path)
         # print(file_path)
 
-        file_path = f"/home/ubuntu/allrust/trans_c_0000/{file_path}"
+        file_path = f"{TRANS_HOME}/trans_c_0000/{file_path}"
 
         # print(file_path)
 
@@ -7487,14 +7491,11 @@ def handle_paths(dep_json_path): # , compile_json_path # , cfg_path
     #guards_path = "database_0000/mini/guards.json"
 
     paths = [dep_json_path]  # , compile_json_path
-    paths = [f"/home/ubuntu/macrust/{item}".replace("allrust", "macrust") for item in paths]
+    paths = [f"{MACRO_HOME}/{item}".replace("allrust", "macrust") for item in paths]
     dep_json_path = paths[0]  # , compile_json_path
 
     return dep_json_path  #, compile_json_path
 
-
-
-one_unit = [{'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_test3_1.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/jerror_2.h', 'start_line': 3, 'end_line': 11, 'line_count': 9}, {'name': 'IFDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/jerror_2.h', 'start_line': 14, 'end_line': 17, 'line_count': 4}, {'name': 'IFDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/jerror_2.h', 'start_line': 27, 'end_line': 31, 'line_count': 5}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/jerror_2.h', 'start_line': 35, 'end_line': 37, 'line_count': 3}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_JMAKE_ENUM_LIST_1.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/config.h', 'start_line': 2, 'end_line': 27, 'line_count': 26}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_TEST50_2.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'TEST2_3', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 84, 'end_line': 84, 'line_count': 1}, {'name': 'test3_3', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/test_2.c', 'start_line': 3, 'end_line': 6, 'line_count': 4}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_TEST2_2.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_test7_1.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'test7_2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 125, 'end_line': 125, 'line_count': 1}, {'name': 'test3_1', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/test_3.c', 'start_line': 3, 'end_line': 6, 'line_count': 4}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/state_macro_3.h', 'start_line': 2, 'end_line': 9, 'line_count': 8}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/state_macro_0.h', 'start_line': 2, 'end_line': 9, 'line_count': 8}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_JERROR_H_2.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_JMESSAGE_2.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_test3_2.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom___test_2.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'MAX_SIZE', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 6, 'end_line': 6, 'line_count': 1}, {'name': 'DEBUG', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 7, 'end_line': 7, 'line_count': 1}, {'name': 'VERSION', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 8, 'end_line': 8, 'line_count': 1}, {'name': 'IFDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 10, 'end_line': 14, 'line_count': 5}, {'name': 'SAVED', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 16, 'end_line': 16, 'line_count': 1}, {'name': 'sun', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 19, 'end_line': 21, 'line_count': 3}, {'name': '__test_2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 23, 'end_line': 23, 'line_count': 1}, {'name': 'CHANGE', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 25, 'end_line': 25, 'line_count': 1}, {'name': 'IFDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 26, 'end_line': 32, 'line_count': 7}, {'name': 'IFDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 35, 'end_line': 41, 'line_count': 7}, {'name': 'PLATFORM2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 44, 'end_line': 44, 'line_count': 1}, {'name': 'IFDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 46, 'end_line': 48, 'line_count': 3}, {'name': 'TEST2_1', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 51, 'end_line': 51, 'line_count': 1}, {'name': 'TEST2_2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 55, 'end_line': 55, 'line_count': 1}, {'name': 'IFDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 58, 'end_line': 68, 'line_count': 11}, {'name': '_GL_SYS_STAT_H_2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 76, 'end_line': 76, 'line_count': 1}, {'name': 'TEST50_1', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 79, 'end_line': 79, 'line_count': 1}, {'name': 'TEST50_2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 81, 'end_line': 81, 'line_count': 1}, {'name': 'JMESSAGE_3', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 92, 'end_line': 92, 'line_count': 1}, {'name': 'messages', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 93, 'end_line': 96, 'line_count': 4}, {'name': 'test3_1', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 114, 'end_line': 114, 'line_count': 1}, {'name': 'test3_2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 117, 'end_line': 117, 'line_count': 1}, {'name': 'test3_3', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 120, 'end_line': 120, 'line_count': 1}, {'name': 'test7_1', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 123, 'end_line': 123, 'line_count': 1}, {'name': 'main', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/main.c', 'start_line': 127, 'end_line': 160, 'line_count': 34}, {'name': 'test3_2', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/test_1.c', 'start_line': 3, 'end_line': 6, 'line_count': 4}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/state_macro_4.h', 'start_line': 2, 'end_line': 9, 'line_count': 8}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_JMESSAGE_3.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/state_macro_1.h', 'start_line': 2, 'end_line': 9, 'line_count': 8}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/custom_test3_3.h', 'start_line': 2, 'end_line': 7, 'line_count': 6}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/state_macro_2.h', 'start_line': 2, 'end_line': 9, 'line_count': 8}, {'name': 'IFNDEF', 'file_path': '/home/ubuntu/allrust/workspace_0000_mini2/mini2/custom_macros/state_macro_5.h', 'start_line': 2, 'end_line': 9, 'line_count': 8}]
 
 
 def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_dir, target_path, rust_edition, llm_choice, claude_api_key, azure_endpoint):
@@ -7520,12 +7521,10 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     resume = config["resume"]
     old_block_path = config["old_block_path"]
     
-
-    #target = target #"mini"
-    occupy_path = "/home/ubuntu/llm_tool/llm_api/instances.json"
-    build_template_path = f"/home/ubuntu/macrust/template_rust/template_build.rs"
-    build_template_path = f"/home/ubuntu/allrust/template/template_build.rs"
-    run_all_template_path = f"/home/ubuntu/allrust/template/run_all.sh"
+    occupy_path = None 
+    build_template_path = f"{MACRO_HOME}/template_rust/template_build.rs"
+    build_template_path = f"{TRANS_HOME}/template/template_build.rs"
+    run_all_template_path = f"{TRANS_HOME}/template/run_all.sh"
 
     average = 400
 
@@ -7540,7 +7539,7 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     else:
         raise ValueError("cargo-modules not found")
 
-    # execute_error, execute_out, iteration_count = run_script("/home/ubuntu/allrust/workspace_0000_mini2/run_all.sh", 1000, True, None, "both", None, 3, None, None)
+    # execute_error, execute_out, iteration_count = run_script(f"{TRANS_HOME}/workspace_0000_mini2/run_all.sh", 1000, True, None, "both", None, 3, None, None)
     # print("-------")
     # #print(execute_error)
     # #print(execute_out)
@@ -7715,10 +7714,10 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
 
             #denormalize_block_path(block_path, original_dir, os.path.abspath(target_dir)) #denormalize_block_group_path(block_group_path, original_dir, os.path.abspath(target_dir))
 
-            clone_compile_json(os.path.abspath(original_dir), "/home/ubuntu/allrust/trans_c_0000", f"/home/ubuntu/allrust/workspace_0000_{target}")
+            clone_compile_json(os.path.abspath(original_dir), f"{TRANS_HOME}/trans_c_0000", f"{TRANS_HOME}/workspace_0000_{target}")
 
             print(target_dir) # workspace_0000_pp-patterns/pp-patterns
-            print(original_dir) # /home/ubuntu/allrust/trans_c_0000/pp-patterns
+            print(original_dir) # {TRANS_HOME}/trans_c_0000/pp-patterns
 
             print(os.path.abspath(target_dir))
             print(original_dir)
@@ -7736,7 +7735,7 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
             """
 
             #generate_is_program(target_dir, dep_json_path, is_program_path)
-            denormalize_block_path(is_program_path, f"/home/ubuntu/allrust/trans_c_0000/{target}", os.path.abspath(target_dir))
+            denormalize_block_path(is_program_path, f"{TRANS_HOME}/trans_c_0000/{target}", os.path.abspath(target_dir))
 
         #******************************************************************
         #*******       Translation     
@@ -7788,20 +7787,20 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
         print(f"\n\n++++++++++++++= End of translation ({target}) ++++++++++++++=")
 
         print(f"\nNext action:")
-        print(f"\npython3 semantics.py /home/ubuntu/allrust/{target_dir} s_repair")
+        print(f"\npython3 semantics.py {TRANS_HOME}/{target_dir} s_repair")
         
 
 
 
 if __name__ == "__main__":
 
-    # error, std_out, repair_count = run_script("/home/ubuntu/allrust/workspace_0000_pp-patterns/run_all.sh", 100, True, None, "both", None, 2, None, None)
+    # error, std_out, repair_count = run_script("{TRANS_HOME}/workspace_0000_pp-patterns/run_all.sh", 100, True, None, "both", None, 2, None, None)
     # print(error)
 
-    # database_dir = "/home/ubuntu/allrust/database_0000/time-1.9"
+    # database_dir = f"{TRANS_HOME}/database_0000/time-1.9"
     # sum_answer_data = read_json(f"{database_dir}/sum_answer.json")
     # # update metadata
-    # update_metadata_with_rust(sum_answer_data, "/home/ubuntu/allrust/div_metadata_0000/time-1.9", None)
+    # update_metadata_with_rust(sum_answer_data, f"{TRANS_HOME}/div_metadata_0000/time-1.9", None)
 
 
     """
@@ -7885,7 +7884,7 @@ if __name__ == "__main__":
     user_id = "0000"
 
     config_data = read_json("config.json")
-    #target_path = f"/home/ubuntu/macrust/benchmark/{target}/targets_actual.txt" # Should change this
+    #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"]

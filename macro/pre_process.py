@@ -134,6 +134,11 @@ from llm_api import (
     is_empty_string,
 )
 
+MACRO_HOME = "/root/SmartC2Rust/macro"
+TRANS_HOME = "/root/SmartC2Rust/trans"
+C_PARSER_HOME = "/root/kiso-parser-c"
+
+
 MACRO_TRANSFORMATION = False #True # False
 DEBUG_LLM = False
 IF_MODIFY_FILE = False # Handling of if_condition # Disable this at the initial stage, as the design is not yet finalized
@@ -1021,8 +1026,8 @@ def macrust_main(config): #process_type, user_id, original_dir, given_test_path,
 
     print("Starting macrust main")
 
-    macro_finder = "/home/ubuntu/macrust/macro_finder/build/macro-finder"
-    occupy_path = "/home/ubuntu/llm_tool/llm_api/instances.json"
+    macro_finder = f"{MACRO_HOME}/macro_finder/build/macro-finder"
+    occupy_path = None
 
     #llm_on = get_llm_flag(llm_on)
     claude_model = get_claude_model(llm_choice)
@@ -1353,7 +1358,7 @@ if __name__ == "__main__":
         llm_on = "on"
         reformat_type = str(sys.argv[3])
         if reformat_type == "genifai":
-            snap_dir = str(sys.argv[4])  #"/home/ubuntu/macrust/programs/mini/snap"
+            snap_dir = str(sys.argv[4]) 
         else:
             base_test_path = str(sys.argv[4])
 
@@ -1368,13 +1373,13 @@ if __name__ == "__main__":
         llm_on = str(sys.argv[3]) # process_type = "meta"
         given_test_path = str(sys.argv[4])
         target_path = str(sys.argv[5])
-        #target_path = f"/home/ubuntu/macrust/benchmark/mini2/targets.txt" # Should change here
+        #target_path = f"{MACRO_HOME}/benchmark/mini2/targets.txt" # Should change here
     
     user_id = "0000"
 
-    config_path = "/home/ubuntu/allrust/config.json"  # This is being affected
+    config_path = f"{TRANS_HOME}/config.json"  # This is being affected
     config_data = read_json(config_path)
-    #target_path = f"/home/ubuntu/macrust/benchmark/{target}/targets_actual.txt" # Should change this
+    #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"] 
