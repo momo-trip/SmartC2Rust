@@ -72,6 +72,7 @@ Each benchmark program has a `targets.txt` file in `benchmark/{program}/targets.
 
 ## Translation procedure
 ### Step 1: Reformat test cases
+Reformats the original test script into individual test cases using the LLM so that the subsequent iterative cycle can run automatically.
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/benchmark/{program} reformat base /root/SmartC2Rust/benchmark/{program}/base_test.sh
@@ -89,6 +90,7 @@ python3 pre_process.py /root/SmartC2Rust/benchmark/{program} reformat base /root
 
 
 ### Step 2: Get golden flows
+Executes the original C program to record golden execution flows as the ground truth.
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
@@ -102,6 +104,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
 
 
 ### Step 3: Pre-processing for parsing
+Resolves and analyzes macros, extracting per-file metadata such as function signatures, types, and macro definitions.
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off /root/SmartC2Rust/macro/trans_re_0000/{program}/run_test.sh /root/SmartC2Rust/macro/benchmark/{program}/targets.txt
@@ -122,6 +125,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off
 
 
 ### Step 4: Pre-processing for segmentation
+Performs static analysis to build call graphs and dependency information for segmenting the code into translation units.
 ```bash
 cd /root/SmartC2Rust/trans
 python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root/SmartC2Rust/benchmark/{program}/targets.txt /root/SmartC2Rust/macro/metadata_0000/{program} /root/SmartC2Rust/macro/div_metadata_0000/{program} /root/SmartC2Rust/macro/trans_c_0000/{program}
@@ -144,6 +148,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root
     - `block_output.txt`: Block output file tracking translation units (e.g., `database_0000/avl/block_output.txt`)
 
 ### Step 5: Compilation-repair
+Translates C code to Rust and iteratively repairs compilation errors using LLM feedback.
 ```bash
 cd /root/SmartC2Rust/trans
 python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt off
@@ -168,7 +173,8 @@ python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Ru
 - `trans/chats_0000_trans/{program}/`: LLM interaction prompt logs for the compile-repair step
 
 
-### Step 6: Compilation-repair
+### Step 6: Semantics-repair
+Verifies and repairs the semantic equivalence of the translated Rust code by comparing its behavior against the golden flows. Note that this step also fixes compilation errors that arise during the repair process.
 ```bash
 cd /root/SmartC2Rust/trans
 python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} s_repair
@@ -189,6 +195,7 @@ python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} 
 
 ## LLM model
 The default model is Claude Opus 4.6 (Anthropic).
+
 **Note:** Only Claude models are actively maintained and tested. Other LLM backends (GPT, Gemini, Llama) are included in the codebase but have not been recently verified and may not work as expected.
 
 
