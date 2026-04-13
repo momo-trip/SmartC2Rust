@@ -101,9 +101,9 @@ from c_parser_api import (
     analyze_call_relationship,
     p_f,
     get_files_list,
-    get_expanded_code,
-    insert_expanded_code,
-    change_combined_condition,
+    #get_expanded_code,
+    #insert_expanded_code,
+    #change_combined_condition,
     detect_const,
     get_entry_points,
     combine_with_innermost_conditioned_blocks,
@@ -112,12 +112,12 @@ from c_parser_api import (
 )
 
 from llm_api import (
-    RepairConfig,
+    #RepairConfig,
     LLMInterface,
     init_prompt_count, 
     #set_exp_data,
-    repair_test,
-    repair_branch,
+    #repair_test,
+    #repair_branch,
     occupy_llm,
     configure_llm,
     shutdown_llm,
