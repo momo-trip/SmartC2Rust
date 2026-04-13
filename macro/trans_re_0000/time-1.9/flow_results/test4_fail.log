@@ -1,3 +1,0 @@
--p format run exit code: 133
-FAIL: out-posix1 not created
-FAIL: out-quiet1 or out-noquiet1 not created

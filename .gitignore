@@ -1,9 +1,9 @@
 **/config.json
 **/instances.json
 
-trans_c_tmp_parse/
-trans_c*/
-trans_re*/
+**/trans_c_tmp_parse/
+**/trans_c*/
+**/trans_re*/
 database*/
 logs*/
 *workspace*/
