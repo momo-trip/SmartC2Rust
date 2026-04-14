@@ -6225,6 +6225,8 @@ int main(int argc, char* argv[]) {{
     return rust_main_wrapper(argc, argv);
 }}
 """
+
+
 code_snippet = f"""```rust
 // Rust side
 use std::ffi::CStr;

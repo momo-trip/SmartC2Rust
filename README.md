@@ -71,6 +71,9 @@ The `targets.txt` lists function names with their source locations in the format
 
 **Note:** For the benchmark programs, the entry point is set to the main function.
 
+See [docs/ffi-boundary.md](docs/ffi-boundary.md) for details on how the FFI boundary is designed.
+
+
 ## Translation procedure
 ### Step 1: Reformat test cases
 Reformats the original test script into individual test cases using the LLM so that the subsequent iterative cycle can run automatically.
