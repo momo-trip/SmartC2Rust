@@ -122,7 +122,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
 Resolves and analyzes macros, extracting per-file metadata such as function signatures, types, and macro definitions.
 ```bash
 cd /root/SmartC2Rust/macro
-python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off /root/SmartC2Rust/macro/trans_re_0000/{program}/run_test.sh /root/SmartC2Rust/macro/benchmark/{program}/targets.txt
+python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off /root/SmartC2Rust/macro/trans_re_0000/{program}/run_test.sh /root/SmartC2Rust/benchmark/{program}/targets.txt
 ```
 
 **Input:**

@@ -179,7 +179,6 @@ CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
 full_regions = []
 
-WITH_FLOW = True #False #True
 DEBUG_LLM = False
 TEST_MODE = None #False #True #False
 FFI_STRATEGY = None # True #False
@@ -2806,6 +2805,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
     work_dir = interface.work_dir
     database_dir = interface.database_dir
     #rust_path = interface.rust_path
+    flow_on = interface.flow_on
 
     target = interface.target
 
@@ -3037,28 +3037,50 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                                 f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
                             ])
                     else:
-                        prompt.extend(["",
-                                "## Response rules:",
-                                "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
-                                "- Please identify and fix the root cause of the error according to the following rules:",
-                                f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
-                                f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
-                                f"        -  Please debug by yourself.",
-                                f"    - Otherwise, to clear the root cause, please use the following info as needed and identify the cause code.", #f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
-                                f"        - Please refer to the {flow_path} file, which contains information about function execution flow for both the original C and current Rust implementations.",
-                                #f"        - Please refer to the {flow_path} file, which contains information about function execution flow, arguments, and return values for both the original C and current Rust implementations.",
-                                f"        - This flow information is updated whenever the Rust program is modified. So, please check the current status as needed.",
-                                f"        - For your reference, the golden/test{test_number}_golden_flow.txt file contains the expected execution flow of the C implementation.",  #  the {c_io_dir}/{target}/golden/test{test_number}_golden_flow.txt file contains only the expected execution flow of the C implementation.", 
-                                #f"- The entry point in the Rust program is in workspace_io/trans_rust/src/which_2_21/module4_h/unit0.rs",
-                                f"- When fixing the Rust program, please aim to understand the original C program's intent and functionality accurately, and implement an equivalent code, rather than creating special handling or hacky fixes for specific test cases.",
-                                f"- The purpose of converting from C to Rust is to replace memory-vulnerable code with memory-safe code. When modifying the Rust program ({rust_io_dir}), please suggest safe modifications that avoid using unsafe blocks and raw pointers whenever possible.",
-                                f"- The {rust_build_path} shell file contains code for building the Rust program.",
-                                #f"- The {build_path} shell file contains code for building the C program.",
-                                f"- The {run_test_path} shell file contains code for executing the test cases.",
-                                f"- The {run_all_path} shell file contains code that executes {rust_build_path}, {build_path} and {run_test_path} together.",
-                                f"- When making modifications, please consider the directory structure where the Rust program ({rust_io_dir}) is located.",
-                                f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
-                            ])
+                        if flow_on is True:
+                            prompt.extend(["",
+                                    "## Response rules:",
+                                    "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
+                                    "- Please identify and fix the root cause of the error according to the following rules:",
+                                    f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
+                                    f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                    f"        -  Please debug by yourself.",
+                                    f"    - Otherwise, to clear the root cause, please use the following info as needed and identify the cause code.", #f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                    f"        - Please refer to the {flow_path} file, which contains information about function execution flow for both the original C and current Rust implementations.",
+                                    #f"        - Please refer to the {flow_path} file, which contains information about function execution flow, arguments, and return values for both the original C and current Rust implementations.",
+                                    f"        - This flow information is updated whenever the Rust program is modified. So, please check the current status as needed.",
+                                    f"        - For your reference, the golden/test{test_number}_golden_flow.txt file contains the expected execution flow of the C implementation.",  #  the {c_io_dir}/{target}/golden/test{test_number}_golden_flow.txt file contains only the expected execution flow of the C implementation.", 
+                                    #f"- The entry point in the Rust program is in workspace_io/trans_rust/src/which_2_21/module4_h/unit0.rs",
+                                    f"- When fixing the Rust program, please aim to understand the original C program's intent and functionality accurately, and implement an equivalent code, rather than creating special handling or hacky fixes for specific test cases.",
+                                    f"- The purpose of converting from C to Rust is to replace memory-vulnerable code with memory-safe code. When modifying the Rust program ({rust_io_dir}), please suggest safe modifications that avoid using unsafe blocks and raw pointers whenever possible.",
+                                    f"- The {rust_build_path} shell file contains code for building the Rust program.",
+                                    #f"- The {build_path} shell file contains code for building the C program.",
+                                    f"- The {run_test_path} shell file contains code for executing the test cases.",
+                                    f"- The {run_all_path} shell file contains code that executes {rust_build_path}, {build_path} and {run_test_path} together.",
+                                    f"- When making modifications, please consider the directory structure where the Rust program ({rust_io_dir}) is located.",
+                                    f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
+                                ])
+
+                        else:
+                            prompt.extend(["",
+                                    "## Response rules:",
+                                    "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
+                                    "- Please identify and fix the root cause of the error according to the following rules:",
+                                    f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
+                                    f"    - If there are no compile or runtime error messages, and the test case is failing due to differences between expected and actual results:",
+                                    f"        -  Please debug by yourself.",
+                                    # f"    - Otherwise, to clear the root cause, please use the following info as needed and identify the cause code.",
+                                    # f"        - Please refer to the {flow_path} file, which contains information about function execution flow for both the original C and current Rust implementations.",
+                                    # f"        - For your reference, the golden/test{test_number}_golden_flow.txt file contains the expected execution flow of the C implementation.", 
+                                    f"- When fixing the Rust program, please aim to understand the original C program's intent and functionality accurately, and implement an equivalent code, rather than creating special handling or hacky fixes for specific test cases.",
+                                    f"- The purpose of converting from C to Rust is to replace memory-vulnerable code with memory-safe code. When modifying the Rust program ({rust_io_dir}), please suggest safe modifications that avoid using unsafe blocks and raw pointers whenever possible.",
+                                    f"- The {rust_build_path} shell file contains code for building the Rust program.",
+                                    #f"- The {build_path} shell file contains code for building the C program.",
+                                    f"- The {run_test_path} shell file contains code for executing the test cases.",
+                                    f"- The {run_all_path} shell file contains code that executes {rust_build_path}, {build_path} and {run_test_path} together.",
+                                    f"- When making modifications, please consider the directory structure where the Rust program ({rust_io_dir}) is located.",
+                                    f"- As the goal is to maintain end-to-end test equivalence between the original C program and its Rust conversion, absolutely do not modify the existing C test cases ({run_test_path}) or C program ({c_io_dir}).",
+                                ])
 
                     prompt.extend(["- When encountering errors with backslashes in byte literals, you need to escape the backslash in both the source code and within the byte literal. Therefore, use three backslashes (double backslash).",
                             "- When encountering errors with backslashes in character literals, you need to escape the backslash in both the source code and within the character literal. Therefore, use two backslashes.",
@@ -3571,16 +3593,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
 
     return repair_count, modified_c_keys
 
-
-"""
-[C言語側]
-main() ─→ first_level_func() ─→ second_level_func() ─→ third_level_func()
-                └─→ another_first_level_func()
-
-[Rust移行後]
-main() ─→ ffi::first_level_func() ─→ rust_second_level_func() ─→ rust_third_level_func()
-                └─→ rust_another_first_level_func()
-"""
 
 
 def get_equivalent(modifications):
@@ -4331,8 +4343,6 @@ def get_fail_flow_old(test_report, test_number, rust_log_path, rust_flow_path, g
     os.makedirs(f"{mix_io_dir}/scope", exist_ok=True)
 
 
-    #c_line_data = get_tree_flow("C", golden_flow_path)
-
     for test_name, line_data in file_data.items():
         #print(test_name)
         if test_name not in fail_numbers:
@@ -4414,9 +4424,6 @@ def get_fail_flow(work_dir, test_number):  #  golden_flow_path, rust_flow_path, 
     if rust_log_path is None:
         return None
 
-    #base_dir = f"{MACRO_HOME}/trans_re_0000"
-    #call_tree_path = f"call_tree.txt"
-
     rust_flow_path = f"{rust_log_dir}/test{test_number}_flow.txt"
 
     parse_trace(rust_log_path, None, rust_flow_path, True) # binary_path: str, 
@@ -4495,9 +4502,6 @@ def delete_all_log(given_test_number, c_io_dir):
         delete_file(success_path)
         delete_file(fail_path)
 
-        # print(success_path)
-        # print(fail_path)
-    
 
 def get_smallest_fail_id(given_test_number, c_io_dir, error):
 
@@ -4506,8 +4510,6 @@ def get_smallest_fail_id(given_test_number, c_io_dir, error):
         success_path = f"{c_io_dir}/flow_results/test{str(test_id)}_success.log"
         fail_path = f"{c_io_dir}/flow_results/test{str(test_id)}_fail.log"
 
-        # print(success_path)
-        # print(fail_path)
         if os.path.exists(fail_path):
             test_number = test_id
             break
@@ -4515,11 +4517,9 @@ def get_smallest_fail_id(given_test_number, c_io_dir, error):
     if test_number is not None:
         return test_number
 
-    #"""
     if error is not None:
         test_number = 1
         return test_number
-    #"""
 
     return None
 
@@ -4527,8 +4527,8 @@ def get_smallest_fail_id(given_test_number, c_io_dir, error):
 def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                     raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                     dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
-                    llm_interface, progress_queue, max_iterations
-                    ): # c_flow_path, rust_flow_path, rust_log_path, golden_flow_path, 
+                    llm_interface, progress_queue, max_iterations, flow_on
+                    ): 
 
     print("Repairing functional errors")
 
@@ -4579,6 +4579,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         c_rust_path=c_rust_path,
         raw_dir=raw_dir,
         select=False,
+        flow_on=flow_on,
         #test_type=test_type,
         #llm_choice=llm_choice,
         llm_interface=llm_interface,
@@ -4615,25 +4616,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
 
     given_test_number = get_given_num(c_io_dir)
     print(given_test_number)
-    #sys.exit(0)
-
-    """
-    test_report = []
-    for i in range(1, given_test_number + 1):
-        test_report.append({
-            "test_number" : i,
-            #"need_function_flow" : True,
-            #"need_arg_return" : True,
-            #"need_module_deps" : False,
-        })
-
-    # Preparation
-    for item in test_report:
-        success_path = f"flow_results/test{item['test_number']}_success.log"
-        fail_path = f"flow_results/test{item['test_number']}_fail.log"
-        delete_file(success_path)
-        delete_file(fail_path)
-    """
 
     # Run first
     error = None
@@ -4645,18 +4627,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
     print("Crearing log paths")
     delete_all_log(given_test_number, c_io_dir)
     error, std_out = run_script_wo_log(run_all_path, given_time, True, None, "both") #, rust_log_path, golden_flow_path) # #run_script(run_path, given_time, True, None, "both")
-    """
-    clear_rust_flow(rust_log_path, rust_flow_path)
-    error, std_out = run_script_flow(run_path, given_time, True, None, "both", rust_log_path, golden_flow_path) # #run_script(run_path, given_time, True, None, "both")
-    print("run_script_flow in the first step")
-
-    clear_rust_flow(rust_log_path, rust_flow_path)
-    if target != 'yank':
-        std_out = run_script_pty(run_path, given_time)
-    print("run_script_pty in the first step")
-    # Should I prepare a repair specifically for timeout here?
-    # If you have flow_path, it will be very useful
-    """
 
     print("======= error =======")
     print(error)
@@ -4668,10 +4638,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
 
     test_number = get_smallest_fail_id(given_test_number, c_io_dir, error)
 
-    #for item in test_report:
     while (1):
-        # print(test_number)
-        # sys.exit(0)
         if test_number is None:
             break
 
@@ -4705,7 +4672,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
             break
 
         # fail flow acquisition
-        if WITH_FLOW:
+        if flow_on:
             # get_fail_flow(test_report, test_number, rust_log_path, rust_flow_path, golden_flow_path)
             rust_flow_path = get_fail_flow(work_dir, test_number) #, rust_flow_path) # , golden_flow_path
 
@@ -4721,7 +4688,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         """
         flow_path = f"{mix_io_dir}/flows/test{test_number}.txt"
         # Repair work
-        if not WITH_FLOW:
+        if not flow_on:
             write_file(flow_path, "")
         """
 
@@ -4839,6 +4806,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
 
         write_file("repair_count.txt", str(judge_count))
         """
+
         part_modify_count += 1
         if part_modify_count > 50:
             break
@@ -4944,11 +4912,6 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
     rust_binary_path = f"{rust_io_dir}/target/release/{target}"
 
     convert_cargo_toml_to_binary(toml_path, target)
-
-    print(rust_io_dir)
-    print(lib_path)
-    print(build_rs_path)
-    print(toml_path)
 
     prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to a standalone binary. Please apply the following modifications to the Rust code below. Follow these rules and steps STRICTLY:",
                 "",
@@ -5100,7 +5063,6 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
 
                 sum_target_list = list(set(sum_target_list))
 
-                ##
                 tmp_sum_target_list = []
                 for see_path in sum_target_list:
                     if see_path is None:
@@ -5109,7 +5071,6 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                         see_path = find_matching_path(raw_dir, see_path)
                     tmp_sum_target_list.append(see_path)
                 sum_target_list = tmp_sum_target_list
-                ##
 
                 for see_path in sum_target_list:
                     is_excluded = check_excluded(target_dir, see_path)
@@ -5182,7 +5143,7 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
         if ready_to_execute is True:
             break
 
-    print("*********** End of produce_finary_binary ***********")
+    print("*********** End of produce_final_binary ***********")
       
 
 
@@ -5368,9 +5329,9 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     flag_build_path) = extract_all_paths(paths)
 
 
-    mix_io_dir = work_dir #get_last_directory(work_dir) #f"workspace_io"  #_{target}"  #"io_mix"
-    c_io_dir = f"{work_dir}/{target}" # "io_c"
-    rust_io_dir = f"{work_dir}/trans_rust" #"trans_rust"
+    mix_io_dir = work_dir
+    c_io_dir = f"{work_dir}/{target}"
+    rust_io_dir = f"{work_dir}/trans_rust"
 
 
     ################################
@@ -5426,19 +5387,10 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         if TEST_MODE:
             atexit.register(lambda: shutdown_llm(llm_interface))
 
-        #if FFI_STRATEGY == "preserve":
-        # out = run_script_pty("workspace_io/io_c/which_2_21/run_all.sh", given_time)
-        # print(out)
-
         progress_queue = []
         max_iterations = 5
         explore_time = 0
         notes = []
-
-        # print(mix_io_dir)
-        # print(rust_build_path)
-        # print(run_all_path)
-        # print(run_test_path)
 
         # initialize
         initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) 
@@ -5447,7 +5399,7 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                         raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                         dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
-                        llm_interface, progress_queue, max_iterations
+                        llm_interface, progress_queue, max_iterations, True
                         )  
 
         if FFI_STRATEGY == "minimize":
@@ -5462,7 +5414,7 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
             check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                             raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                             dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
-                            llm_interface, progress_queue, max_iterations
+                            llm_interface, progress_queue, max_iterations, False
                             )  
 
         output = {
@@ -5478,16 +5430,12 @@ if __name__ == "__main__":
     #####################################################################
     
     # setup
-    #original_dir = str(sys.argv[1])
     compile_dir = str(sys.argv[1])
-    #work_dir = str(sys.argv[2])
     process_type = str(sys.argv[2])
-    # target = str(sys.argv[1])
 
     user_id = "0000"
-    config_path = f"{CONFIG_PATH}"  # This is being affected
+    config_path = f"{CONFIG_PATH}"
     config_data = read_json(config_path)
-    #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
 
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
