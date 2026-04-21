@@ -24,6 +24,7 @@ This drops you into the container with all tools and source code pre-installed a
 
 ### Updating dependencies
 
+⚠️IMPORTANT⚠️: Please be sure to run the following before anything else. 
 SmartC2Rust depends on several kiso-* libraries that are pre-installed in the Docker image. To pull the latest updates for all components:
 
 ```bash
