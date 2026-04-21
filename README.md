@@ -51,6 +51,7 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
     "azure_endpoint": "<your-endpoint-if-applicable>",
     "test_mode": false,
     "average" : 400,
+    "ffi_strategy": "minimize"
 }
 ```
 
@@ -61,7 +62,7 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 | `azure_endpoint` | Endpoint URL (required for `claude_azure` backends, otherwise leave empty `""`) |
 | `test_mode` | Set `false` for normal use |
 | `average` | Maximum number of source lines per translation unit. |
-
+| `ffi_strategy` | Translation strategy: `"preserve"` (C-compatible via FFI) or `"minimize"` (safe, idiomatic Rust; default) |
 
 ## Entry point selection
 
@@ -72,6 +73,14 @@ The `targets.txt` lists function names with their source locations in the format
 **Note:** For the benchmark programs, the entry point is set to the main function.
 
 See [docs/ffi-boundary.md](docs/ffi-boundary.md) for details on how the FFI boundary is designed.
+
+
+## Artifact notes
+### Macro handling
+When scaling to larger programs, performing macro analysis from scratch with LLMs becomes impractical due to cost considerations. Therefore, we introduce a more structured approach by classifying macros into constant and conditional categories based on parser results. The LLM is then used to refine the translated code, ensuring consistency, successful compilation, and integration across translation units.
+
+### FFI strategy
+In the paper, we focus on command-line tools, where the entry point can be translated using a minimize strategy. In contrast, when translating library functions in isolation, FFI interfaces are often unavoidable for interoperability with existing C code. Therefore, we provide two modes (`"preserve"` or `"minimize"`) to support both use cases.
 
 
 ## Translation procedure
