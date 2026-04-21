@@ -170,7 +170,7 @@ CONFIG_PATH = "/root/SmartC2Rust/config.json"
 ###  Configurations
 ####################################################
 
-FFI_ON = False # default False    # avoid to become C-ish by relying on FFIs
+FFI_STRATEGY = None
 W_O_DEP = False # default False    # Without dependency data
 
 MANUAL_FIRST = False
@@ -691,7 +691,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
 
     # targets
     if t_at_least_found:
-        if FFI_ON is True:
+        if FFI_STRATEGY == "preserve":
             added_prompt.extend([
                 "- FFI boundary functions:",
                 "    - The following functions already have stub implementations. Please replace them with the actual implementations.",
@@ -755,7 +755,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
     if g_at_least_found:
         global_vars_list = ", ".join(global_vars)
 
-        if FFI_ON is True:
+        if FFI_STRATEGY == "preserve":
             added_prompt.extend([
                 "- Global variables:",
                 "    - These C global variables are shared across the FFI boundary.",
@@ -3462,7 +3462,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
 
                 prompt = []
 
-                if FFI_ON is True:
+                if FFI_STRATEGY == "preserve":
                     prompt.extend([f"When running the Rust program in {rust_output_dir}, the following error occurs. Please fix the Rust program in {rust_output_dir} to resolve the error.",
                             "When responding, follow the response rules below and select only one of the three Response modes.",
                             "",
@@ -4800,7 +4800,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         is_program_path=is_program_path,
     )
 
-    if FFI_ON is True:
+    if FFI_STRATEGY == "preserve":
         translate_llm('divided_type', one_unit, rust_path, interface)
 
     else:
@@ -7720,7 +7720,7 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
 
         if resume is False:
             clang_args_json_path = f"{database_dir}/file_clang_args.json"
-            if FFI_ON is True:
+            if FFI_STRATEGY == "preserve":
                 build_rs_path, lib_path, toml_path = setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
                             chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, # , root_dir
                             average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition, # build_list_path, 
@@ -7806,6 +7806,7 @@ if __name__ == "__main__":
     azure_endpoint = config_data["azure_endpoint"]
     TEST_MODE = config_data["test_mode"]
     average = config_data["average"]
+    FFI_STRATEGY = config_data["ffi_strategy"]
 
     config = {
         "original_dir": original_dir,
