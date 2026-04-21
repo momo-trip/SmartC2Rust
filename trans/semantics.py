@@ -45,11 +45,9 @@ from threading import Timer, Thread
 from dataclasses import dataclass, field
 import subprocess
 from pathlib import Path
-
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
 from pydantic import BaseModel
 import openai
 import anthropic
@@ -57,7 +55,6 @@ from anthropic import InternalServerError
 import replicate
 # import google.generativeai as genai
 # from google.generativeai.protos import Content, Part
-
 from clang.cindex import (
     Index, 
     CursorKind, 
@@ -66,11 +63,9 @@ from clang.cindex import (
     CompilationDatabase, 
     Config
 )
-
 from graphviz import Digraph
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-
 import clang.cindex
 clang.cindex.Config.set_library_file('/usr/lib/llvm-19/lib/libclang.so.1')  # Numbers may change depending on version
 #clang.cindex.Config.set_library_file('/opt/homebrew/opt/llvm/lib/libclang.dylib') # for mac os
@@ -120,6 +115,7 @@ from utils_api import (
     get_ref_files,
     get_path_map,
     read_specific_lines,
+    get_lined_specific_code,
     append_rust_path,
     update_modified_keys,
 )
@@ -565,22 +561,6 @@ def find_matching_path(workspace_dir, target_suffix):
                 break
     
     return matching_path
-
-
-def get_lined_specific_code(test_path, start_line, end_line, work_dir):
-    if not os.path.exists(test_path):
-        test_path = find_matching_path(work_dir, test_path)
-
-    target_code = read_specific_lines(test_path, start_line, end_line)
-    
-    lined_test_path = "lined.txt" #"lined.c"
-    write_file(lined_test_path, target_code)
-    add_line_numbers_custom(lined_test_path, start_line) #add_line_numbers(lined_test_path)
-    test_code = read_file(lined_test_path)
-
-    delete_file(lined_test_path)
-
-    return test_code
 
 
 def support_returns(file_path):
@@ -3171,24 +3151,24 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
             if log_choice['need_function_flow'] is True and log_choice['need_arg_return'] is False:
                 flow_path = f"{mix_io_dir}/flows/test{test_number}.txt"
                 if os.path.exists(flow_path):
-                    prompt.extend(["", f"## Function execution flow:"]) #f"## 関数の実行順序:"])
+                    prompt.extend(["", f"## Function execution flow:"])
                     flow_code = read_file(flow_path)
                     prompt.extend([flow_code])
             
             elif log_choice['need_arg_return'] is True:
                 value_path = f"{mix_io_dir}/analysis/test{test_number}.json"
                 if os.path.exists(value_path):
-                    prompt.extend(["", f"## Function arguments and return values:"]) #f"## 関数の引数と返り値の値:"])
+                    prompt.extend(["", f"## Function arguments and return values:"])
                     value_code = read_file(value_path)
                     prompt.extend([value_code])
             
             if log_choice['need_module_deps'] is True:
-                prompt.extend(["", f"## Module structure of the target Rust program ({rust_io_dir}):"]) #f"## 対象のRustプログラム({rust_io_dir})のmodule構造:"])
+                prompt.extend(["", f"## Module structure of the target Rust program ({rust_io_dir}):"])
                 structure = get_cargo_modules(rust_io_dir)
                 prompt.extend([structure])
             """
 
-            prompt.extend(["", f"## Directory structure of C program ({c_io_dir}) using functions from Rust program ({rust_io_dir}):"])  #f"## Rustのプログラム（{rust_io_dir}）の関数を使用するCのプログラム（{c_io_dir}）のディレクトリ構造:"])
+            prompt.extend(["", f"## Directory structure of C program ({c_io_dir}) using functions from Rust program ({rust_io_dir}):"])
             directory_structure = get_dir_struct('s_repair', mix_io_dir, None)  #c_io_dir)
             prompt.extend([directory_structure])
             
@@ -5157,8 +5137,6 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
 
 if __name__ == "__main__":
     
-    # rust_parse_log(rust_log_path, rust_flow_path)
-
     #####################################################################
     ##### Input
     #####################################################################
@@ -5174,6 +5152,7 @@ if __name__ == "__main__":
     config_path = f"{CONFIG_PATH}"  # This is being affected
     config_data = read_json(config_path)
     #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
+
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"]

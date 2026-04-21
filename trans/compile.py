@@ -165,29 +165,19 @@ TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
 CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
-full_regions = []
 
 ####################################################
-# Paramaters in the paper
+###  Configurations
 ####################################################
 
-FFI_ON = False #True # False
-W_O_DEP = False # default False
+FFI_ON = False # default False    # avoid to become C-ish by relying on FFIs
+W_O_DEP = False # default False    # Without dependency data
 
 MANUAL_FIRST = False
 MANUAL = False
 DEBUG_LLM = False
 
 WITH_CONDENSED = WITH_FILES = False
-keyboard_interrupt_occurred = False
-
-path_count = 0  
-current_c_block_end = 0
-
-finished = False
-platform_instruction = ""
-reflect_path = None
-
 
 INSERT_FILES = False
 INSERT_FILES_REPAIR = False
@@ -195,17 +185,8 @@ INSERT_FILES_REPAIR = False
 REPAIR_MEMORIZED = True # True #True (It runs even without this...!? No, that shouldn't be the case)
 # Set REPAIR_MEMORIZED & WITH_CONDENSED to True.
 
-part_max = 10 #100
-
-####################################################
-# Configurations
-####################################################
-# variables
 FROM_PART = False #True #False #False
-
-MAX_COMPILE = 20 # 15 #
 REPAIR_MAX = 500
-
 LLM_DIV = False
 RULE_DIV = True
 
@@ -214,20 +195,29 @@ RANDOM_TYPE = False
 
 MOD_LINE = True #False # Modify line by line
 MOD_PARSE = not(MOD_LINE) # Modify per parse unit
-TEST_MODE = None #False #True #False
 
 ####################################################
 # Initial values
 ####################################################
+TEST_MODE = None 
+
+keyboard_interrupt_occurred = False
+path_count = 0  
+current_c_block_end = 0
+
+finished = False
+platform_instruction = ""
+reflect_path = None
+
 reflect_count = 0
 
 SINGLE_TYPE = DIVIDED_TYPE = PLAIN_TYPE = False
-#INDIV_REF = FILE_REF = False
 
 iteration_dict = {}
 judge_dict = {}
 persable_units = {}
 module_list = []
+full_regions = []
 
 
 #########################################################
@@ -1455,10 +1445,8 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
             exp_data['repair_count'] = 0
             exp_data['phase'] = 'convert'
 
-            # prompt.extend([f"- まとめると、以下のようなJSON形式のformatで回答してください。"])
             # prompt.extend([convert_template])
 
-            # prompt.extend(["", "## 対象のRustのmodule構造:"])
             # structure = get_cargo_modules(rust_output_dir)
             # prompt.extend([structure, ""])
             
@@ -2099,10 +2087,10 @@ def translate_llm_wo_ffi(convert_element, one_unit, rust_path, interface): # , s
             exp_data['repair_count'] = 0
             exp_data['phase'] = 'convert'
 
-            # prompt.extend([f"- まとめると、以下のようなJSON形式のformatで回答してください。"])
+            # prompt.extend([f"- In summary, please respond in the following JSON format."])
             # prompt.extend([convert_template])
 
-            # prompt.extend(["", "## 対象のRustのmodule構造:"])
+            # prompt.extend(["", "## Target Rust module structure:"])
             # structure = get_cargo_modules(rust_output_dir)
             # prompt.extend([structure, ""])
             
@@ -3475,11 +3463,11 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                 prompt = []
 
                 if FFI_ON is True:
-                    prompt.extend([f"When running the Rust program in {rust_output_dir}, the following error occurs. Please fix the Rust program in {rust_output_dir} to resolve the error.", #f"{rust_output_dir}のRustプログラムを実行すると以下のエラーが起こる。エラーを解決するよう、{rust_output_dir}のRustプログラムを修正してください。",
-                            "When responding, follow the response rules below and select only one of the three Response modes.",  #"回答するにあたって、以下の回答の注意を守り、かつ以下の3つのうちいずれか一つのモードのみを選択して、応答を生成してください。",
+                    prompt.extend([f"When running the Rust program in {rust_output_dir}, the following error occurs. Please fix the Rust program in {rust_output_dir} to resolve the error.",
+                            "When responding, follow the response rules below and select only one of the three Response modes.",
                             "",
                             "## Response rules:", 
-                            f"- Identify and fix the file that fundamentally resolves the error, not limited to {rust_path}. If necessary, use read_data mode to check the program's content.", #f"- {rust_path}に限らず、エラーを根本的に解決するファイルを特定し修正してください。必要があれば、read_data modeを使ってプログラムの内容を確認してください。",
+                            f"- Identify and fix the file that fundamentally resolves the error, not limited to {rust_path}. If necessary, use read_data mode to check the program's content.",
                             #"- In modification, do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                             "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
                             "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
@@ -3492,8 +3480,8 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                             # "- The code content should be ready to run as-is, without omissions. If the token limit is likely to be exceeded, please split the response into multiple parts.", # but it's omitted for brevity as it would exceed the token limit.
                             "- When representing backslashes as byte literals, escape the backslash twice in the source code, and also escape it again in the byte literal, resulting in four backslashes (double backslashes).",
                             "- When representing backslashes as character literals, escape the backslash once in the source code and again in the character literal, resulting in two backslashes.",
-                            f"- When making modifications, consider the directory structure where the Rust program ({rust_output_dir}) is located.", #f"- 修正の際は、Rustプログラム（{rust_output_dir}）のあるディレクトリ構造を考慮して作成してください。",
-                            f"- The shell script code to execute the Rust program in {rust_output_dir} is in the file at {run_path} and is executed with ./{run_path}", #f"- {rust_output_dir}のRustプログラムを実行するシェルスクリプトの回答のコードは、{run_path}のファイルのコードで、./{run_path}で行われます。",
+                            f"- When making modifications, consider the directory structure where the Rust program ({rust_output_dir}) is located.",
+                            f"- The shell script code to execute the Rust program in {rust_output_dir} is in the file at {run_path} and is executed with ./{run_path}",
                             #"- Declare all items (structs, enums, functions, constants, etc.) with pub (public) so they can be imported from other modules.",
                             "- Define all functions and types at the top level. Avoid using the mod keyword for module partitioning and avoid defining methods for types (within impl blocks).", #"- Define all functions and types at the top level without using the mod keyword.",
                             # "- When writing functions, first add 'use tracing::info;' at the top of the file, then add log outputs using the info!() macro in each function so that the values of the arguments and the return values can be traced as follows:",
@@ -3525,8 +3513,8 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                             # "- The code content should be ready to run as-is, without omissions. If the token limit is likely to be exceeded, please split the response into multiple parts.", # but it's omitted for brevity as it would exceed the token limit.
                             "- When representing backslashes as byte literals, escape the backslash twice in the source code, and also escape it again in the byte literal, resulting in four backslashes (double backslashes).",
                             "- When representing backslashes as character literals, escape the backslash once in the source code and again in the character literal, resulting in two backslashes.",
-                            f"- When making modifications, consider the directory structure where the Rust program ({rust_output_dir}) is located.", #f"- 修正の際は、Rustプログラム（{rust_output_dir}）のあるディレクトリ構造を考慮して作成してください。",
-                            f"- The shell script code to execute the Rust program in {rust_output_dir} is in the file at {run_path} and is executed with ./{run_path}", #f"- {rust_output_dir}のRustプログラムを実行するシェルスクリプトの回答のコードは、{run_path}のファイルのコードで、./{run_path}で行われます。",
+                            f"- When making modifications, consider the directory structure where the Rust program ({rust_output_dir}) is located.",
+                            f"- The shell script code to execute the Rust program in {rust_output_dir} is in the file at {run_path} and is executed with ./{run_path}",
                             #"- Declare all items (structs, enums, functions, constants, etc.) with pub (public) so they can be imported from other modules.",
                             "- Define all functions and types at the top level. Avoid using the mod keyword for module partitioning and avoid defining methods for types (within impl blocks).", #"- Define all functions and types at the top level without using the mod keyword.",
                             # "- When writing functions, first add 'use tracing::info;' at the top of the file, then add log outputs using the info!() macro in each function so that the values of the arguments and the return values can be traced as follows:",
@@ -4082,7 +4070,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
             print(f"In mode: {mode}")
             print(f"Modifying at repair_count: {repair_count}")
             # Cannot include modifications for the same start_line and end_line. For example, in the case of a split response with start_line = 1, end_line = 600, start_line and end_line remain the same throughout
-            part_editied_files = reflect_line_modification(sum_modified_list, work_dir) #reflect_line_modification(sum_modified_list, rust_output_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            part_editied_files = reflect_line_modification(sum_modified_list, work_dir, database_dir)
             modified_c_keys = update_modified_keys(modified_c_keys, meta_dir, rust_c_map, part_editied_files)
             editied_files.extend(part_editied_files)
 
@@ -4148,9 +4136,8 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
 
 
 #********************************************
-#***** Rust: Prompt for FILE_REF
+#***** Rust: Prompt for file reference
 #********************************************
-
 
 def concatanate_rust_files(rust_path_list):
     concatenated_content = ""  # String to hold the concatenated content
@@ -6115,7 +6102,7 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
         
         if mode == 'modify_data':
             print(f"In mode: {mode}")
-            reflect_line_modification(sum_modified_list, work_dir) #reflect_line_modification(sum_modified_list, raw_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            reflect_line_modification(sum_modified_list, work_dir, database_dir)
 
         elif mode == 'read_data':
             print(f"In mode: {mode}")
@@ -6393,7 +6380,7 @@ def generate_link_harness_wo_ffi(work_dir, build_path, rust_build_path, run_test
         
         if mode == 'modify_data':
             print(f"In mode: {mode}")
-            reflect_line_modification(sum_modified_list, work_dir) #reflect_line_modification(sum_modified_list, raw_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            reflect_line_modification(sum_modified_list, work_dir, database_dir)
 
         elif mode == 'read_data':
             print(f"In mode: {mode}")
@@ -7794,65 +7781,6 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
 
 
 if __name__ == "__main__":
-
-    # error, std_out, repair_count = run_script("{TRANS_HOME}/workspace_0000_pp-patterns/run_all.sh", 100, True, None, "both", None, 2, None, None)
-    # print(error)
-
-    # database_dir = f"{TRANS_HOME}/database_0000/time-1.9"
-    # sum_answer_data = read_json(f"{database_dir}/sum_answer.json")
-    # # update metadata
-    # update_metadata_with_rust(sum_answer_data, f"{TRANS_HOME}/div_metadata_0000/time-1.9", None)
-
-
-    """
-    cashed = {}
-    sum_prompt = []
-    cashed = {}
-    ifdefs = set()
-    prompt = []
-    components_included = []
-    for item in one_unit:
-        components_included.append(item)
-        if 'components' in item:
-            components_included.append(item['components'])
-
-
-    i_at_least_found = False
-    g_at_least_found = False
-    if_at_least_found = False
-    r_at_least_found = False
-
-    meta_dir = "metadata_0000/mini2"
-    
-    for c_item in components_included:
-        if_at_least_found, ifdefs = collect_ifdef_dependencies(cashed, c_item, meta_dir, components_included, if_at_least_found, ifdefs)
-        
-    if if_at_least_found:
-        prompt.extend([
-            "- Cfg state items:", 
-            "    - Please translate the following #ifdef statements to Rust, taking into consideration that the conditional compilation flags are defined as cfg attributes in build.rs.",
-            "    - The conditional compilation flags are automatically detected from C header macros using bindgen, and emitted as cargo:rustc-cfg=has_<macro_name> (lowercase) during the build process."
-        ])
-        # for target_name, value in ifdefs.items():
-        #     for ifdef_statement in ifdefs[target_name]:
-        #         prompt.append(f"    {ifdef_statement}")
-        for ifdef_statement in ifdefs:
-            prompt.append(f"    {ifdef_statement}")
-
-    prompt.extend(sum_prompt)
-    print(prompt)
-    """
-
-    # calculate_execution_time(chat_dir, "time.json", 400, target)
-    # print(c_build_path)
-    # print(f"{work_dir}/answer.json")
-    # merge_conds_rust_metadata(c_build_path, f"{work_dir}/answer.json")
-
-    # show_iteration_counts()
-
-    # prompt, sole_prompt = get_context_prompt('divided_type', [], one_unit, "database_0000/mini2/dependencies.json", "div_metadata_0000/mini2", "workspace_0000_mini2/trans_rust", "workspace_0000_mini2/mini2/c_build.sh")
-    # print(sole_prompt)
-    # print("iru?")
 
     #####################################################################
     ##### Input

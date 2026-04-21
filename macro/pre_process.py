@@ -91,6 +91,7 @@ from utils_api import (
     obtain_metadata,
     get_setting_data,
     get_llm_flag,
+    get_lined_specific_code,
     normalize_metafiles,
     normalize_translation_metadata,
     denormalize_translation_metadata,
@@ -128,7 +129,6 @@ from llm_api import (
     get_claude_model,
     find_matching_path,
     check_excluded,
-    get_lined_specific_code,
     get_lined_code,
     trim_code,
     is_empty_string,
@@ -455,7 +455,7 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
                     if is_excluded:
                         continue
 
-                    file_code = get_lined_specific_code(raw_dir, database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'])
+                    file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'], raw_dir)
                     file_code = trim_code(see_item['file_path'], file_code, 10000)
 
                     read_prompt.extend([f"Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"]) 
@@ -490,7 +490,7 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
 
         if mode == 'modify_data':
             print(f"In mode: {mode}")
-            reflect_line_modification(sum_modified_list, raw_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            reflect_line_modification(sum_modified_list, raw_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
             sum_modified_list = []
                 
         #if mode is not None and mode == "modify_data":
@@ -768,7 +768,7 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
                     if is_excluded:
                         continue
 
-                    file_code = get_lined_specific_code(raw_dir, database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'])
+                    file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'], raw_dir)
                     file_code = trim_code(see_item['file_path'], file_code, 10000)
 
                     read_prompt.extend([f"Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"])
@@ -803,7 +803,7 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
 
         if mode == 'modify_data':
             print(f"In mode: {mode}")
-            reflect_line_modification(sum_modified_list, raw_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            reflect_line_modification(sum_modified_list, raw_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
             sum_modified_list = []
                 
         #if mode is not None and mode == "modify_data":
