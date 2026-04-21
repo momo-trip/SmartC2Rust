@@ -138,6 +138,8 @@ from llm_api import (
     ask_correspondence,
     get_claude_model,
     adjust_prompt,
+    check_excluded,
+    is_empty_string,
 )
 
 from c_parser_api import (
@@ -177,10 +179,10 @@ CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
 full_regions = []
 
-FFI_ON = True #False
 WITH_FLOW = True #False #True
 DEBUG_LLM = False
 TEST_MODE = None #False #True #False
+FFI_STRATEGY = None # True #False
 
 REPAIR_MAX = 500
 given_time = 60 #200 # 20 # default 20
@@ -2296,7 +2298,7 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
             
 
             # If function name is main, rename to rust_main
-            if FFI_ON:
+            if FFI_STRATEGY == "preserve":
                 if name == 'main':
                     function_line = function_line.replace('fn main', 'fn rust_main')
 
@@ -2307,7 +2309,7 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
                 #modified_lines.insert(start_line, trace_macro)
             elif is_pub:
                 print("May skipping")
-                if FFI_ON:
+                if FFI_STRATEGY == "preserve":
                     # Case of pub only
                     if item['name'] == "rust_main":
                         new_function_line = function_line.replace('pub fn', 'pub extern "C" fn')
@@ -2488,7 +2490,7 @@ def modify_cargo(rust_io_dir, inspect_dir, inspect_core_dir):
         content = parts[0] + '[dependencies]\n' + dependency_line + (parts[1] if len(parts) > 1 else '')
     
     # Write changes back
-    if FFI_ON:
+    if FFI_STRATEGY == "preserve":
         with open(toml_path, 'w') as f:
             f.write(content)
 
@@ -2812,7 +2814,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
     
     rust_build_path = interface.rust_build_path
     build_path = interface.build_path
-    run_test_path = interface.run_test_path # これは、run_test_pathのこと
+    run_test_path = interface.run_test_path
     run_all_path = interface.run_all_path
 
     rust_c_path = interface.rust_c_path
@@ -2895,7 +2897,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                 prompt = []
                 if error_log is not None:
 
-                    if FFI_ON:
+                    if FFI_STRATEGY == "preserve":
                         prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
                                     f"To ensure equivalence between the pre- and post-translation code, I called the Rust main function via FFI from C test cases, but test{test_number} is not passing.",
                                     f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the error and make test{test_number} pass.",
@@ -2910,7 +2912,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                                     "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",
                                 ])                   
                 else:
-                    if FFI_ON:
+                    if FFI_STRATEGY == "preserve":
                         prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
                                         "To ensure equivalence between the pre- and post-translation code, I called the Rust main function via FFI from C test cases, but errors are occurring.",
                                         f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the errors.",
@@ -2922,7 +2924,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                                         f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the errors.",
                                         "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",                               
                                         ])
-                if FFI_ON:
+                if FFI_STRATEGY == "preserve":
                     prompt.extend(["",
                                 "## Response rules:",
                                 "- Before making any modifications, please check the original C program to ensure all functionality is properly implemented. If any features have been simplified or are missing, please modify the Rust program to faithfully implement all the original functionality from the C code.",
@@ -3011,7 +3013,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                                 "When answering, please follow the response rules below and generate a response using only one of the following three response modes.",
                             ]
 
-                    if FFI_ON:
+                    if FFI_STRATEGY == "preserve":
                         prompt.extend(["",
                                 "## Response rules:",
                                 "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
@@ -3419,7 +3421,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
         print(f"Running program for the mode: {mode}")
         if mode == 'modify_data':
             print(f"In mode: {mode}")
-            part_editied_files = reflect_line_modification(sum_modified_list, rust_io_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            part_editied_files = reflect_line_modification(sum_modified_list, rust_io_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
             #modified_c_keys = update_modified_keys(modified_c_keys, meta_dir, rust_c_map, part_editied_files)
             editied_files.extend(part_editied_files)
 
@@ -3440,7 +3442,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                 read_prompt.extend([f'{file_code}\n'])
 
             for see_item in sum_slice_list:
-                file_code = get_lined_specific_code(see_item['file_path'], see_item['start_line'], see_item['end_line'], mix_io_dir)
+                file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'], mix_io_dir)
                 read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"])
                 read_prompt.extend([f'{file_code}\n'])
 
@@ -3944,7 +3946,7 @@ def reformat_flow(repair_target, interface):  #target_dir, entry, original_run_p
         if mode == 'modify_data':
             print(f"In mode: {mode}")
             print(f"sum_modified_list at reformate_flow: {sum_modified_list}")
-            reflect_line_modification(sum_modified_list, rust_io_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            reflect_line_modification(sum_modified_list, rust_io_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
 
         elif mode == 'read_data':
             print(f"In mode: {mode}")
@@ -4845,6 +4847,345 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
     print(f"Finished of functional_check, judge count: {judge_count}, given_test_number: {given_test_number}")
 
 
+def convert_cargo_toml_to_binary(toml_path: str, target_name: str) -> None:
+    """
+    Convert Cargo.toml from a library crate to a binary crate.
+    
+    Operations:
+    1. Remove the [lib] section if it exists
+    2. Add a [[bin]] section with name and path
+    3. Remove crate-type if specified
+    4. Preserve all other sections ([package], [dependencies], [build-dependencies], etc.)
+    
+    Args:
+        toml_path: Path to Cargo.toml
+        target_name: Binary name (set as the name field in [[bin]])
+    """
+    import tomlkit
+    
+    with open(toml_path, 'r') as f:
+        doc = tomlkit.parse(f.read())
+    
+    # 1. Remove the [lib] section
+    if 'lib' in doc:
+        del doc['lib']
+    
+    # 3. Remove crate-type from [package] (if present)
+    if 'package' in doc and 'crate-type' in doc['package']:
+        del doc['package']['crate-type']
+    
+    # 2. Add the [[bin]] section
+    bin_table = tomlkit.table()
+    bin_table['name'] = target_name
+    bin_table['path'] = 'src/main.rs'
+    
+    bin_array = tomlkit.aot()  # Array of Tables
+    bin_array.append(bin_table)
+    doc['bin'] = bin_array
+    
+    with open(toml_path, 'w') as f:
+        f.write(tomlkit.dumps(doc))
+
+
+reformat_response = f"""# In "modify_data" mode
+{{
+    "mode" : "modify_data",
+    "answer" : [
+        {{
+            "file_path" : (file path),
+            "start_line" : (start line of the original code to be deleted; must reflect the original range to be replaced),
+            "end_line" : (end line of the original code to be deleted; must reflect the original range to be replaced),
+            "modified_data" : (Content of the corrected code without any omission. Content of the corrected code as a string if is_JSON is false, or as a direct JSON object if is_JSON is true.),
+        }},
+        {{
+            "file_path" : (file path),
+            "start_line" : (start line of the original code to be deleted; must reflect the original range to be replaced),
+            "end_line" : (end line of the original code to be deleted; must reflect the original range to be replaced),
+            "modified_data" : (Content of the corrected code without any omission. Content of the corrected code as a string if is_JSON is false, or as a direct JSON object if is_JSON is true.),
+        }},...
+    ],
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "ready_to_execute" : True if modifications are complete and ready to execute for verification. False otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
+}}
+
+# In "read_data" mode
+{{
+    "mode" : "read_data",
+    "target_files" : [path/to/file1, path/to/file2, ..., path/to/fileN], 
+    "file_slices" : (if necessary, otherwise None) [
+        {{
+            "file_path" : (file path),
+            "start_line" : (start_line of the scope),
+            "end_line" : (end_line of the scope),
+        }},...
+    ]
+    "ongoing_in_mode" : true if the "answer" response in "read_data" mode is long and will continue in subsequent responses. false otherwise,
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "ready_to_execute" : True if modifications are complete and ready to execute for verification. False otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
+}}
+"""
+
+
+def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+                            raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
+                            dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
+                            llm_interface, progress_queue, max_iterations
+                            ):
+    
+    lib_path = f"{rust_io_dir}/src/lib.rs" 
+    main_path = f"{rust_io_dir}/src/main.rs"
+    if os.path.exists(lib_path):
+        os.rename(lib_path, main_path)
+        
+    build_rs_path = rust_io_dir + '/build.rs'
+    toml_path = f"{rust_io_dir}/Cargo.toml"
+    rust_binary_path = f"{rust_io_dir}/target/release/{target}"
+
+    convert_cargo_toml_to_binary(toml_path, target)
+
+    print(rust_io_dir)
+    print(lib_path)
+    print(build_rs_path)
+    print(toml_path)
+
+    prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to a standalone binary. Please apply the following modifications to the Rust code below. Follow these rules and steps STRICTLY:",
+                "",
+                "## Strict rules",
+                f"Step A: Modification to {main_path}",
+                "  1. Rename the function `rust_main` to `main`.",
+                "  2. Replace the argument signature of `main`:",
+                "     - If `rust_main` takes `Vec<String>` or `args: Vec<String>`, keep that parameter but populate it inside `main` via `let args: Vec<String> = std::env::args().collect();`.",
+                "     - `main` function signature MUST be exactly: `fn main()` (no parameters, no return type, or return `()`).",
+                "     - If the original `rust_main` returned `i32`, exit with that code using `std::process::exit(code)` at the end.",
+                "  3. Remove the entire `parse_args` function (or any helper that parses `argc`/`argv` from raw pointers).",
+                "  4. Remove the entire `rust_main_wrapper` function (the `extern \"C\"` entry point).",
+                "  5. Remove any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes/modifiers in the code being transformed.",
+                "  6. Keep ALL other functions, types, constants, modules, and imports exactly as they are.",
+                "  7. Keep the body of `rust_main` (now `main`) EXACTLY the same, except for the argument population line added at the top.",
+                "",
+                # f"Step B: Modification to {toml_path}",
+                # "1. If there is a `[lib]` section, remove it entirely.",
+                # "2. Add a `[[bin]]` section with:",
+                # f"   - `name = \"{target}\"`",
+                # "   - `path = \"src/main.rs\"`",
+                # "3. If `crate-type` is specified anywhere, remove it.",
+                # "4. Keep ALL other sections (`[package]`, `[dependencies]`, `[features]`, `[profile.*]`, etc.) exactly as they are.",
+                # "5. Keep all dependency names and version specifications unchanged.",
+                # "",
+                f"Step B: Modification to {run_test_path}",
+                f" 1. Replace invocations of the C binary (which internally calls the Rust FFI wrapper) with direct invocations of the Rust binary.",
+                f"    - The Rust binary is located at: `{rust_binary_path}`",
+                "  2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
+                "  3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
+                "  4. If the C binary was invoked with arguments, pass the same arguments to the Rust binary.",
+                "  5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
+                ]
+
+
+    prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",])
+    prompt.extend([reformat_response])
+
+    code = read_file(main_path)
+
+    prompt.extend([f"## Rust code ({main_path}):",])
+    prompt.extend([code])
+
+    code = read_file(run_test_path)
+
+    prompt.extend([f"## Test code ({run_test_path}):",])
+    prompt.extend([code])
+
+    prompt.extend(["", "## Directory structure of the translated Rust program:"]) 
+    directory_structure = get_dir_struct("translation", mix_io_dir, None)  #rust_output_dir)
+    
+    write_file(f"{database_dir}/directry_structure.txt", directory_structure)
+    directory_structure = trim_code(f"{database_dir}/directry_structure.txt", directory_structure, 10000)
+    prompt.extend([directory_structure, ""])
+
+
+    # ongoing_flag = None
+    # error = None
+    # std_out = None 
+    iteration_count = 0
+    progress_queue = None
+    max_iterations = 10
+
+    max_retries = 10
+
+    for retry in range(max_retries):
+        ongoing_flag = None
+        ongoing_in_mode_flag = None
+        ready_to_execute = False    
+        error = None
+        std_out = None 
+        read_prompt = None
+        mode = None
+
+        sum_target_list = []
+        sum_slice_list = []
+        sum_modified_list = []
+        
+        while (1):
+            if ongoing_flag is False and ongoing_in_mode_flag is False:
+                break
+                
+            if read_prompt is not None:
+                prompt.extend(["", "## Response to the previous request:"])
+                prompt.extend(read_prompt)
+                read_prompt = None # initialization
+
+                sum_target_list = []
+                sum_slice_list = []
+                
+            rsp_json = ask_llm(prompt, "continue", llm_interface)
+
+            if 'mode' in rsp_json:
+                mode = rsp_json['mode']
+
+                if mode == 'read_data':
+                    if 'answer' in rsp_json:
+                        code = rsp_json['answer']
+                        append_file(execute_path, code)
+
+                    if 'target_files' in rsp_json:
+                        target_list = rsp_json['target_files']
+                        if not isinstance(target_list, list):
+                            target_list = [target_list]
+                        sum_target_list.extend(target_list)
+                    
+                    if 'file_slices' in rsp_json and rsp_json['file_slices'] is not None:
+                        slice_list = rsp_json['file_slices']
+                        if not isinstance(slice_list, list):
+                            slice_list = [slice_list]
+                        sum_slice_list.extend(slice_list)
+                
+                if mode == 'modify_data':
+                    if 'answer' in rsp_json:
+                        modified_list = rsp_json['answer'] # It might be okay to insert individually converted results here
+                        if not isinstance(modified_list, list):
+                            modified_list = [modified_list]
+                        sum_modified_list.extend(modified_list)
+            
+            ongoing_flag = False
+            if 'ongoing' in rsp_json:
+                ongoing_flag = rsp_json['ongoing']
+            
+            ongoing_in_mode_flag = False
+            if 'ongoing_in_mode' in rsp_json:
+                ongoing_in_mode_flag = rsp_json['ongoing_in_mode']
+            
+            ready_to_execute = False
+            if 'ready_to_execute' in rsp_json:
+                ready_to_execute = rsp_json['ready_to_execute']
+
+            if ready_to_execute is True:
+                break
+
+            if mode == 'read_data':
+                print(f"In mode: {mode}")
+                read_prompt = ["- The content obtained in read_data mode is as follows.", ""] 
+
+                slice_set = set()
+                for slice_item in sum_slice_list:
+                    slice_set.add(slice_item['file_path'])
+
+                new_sum_target_list = []
+                print(f"sum_target_list: {sum_target_list}")
+                for see_path in sum_target_list:
+                    if see_path not in slice_set:
+                        new_sum_target_list.append(see_path)
+                sum_target_list = new_sum_target_list
+
+                sum_target_list = list(set(sum_target_list))
+
+                ##
+                tmp_sum_target_list = []
+                for see_path in sum_target_list:
+                    if see_path is None:
+                        continue
+                    if not os.path.exists(see_path):
+                        see_path = find_matching_path(raw_dir, see_path)
+                    tmp_sum_target_list.append(see_path)
+                sum_target_list = tmp_sum_target_list
+                ##
+
+                for see_path in sum_target_list:
+                    is_excluded = check_excluded(target_dir, see_path)
+                    if is_excluded:
+                        continue
+
+                    file_code = get_lined_code(see_path, database_dir)
+                    file_code = trim_code(see_path, file_code, 10000)
+
+                    read_prompt.extend([f"- Content of the file {see_path}:"])
+                    if not is_empty_string(file_code):
+                        read_prompt.extend([f'{file_code}\n'])
+                    else:
+                        read_prompt.extend([f'None\n'])
+                
+                for see_item in sum_slice_list:
+                    is_excluded = check_excluded(raw_dir, see_item['file_path'])
+                    if is_excluded:
+                        continue
+
+                    file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'], raw_dir)
+                    file_code = trim_code(see_item['file_path'], file_code, 10000)
+
+                    read_prompt.extend([f"Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"])
+                    read_prompt.extend([f'{file_code}\n'])
+
+            prompt = []
+            prompt.extend(["Please continue your response."])
+            prompt.extend([
+                "Please follow the rules below when modifying the program.",
+                "\n## Modification rules:",
+                "### Step A: Modification to src/main.rs",
+                "1. Rename the function `rust_main` to `main`.",
+                "2. If `rust_main` takes `args: Vec<String>`, populate it inside `main` via `let args: Vec<String> = std::env::args().collect();`.",
+                "3. The `main` function signature MUST be exactly: `fn main()` (no parameters).",
+                "4. If the original `rust_main` returned `i32`, exit with that code using `std::process::exit(code)` at the end.",
+                "5. Remove the entire `parse_args` function.",
+                "6. Remove the entire `rust_main_wrapper` function.",
+                "7. Remove any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes.",
+                "8. Keep ALL other functions, types, constants, modules, and imports exactly as they are.",
+                "9. Keep the body of `rust_main` (now `main`) EXACTLY the same, except for the argument population line added at the top.",
+                "",
+                # "### Step B: Modification to Cargo.toml",
+                # "1. If there is a `[lib]` section, remove it entirely.",
+                # f"2. Add a `[[bin]]` section with `name = \"{target}\"` and `path = \"src/main.rs\"`.",
+                # "3. If `crate-type` is specified anywhere, remove it.",
+                # "4. Keep ALL other sections (`[package]`, `[dependencies]`, etc.) exactly as they are.",
+                # "5. Keep all dependency names and version specifications unchanged.",
+                # "",
+                "### Step B: Modification to run_test.sh",
+                #f"1. Replace invocations of the C binary with direct invocations of the Rust binary at `./target/release/{target}`.",
+                f"1. Replace invocations of the C binary with direct invocations of the Rust binary at `{rust_binary_path}`.",
+                "2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
+                "3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
+                "4. Pass the same arguments to the Rust binary that were passed to the C binary.",
+                "5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
+            ])
+
+            prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",
+            ])
+            prompt.extend([reformat_response])
+
+
+        if mode == 'modify_data':
+            print(f"In mode: {mode}")
+            reflect_line_modification(sum_modified_list, raw_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            sum_modified_list = []
+                
+
+        if ready_to_execute is True:
+            break
+
+    print("*********** End of produce_finary_binary ***********")
+      
+
+
 def rename_one_path(file_path, raw_dir, c_io_dir):
     file_path = remove_base_path(file_path, f"{raw_dir}")
     file_path = f"{c_io_dir}/{file_path}"
@@ -5085,7 +5426,7 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         if TEST_MODE:
             atexit.register(lambda: shutdown_llm(llm_interface))
 
-        #if FFI_ON:
+        #if FFI_STRATEGY == "preserve":
         # out = run_script_pty("workspace_io/io_c/which_2_21/run_all.sh", given_time)
         # print(out)
 
@@ -5094,40 +5435,35 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         explore_time = 0
         notes = []
 
+        # print(mix_io_dir)
+        # print(rust_build_path)
+        # print(run_all_path)
+        # print(run_test_path)
+
         # initialize
-        print(mix_io_dir)
-        print(rust_build_path)
-        print(run_all_path)
-        print(run_test_path)
+        initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) 
 
-        initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) #c_io_dir, rust_io_dir, o_meta_dir, o_dep_json_path, io_list_path, c_flow_path, c_log_path, rust_flow_path, rust_log_path, mix_io_dir)
-
-        """
-        delete_file(f"/home/{user_name}/portable/out_flow_rust.log")
-
-        if WITH_FLOW:
-            if not os.path.exists(f"../programs/{target}/golden"):
-                print("Does not found golden dir.")
-                #raise ValueError("Does not found golden dir.")
-            else:
-                copy_directory(f"../programs/{target}/golden", "./")
-        else:
-            create_directory("golden")
-            delete_directory(f"workspace_io/io_c/{target}/golden")
-        """
-
-        # delete_file("file_data.json")
-        # get_flow_data(rust_log_path, rust_flow_path, golden_flow_path)
-
-        # repair function errors #if process_type == "s_repair": # or process_type == "whole":
+        # Repair function errors
         check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                         raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                         dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                         llm_interface, progress_queue, max_iterations
                         )  
-        # c_flow_path, rust_flow_path, rust_log_path, golden_flow_path, 
-        # I think it's enough to just check here if only the function mappings have changed
-        # Might need a Rust io_checker tool?
+
+        if FFI_STRATEGY == "minimize":
+            # Produce the final standalone binary
+            produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+                            raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
+                            dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
+                            llm_interface, progress_queue, max_iterations
+                            )  
+
+            # Repair function errors
+            check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+                            raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
+                            dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
+                            llm_interface, progress_queue, max_iterations
+                            )  
 
         output = {
             'work_dir' : work_dir
@@ -5157,7 +5493,7 @@ if __name__ == "__main__":
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"]
     TEST_MODE = config_data["test_mode"] 
-
+    FFI_STRATEGY = config_data["ffi_strategy"] 
     
     allrust_semantics_main(process_type, user_id, compile_dir, llm_choice, claude_api_key, azure_endpoint)
 

@@ -6399,10 +6399,6 @@ def generate_link_harness_wo_ffi(work_dir, build_path, rust_build_path, run_test
                 read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"]) 
                 read_prompt.extend([f'{file_code}\n'])
 
-        
-        prompt = ["Please continue your answer."
-        ]
-
         prompt = [
             #"The following directory is created for calling Rust functions from a C program.",
             "Please complete the following steps:",
@@ -7444,7 +7440,6 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
     # turn off warnings
     # turn_off_warning(build_rs_path)
 
-
     print("\n========= Translation =========\n")
 
     c_order, components = get_c_order(block_group_path)
@@ -7452,14 +7447,9 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
     finished = []
     for c_id in c_order: # Add "test": null to all files in the initial state
         one_unit = components[c_id]
-        #print(one_unit)
-
-        # if "src/zopflipng" in c_path:
-        #     continue
-
         exp_data = {}
         error = None
-        return_path = f"{database_dir}/return.txt"  # What does this mean, exactly?
+        return_path = f"{database_dir}/return.txt"
 
         #set_convert_type(moment_path, target, 'divided', llm_choice)
         translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, original_dir,
@@ -7476,8 +7466,6 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
 
 # I don't think this is needed in production
 def handle_paths(dep_json_path): # , compile_json_path # , cfg_path
-    #guards_path = "database_0000/mini/guards.json"
-
     paths = [dep_json_path]  # , compile_json_path
     paths = [f"{MACRO_HOME}/{item}".replace("trans", "macro") for item in paths]
     dep_json_path = paths[0]  # , compile_json_path
@@ -7527,7 +7515,6 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     else:
         raise ValueError("cargo-modules not found")
 
-    # execute_error, execute_out, iteration_count = run_script(f"{TRANS_HOME}/workspace_0000_mini2/run_all.sh", 1000, True, None, "both", None, 3, None, None)
     # print("-------")
     # #print(execute_error)
     # #print(execute_out)
