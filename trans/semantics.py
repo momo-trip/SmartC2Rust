@@ -4672,9 +4672,8 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
             break
 
         # fail flow acquisition
-        if flow_on:
-            # get_fail_flow(test_report, test_number, rust_log_path, rust_flow_path, golden_flow_path)
-            rust_flow_path = get_fail_flow(work_dir, test_number) #, rust_flow_path) # , golden_flow_path
+        # if flow_on:
+        rust_flow_path = get_fail_flow(work_dir, test_number)
 
         # ready for repair and repair
         interface.test_number = test_number
@@ -4683,7 +4682,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         interface.std_out = std_out
 
         interface.repair_count = repair_count
-        interface.flow_path =  rust_flow_path
+        interface.flow_path = rust_flow_path
 
         """
         flow_path = f"{mix_io_dir}/flows/test{test_number}.txt"
