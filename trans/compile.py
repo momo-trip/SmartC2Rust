@@ -1196,9 +1196,6 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                 updated_toml_data = toml.dumps(existing_data)  # Convert the overwritten data to TOML format
                 write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
 
-        else:
-            print("Error: LLM resonse is an unexpected form. Maybe blank?") 
-        
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
             #ongoing_flag = search_key('ongoing', rsp_json)
@@ -1491,9 +1488,6 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                 updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
                 write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
 
-        else:
-            print("Error: LLM resonse is an unexpected form. Maybe blank?") 
-        
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
             #ongoing_flag = search_key('ongoing', rsp_json)
@@ -1838,9 +1832,6 @@ def translate_llm_wo_ffi(convert_element, one_unit, rust_path, interface): # , s
                 updated_toml_data = toml.dumps(existing_data)  # Convert the overwritten data to TOML format
                 write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
 
-        else:
-            print("Error: LLM resonse is an unexpected form. Maybe blank?") 
-        
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
             #ongoing_flag = search_key('ongoing', rsp_json)
@@ -2135,9 +2126,7 @@ def translate_llm_wo_ffi(convert_element, one_unit, rust_path, interface): # , s
                 updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
                 write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
 
-        else:
-            print("Error: LLM resonse is an unexpected form. Maybe blank?") 
-        
+
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
             #ongoing_flag = search_key('ongoing', rsp_json)
@@ -2250,9 +2239,6 @@ def repair_total(convert_element, prompt, c_path, rust_path, exp_data, error): #
                 delete_file(rust_path)
             append_rust_path(rust_path, rsp_json['rust_code']) #toml_submit, build_submit = update_rust_path(rust_path, rsp_json, rust_output_dir)
         
-        else:
-            print("Error: LLM resonse is an unexpected form. Maybe blank?") 
-
 
         if 'toml' in rsp_json: #if len(rsp_json) > 1:
             if rsp_json['toml'] is not None:
