@@ -6,7 +6,14 @@ When translating C code to Rust, the FFI (Foreign Function Interface) boundary i
 The design of this boundary affects how much of the translated Rust code can be written as safe Rust. 
 Without explicit guidance, LLMs tend to produce C-style Rust code that uses `unsafe` throughout, rather than isolating it at the boundary.
 
-## Entry point as `main`
+
+SmartC2Rust supports two strategies for handling this boundary:
+
+- **Minimize strategy** (default, used in the paper): The translated Rust code is compiled as a standalone binary minimal FFI boundary. This is applicable when the entry point is the `main` function.
+- **Preserve strategy** : FFI wrappers are retained so that the translated code can be called from existing C code. 
+
+
+## Minimize strategy (entry point = `main`)
 
 When the entry point is the `main` function, the FFI boundary can be kept minimal. The key technique is to convert C types into safe Rust types at the boundary, then pass them to a fully safe Rust function:
 
@@ -43,8 +50,10 @@ pub extern "C" fn rust_main_wrapper(
 ```
 
 With this pattern, `unsafe` is confined to the wrapper and argument parsing. The actual program logic in `rust_main` is entirely safe Rust.
+As a final step (Step 6: semantics-repair), the wrapper is then refined into `fn main()`, producing a standalone binary with minimal FFI boundary.
 
-## Entry point as library functions
+
+## Preserve strategy (including entry point = library functions)
 
 For large-scale programs, it may be practical to translate only a subset of functions rather than the entire program. 
 In this case, the entry points are individual library functions rather than `main`, and the FFI boundary becomes more pervasive. 
@@ -52,7 +61,4 @@ Each translated function needs its own FFI wrapper, and since these functions ma
 
 This is a natural trade-off: incremental translation gives flexibility in choosing what to translate, but at the cost of more FFI boundaries and more `unsafe` code around them.
 
-## LLM behavior
 
-Without explicit instructions about FFI boundary design, LLMs tend to produce Rust code that mirrors the original C code closely, using raw pointers and `unsafe` blocks throughout the translated code. 
-Providing the wrapper pattern as part of the translation prompt helps the LLM separate the FFI layer from the core logic, resulting in more idiomatic and safer Rust.
