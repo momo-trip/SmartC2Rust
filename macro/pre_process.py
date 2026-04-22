@@ -49,6 +49,7 @@ from pathlib import Path
 from typing import Optional
 # from openai import RateLimitError, APIError
 # from testGen.main import print_hello
+from concurrent.futures import ProcessPoolExecutor
 
 full_regions = []
 
@@ -102,9 +103,6 @@ from c_parser_api import (
     analyze_call_relationship,
     p_f,
     get_files_list,
-    #get_expanded_code,
-    #insert_expanded_code,
-    #change_combined_condition,
     detect_const,
     get_entry_points,
     combine_with_innermost_conditioned_blocks,
@@ -113,12 +111,8 @@ from c_parser_api import (
 )
 
 from llm_api import (
-    #RepairConfig,
     LLMInterface,
     init_prompt_count, 
-    #set_exp_data,
-    #repair_test,
-    #repair_branch,
     occupy_llm,
     configure_llm,
     shutdown_llm,
@@ -139,85 +133,13 @@ TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
 CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
-MACRO_TRANSFORMATION = False #True # False
+
+MACRO_TRANSFORMATION = False 
 DEBUG_LLM = False
-IF_MODIFY_FILE = False # Handling of if_condition # Disable this at the initial stage, as the design is not yet finalized
-TEST_MODE = None #False #True #False
+TEST_MODE = None 
 
 REPAIR_MAX = 500
 guided_line = 20 #10
-
-
-def initialize(target_dir, meta_dir, database_dir, dep_json_path):  # , flag_json_path 
-               #macro_list_path, macro_path, all_macro_path): # , initial_macro_path 
-
-    # initialize directories and files
-    #delete_directory(raw_dir) # Do not delete here, otherwise parallel execution of multiple programs is not possible
-    delete_directory(target_dir)
-    delete_directory(meta_dir)
-
-    database_json_path = f"{database_dir}/compile_commands.json"
-    delete_file(database_json_path)
-
-    # delete_file(f'{database_dir}/m_conds.json')
-    # delete_file(f'{database_dir}/m_grep.json')
-
-    # delete_file(f"{database_dir}/dep_user.json")
-    # delete_file(f'{database_dir}/macro_func.txt')
-
-    #delete_file(token_path)
-    #delete_file("token_macro.json")
-
-    #delete_file('find_defines.c') # Not verified
-    #delete_file('find_if.c') # Not verified
-
-    # create new directories
-    if not DEBUG_LLM:
-        # delete_directory(database_dir)
-        # create_directory(database_dir)
-
-        # list of files to keep
-        keep_files = {"answer.json"}
-        
-        if os.path.exists(database_dir):
-            for item in os.listdir(database_dir):
-                item_path = os.path.join(database_dir, item)
-                
-                # delete items not included in keep_files
-                if item not in keep_files:
-                    if os.path.isfile(item_path):
-                        os.remove(item_path)
-                        print(f"Deleted: {item_path}")
-                    elif os.path.isdir(item_path):
-                        shutil.rmtree(item_path)
-                        print(f"Deleted directory: {item_path}")
-        else:
-            create_directory(database_dir)
-    
-    # delete_directory(root_dir)
-    # delete_directory("preprocessed_output")
-    #delete_file(macro_list_path)
-    #delete_file(macro_path)
-    #delete_file(initial_macro_path)
-
-    #delete_file(initial_list_path)
-    #delete_file(all_macro_path)
-
-    # write_json(f"{database_dir}/pro_functions.json", {})
-    # write_json(f"{database_dir}/pro_data_type.json", {})
-    # write_json(f"{database_dir}/pro_global_var.json", {})
-    # write_json(f"{database_dir}/pro_macro.json", {})
-
-    # write_json(f"{database_dir}/pro_pro_functions.json", {})
-    # write_json(f"{database_dir}/pro_pro_data_type.json", {})
-    # write_json(f"{database_dir}/pro_pro_global_var.json", {})
-    # write_json(f"{database_dir}/pro_pro_macro.json", {})
-
-    # write_json("pro_pro_functions.json", [])
-    # write_json("pro_pro_data_type.json", [])
-    # write_json("pro_pro_global_var.json", [])
-    # write_json("pro_pro_macro.json", [])
-
 
 
 reformat_response = f"""# In "modify_data" mode
@@ -263,10 +185,6 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
     output = {}
 
     files = get_all_files(snap_dir)
-    # print(files)
-    # print(run_test_path)
-    # print(raw_dir)
-
     for file_path in files:
         if file_path.endswith(".sh"):
             continue
@@ -336,16 +254,14 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
     directory_structure = trim_code(f"{database_dir}/directry_structure.txt", directory_structure, 10000)
     prompt.extend([directory_structure, ""])
 
-
     # ongoing_flag = None
     # error = None
     # std_out = None 
     iteration_count = 0
     progress_queue = None
     max_iterations = 10
-    
-
     max_retries = 10
+
     for retry in range(max_retries):
         ongoing_flag = None
         ongoing_in_mode_flag = None
@@ -422,10 +338,8 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
                     if see_path not in slice_set:
                         new_sum_target_list.append(see_path)
                 sum_target_list = new_sum_target_list
-
                 sum_target_list = list(set(sum_target_list))
 
-                ##
                 tmp_sum_target_list = []
                 for see_path in sum_target_list:
                     if see_path is None:
@@ -434,7 +348,6 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
                         see_path = find_matching_path(raw_dir, see_path)
                     tmp_sum_target_list.append(see_path)
                 sum_target_list = tmp_sum_target_list
-                ##
 
                 for see_path in sum_target_list:
                     is_excluded = check_excluded(target_dir, see_path)
@@ -735,10 +648,8 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
                     if see_path not in slice_set:
                         new_sum_target_list.append(see_path)
                 sum_target_list = new_sum_target_list
-
                 sum_target_list = list(set(sum_target_list))
 
-                ##
                 tmp_sum_target_list = []
                 for see_path in sum_target_list:
                     if see_path is None:
@@ -747,7 +658,6 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
                         see_path = find_matching_path(raw_dir, see_path)
                     tmp_sum_target_list.append(see_path)
                 sum_target_list = tmp_sum_target_list
-                ##
 
                 for see_path in sum_target_list:
                     is_excluded = check_excluded(target_dir, see_path)
@@ -859,8 +769,6 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
             prompt.extend(["", "## Error:"])
             prompt.extend([error])
 
-
-
     print("*********** End of reforamt ***********")
 
     output['run_test_path'] = run_test_path
@@ -939,6 +847,7 @@ def find_log_paths(results_dir):
     )
     return log_dir, log_paths
 
+
 def get_test_number(log_path):
     """Extract test number from trace log filename (e.g. test1_trace.log -> 1)"""
     basename = os.path.basename(log_path)
@@ -957,8 +866,6 @@ def find_base_dir(original_dir):
         current = os.path.dirname(current)
     raise FileNotFoundError(f"c_build.sh not found above {original_dir}")
 
-
-from concurrent.futures import ProcessPoolExecutor
 
 def set_golden_dir(original_dir):
     # Find flow_results path
@@ -1006,7 +913,78 @@ def set_golden_dir(original_dir):
                 print(f"ERROR: {futures[future]}: {e}")
 
 
-def macro_main(config): #process_type, user_id, original_dir, given_test_path, target_path, llm_choice, claude_api_key, azure_endpoint, out_meta_dir):
+def initialize(target_dir, meta_dir, database_dir, dep_json_path): 
+
+    # initialize directories and files
+    #delete_directory(raw_dir) # Do not delete here, otherwise parallel execution of multiple programs is not possible
+    delete_directory(target_dir)
+    delete_directory(meta_dir)
+
+    database_json_path = f"{database_dir}/compile_commands.json"
+    delete_file(database_json_path)
+
+    # delete_file(f'{database_dir}/m_conds.json')
+    # delete_file(f'{database_dir}/m_grep.json')
+
+    # delete_file(f"{database_dir}/dep_user.json")
+    # delete_file(f'{database_dir}/macro_func.txt')
+
+    #delete_file(token_path)
+    #delete_file("token_macro.json")
+
+    #delete_file('find_defines.c') # Not verified
+    #delete_file('find_if.c') # Not verified
+
+    # create new directories
+    if not DEBUG_LLM:
+        # delete_directory(database_dir)
+        # create_directory(database_dir)
+
+        # list of files to keep
+        keep_files = {"answer.json"}
+        
+        if os.path.exists(database_dir):
+            for item in os.listdir(database_dir):
+                item_path = os.path.join(database_dir, item)
+                
+                # delete items not included in keep_files
+                if item not in keep_files:
+                    if os.path.isfile(item_path):
+                        os.remove(item_path)
+                        print(f"Deleted: {item_path}")
+                    elif os.path.isdir(item_path):
+                        shutil.rmtree(item_path)
+                        print(f"Deleted directory: {item_path}")
+        else:
+            create_directory(database_dir)
+    
+    # delete_directory(root_dir)
+    # delete_directory("preprocessed_output")
+    #delete_file(macro_list_path)
+    #delete_file(macro_path)
+    #delete_file(initial_macro_path)
+
+    #delete_file(initial_list_path)
+    #delete_file(all_macro_path)
+
+    # write_json(f"{database_dir}/pro_functions.json", {})
+    # write_json(f"{database_dir}/pro_data_type.json", {})
+    # write_json(f"{database_dir}/pro_global_var.json", {})
+    # write_json(f"{database_dir}/pro_macro.json", {})
+
+    # write_json(f"{database_dir}/pro_pro_functions.json", {})
+    # write_json(f"{database_dir}/pro_pro_data_type.json", {})
+    # write_json(f"{database_dir}/pro_pro_global_var.json", {})
+    # write_json(f"{database_dir}/pro_pro_macro.json", {})
+
+    # write_json("pro_pro_functions.json", [])
+    # write_json("pro_pro_data_type.json", [])
+    # write_json("pro_pro_global_var.json", [])
+    # write_json("pro_pro_macro.json", [])
+
+
+
+def macro_main(config):
 
     ############################################
     ##### Configuration
@@ -1026,12 +1004,10 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
     macro_finder = f"{MACRO_HOME}/macro_finder/build/macro-finder"
     occupy_path = None
 
-    #llm_on = get_llm_flag(llm_on)
     claude_model = get_claude_model(llm_choice)
 
     paths = create_path_config(
         user_id=user_id,
-        #target="mini",
         original_dir=original_dir,
         process_type=process_type,
         work_dir=None,
@@ -1043,7 +1019,7 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
     rust_lib_h_path,
     run_test_path,
     run_all_path,
-    raw_dir,  #
+    raw_dir,
     target_dir, 
     work_dir, 
     c_code_dir,
@@ -1109,19 +1085,6 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
     independent_const_build_path, 
     flag_build_path) = extract_all_paths(paths)
 
-    #config_data = read_json(config_path)
-    #c_run_path, run_test_path, run_all_path, target_funcs = get_setting_data(config_data, raw_dir)  # created_paths,    # target, # translation_dir,    #c_run_path = f"{raw_dir}/{target}/{run_file}"
-
-    # get_expanded_code(target_dir, meta_dir, database_dir)
-    # insert_expanded_code(target_dir, meta_dir, database_dir)
-    # unordered_taken_directive_path = f"{database_dir}/output_used.json"
-    # change_combined_condition(target_dir, meta_dir, database_dir, unordered_taken_directive_path)
-    # detect_const((target_dir, database_dir, meta_dir)
-
-    # # headers = get_entry_points(target_dir)
-    # # print(headers)
-    # sys.exit(0)
-
     output = {}
     if process_type == "reformat":
 
@@ -1129,13 +1092,11 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
 
         print("************ reformat process started ************")
         # initialize
-        initialize(target_dir, meta_dir, database_dir, dep_json_path),  #flag_json_path, 
-                   #macro_list_path, macro_path, all_macro_path)  # , initial_macro_path
+        initialize(target_dir, meta_dir, database_dir, dep_json_path)
 
         print(f"original_dir: {original_dir}") 
         copy_directory(original_dir, raw_dir)
         #grant_permissions(target_dir) # This sometimes prevents compile_commands.json from being displayed: ex tiff-4.3.0
-
 
         exp_data = {}
         llm_interface = LLMInterface(
@@ -1207,9 +1168,6 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
 
     elif process_type == "macro":
 
-        # combine_with_innermost_conditioned_blocks(all_directive_path, guarded_macros_path, target_dir, database_dir, "1", div_meta_dir)
-        # sys.exit(0)
-
         #####################################
         ##### Program start
         #####################################
@@ -1225,16 +1183,15 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
                    #macro_list_path, macro_path, all_macro_path)  # , initial_macro_path
 
         # copy the target directory
-        print(f"original_dir: {original_dir}") 
         check_permission(original_dir)
 
-        #sys.exit(0)
-        print(raw_dir)
         copy_directory(original_dir, raw_dir)
         #grant_permissions(raw_dir)  # If this is enabled, compile_commands.json may occasionally not appear (e.g., tiff-4.3.0)
 
         copy_file(given_test_path, run_test_path)
 
+        print(f"original_dir: {original_dir}") 
+        print(raw_dir)
         print(target_dir)
         print(run_test_path)
         print(build_path)
@@ -1251,11 +1208,11 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
             temperature=0,
             api_key=None,
             timeout=300,
-            history_path=history_path, #f"{database_dir}/history.json",
-            token_path=token_path, #f"{database_dir}/tokens.json",
-            database_dir=database_dir, #f"{database_dir}",
-            chat_dir=chat_dir, #f"{chat_dir}",
-            count_path=count_path, #f"{database_dir}/count.json",
+            history_path=history_path,
+            token_path=token_path,
+            database_dir=database_dir,
+            chat_dir=chat_dir,
+            count_path=count_path,
             exp_data=exp_data
         )
 
@@ -1269,7 +1226,6 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
             claude_model
         )
 
-        #TEST_MODE = False #False
         if TEST_MODE:
             llm_interface = occupy_llm(llm_interface)
             atexit.register(lambda: shutdown_llm(llm_interface))
@@ -1329,10 +1285,6 @@ def macro_main(config): #process_type, user_id, original_dir, given_test_path, t
 
 if __name__ == "__main__": 
 
-    # split_json_data(undefined_path, 80)
-    # c_run_path, run_test_path, run_all_path, created_paths, target_funcs = get_setting_data(translation_dir, target, raw_dir) #c_run_path = f"{raw_dir}/{target}/{run_file}"
-    # know_static_macros(original_dir, list_path, macro_path, c_run_path, initial_list_path, initial_dep_json_path)
-    
     # python activate
     # https://qiita.com/yokoto/items/6d9e7d0ee440b3d147ac
     # python3 -m venv .python/venv
@@ -1359,8 +1311,6 @@ if __name__ == "__main__":
         else:
             base_test_path = str(sys.argv[4])
 
-        #target = str(sys.argv[4])
-    
     # """
     # elif process_type == "golden":
     #     target_path = str(sys.argv[3])
@@ -1396,11 +1346,10 @@ if __name__ == "__main__":
         "out_meta_dir": None,
     }
 
-    output, output_dir = macro_main(config) #process_type, user_id, original_dir, given_test_path, target_path, llm_choice, claude_api_key, azure_endpoint, None)
+    output, output_dir = macro_main(config)
     
-    #print(f"Saved at {output_dir}")
-    if process_type == "reformat":
+    if process_type == "reformat":  # print(f"Saved at {output_dir}")
         original_run_test_path = f"{original_dir}/run_test.sh"
         copy_file(output['run_test_path'], original_dir)
-        #print(f"Saved at {original_run_test_path}")
+        # print(f"Saved at {original_run_test_path}")
 
