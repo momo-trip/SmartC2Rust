@@ -209,7 +209,7 @@ python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} 
 
 
 ## LLM model
-The default model is Claude Opus 4.6 (Anthropic).
+The default model is Claude Opus 4.7 (Anthropic).
 
 **Note:** Only Claude models are actively maintained and tested. Other LLM backends (GPT, Gemini, Llama) are included in the codebase but have not been recently verified and may not work as expected.
 
