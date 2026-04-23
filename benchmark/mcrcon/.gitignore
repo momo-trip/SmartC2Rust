@@ -2,7 +2,7 @@
 *.o
 *.dev
 *.win
-*.txt
+#*.txt
 *.layout
 *.project
 mcrcon
