@@ -20,7 +20,7 @@ log_test_start() {
 cleanup() {
     echo "Cleaning up processes on port 4000..."
     # More reliable cleanup
-    sudo lsof -ti :4000 | xargs -r sudo kill -9 2>/dev/null
+    lsof -ti :4000 | xargs -r kill -9 2>/dev/null
     sleep 1
     
     # Also ensure httpd process is terminated

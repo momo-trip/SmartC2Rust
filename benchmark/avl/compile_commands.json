@@ -84,11 +84,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/avl-8fddf0.o",
+      "/tmp/avl-53f0a5.o",
       "avl.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/avl",
     "file": "/root/SmartC2Rust/benchmark/avl/avl.c",
-    "output": "/tmp/avl-8fddf0.o"
+    "output": "/tmp/avl-53f0a5.o"
   }
 ]

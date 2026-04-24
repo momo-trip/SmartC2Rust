@@ -37,7 +37,7 @@ fi
 # Start the server in the background
 echo -e "${YELLOW}1. Starting server...${NC}"
 cd server
-./cpkthttp 80 > server_log.txt 2>&1 &
+./cpkthttp > server_log.txt 2>&1 &
 SERVER_PID=$!
 
 # Wait a bit for the server to start

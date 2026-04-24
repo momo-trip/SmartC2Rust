@@ -9,6 +9,18 @@ current_test=0
 rm -rf results
 mkdir -p results
 
+
+# Deterministic input generator (MUST match gen_expected.sh)
+gen_input() {
+    local size=$1
+    if [ "$size" -eq 0 ]; then
+        : > test_input
+    else
+        yes "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" \
+            | tr -d '\n' | head -c "$size" > test_input
+    fi
+}
+
 # Function to run a test case and log its output
 run_test() {
     local test_name=$1
@@ -19,8 +31,8 @@ run_test() {
     # Log test start
     echo "Test Case #${current_test}: Started" | tee -a /root/SmartC2Rust/benchmark/SipHash/out_flow_c.log /root/SmartC2Rust/benchmark/SipHash/out_flow_rust.log
     
-    # Create test input file with same seed as gen_expected
-    dd if=/dev/urandom bs=1 count=$input_size 2>/dev/null | LC_ALL=C tr -dc 'a-zA-Z0-9' > test_input
+    # Create test input file (deterministic, matches gen_expected.sh)
+    gen_input "$input_size"
     
     # Create test key file
     echo -n "$key_value" > test_key

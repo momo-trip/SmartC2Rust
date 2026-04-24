@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr("127.0.0.1");
-    address.sin_port = htons(9734);
+    address.sin_port = htons(4000);
     len = sizeof(address);
     result = connect(sockfd, (struct sockaddr *)&address, len);
 
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
         perror("oops: client1");
         exit(1);
     }
-    write(sockfd, &ch, 1);
+    write(sockfd, "GET / HTTP/1.0\r\n\r\n", 18);
     read(sockfd, &ch, 1);
     printf("char from server = %c\n", ch);
     close(sockfd);

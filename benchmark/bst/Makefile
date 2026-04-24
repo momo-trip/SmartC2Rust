@@ -7,4 +7,7 @@ all: $(TARGET)
 $(TARGET): bst.c
 	$(CC) $(CFLAGS) $^ -o $@
 
-.PHONY: all 
+clean:
+	rm -f $(TARGET)
+
+.PHONY: all clean
