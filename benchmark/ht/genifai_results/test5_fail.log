@@ -1,9 +1,0 @@
-Generated similar.txt, exit code: 0
-Running: ./stats_t5 <samples/words.txt
-Exit code: 127
-Output: ./run_test.sh: line 180: ./stats_t5: No such file or directory
-ERROR: stats_t5 exited with non-zero status 127
-ERROR: Output mismatch.
-Expected: len=466550 cap=1048576 avgprobe=1.402
-Got: ./run_test.sh: line 180: ./stats_t5: No such file or directory
-

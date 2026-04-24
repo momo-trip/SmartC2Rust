@@ -7,8 +7,8 @@ mkdir -p $RESULTS_DIR
 
 # Log files
 LOG_FILE="$RESULTS_DIR/buffer_test.log"
-C_LOG_FILE="/home/ubuntu/portable/out_flow_c.log"
-RUST_LOG_FILE="/home/ubuntu/portable/out_flow_rust.log"
+C_LOG_FILE="/root/SmartC2Rust/benchmark/buffer/out_flow_c.log"
+RUST_LOG_FILE="/root/SmartC2Rust/benchmark/buffer/out_flow_rust.log"
 
 # Expected values directory
 EXPECTED_DIR="expected"

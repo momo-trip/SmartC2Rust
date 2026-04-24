@@ -28,8 +28,8 @@ mkdir -p "$RESULTS_DIR"
 mkdir -p "$TEMP_DIR"
 
 # Log files
-C_LOG_FILE="/home/ubuntu/portable/out_flow_c.log"
-RUST_LOG_FILE="/home/ubuntu/portable/out_flow_rust.log"
+C_LOG_FILE="/root/SmartC2Rust/benchmark/c4/out_flow_c.log"
+RUST_LOG_FILE="/root/SmartC2Rust/benchmark/c4/out_flow_rust.log"
 
 # Log start of a test
 logstart() {

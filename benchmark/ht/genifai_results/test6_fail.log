@@ -1,8 +1,0 @@
-Running: ./stats_t6 <samples/similar.txt
-Exit code: 127
-Output: ./run_test.sh: line 221: ./stats_t6: No such file or directory
-ERROR: stats_t6 exited with non-zero status 127
-ERROR: Output mismatch.
-Expected: len=466550 cap=1048576 avgprobe=1.378
-Got: ./run_test.sh: line 221: ./stats_t6: No such file or directory
-

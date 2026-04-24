@@ -7,17 +7,10 @@ NC='\033[0m' # No Color
 
 echo -e "${YELLOW}FastestWebsiteEver Server Test${NC}"
 
-# Function to log test start
-log_test_start() {
-    echo "Test Case #$1: Started" >> /home/ubuntu/portable/out_flow_c.log
-    echo "Test Case #$1: Started" >> /home/ubuntu/portable/out_flow_rust.log
-    echo "Test Case #$1: Started"
-}
-
 # Function to cleanup processes and ports
 cleanup() {
     echo "Cleaning up processes on port 8080..."
-    sudo lsof -ti :8080 | xargs -r sudo kill -9 2>/dev/null
+    lsof -ti :8080 | xargs -r kill -9 2>/dev/null
     sleep 1
     
     if lsof -i :8080 >/dev/null 2>&1; then
@@ -44,7 +37,7 @@ fi
 # Start the server in the background
 echo -e "${YELLOW}1. Starting server...${NC}"
 cd server
-sudo ./cpkthttp 8080 > server_log.txt 2>&1 &
+./cpkthttp 8080 > server_log.txt 2>&1 &
 SERVER_PID=$!
 
 # Wait a bit for the server to start
@@ -69,7 +62,7 @@ HTTP_CODE=${curl_output: -3}
 # Check HTTP response code
 if [ "$HTTP_CODE" != "200" ]; then
   echo -e "${RED}Request failed: HTTP code $HTTP_CODE${NC}"
-  sudo kill $SERVER_PID
+  kill $SERVER_PID
   exit 1
 fi
 
@@ -77,7 +70,7 @@ fi
 RESPONSE_SIZE=$(stat -c%s "$OUTPUT_FILE")
 if [ $RESPONSE_SIZE -lt 100 ]; then
   echo -e "${RED}Abnormal response size: $RESPONSE_SIZE bytes${NC}"
-  sudo kill $SERVER_PID
+  kill $SERVER_PID
   exit 1
 else
   echo -e "${GREEN}Request successful: received $RESPONSE_SIZE bytes${NC}"
@@ -90,21 +83,24 @@ echo "Received file type: $FILE_TYPE"
 # Test multiple requests
 echo -e "${YELLOW}3. Testing multiple requests...${NC}"
 for i in {1..5}; do
-  echo -n "Request $i: "
-  curl -s -o /dev/null -w "%{http_code}" http://localhost:8080
-  echo ""
-  sleep 0.5
+  code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
+  if [ "$code" != "200" ]; then
+    echo -e "${RED}Request $i failed: HTTP $code${NC}"
+    kill $SERVER_PID 2>/dev/null
+    exit 1
+  fi
+  echo -e "Request $i: ${GREEN}$code${NC}"
 done
 
 # Terminate the server
 echo -e "${YELLOW}4. Terminating server...${NC}"
-sudo kill $SERVER_PID
+kill $SERVER_PID
 sleep 2  
 
 # Check if the server terminated
 if ps -p $SERVER_PID > /dev/null; then
   echo -e "${RED}Server termination failed${NC}"
-  sudo kill -9 $SERVER_PID
+  kill -9 $SERVER_PID
   echo "Force terminated"
 else
   echo -e "${GREEN}Server terminated normally${NC}"
