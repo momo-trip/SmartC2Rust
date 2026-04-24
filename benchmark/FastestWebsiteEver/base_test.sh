@@ -9,13 +9,13 @@ echo -e "${YELLOW}FastestWebsiteEver Server Test${NC}"
 
 # Function to cleanup processes and ports
 cleanup() {
-    echo "Cleaning up processes on port 8080..."
-    lsof -ti :8080 | xargs -r kill -9 2>/dev/null
+    echo "Cleaning up processes on port 80..."
+    lsof -ti :80 | xargs -r kill -9 2>/dev/null
     sleep 1
     
-    if lsof -i :8080 >/dev/null 2>&1; then
-        echo "Warning: Port 8080 is still in use"
-        lsof -i :8080
+    if lsof -i :80 >/dev/null 2>&1; then
+        echo "Warning: Port 80 is still in use"
+        lsof -i :80
         echo "Please manually kill the process and try again"
         exit 1
     fi
@@ -37,7 +37,7 @@ fi
 # Start the server in the background
 echo -e "${YELLOW}1. Starting server...${NC}"
 cd server
-./cpkthttp 8080 > server_log.txt 2>&1 &
+./cpkthttp 80 > server_log.txt 2>&1 &
 SERVER_PID=$!
 
 # Wait a bit for the server to start
@@ -50,13 +50,13 @@ if ! ps -p $SERVER_PID > /dev/null; then
   exit 1
 else
   echo -e "${GREEN}Server started successfully (PID: $SERVER_PID)${NC}"
-  echo "server: waiting for connections on port 8080..."
+  echo "server: waiting for connections on port 80..."
 fi
 
 # Send request from client
 echo -e "${YELLOW}2. Sending request from client...${NC}"
 OUTPUT_FILE="test_output.bin"
-curl_output=$(curl -s -w "%{http_code}" http://localhost:8080 -o $OUTPUT_FILE)
+curl_output=$(curl -s -w "%{http_code}" http://localhost:80 -o $OUTPUT_FILE)
 HTTP_CODE=${curl_output: -3}
 
 # Check HTTP response code
@@ -83,7 +83,7 @@ echo "Received file type: $FILE_TYPE"
 # Test multiple requests
 echo -e "${YELLOW}3. Testing multiple requests...${NC}"
 for i in {1..5}; do
-  code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
+  code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80)
   if [ "$code" != "200" ]; then
     echo -e "${RED}Request $i failed: HTTP $code${NC}"
     kill $SERVER_PID 2>/dev/null
