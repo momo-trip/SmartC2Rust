@@ -1,1 +1,1 @@
-/usr/bin/clang -finstrument-functions -g -O3 -DNDEBUG -rdynamic CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o -o zopfli  libzopfli.a -lm 
+/usr/bin/clang -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -rdynamic CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o -o zopfli  libzopfli.a -lm 

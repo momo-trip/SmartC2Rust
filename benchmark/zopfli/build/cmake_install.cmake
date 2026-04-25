@@ -1,4 +1,4 @@
-# Install script for directory: /home/ubuntu/macrust/smartc2rust_benchmark/zopfli
+# Install script for directory: /root/SmartC2Rust/benchmark/zopfli
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,15 +39,15 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/llvm-objdump")
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/libzopfli.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/root/SmartC2Rust/benchmark/zopfli/build/libzopfli.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/libzopflipng.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/root/SmartC2Rust/benchmark/zopfli/build/libzopflipng.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -57,11 +57,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopfli"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/zopfli")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/root/SmartC2Rust/benchmark/zopfli/build/zopfli")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopfli" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopfli")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/llvm-strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopfli")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopfli")
     endif()
   endif()
 endif()
@@ -73,19 +73,19 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopflipng"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/zopflipng")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/root/SmartC2Rust/benchmark/zopfli/build/zopflipng")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopflipng" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopflipng")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/llvm-strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopflipng")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zopflipng")
     endif()
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES
-    "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli.h"
-    "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/zopflipng_lib.h"
+    "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli.h"
+    "/root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_lib.h"
     )
 endif()
 
@@ -93,7 +93,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli/ZopfliConfig.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli/ZopfliConfig.cmake"
-         "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/Export/lib/cmake/Zopfli/ZopfliConfig.cmake")
+         "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/Export/lib/cmake/Zopfli/ZopfliConfig.cmake")
     if(EXPORT_FILE_CHANGED)
       file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli/ZopfliConfig-*.cmake")
       if(OLD_CONFIG_FILES)
@@ -102,14 +102,14 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
       endif()
     endif()
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli" TYPE FILE FILES "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/Export/lib/cmake/Zopfli/ZopfliConfig.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli" TYPE FILE FILES "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/Export/lib/cmake/Zopfli/ZopfliConfig.cmake")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli" TYPE FILE FILES "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/Export/lib/cmake/Zopfli/ZopfliConfig-release.cmake")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli" TYPE FILE FILES "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/Export/lib/cmake/Zopfli/ZopfliConfig-release.cmake")
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli" TYPE FILE FILES "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/ZopfliConfigVersion.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/Zopfli" TYPE FILE FILES "/root/SmartC2Rust/benchmark/zopfli/build/ZopfliConfigVersion.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -120,5 +120,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/root/SmartC2Rust/benchmark/zopfli/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

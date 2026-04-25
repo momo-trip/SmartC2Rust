@@ -1,0 +1,8 @@
+Test #15: Commands with multiple spaces
+Command: ./which cat      ls
+Expected output: /usr/usr/bin/cat
+/usr/usr/bin/ls
+Actual output: /usr/usr/bin/cat
+/usr/usr/bin/ls
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

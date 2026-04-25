@@ -1,0 +1,6 @@
+Test #6: Help option
+Command: ./which --help | head -n 1
+Expected output: Usage: ./which [options] [--] COMMAND [...]
+Actual output: Usage: ./which [options] [--] COMMAND [...]
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

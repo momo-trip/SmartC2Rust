@@ -1,7 +1,0 @@
-Test #20: Testing value of hash
-Command: ./url-test "http://user:pass@subdomain.host.com:8080/p/a/t/h?query=string#hash" | grep "VALUE hash:"
-Expected output: #hash
-Actual output: 
-Exit code: 0
-Status: FAILED
-Timestamp: 2026-04-24 20:09:34

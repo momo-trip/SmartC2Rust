@@ -1,0 +1,7 @@
+Test #11: Multiple non-existent commands
+Command: ./which non_existent1 non_existent2
+Expected output: ./which: no non_existent1 in
+Actual output: ./which: no non_existent1 in (/root/SmartC2Rust/benchmark/time-1.9:/root/.vscode-server/usr/bin/072586267e68ece9a47aa43f8c108e0dcbf44622/usr/bin/remote-cli:/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin)
+./which: no non_existent2 in (/root/SmartC2Rust/benchmark/time-1.9:/root/.vscode-server/usr/bin/072586267e68ece9a47aa43f8c108e0dcbf44622/usr/bin/remote-cli:/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin)
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/zopfli
+CMAKE_SOURCE_DIR = /root/SmartC2Rust/benchmark/zopfli
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build
+CMAKE_BINARY_DIR = /root/SmartC2Rust/benchmark/zopfli/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/libzopflipng.dir/depend.make
@@ -72,44 +72,44 @@ include CMakeFiles/libzopflipng.dir/flags.make
 CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o: CMakeFiles/libzopflipng.dir/flags.make
 CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o: ../src/zopflipng/zopflipng_lib.cc
 CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o: CMakeFiles/libzopflipng.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o -MF CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o.d -o CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/zopflipng_lib.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o -MF CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o.d -o CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_lib.cc
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/zopflipng_lib.cc > CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_lib.cc > CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.i
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/zopflipng_lib.cc -o CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_lib.cc -o CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.s
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o: CMakeFiles/libzopflipng.dir/flags.make
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o: ../src/zopflipng/lodepng/lodepng.cpp
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o: CMakeFiles/libzopflipng.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o -MF CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o.d -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o -MF CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o.d -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp > CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp > CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.i
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.s
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o: CMakeFiles/libzopflipng.dir/flags.make
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o: ../src/zopflipng/lodepng/lodepng_util.cpp
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o: CMakeFiles/libzopflipng.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o -MF CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o.d -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o -MF CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o.d -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp > CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp > CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.i
 
 CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.s
 
 # Object files for target libzopflipng
 libzopflipng_OBJECTS = \
@@ -125,7 +125,7 @@ libzopflipng.a: CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o
 libzopflipng.a: CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o
 libzopflipng.a: CMakeFiles/libzopflipng.dir/build.make
 libzopflipng.a: CMakeFiles/libzopflipng.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libzopflipng.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libzopflipng.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/libzopflipng.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/libzopflipng.dir/link.txt --verbose=$(VERBOSE)
 
@@ -138,6 +138,6 @@ CMakeFiles/libzopflipng.dir/clean:
 .PHONY : CMakeFiles/libzopflipng.dir/clean
 
 CMakeFiles/libzopflipng.dir/depend:
-	cd /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/macrust/smartc2rust_benchmark/zopfli /home/ubuntu/macrust/smartc2rust_benchmark/zopfli /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopflipng.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/SmartC2Rust/benchmark/zopfli/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/SmartC2Rust/benchmark/zopfli /root/SmartC2Rust/benchmark/zopfli /root/SmartC2Rust/benchmark/zopfli/build /root/SmartC2Rust/benchmark/zopfli/build /root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopflipng.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/libzopflipng.dir/depend
 

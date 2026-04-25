@@ -1,0 +1,7 @@
+Test #15: Testing value of host
+Command: ./url-test "http://user:pass@subdomain.host.com:8080/p/a/t/h?query=string#hash" | grep "VALUE host:"
+Expected output: subdomain.host.com
+Actual output: subdomain.host.com
+Exit code: 0
+Status: PASSED
+Timestamp: 2026-04-24 20:16:11

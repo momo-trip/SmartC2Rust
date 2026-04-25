@@ -1,7 +1,0 @@
-Test #17: Testing value of path
-Command: ./url-test "http://user:pass@subdomain.host.com:8080/p/a/t/h?query=string#hash" | grep "VALUE path:"
-Expected output: /p/a/t/h?query=string#hash
-Actual output: 
-Exit code: 0
-Status: FAILED
-Timestamp: 2026-04-24 20:09:34

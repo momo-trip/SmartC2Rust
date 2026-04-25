@@ -1,0 +1,6 @@
+Test #20: Path with spaces
+Command: ./which "program with spaces"
+Expected output: ./which: no program with spaces in
+Actual output: ./which: no program with spaces in (/root/SmartC2Rust/benchmark/time-1.9:/root/.vscode-server/usr/bin/072586267e68ece9a47aa43f8c108e0dcbf44622/usr/bin/remote-cli:/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin)
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

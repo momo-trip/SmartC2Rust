@@ -4,7 +4,7 @@
 # compile C with /usr/bin/clang
 C_DEFINES = 
 
-C_INCLUDES = -I/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli
+C_INCLUDES = -I/root/SmartC2Rust/benchmark/zopfli/src/zopfli
 
-C_FLAGS = -finstrument-functions -g -O3 -DNDEBUG
+C_FLAGS = -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG
 

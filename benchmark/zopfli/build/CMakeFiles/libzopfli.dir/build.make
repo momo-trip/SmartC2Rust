@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/zopfli
+CMAKE_SOURCE_DIR = /root/SmartC2Rust/benchmark/zopfli
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build
+CMAKE_BINARY_DIR = /root/SmartC2Rust/benchmark/zopfli/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/libzopfli.dir/depend.make
@@ -72,170 +72,170 @@ include CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o: ../src/zopfli/blocksplitter.c
 CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/blocksplitter.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/blocksplitter.c > CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c > CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/blocksplitter.c -o CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c -o CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o: ../src/zopfli/cache.c
 CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/cache.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/cache.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/cache.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/cache.c > CMakeFiles/libzopfli.dir/src/zopfli/cache.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c > CMakeFiles/libzopfli.dir/src/zopfli/cache.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/cache.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/cache.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/cache.c -o CMakeFiles/libzopfli.dir/src/zopfli/cache.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c -o CMakeFiles/libzopfli.dir/src/zopfli/cache.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o: ../src/zopfli/deflate.c
 CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/deflate.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/deflate.c > CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c > CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/deflate.c -o CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c -o CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o: ../src/zopfli/gzip_container.c
 CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/gzip_container.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/gzip_container.c > CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c > CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/gzip_container.c -o CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c -o CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o: ../src/zopfli/hash.c
 CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/hash.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/hash.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/hash.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/hash.c > CMakeFiles/libzopfli.dir/src/zopfli/hash.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c > CMakeFiles/libzopfli.dir/src/zopfli/hash.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/hash.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/hash.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/hash.c -o CMakeFiles/libzopfli.dir/src/zopfli/hash.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c -o CMakeFiles/libzopfli.dir/src/zopfli/hash.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o: ../src/zopfli/katajainen.c
 CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/katajainen.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/katajainen.c > CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c > CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/katajainen.c -o CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c -o CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o: ../src/zopfli/lz77.c
 CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/lz77.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/lz77.c > CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c > CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/lz77.c -o CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c -o CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o: ../src/zopfli/squeeze.c
 CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/squeeze.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/squeeze.c > CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c > CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/squeeze.c -o CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c -o CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o: ../src/zopfli/tree.c
 CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/tree.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/tree.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/tree.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/tree.c > CMakeFiles/libzopfli.dir/src/zopfli/tree.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c > CMakeFiles/libzopfli.dir/src/zopfli/tree.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/tree.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/tree.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/tree.c -o CMakeFiles/libzopfli.dir/src/zopfli/tree.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c -o CMakeFiles/libzopfli.dir/src/zopfli/tree.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/util.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/util.c.o: ../src/zopfli/util.c
 CMakeFiles/libzopfli.dir/src/zopfli/util.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/util.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/util.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/util.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/util.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/util.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/util.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/util.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/util.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/util.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/util.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/util.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/util.c > CMakeFiles/libzopfli.dir/src/zopfli/util.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c > CMakeFiles/libzopfli.dir/src/zopfli/util.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/util.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/util.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/util.c -o CMakeFiles/libzopfli.dir/src/zopfli/util.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c -o CMakeFiles/libzopfli.dir/src/zopfli/util.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o: ../src/zopfli/zlib_container.c
 CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zlib_container.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zlib_container.c > CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c > CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zlib_container.c -o CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c -o CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.s
 
 CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o: CMakeFiles/libzopfli.dir/flags.make
 CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o: ../src/zopfli/zopfli_lib.c
 CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o: CMakeFiles/libzopfli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli_lib.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o -MF CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o.d -o CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c
 
 CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli_lib.c > CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c > CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.i
 
 CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli_lib.c -o CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c -o CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.s
 
 # Object files for target libzopfli
 libzopfli_OBJECTS = \
@@ -269,7 +269,7 @@ libzopfli.a: CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o
 libzopfli.a: CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o
 libzopfli.a: CMakeFiles/libzopfli.dir/build.make
 libzopfli.a: CMakeFiles/libzopfli.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking C static library libzopfli.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking C static library libzopfli.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/libzopfli.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/libzopfli.dir/link.txt --verbose=$(VERBOSE)
 
@@ -282,6 +282,6 @@ CMakeFiles/libzopfli.dir/clean:
 .PHONY : CMakeFiles/libzopfli.dir/clean
 
 CMakeFiles/libzopfli.dir/depend:
-	cd /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/macrust/smartc2rust_benchmark/zopfli /home/ubuntu/macrust/smartc2rust_benchmark/zopfli /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/SmartC2Rust/benchmark/zopfli/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/SmartC2Rust/benchmark/zopfli /root/SmartC2Rust/benchmark/zopfli /root/SmartC2Rust/benchmark/zopfli/build /root/SmartC2Rust/benchmark/zopfli/build /root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/libzopfli.dir/depend
 

@@ -1,0 +1,6 @@
+Test #17: Multiple options
+Command: ./which -a ls 2>&1 | grep -c /ls
+Expected output: 2
+Actual output: 2
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

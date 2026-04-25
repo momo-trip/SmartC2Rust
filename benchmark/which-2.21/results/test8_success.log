@@ -1,0 +1,6 @@
+Test #8: Skip tilde option
+Command: ./which --skip-tilde ls
+Expected output: /usr/usr/bin/ls
+Actual output: /usr/usr/bin/ls
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

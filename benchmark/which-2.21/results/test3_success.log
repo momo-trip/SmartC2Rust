@@ -1,0 +1,10 @@
+Test #3: Multiple commands
+Command: ./which ls cat grep
+Expected output: /usr/usr/bin/ls
+/usr/usr/bin/cat
+/usr/usr/bin/grep
+Actual output: /usr/usr/bin/ls
+/usr/usr/bin/cat
+/usr/usr/bin/grep
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

@@ -1,0 +1,6 @@
+Test #19: Directory command
+Command: ./which /usr/bin
+Expected output: ./which: no bin in (/usr)
+Actual output: ./which: no bin in (/usr)
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

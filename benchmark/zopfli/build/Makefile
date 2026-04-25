@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/zopfli
+CMAKE_SOURCE_DIR = /root/SmartC2Rust/benchmark/zopfli
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build
+CMAKE_BINARY_DIR = /root/SmartC2Rust/benchmark/zopfli/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles /root/SmartC2Rust/benchmark/zopfli/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

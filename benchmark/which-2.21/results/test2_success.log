@@ -1,0 +1,6 @@
+Test #2: Non-existent command
+Command: ./which non_existent_command
+Expected output: ./which: no non_existent_command in
+Actual output: ./which: no non_existent_command in (/root/SmartC2Rust/benchmark/time-1.9:/root/.vscode-server/usr/bin/072586267e68ece9a47aa43f8c108e0dcbf44622/usr/bin/remote-cli:/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin)
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

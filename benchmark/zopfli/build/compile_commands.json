@@ -4,208 +4,221 @@
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/blocksplitter.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/blocksplitter.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/cache.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/cache.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/deflate.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/deflate.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/gzip_container.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/gzip_container.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/hash.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/hash.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/katajainen.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/katajainen.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/lz77.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/lz77.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/squeeze.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/squeeze.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/tree.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/tree.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/util.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/util.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/util.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/util.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/util.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zlib_container.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zlib_container.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli_lib.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli_lib.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
-      "-I/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli",
+      "-I/root/SmartC2Rust/benchmark/zopfli/src/zopfli",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-O3",
       "-DNDEBUG",
       "-c",
       "-o",
       "CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o",
-      "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli_bin.c"
+      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_bin.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli/zopfli_bin.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/build/CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o"
+    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_bin.c",
+    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o"
   }
 ]

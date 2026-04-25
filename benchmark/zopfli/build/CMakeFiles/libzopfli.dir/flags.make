@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = 
 
-C_FLAGS = -finstrument-functions -g -O3 -DNDEBUG
+C_FLAGS = -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG
 

@@ -1,0 +1,7 @@
+Test #4: All option
+Command: ./which -a ls | sort | uniq
+Expected output: /usr/usr/bin/ls
+Actual output: /usr/bin/ls
+/usr/usr/bin/ls
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

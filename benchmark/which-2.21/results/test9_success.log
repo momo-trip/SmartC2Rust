@@ -1,0 +1,6 @@
+Test #9: Show dot option
+Command: ./which --show-dot ls
+Expected output: /usr/usr/bin/ls
+Actual output: /usr/usr/bin/ls
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

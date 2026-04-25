@@ -1,1 +1,1 @@
-/usr/bin/clang++ -finstrument-functions -g -O3 -DNDEBUG -rdynamic CMakeFiles/zopflipng.dir/src/zopflipng/zopflipng_bin.cc.o -o zopflipng  libzopflipng.a libzopfli.a -lm 
+/usr/bin/clang++ -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -rdynamic CMakeFiles/zopflipng.dir/src/zopflipng/zopflipng_bin.cc.o -o zopflipng  libzopflipng.a libzopfli.a -lm 

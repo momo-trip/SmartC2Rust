@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/clang++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/ubuntu/macrust/smartc2rust_benchmark/zopfli/src/zopfli
+CXX_INCLUDES = -I/root/SmartC2Rust/benchmark/zopfli/src/zopfli
 
-CXX_FLAGS = -finstrument-functions -g -O3 -DNDEBUG
+CXX_FLAGS = -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG
 

@@ -1,0 +1,7 @@
+Test #29: Testing value of protocol
+Command: ./url-test "git://git@github.com:jwerle/url.h.git" | grep "VALUE protocol:"
+Expected output: git
+Actual output: git
+Exit code: 0
+Status: PASSED
+Timestamp: 2026-04-24 20:16:11

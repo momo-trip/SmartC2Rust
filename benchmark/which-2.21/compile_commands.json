@@ -7,14 +7,15 @@
       "-I..",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-c",
       "-o",
       "shell.o",
       "shell.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/tilde",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/tilde/shell.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/tilde/shell.o"
+    "directory": "/root/SmartC2Rust/benchmark/which-2.21/tilde",
+    "file": "/root/SmartC2Rust/benchmark/which-2.21/tilde/shell.c",
+    "output": "/root/SmartC2Rust/benchmark/which-2.21/tilde/shell.o"
   },
   {
     "arguments": [
@@ -24,14 +25,15 @@
       "-I..",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-c",
       "-o",
       "tilde.o",
       "tilde.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/tilde",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/tilde/tilde.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/tilde/tilde.o"
+    "directory": "/root/SmartC2Rust/benchmark/which-2.21/tilde",
+    "file": "/root/SmartC2Rust/benchmark/which-2.21/tilde/tilde.c",
+    "output": "/root/SmartC2Rust/benchmark/which-2.21/tilde/tilde.o"
   },
   {
     "arguments": [
@@ -40,46 +42,15 @@
       "-I.",
       "-finstrument-functions",
       "-g",
-      "-c",
-      "-o",
-      "which.o",
-      "which.c"
-    ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/which.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/which.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-DHAVE_CONFIG_H",
-      "-I.",
-      "-finstrument-functions",
-      "-g",
-      "-c",
-      "-o",
-      "bash.o",
-      "bash.c"
-    ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/bash.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/bash.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-DHAVE_CONFIG_H",
-      "-I.",
-      "-finstrument-functions",
-      "-g",
+      "-gdwarf-4",
       "-c",
       "-o",
       "getopt1.o",
       "getopt1.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/getopt1.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/getopt1.o"
+    "directory": "/root/SmartC2Rust/benchmark/which-2.21",
+    "file": "/root/SmartC2Rust/benchmark/which-2.21/getopt1.c",
+    "output": "/root/SmartC2Rust/benchmark/which-2.21/getopt1.o"
   },
   {
     "arguments": [
@@ -88,13 +59,48 @@
       "-I.",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
+      "-c",
+      "-o",
+      "bash.o",
+      "bash.c"
+    ],
+    "directory": "/root/SmartC2Rust/benchmark/which-2.21",
+    "file": "/root/SmartC2Rust/benchmark/which-2.21/bash.c",
+    "output": "/root/SmartC2Rust/benchmark/which-2.21/bash.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-DHAVE_CONFIG_H",
+      "-I.",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
       "-c",
       "-o",
       "getopt.o",
       "getopt.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/getopt.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/which-2.21/getopt.o"
+    "directory": "/root/SmartC2Rust/benchmark/which-2.21",
+    "file": "/root/SmartC2Rust/benchmark/which-2.21/getopt.c",
+    "output": "/root/SmartC2Rust/benchmark/which-2.21/getopt.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-DHAVE_CONFIG_H",
+      "-I.",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-c",
+      "-o",
+      "which.o",
+      "which.c"
+    ],
+    "directory": "/root/SmartC2Rust/benchmark/which-2.21",
+    "file": "/root/SmartC2Rust/benchmark/which-2.21/which.c",
+    "output": "/root/SmartC2Rust/benchmark/which-2.21/which.o"
   }
 ]

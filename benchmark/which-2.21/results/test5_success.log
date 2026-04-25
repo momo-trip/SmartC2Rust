@@ -1,0 +1,12 @@
+Test #5: Version option
+Command: ./which --version | head -n 4
+Expected output: GNU which v2.21, Copyright (C) 1999 - 2015 Carlo Wood.
+GNU which comes with ABSOLUTELY NO WARRANTY;
+This program is free software; your freedom to use, change
+and distribute this program is protected by the GPL.
+Actual output: GNU which v2.21, Copyright (C) 1999 - 2015 Carlo Wood.
+GNU which comes with ABSOLUTELY NO WARRANTY;
+This program is free software; your freedom to use, change
+and distribute this program is protected by the GPL.
+Status: PASSED
+Timestamp: 2026-04-24 20:17:21

@@ -1,0 +1,7 @@
+Test #8: Testing existence of path
+Command: ./url-test "http://user:pass@subdomain.host.com:8080/p/a/t/h?query=string#hash"
+Expected output: 1
+Actual output: 1
+Exit code: 0
+Status: PASSED
+Timestamp: 2026-04-24 20:16:11
