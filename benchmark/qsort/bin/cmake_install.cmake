@@ -1,4 +1,4 @@
-# Install script for directory: /home/ubuntu/macrust/smartc2rust_benchmark/qsort
+# Install script for directory: /root/SmartC2Rust/benchmark/qsort
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/llvm-objdump")
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/root/SmartC2Rust/benchmark/qsort/bin/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

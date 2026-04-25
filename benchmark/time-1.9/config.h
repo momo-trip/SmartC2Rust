@@ -9,7 +9,7 @@
 /* #undef __x86_64_x32__ */
 #endif
 #ifndef __x86_64__
-#define __x86_64__ 1
+/* #undef __x86_64__ */
 #endif
 #ifndef __alpha__
 /* #undef __alpha__ */
@@ -24,7 +24,7 @@
 /* #undef __arm64_ilp32__ */
 #endif
 #ifndef __arm64__
-/* #undef __arm64__ */
+#define __arm64__ 1
 #endif
 #ifndef __hppa__
 /* #undef __hppa__ */
@@ -197,9 +197,6 @@
 
 /* Define if the 'malloc' function is POSIX compliant. */
 #define HAVE_MALLOC_POSIX 1
-
-/* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
 
 /* Define to 1 on MSVC platforms that have the "invalid parameter handler"
    concept. */
@@ -611,13 +608,16 @@
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
 
+/* Define to 1 if you have the <stdio.h> header file. */
+#define HAVE_STDIO_H 1
+
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the `strerror' function. */
 #define HAVE_STRERROR 1
 
-/* Define to 1 if you have the `strerror_r' function. */
+/* Define if you have `strerror_r'. */
 #define HAVE_STRERROR_R 1
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -747,7 +747,9 @@
    'size_t'. */
 /* #undef SIZE_T_SUFFIX */
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #define STDC_HEADERS 1
 
 /* Define to 1 if strerror_r returns char *. */
@@ -997,7 +999,7 @@
 /* Define to `int' if <sys/types.h> does not define. */
 /* #undef mode_t */
 
-/* Define to `int' if <sys/types.h> does not define. */
+/* Define as a signed integer type capable of holding a process identifier. */
 /* #undef pid_t */
 
 /* Define to the equivalent of the C99 'restrict' keyword, or to

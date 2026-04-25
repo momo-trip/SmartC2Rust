@@ -1,0 +1,24 @@
+Su-exec Test Results Summary
+Generated on: Fri Apr 24 19:13:09 EDT 2026
+=================================
+
+test01_no_args: Exit=1, Stdout=1 lines, Stderr=0 lines
+test02_one_arg: Exit=1, Stdout=1 lines, Stderr=0 lines
+test03_help_flag: Exit=1, Stdout=1 lines, Stderr=0 lines
+test04_invalid_option: Exit=1, Stdout=1 lines, Stderr=0 lines
+test05_basic_root: Exit=0, Stdout=1 lines, Stderr=0 lines
+test06_user_group: Exit=1, Stdout=0 lines, Stderr=1 lines
+test07_numeric_uid: Exit=0, Stdout=1 lines, Stderr=0 lines
+test08_numeric_gid: Exit=1, Stdout=0 lines, Stderr=1 lines
+test09_nonexistent_user: Exit=1, Stdout=0 lines, Stderr=1 lines
+test10_nonexistent_group: Exit=1, Stdout=0 lines, Stderr=1 lines
+test11_valid_user_group: Exit=0, Stdout=1 lines, Stderr=0 lines
+test12_numeric_gid_root: Exit=0, Stdout=1 lines, Stderr=0 lines
+test13_empty_username: Exit=0, Stdout=1 lines, Stderr=0 lines
+test14_numeric_uid_only: Exit=0, Stdout=1 lines, Stderr=0 lines
+test15_large_numeric_uid: Exit=0, Stdout=1 lines, Stderr=0 lines
+test16_invalid_large_uid: Exit=0, Stdout=1 lines, Stderr=0 lines
+test17_negative_uid: Exit=1, Stdout=0 lines, Stderr=1 lines
+test18_user_colon_no_group: Exit=1, Stdout=0 lines, Stderr=1 lines
+test19_only_colon: Exit=0, Stdout=1 lines, Stderr=0 lines
+test20_multiple_colons: Exit=1, Stdout=0 lines, Stderr=1 lines

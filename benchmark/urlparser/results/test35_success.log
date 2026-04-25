@@ -1,0 +1,7 @@
+Test #35: Testing protocol validation for http
+Command: ./url-test "CHECK_PROTOCOL:http"
+Expected output: 
+Actual output: 
+Exit code: 0
+Status: PASSED
+Timestamp: 2026-04-24 20:09:34

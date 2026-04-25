@@ -1,0 +1,48 @@
+1 - Create a string and obtain the length: PASSED
+2 - Create a string with specified length: PASSED
+3 - Strings concatenation: PASSED
+4 - sdscpy() against an originally longer string: PASSED
+5 - sdscpy() against an originally shorter string: PASSED
+6 - sdscatprintf() seems working in the base case: PASSED
+7 - sdscatprintf() seems working with \0 inside of result: PASSED
+8 - sdscatprintf() can print 1MB: PASSED
+9 - sdscatfmt() seems working in the base case: PASSED
+[--Hello Hi! World -9223372036854775808,9223372036854775807--]
+10 - sdscatfmt() seems working with unsigned numbers: PASSED
+11 - sdstrim() works when all chars match: PASSED
+12 - sdstrim() works when a single char remains: PASSED
+13 - sdstrim() correctly trims characters: PASSED
+14 - sdsrange(...,1,1): PASSED
+15 - sdsrange(...,1,-1): PASSED
+16 - sdsrange(...,-2,-1): PASSED
+17 - sdsrange(...,2,1): PASSED
+18 - sdsrange(...,1,100): PASSED
+19 - sdsrange(...,100,100): PASSED
+20 - sdscmp(foo,foa): PASSED
+21 - sdscmp(bar,bar): PASSED
+22 - sdscmp(bar,bar): PASSED
+23 - sdscatrepr(...data...): PASSED
+24 - sdsnew() free/len buffers: PASSED
+25 - sdsMakeRoomFor() len: PASSED
+26 - sdsMakeRoomFor() free: PASSED
+27 - sdsMakeRoomFor() len: PASSED
+28 - sdsMakeRoomFor() free: PASSED
+29 - sdsMakeRoomFor() len: PASSED
+30 - sdsMakeRoomFor() free: PASSED
+31 - sdsMakeRoomFor() len: PASSED
+32 - sdsMakeRoomFor() free: PASSED
+33 - sdsMakeRoomFor() len: PASSED
+34 - sdsMakeRoomFor() free: PASSED
+35 - sdsMakeRoomFor() len: PASSED
+36 - sdsMakeRoomFor() free: PASSED
+37 - sdsMakeRoomFor() len: PASSED
+38 - sdsMakeRoomFor() free: PASSED
+39 - sdsMakeRoomFor() len: PASSED
+40 - sdsMakeRoomFor() free: PASSED
+41 - sdsMakeRoomFor() len: PASSED
+42 - sdsMakeRoomFor() free: PASSED
+43 - sdsMakeRoomFor() len: PASSED
+44 - sdsMakeRoomFor() free: PASSED
+45 - sdsMakeRoomFor() content: PASSED
+46 - sdsMakeRoomFor() final length: PASSED
+46 tests, 46 passed, 0 failed

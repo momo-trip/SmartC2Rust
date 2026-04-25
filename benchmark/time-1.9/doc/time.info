@@ -1,8 +1,8 @@
-This is time.info, produced by makeinfo version 6.1 from time.texi.
+This is time.info, produced by makeinfo version 6.8 from time.texi.
 
 This manual is for GNU 'time' command for running programs and
-summarizing the system resources they use.  version 1.9 updated 4
-January 2018
+summarizing the system resources they use.  version 1.9 updated 24 April
+2026
 
    Copyright (C) 1991-2018 Free Software Foundation, Inc.
 
@@ -24,8 +24,8 @@ Time
 ****
 
 This file documents the the GNU 'time' command for running programs and
-summarizing the system resources they use.  Version 1.9, updated 4
-January 2018
+summarizing the system resources they use.  Version 1.9, updated 24
+April 2026
 
 * Menu:
 
@@ -976,20 +976,25 @@ Concept index
 
 
 Tag Table:
-Node: Top773
-Node: Resource Measurement1264
-Node: Setting Format3237
-Node: Format String4471
-Node: Time Resources5782
-Node: Memory Resources6424
-Node: I/O Resources7141
-Node: Command Info8351
-Node: Redirecting8580
-Node: Examples9375
-Node: Accuracy11693
-Node: Invoking time13219
-Node: Reporting bugs14438
-Node: GNU Free Documentation License15706
-Node: Concept index40862
+Node: Top772
+Node: Resource Measurement1262
+Node: Setting Format3235
+Node: Format String4469
+Node: Time Resources5780
+Node: Memory Resources6422
+Node: I/O Resources7139
+Node: Command Info8349
+Node: Redirecting8578
+Node: Examples9373
+Node: Accuracy11691
+Node: Invoking time13217
+Node: Reporting bugs14436
+Node: GNU Free Documentation License15704
+Node: Concept index40860
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

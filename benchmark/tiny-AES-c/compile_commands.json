@@ -7,14 +7,15 @@
       "-c",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-DAES192=1",
       "-o",
       "aes.o",
       "aes.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/aes.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/aes.o"
+    "directory": "/root/SmartC2Rust/benchmark/tiny-AES-c",
+    "file": "/root/SmartC2Rust/benchmark/tiny-AES-c/aes.c",
+    "output": "/root/SmartC2Rust/benchmark/tiny-AES-c/aes.o"
   },
   {
     "arguments": [
@@ -24,13 +25,14 @@
       "-c",
       "-finstrument-functions",
       "-g",
+      "-gdwarf-4",
       "-DAES192=1",
       "-o",
       "test.o",
       "test.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/test.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/tiny-AES-c/test.o"
+    "directory": "/root/SmartC2Rust/benchmark/tiny-AES-c",
+    "file": "/root/SmartC2Rust/benchmark/tiny-AES-c/test.c",
+    "output": "/root/SmartC2Rust/benchmark/tiny-AES-c/test.o"
   }
 ]

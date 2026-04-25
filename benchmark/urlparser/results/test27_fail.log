@@ -1,0 +1,7 @@
+Test #27: Testing existence of pathname
+Command: ./url-test "git://git@github.com:jwerle/url.h.git"
+Expected output: 1
+Actual output: 
+Exit code: 0
+Status: FAILED
+Timestamp: 2026-04-24 20:09:34

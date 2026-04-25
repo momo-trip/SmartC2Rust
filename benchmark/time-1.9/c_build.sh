@@ -7,6 +7,7 @@ option=${1:-"build"}
 
 if [ "$option" = "init" ]; then
     make distclean 
+    autoreconf -fiv
     CC=clang CFLAGS="-finstrument-functions -g -gdwarf-4" ./configure
 fi
 bear -- make -j$(nproc)

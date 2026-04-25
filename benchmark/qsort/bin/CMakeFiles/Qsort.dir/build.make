@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/qsort
+CMAKE_SOURCE_DIR = /root/SmartC2Rust/benchmark/qsort
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin
+CMAKE_BINARY_DIR = /root/SmartC2Rust/benchmark/qsort/bin
 
 # Include any dependencies generated for this target.
 include CMakeFiles/Qsort.dir/depend.make
@@ -72,16 +72,16 @@ include CMakeFiles/Qsort.dir/flags.make
 CMakeFiles/Qsort.dir/qsort.c.o: CMakeFiles/Qsort.dir/flags.make
 CMakeFiles/Qsort.dir/qsort.c.o: ../qsort.c
 CMakeFiles/Qsort.dir/qsort.c.o: CMakeFiles/Qsort.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Qsort.dir/qsort.c.o"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/Qsort.dir/qsort.c.o -MF CMakeFiles/Qsort.dir/qsort.c.o.d -o CMakeFiles/Qsort.dir/qsort.c.o -c /home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Qsort.dir/qsort.c.o"
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/Qsort.dir/qsort.c.o -MF CMakeFiles/Qsort.dir/qsort.c.o.d -o CMakeFiles/Qsort.dir/qsort.c.o -c /root/SmartC2Rust/benchmark/qsort/qsort.c
 
 CMakeFiles/Qsort.dir/qsort.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Qsort.dir/qsort.c.i"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c > CMakeFiles/Qsort.dir/qsort.c.i
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/SmartC2Rust/benchmark/qsort/qsort.c > CMakeFiles/Qsort.dir/qsort.c.i
 
 CMakeFiles/Qsort.dir/qsort.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Qsort.dir/qsort.c.s"
-	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c -o CMakeFiles/Qsort.dir/qsort.c.s
+	/usr/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/SmartC2Rust/benchmark/qsort/qsort.c -o CMakeFiles/Qsort.dir/qsort.c.s
 
 # Object files for target Qsort
 Qsort_OBJECTS = \
@@ -93,7 +93,7 @@ Qsort_EXTERNAL_OBJECTS =
 libQsort.a: CMakeFiles/Qsort.dir/qsort.c.o
 libQsort.a: CMakeFiles/Qsort.dir/build.make
 libQsort.a: CMakeFiles/Qsort.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libQsort.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libQsort.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/Qsort.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Qsort.dir/link.txt --verbose=$(VERBOSE)
 
@@ -106,6 +106,6 @@ CMakeFiles/Qsort.dir/clean:
 .PHONY : CMakeFiles/Qsort.dir/clean
 
 CMakeFiles/Qsort.dir/depend:
-	cd /home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/macrust/smartc2rust_benchmark/qsort /home/ubuntu/macrust/smartc2rust_benchmark/qsort /home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin /home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin /home/ubuntu/macrust/smartc2rust_benchmark/qsort/bin/CMakeFiles/Qsort.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/SmartC2Rust/benchmark/qsort/bin && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/SmartC2Rust/benchmark/qsort /root/SmartC2Rust/benchmark/qsort /root/SmartC2Rust/benchmark/qsort/bin /root/SmartC2Rust/benchmark/qsort/bin /root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/Qsort.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/Qsort.dir/depend
 

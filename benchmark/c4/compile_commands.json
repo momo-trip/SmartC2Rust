@@ -10,12 +10,16 @@
       "-Wno-format",
       "-Wno-parentheses",
       "-Wno-main",
+      "-ffreestanding",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
       "-o",
       "c4",
       "c4.c"
     ],
-    "directory": "/home/ubuntu/macrust/smartc2rust_benchmark/c4",
-    "file": "/home/ubuntu/macrust/smartc2rust_benchmark/c4/c4.c",
-    "output": "/home/ubuntu/macrust/smartc2rust_benchmark/c4/c4"
+    "directory": "/root/SmartC2Rust/benchmark/c4",
+    "file": "/root/SmartC2Rust/benchmark/c4/c4.c",
+    "output": "/root/SmartC2Rust/benchmark/c4/c4"
   }
 ]

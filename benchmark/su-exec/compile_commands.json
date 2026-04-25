@@ -86,11 +86,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/su-exec-123ced.o",
+      "/tmp/su-exec-5e8bd0.o",
       "su-exec.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/su-exec",
     "file": "/root/SmartC2Rust/benchmark/su-exec/su-exec.c",
-    "output": "/tmp/su-exec-123ced.o"
+    "output": "/tmp/su-exec-5e8bd0.o"
   }
 ]

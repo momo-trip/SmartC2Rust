@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/ubuntu/macrust/smartc2rust_benchmark/qsort/qsort.c" "CMakeFiles/Qsort.dir/qsort.c.o" "gcc" "CMakeFiles/Qsort.dir/qsort.c.o.d"
+  "/root/SmartC2Rust/benchmark/qsort/qsort.c" "CMakeFiles/Qsort.dir/qsort.c.o" "gcc" "CMakeFiles/Qsort.dir/qsort.c.o.d"
   )
 
 # Targets to which this target links.

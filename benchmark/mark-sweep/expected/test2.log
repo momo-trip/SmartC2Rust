@@ -1,0 +1,14 @@
+Running test 2
+Test 2: Unreached objects are collected.
+Expected: 256, Actual: 0
+Result: FAIL
+Expected: 256, Actual: 1
+Result: FAIL
+Expected: 0, Actual: 2
+Result: FAIL
+Expected: 0, Actual: 1
+Result: FAIL
+Collected 2 objects, 0 remaining.
+Expected: 0, Actual: 0
+Result: PASS
+Collected 0 objects, 0 remaining.
