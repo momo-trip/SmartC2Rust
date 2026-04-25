@@ -3,260 +3,303 @@
 
 # Reformed test cases
 
-failed=0
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export PATH="$SCRIPT_DIR:$SCRIPT_DIR/tests:$PATH"
-export VERSION="1.9"
-export srcdir="tests"
-export builddir="."
+cd "$SCRIPT_DIR"
 
 mkdir -p flow_results
 
-TIME_BIN="$SCRIPT_DIR/time"
-TIME_AUX_BIN="$SCRIPT_DIR/tests/time-aux"
+export VERSION="1.9"
+export LC_ALL=C
 
-# ============================================================
-# Test 1: help-version (--help and --version)
-# ============================================================
+failed=0
+
+#########################################
+# Test 1: help-version test
+# Ensure 'time --help' and 'time --version' run successfully
+# and version string matches $VERSION
+#########################################
 echo "Test 1 started"
-test1_log=""
-test1_pass=1
+TEST_LOG="flow_results/test1.tmp.log"
+: > "$TEST_LOG"
+test1_ok=1
 
-# Test --help
-help_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log $SCRIPT_DIR/time_t1 --help 2>&1)
+# --version check
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./test_bins/time_t1 --version >"flow_results/test1_ver.out" 2>>"$TEST_LOG"
 rc=$?
-test1_log="${test1_log}--help exit code: $rc\n"
-test1_log="${test1_log}--help output: $help_out\n"
 if [ $rc -ne 0 ]; then
-    test1_log="${test1_log}FAIL: --help returned non-zero exit code\n"
-    test1_pass=0
+    echo "time --version failed with rc=$rc" >>"$TEST_LOG"
+    test1_ok=0
 fi
-# Check that --help output contains 'Usage'
-if echo "$help_out" | grep -qi 'usage'; then
-    test1_log="${test1_log}PASS: --help output contains 'Usage'\n"
-else
-    test1_log="${test1_log}FAIL: --help output does not contain 'Usage'\n"
-    test1_pass=0
+v=$(sed -n -e '1s/.* //p' -e 'q' "flow_results/test1_ver.out")
+if [ "x$v" != "x$VERSION" ]; then
+    echo "--version-\$VERSION mismatch: got '$v', expected '$VERSION'" >>"$TEST_LOG"
+    test1_ok=0
 fi
 
-# Test --version
-version_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log $SCRIPT_DIR/time_t1 --version 2>&1)
+# --help check
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./test_bins/time_t1 --help >/dev/null 2>>"$TEST_LOG"
 rc=$?
-test1_log="${test1_log}--version exit code: $rc\n"
-test1_log="${test1_log}--version output: $version_out\n"
 if [ $rc -ne 0 ]; then
-    test1_log="${test1_log}FAIL: --version returned non-zero exit code\n"
-    test1_pass=0
-fi
-# Check that --version output contains version number
-if echo "$version_out" | grep -q '1.9'; then
-    test1_log="${test1_log}PASS: --version output contains version number\n"
-else
-    test1_log="${test1_log}FAIL: --version output does not contain version number\n"
-    test1_pass=0
+    echo "time --help failed with rc=$rc" >>"$TEST_LOG"
+    test1_ok=0
 fi
 
-if [ $test1_pass -eq 1 ]; then
-    echo "Test 1 passed"
-    printf "%b" "$test1_log" > flow_results/test1_success.log
-else
-    echo "Test 1 failed"
-    echo "Test 1 failed" >&2
-    printf "%b" "$test1_log" > flow_results/test1_fail.log
-    failed=1
-fi
 echo "Test 1 ended"
+if [ $test1_ok -eq 1 ]; then
+    mv "$TEST_LOG" flow_results/test1_success.log
+    echo "Test 1 passed"
+else
+    mv "$TEST_LOG" flow_results/test1_fail.log
+    echo "Test 1 failed" >&2
+    failed=1
+fi
+rm -f flow_results/test1_ver.out
 
-# ============================================================
-# Test 2: time-max-rss (MAX-RSS reporting)
-# ============================================================
+#########################################
+# Test 2: time-exit-codes test
+# Ensure time propagates the correct exit codes from child process
+#########################################
 echo "Test 2 started"
-test2_log=""
-test2_pass=1
+TEST_LOG="flow_results/test2.tmp.log"
+: > "$TEST_LOG"
+test2_ok=1
 
-# Check time-aux is available
-if [ ! -x "$SCRIPT_DIR/tests/time-aux_t2" ]; then
-    test2_log="${test2_log}FAIL: time-aux_t2 is missing/not executable\n"
-    test2_pass=0
-else
-    # Get baseline MAX-RSS
-    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log $SCRIPT_DIR/time_t2 -o /tmp/time_test2_mem_baseline -f "%M" $SCRIPT_DIR/tests/time-aux_t2 2>/dev/null
+TIME_BIN="./test_bins/time_t2"
+AUX_BIN="$PWD/test_bins/time-aux_t2"
+
+# sanity check
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log "$AUX_BIN" >>"$TEST_LOG" 2>&1
+rc=$?
+if [ $rc -ne 0 ]; then
+    echo "time-aux sanity check failed rc=$rc" >>"$TEST_LOG"
+    test2_ok=0
+fi
+
+for i in 0 1 3 5 100 123 125 126 128; do
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log \
+        "$TIME_BIN" -q -o "flow_results/test2_out$i" -f "%x" "$AUX_BIN" -e "$i" >>"$TEST_LOG" 2>&1
     rc=$?
-    test2_log="${test2_log}baseline run exit code: $rc\n"
-    if [ $rc -ne 0 ]; then
-        test2_log="${test2_log}FAIL: failed to run time/time-aux (baseline max-rss)\n"
-        test2_pass=0
-    else
-        # Allocate 5MB of RAM
-        LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log $SCRIPT_DIR/time_t2 -o /tmp/time_test2_mem_5MB -f "%M" $SCRIPT_DIR/tests/time-aux_t2 -m 5M 2>/dev/null
-        rc=$?
-        test2_log="${test2_log}5MB run exit code: $rc\n"
-        if [ $rc -ne 0 ]; then
-            test2_log="${test2_log}FAIL: failed to run time/time-aux (5M max-rss)\n"
-            test2_pass=0
-        else
-            b=$(cat /tmp/time_test2_mem_baseline)
-            c=$(cat /tmp/time_test2_mem_5MB)
-            d=$(( c - b ))
-            test2_log="${test2_log}mem-baseline(kb): $b\n"
-            test2_log="${test2_log}mem-5MB(kb): $c\n"
-            test2_log="${test2_log}delta(kb): $d\n"
-
-            # On some systems getrusage(2) returns zero in ru_maxrss - skip check
-            if [ "$b" -eq 0 ] && [ "$c" -eq 0 ]; then
-                test2_log="${test2_log}SKIP: getrusage(2) returns zero in ru_maxrss\n"
-            else
-                if [ "$d" -ge 4000 ] && [ "$d" -le 7000 ]; then
-                    test2_log="${test2_log}PASS: delta is in acceptable range (4000-7000 KB)\n"
-                else
-                    test2_log="${test2_log}FAIL: delta $d not in acceptable range\n"
-                    test2_pass=0
-                fi
-            fi
-        fi
+    if [ "$rc" -ne "$i" ]; then
+        echo "exit code mismatch: expected $i, got $rc" >>"$TEST_LOG"
+        test2_ok=0
     fi
-    rm -f /tmp/time_test2_mem_baseline /tmp/time_test2_mem_5MB
-fi
+    out_val=$(cat "flow_results/test2_out$i" 2>/dev/null)
+    if [ "$out_val" != "$i" ]; then
+        echo "reported exit code mismatch for $i: got '$out_val'" >>"$TEST_LOG"
+        test2_ok=0
+    fi
+    rm -f "flow_results/test2_out$i"
+done
 
-if [ $test2_pass -eq 1 ]; then
-    echo "Test 2 passed"
-    printf "%b" "$test2_log" > flow_results/test2_success.log
-else
-    echo "Test 2 failed"
-    echo "Test 2 failed" >&2
-    printf "%b" "$test2_log" > flow_results/test2_fail.log
-    failed=1
-fi
 echo "Test 2 ended"
+if [ $test2_ok -eq 1 ]; then
+    mv "$TEST_LOG" flow_results/test2_success.log
+    echo "Test 2 passed"
+else
+    mv "$TEST_LOG" flow_results/test2_fail.log
+    echo "Test 2 failed" >&2
+    failed=1
+fi
 
-# ============================================================
-# Test 3: time-exit-codes
-# ============================================================
+#########################################
+# Test 3: time-posix-quiet test
+# Test output quietness with -q and -p
+#########################################
 echo "Test 3 started"
-test3_log=""
-test3_pass=1
+TEST_LOG="flow_results/test3.tmp.log"
+: > "$TEST_LOG"
+test3_ok=1
 
-# Test that time returns the exit code of the child process
-# Exit code 0
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null true 2>/dev/null
-rc=$?
-test3_log="${test3_log}exit code for 'true': $rc (expected 0)\n"
-if [ $rc -ne 0 ]; then
-    test3_log="${test3_log}FAIL: expected exit code 0, got $rc\n"
-    test3_pass=0
-fi
+TIME_BIN="./test_bins/time_t3"
+TDIR="flow_results/test3_work"
+mkdir -p "$TDIR"
 
-# Exit code 1
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null false 2>/dev/null
+remove_numeric_values() {
+    sed -e 's/[?0-9.]*//g' -e 's/ *$//' "$@"
+}
+
+# Default output
+cat <<EOF > "$TDIR/exp-default"
+Command exited with non-zero status
+user system :elapsed %CPU (avgtext+avgdata maxresident)k
+inputs+outputs (major+minor)pagefaults swaps
+EOF
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log "$TIME_BIN" -o "$TDIR/out-def1" false >>"$TEST_LOG" 2>&1
 rc=$?
-test3_log="${test3_log}exit code for 'false': $rc (expected 1)\n"
 if [ $rc -ne 1 ]; then
-    test3_log="${test3_log}FAIL: expected exit code 1, got $rc\n"
-    test3_pass=0
+    echo "default: expected rc=1, got rc=$rc" >>"$TEST_LOG"
+    test3_ok=0
+fi
+remove_numeric_values "$TDIR/out-def1" > "$TDIR/out-default"
+if ! diff -u "$TDIR/exp-default" "$TDIR/out-default" >>"$TEST_LOG" 2>&1; then
+    echo "default output mismatch" >>"$TEST_LOG"
+    test3_ok=0
 fi
 
-# Exit code from time-aux with specific exit code
-if [ -x "$SCRIPT_DIR/tests/time-aux_t3" ]; then
-    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log $SCRIPT_DIR/time_t3 -o /dev/null $SCRIPT_DIR/tests/time-aux_t3 -e 42 2>/dev/null
-    rc=$?
-    test3_log="${test3_log}exit code for 'time-aux -e 42': $rc (expected 42)\n"
-    if [ $rc -ne 42 ]; then
-        test3_log="${test3_log}FAIL: expected exit code 42, got $rc\n"
-        test3_pass=0
-    fi
-else
-    test3_log="${test3_log}SKIP: time-aux_t3 not available for exit code test\n"
+# -q output
+cat <<EOF > "$TDIR/exp-q"
+user system :elapsed %CPU (avgtext+avgdata maxresident)k
+inputs+outputs (major+minor)pagefaults swaps
+EOF
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log "$TIME_BIN" -q -o "$TDIR/out-q1" false >>"$TEST_LOG" 2>&1
+rc=$?
+if [ $rc -ne 1 ]; then
+    echo "-q: expected rc=1, got rc=$rc" >>"$TEST_LOG"
+    test3_ok=0
+fi
+remove_numeric_values "$TDIR/out-q1" > "$TDIR/out-q"
+if ! diff -u "$TDIR/exp-q" "$TDIR/out-q" >>"$TEST_LOG" 2>&1; then
+    echo "-q output mismatch" >>"$TEST_LOG"
+    test3_ok=0
 fi
 
-if [ $test3_pass -eq 1 ]; then
-    echo "Test 3 passed"
-    printf "%b" "$test3_log" > flow_results/test3_success.log
-else
-    echo "Test 3 failed"
-    echo "Test 3 failed" >&2
-    printf "%b" "$test3_log" > flow_results/test3_fail.log
-    failed=1
+# -p output
+cat <<EOF > "$TDIR/exp-posix"
+real
+user
+sys
+EOF
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log "$TIME_BIN" -p -o "$TDIR/out-posix1" false >>"$TEST_LOG" 2>&1
+rc=$?
+if [ $rc -ne 1 ]; then
+    echo "-p: expected rc=1, got rc=$rc" >>"$TEST_LOG"
+    test3_ok=0
 fi
+remove_numeric_values "$TDIR/out-posix1" > "$TDIR/out-posix"
+if ! diff -u "$TDIR/exp-posix" "$TDIR/out-posix" >>"$TEST_LOG" 2>&1; then
+    echo "-p output mismatch" >>"$TEST_LOG"
+    test3_ok=0
+fi
+
 echo "Test 3 ended"
-
-# ============================================================
-# Test 4: time-posix-quiet
-# ============================================================
-echo "Test 4 started"
-test4_log=""
-test4_pass=1
-
-# Test POSIX output format with -p flag
-posix_out=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log $SCRIPT_DIR/time_t4 -p true 2>&1)
-rc=$?
-test4_log="${test4_log}-p true exit code: $rc\n"
-test4_log="${test4_log}-p true output: $posix_out\n"
-if [ $rc -ne 0 ]; then
-    test4_log="${test4_log}FAIL: -p true returned non-zero exit code\n"
-    test4_pass=0
-fi
-
-# Check POSIX format output contains 'real', 'user', 'sys'
-if echo "$posix_out" | grep -q 'real'; then
-    test4_log="${test4_log}PASS: POSIX output contains 'real'\n"
+if [ $test3_ok -eq 1 ]; then
+    mv "$TEST_LOG" flow_results/test3_success.log
+    echo "Test 3 passed"
 else
-    test4_log="${test4_log}FAIL: POSIX output does not contain 'real'\n"
-    test4_pass=0
-fi
-if echo "$posix_out" | grep -q 'user'; then
-    test4_log="${test4_log}PASS: POSIX output contains 'user'\n"
-else
-    test4_log="${test4_log}FAIL: POSIX output does not contain 'user'\n"
-    test4_pass=0
-fi
-if echo "$posix_out" | grep -q 'sys'; then
-    test4_log="${test4_log}PASS: POSIX output contains 'sys'\n"
-else
-    test4_log="${test4_log}FAIL: POSIX output does not contain 'sys'\n"
-    test4_pass=0
-fi
-
-# Test quiet mode: -q should suppress output to stderr
-quiet_stderr=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log $SCRIPT_DIR/time_t4 -q true 2>&1 1>/dev/null)
-rc=$?
-test4_log="${test4_log}-q true exit code: $rc\n"
-test4_log="${test4_log}-q true stderr: '$quiet_stderr'\n"
-if [ $rc -ne 0 ]; then
-    test4_log="${test4_log}FAIL: -q true returned non-zero exit code\n"
-    test4_pass=0
-fi
-
-# Test output to file with -o
-tmpfile=$(mktemp /tmp/time_test4_XXXXXX)
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log $SCRIPT_DIR/time_t4 -o "$tmpfile" -f "%e" true 2>/dev/null
-rc=$?
-test4_log="${test4_log}-o file exit code: $rc\n"
-if [ $rc -ne 0 ]; then
-    test4_log="${test4_log}FAIL: -o file returned non-zero exit code\n"
-    test4_pass=0
-else
-    file_content=$(cat "$tmpfile")
-    test4_log="${test4_log}-o file content: '$file_content'\n"
-    if [ -n "$file_content" ]; then
-        test4_log="${test4_log}PASS: -o file produced output\n"
-    else
-        test4_log="${test4_log}FAIL: -o file produced no output\n"
-        test4_pass=0
-    fi
-fi
-rm -f "$tmpfile"
-
-if [ $test4_pass -eq 1 ]; then
-    echo "Test 4 passed"
-    printf "%b" "$test4_log" > flow_results/test4_success.log
-else
-    echo "Test 4 failed"
-    echo "Test 4 failed" >&2
-    printf "%b" "$test4_log" > flow_results/test4_fail.log
+    mv "$TEST_LOG" flow_results/test3_fail.log
+    echo "Test 3 failed" >&2
     failed=1
 fi
+rm -rf "$TDIR"
+
+#########################################
+# Test 4: time-max-rss test
+# Test MAX-RSS (Resident size) reporting for 50MB allocation
+#########################################
+echo "Test 4 started"
+TEST_LOG="flow_results/test4.tmp.log"
+: > "$TEST_LOG"
+test4_ok=1
+
+TIME_BIN="./test_bins/time_t4"
+AUX_BIN="$PWD/test_bins/time-aux_t4"
+TDIR="flow_results/test4_work"
+mkdir -p "$TDIR"
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log "$AUX_BIN" >>"$TEST_LOG" 2>&1
+if [ $? -ne 0 ]; then
+    echo "time-aux not runnable" >>"$TEST_LOG"
+    test4_ok=0
+fi
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log "$TIME_BIN" -o "$TDIR/mem-baseline" -f "%M" "$AUX_BIN" >>"$TEST_LOG" 2>&1
+if [ $? -ne 0 ]; then
+    echo "failed to run time/time-aux (baseline max-rss)" >>"$TEST_LOG"
+    test4_ok=0
+fi
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log "$TIME_BIN" -o "$TDIR/mem-50MB" -f "%M" "$AUX_BIN" -m 50M >>"$TEST_LOG" 2>&1
+if [ $? -ne 0 ]; then
+    echo "failed to run time/time-aux (50M max-rss)" >>"$TEST_LOG"
+    test4_ok=0
+fi
+
+if [ $test4_ok -eq 1 ]; then
+    b=$(cat "$TDIR/mem-baseline")
+    c=$(cat "$TDIR/mem-50MB")
+    d=$(( c - b ))
+    echo "baseline=$b, 50MB=$c, delta=$d" >>"$TEST_LOG"
+    if [ "$b" -eq 0 ] && [ "$c" -eq 0 ]; then
+        echo "getrusage returns zero in ru_maxrss - skipping comparison" >>"$TEST_LOG"
+    elif [ "$d" -ge 40000 ] && [ "$d" -le 60000 ]; then
+        echo "delta is within acceptable range" >>"$TEST_LOG"
+    else
+        echo "time(1) failed to detect 50MB allocation: delta=$d" >>"$TEST_LOG"
+        test4_ok=0
+    fi
+fi
+
 echo "Test 4 ended"
+if [ $test4_ok -eq 1 ]; then
+    mv "$TEST_LOG" flow_results/test4_success.log
+    echo "Test 4 passed"
+else
+    mv "$TEST_LOG" flow_results/test4_fail.log
+    echo "Test 4 failed" >&2
+    failed=1
+fi
+rm -rf "$TDIR"
+
+#########################################
+# Test 5: time-max-rss0 test
+# Test MAX-RSS reporting for 5MB allocation
+#########################################
+echo "Test 5 started"
+TEST_LOG="flow_results/test5.tmp.log"
+: > "$TEST_LOG"
+test5_ok=1
+
+TIME_BIN="./test_bins/time_t5"
+AUX_BIN="$PWD/test_bins/time-aux_t5"
+TDIR="flow_results/test5_work"
+mkdir -p "$TDIR"
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log "$AUX_BIN" >>"$TEST_LOG" 2>&1
+if [ $? -ne 0 ]; then
+    echo "time-aux not runnable" >>"$TEST_LOG"
+    test5_ok=0
+fi
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log "$TIME_BIN" -o "$TDIR/mem-baseline" -f "%M" "$AUX_BIN" >>"$TEST_LOG" 2>&1
+if [ $? -ne 0 ]; then
+    echo "failed to run time/time-aux (baseline max-rss)" >>"$TEST_LOG"
+    test5_ok=0
+fi
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log "$TIME_BIN" -o "$TDIR/mem-5MB" -f "%M" "$AUX_BIN" -m 5M >>"$TEST_LOG" 2>&1
+if [ $? -ne 0 ]; then
+    echo "failed to run time/time-aux (5M max-rss)" >>"$TEST_LOG"
+    test5_ok=0
+fi
+
+if [ $test5_ok -eq 1 ]; then
+    b=$(cat "$TDIR/mem-baseline")
+    c=$(cat "$TDIR/mem-5MB")
+    d=$(( c - b ))
+    echo "baseline=$b, 5MB=$c, delta=$d" >>"$TEST_LOG"
+    if [ "$b" -eq 0 ] && [ "$c" -eq 0 ]; then
+        echo "getrusage returns zero in ru_maxrss - skipping comparison" >>"$TEST_LOG"
+    elif [ "$d" -ge 5000 ] && [ "$d" -le 6000 ]; then
+        echo "delta is within acceptable range" >>"$TEST_LOG"
+    else
+        echo "time(1) failed to detect 5MB allocation: delta=$d" >>"$TEST_LOG"
+        test5_ok=0
+    fi
+fi
+
+echo "Test 5 ended"
+if [ $test5_ok -eq 1 ]; then
+    mv "$TEST_LOG" flow_results/test5_success.log
+    echo "Test 5 passed"
+else
+    mv "$TEST_LOG" flow_results/test5_fail.log
+    echo "Test 5 failed" >&2
+    failed=1
+fi
+rm -rf "$TDIR"
 
 exit $failed
 

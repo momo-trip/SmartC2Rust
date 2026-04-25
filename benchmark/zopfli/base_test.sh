@@ -208,6 +208,10 @@ run_test "Multiple format - zlib" "./build/zopfli --zlib test_input.txt" "test_i
 
 # Test 10: Edge case - empty file
 echo -n "" > empty_file.txt
+run_test "Empty file compression" "./build/zopfli empty_file.txt" "empty_file.txt.gz"
+if [ -f "empty_file.txt.gz" ]; then
+    verify_compressed_file "empty_file.txt.gz" "gzip" "Empty file"
+fi
 
 # Test 11: Test with special characters
 echo "Special chars: !@#$%^&*()_+{}|:<>?[]\\;'\",./" > special_chars.txt
@@ -215,9 +219,6 @@ run_test "Special characters file" "./build/zopfli special_chars.txt" "special_c
 
 # Test 12: Block splitting disabled
 run_test "Block splitting disabled" "./build/zopfli --i1 --blocksplitting=0 test_input.txt" "test_input.txt.gz"
-
-# # Test 13: Deflate with limited iterations
-# run_test "Deflate with i1" "./build/zopfli --i1 --deflate test_input.txt" "test_input.txt.deflate"
 
 # Test 13: Zlib with limited iterations
 run_test "Zlib with i1" "./build/zopfli --i1 --zlib test_input.txt" "test_input.txt.zlib"

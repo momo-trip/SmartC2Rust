@@ -6,395 +6,157 @@ failed=0
 
 mkdir -p flow_results
 
-# Test 1: Original test.c - full assertion-based test
-echo "Test 1 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./url-test_t1 > flow_results/test1_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 1 passed"
-    cp flow_results/test1_output.log flow_results/test1_success.log
-else
-    echo "Test 1 failed"
-    echo "Test 1 failed" >&2
-    cp flow_results/test1_output.log flow_results/test1_fail.log
-    failed=1
-fi
-echo "Test 1 ended"
+HTTP_URL="http://user:pass@subdomain.host.com:8080/p/a/t/h?query=string#hash"
+GIT_URL="git://git@github.com:jwerle/url.h.git"
 
-# Test 2: HTTP URL protocol value
-echo "Test 2 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log ./url-test_t2 > flow_results/test2_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 2 passed"
-    cp flow_results/test2_output.log flow_results/test2_success.log
-else
-    echo "Test 2 failed"
-    echo "Test 2 failed" >&2
-    cp flow_results/test2_output.log flow_results/test2_fail.log
-    failed=1
-fi
-echo "Test 2 ended"
+run_exists_test() {
+    local test_num=$1
+    local binary=$2
+    local url=$3
+    local component=$4
+    local expected=$5
 
-# Test 3: HTTP URL auth value
-echo "Test 3 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log ./url-test_t3 > flow_results/test3_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 3 passed"
-    cp flow_results/test3_output.log flow_results/test3_success.log
-else
-    echo "Test 3 failed"
-    echo "Test 3 failed" >&2
-    cp flow_results/test3_output.log flow_results/test3_fail.log
-    failed=1
-fi
-echo "Test 3 ended"
+    echo "Test ${test_num} started"
+    local log_tmp="flow_results/test${test_num}_tmp.log"
 
-# Test 4: HTTP URL hostname value
-echo "Test 4 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log ./url-test_t4 > flow_results/test4_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 4 passed"
-    cp flow_results/test4_output.log flow_results/test4_success.log
-else
-    echo "Test 4 failed"
-    echo "Test 4 failed" >&2
-    cp flow_results/test4_output.log flow_results/test4_fail.log
-    failed=1
-fi
-echo "Test 4 ended"
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./${binary} "$url" > "$log_tmp" 2>&1
+    local exit_code=$?
 
-# Test 5: HTTP URL host value
-echo "Test 5 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log ./url-test_t5 > flow_results/test5_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 5 passed"
-    cp flow_results/test5_output.log flow_results/test5_success.log
-else
-    echo "Test 5 failed"
-    echo "Test 5 failed" >&2
-    cp flow_results/test5_output.log flow_results/test5_fail.log
-    failed=1
-fi
-echo "Test 5 ended"
+    local output=$(grep "EXISTS $component:" "$log_tmp" | cut -d':' -f2- | tr -d ' ')
 
-# Test 6: HTTP URL pathname value
-echo "Test 6 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test6_trace.log ./url-test_t6 > flow_results/test6_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 6 passed"
-    cp flow_results/test6_output.log flow_results/test6_success.log
-else
-    echo "Test 6 failed"
-    echo "Test 6 failed" >&2
-    cp flow_results/test6_output.log flow_results/test6_fail.log
-    failed=1
-fi
-echo "Test 6 ended"
+    local log_content="Test #${test_num}: Testing existence of $component
+Command: ./${binary} \"$url\"
+Expected output: ${expected}
+Actual output: ${output}
+Exit code: ${exit_code}"
 
-# Test 7: HTTP URL path value
-echo "Test 7 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test7_trace.log ./url-test_t7 > flow_results/test7_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 7 passed"
-    cp flow_results/test7_output.log flow_results/test7_success.log
-else
-    echo "Test 7 failed"
-    echo "Test 7 failed" >&2
-    cp flow_results/test7_output.log flow_results/test7_fail.log
-    failed=1
-fi
-echo "Test 7 ended"
+    if [ $exit_code -eq 0 ] && [ "$output" = "$expected" ]; then
+        echo "$log_content" > "flow_results/test${test_num}_success.log"
+        echo "Test ${test_num} passed"
+    else
+        echo "$log_content" > "flow_results/test${test_num}_fail.log"
+        echo "Test ${test_num} failed" >&2
+        failed=1
+    fi
+    rm -f "$log_tmp"
+    echo "Test ${test_num} ended"
+}
 
-# Test 8: HTTP URL search value
-echo "Test 8 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test8_trace.log ./url-test_t8 > flow_results/test8_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 8 passed"
-    cp flow_results/test8_output.log flow_results/test8_success.log
-else
-    echo "Test 8 failed"
-    echo "Test 8 failed" >&2
-    cp flow_results/test8_output.log flow_results/test8_fail.log
-    failed=1
-fi
-echo "Test 8 ended"
+run_value_test() {
+    local test_num=$1
+    local binary=$2
+    local url=$3
+    local component=$4
+    local expected=$5
 
-# Test 9: HTTP URL query value
-echo "Test 9 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test9_trace.log ./url-test_t9 > flow_results/test9_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 9 passed"
-    cp flow_results/test9_output.log flow_results/test9_success.log
-else
-    echo "Test 9 failed"
-    echo "Test 9 failed" >&2
-    cp flow_results/test9_output.log flow_results/test9_fail.log
-    failed=1
-fi
-echo "Test 9 ended"
+    echo "Test ${test_num} started"
+    local log_tmp="flow_results/test${test_num}_tmp.log"
 
-# Test 10: HTTP URL hash value
-echo "Test 10 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test10_trace.log ./url-test_t10 > flow_results/test10_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 10 passed"
-    cp flow_results/test10_output.log flow_results/test10_success.log
-else
-    echo "Test 10 failed"
-    echo "Test 10 failed" >&2
-    cp flow_results/test10_output.log flow_results/test10_fail.log
-    failed=1
-fi
-echo "Test 10 ended"
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./${binary} "$url" > "$log_tmp" 2>&1
+    local exit_code=$?
 
-# Test 11: HTTP URL port value
-echo "Test 11 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test11_trace.log ./url-test_t11 > flow_results/test11_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 11 passed"
-    cp flow_results/test11_output.log flow_results/test11_success.log
-else
-    echo "Test 11 failed"
-    echo "Test 11 failed" >&2
-    cp flow_results/test11_output.log flow_results/test11_fail.log
-    failed=1
-fi
-echo "Test 11 ended"
+    local output=$(grep "VALUE $component:" "$log_tmp" | cut -d':' -f2- | tr -d ' ')
 
-# Test 12: HTTP URL parsed struct - all fields exist
-echo "Test 12 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test12_trace.log ./url-test_t12 > flow_results/test12_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 12 passed"
-    cp flow_results/test12_output.log flow_results/test12_success.log
-else
-    echo "Test 12 failed"
-    echo "Test 12 failed" >&2
-    cp flow_results/test12_output.log flow_results/test12_fail.log
-    failed=1
-fi
-echo "Test 12 ended"
+    local log_content="Test #${test_num}: Testing value of $component
+Command: ./${binary} \"$url\"
+Expected output: ${expected}
+Actual output: ${output}
+Exit code: ${exit_code}"
 
-# Test 13: Git URL parsed struct - all fields exist
-echo "Test 13 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test13_trace.log ./url-test_t13 > flow_results/test13_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 13 passed"
-    cp flow_results/test13_output.log flow_results/test13_success.log
-else
-    echo "Test 13 failed"
-    echo "Test 13 failed" >&2
-    cp flow_results/test13_output.log flow_results/test13_fail.log
-    failed=1
-fi
-echo "Test 13 ended"
+    if [ "$output" = "$expected" ]; then
+        echo "$log_content" > "flow_results/test${test_num}_success.log"
+        echo "Test ${test_num} passed"
+    else
+        echo "$log_content" > "flow_results/test${test_num}_fail.log"
+        echo "Test ${test_num} failed" >&2
+        failed=1
+    fi
+    rm -f "$log_tmp"
+    echo "Test ${test_num} ended"
+}
 
-# Test 14: Git URL protocol value
-echo "Test 14 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test14_trace.log ./url-test_t14 > flow_results/test14_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 14 passed"
-    cp flow_results/test14_output.log flow_results/test14_success.log
-else
-    echo "Test 14 failed"
-    echo "Test 14 failed" >&2
-    cp flow_results/test14_output.log flow_results/test14_fail.log
-    failed=1
-fi
-echo "Test 14 ended"
+run_protocol_test() {
+    local test_num=$1
+    local binary=$2
+    local protocol=$3
+    local expected=$4
 
-# Test 15: Git URL host value
-echo "Test 15 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test15_trace.log ./url-test_t15 > flow_results/test15_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 15 passed"
-    cp flow_results/test15_output.log flow_results/test15_success.log
-else
-    echo "Test 15 failed"
-    echo "Test 15 failed" >&2
-    cp flow_results/test15_output.log flow_results/test15_fail.log
-    failed=1
-fi
-echo "Test 15 ended"
+    echo "Test ${test_num} started"
+    local log_tmp="flow_results/test${test_num}_tmp.log"
 
-# Test 16: Git URL hostname value
-echo "Test 16 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test16_trace.log ./url-test_t16 > flow_results/test16_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 16 passed"
-    cp flow_results/test16_output.log flow_results/test16_success.log
-else
-    echo "Test 16 failed"
-    echo "Test 16 failed" >&2
-    cp flow_results/test16_output.log flow_results/test16_fail.log
-    failed=1
-fi
-echo "Test 16 ended"
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./${binary} "CHECK_PROTOCOL:$protocol" > "$log_tmp" 2>&1
+    local exit_code=$?
 
-# Test 17: Git URL auth value
-echo "Test 17 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test17_trace.log ./url-test_t17 > flow_results/test17_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 17 passed"
-    cp flow_results/test17_output.log flow_results/test17_success.log
-else
-    echo "Test 17 failed"
-    echo "Test 17 failed" >&2
-    cp flow_results/test17_output.log flow_results/test17_fail.log
-    failed=1
-fi
-echo "Test 17 ended"
+    local output=$(grep "PROTOCOL_VALID $protocol:" "$log_tmp" | cut -d':' -f2- | tr -d ' ')
 
-# Test 18: Git URL pathname value
-echo "Test 18 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test18_trace.log ./url-test_t18 > flow_results/test18_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 18 passed"
-    cp flow_results/test18_output.log flow_results/test18_success.log
-else
-    echo "Test 18 failed"
-    echo "Test 18 failed" >&2
-    cp flow_results/test18_output.log flow_results/test18_fail.log
-    failed=1
-fi
-echo "Test 18 ended"
+    local log_content="Test #${test_num}: Testing protocol validation for $protocol
+Command: ./${binary} \"CHECK_PROTOCOL:$protocol\"
+Expected output: ${expected}
+Actual output: ${output}
+Exit code: ${exit_code}"
 
-# Test 19: Git URL path value
-echo "Test 19 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test19_trace.log ./url-test_t19 > flow_results/test19_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 19 passed"
-    cp flow_results/test19_output.log flow_results/test19_success.log
-else
-    echo "Test 19 failed"
-    echo "Test 19 failed" >&2
-    cp flow_results/test19_output.log flow_results/test19_fail.log
-    failed=1
-fi
-echo "Test 19 ended"
+    if [ "$output" = "$expected" ]; then
+        echo "$log_content" > "flow_results/test${test_num}_success.log"
+        echo "Test ${test_num} passed"
+    else
+        echo "$log_content" > "flow_results/test${test_num}_fail.log"
+        echo "Test ${test_num} failed" >&2
+        failed=1
+    fi
+    rm -f "$log_tmp"
+    echo "Test ${test_num} ended"
+}
 
-# Test 20: Protocol validation - http
-echo "Test 20 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test20_trace.log ./url-test_t20 > flow_results/test20_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 20 passed"
-    cp flow_results/test20_output.log flow_results/test20_success.log
-else
-    echo "Test 20 failed"
-    echo "Test 20 failed" >&2
-    cp flow_results/test20_output.log flow_results/test20_fail.log
-    failed=1
-fi
-echo "Test 20 ended"
+# HTTP URL existence tests (1-11)
+run_exists_test  1 url-test_t1  "$HTTP_URL" "href"     "1"
+run_exists_test  2 url-test_t2  "$HTTP_URL" "auth"     "1"
+run_exists_test  3 url-test_t3  "$HTTP_URL" "protocol" "1"
+run_exists_test  4 url-test_t4  "$HTTP_URL" "port"     "1"
+run_exists_test  5 url-test_t5  "$HTTP_URL" "hostname" "1"
+run_exists_test  6 url-test_t6  "$HTTP_URL" "host"     "1"
+run_exists_test  7 url-test_t7  "$HTTP_URL" "pathname" "1"
+run_exists_test  8 url-test_t8  "$HTTP_URL" "path"     "1"
+run_exists_test  9 url-test_t9  "$HTTP_URL" "hash"     "1"
+run_exists_test 10 url-test_t10 "$HTTP_URL" "search"   "1"
+run_exists_test 11 url-test_t11 "$HTTP_URL" "query"    "1"
 
-# Test 21: Protocol validation - https
-echo "Test 21 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test21_trace.log ./url-test_t21 > flow_results/test21_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 21 passed"
-    cp flow_results/test21_output.log flow_results/test21_success.log
-else
-    echo "Test 21 failed"
-    echo "Test 21 failed" >&2
-    cp flow_results/test21_output.log flow_results/test21_fail.log
-    failed=1
-fi
-echo "Test 21 ended"
+# HTTP URL value tests (12-21)
+run_value_test 12 url-test_t12 "$HTTP_URL" "protocol" "http"
+run_value_test 13 url-test_t13 "$HTTP_URL" "auth"     "user:pass"
+run_value_test 14 url-test_t14 "$HTTP_URL" "hostname" "subdomain.host.com:8080"
+run_value_test 15 url-test_t15 "$HTTP_URL" "host"     "subdomain.host.com"
+run_value_test 16 url-test_t16 "$HTTP_URL" "pathname" "/p/a/t/h"
+run_value_test 17 url-test_t17 "$HTTP_URL" "path"     "/p/a/t/h?query=string#hash"
+run_value_test 18 url-test_t18 "$HTTP_URL" "search"   "?query=string"
+run_value_test 19 url-test_t19 "$HTTP_URL" "query"    "query=string"
+run_value_test 20 url-test_t20 "$HTTP_URL" "hash"     "#hash"
+run_value_test 21 url-test_t21 "$HTTP_URL" "port"     "8080"
 
-# Test 22: Protocol validation - git
-echo "Test 22 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test22_trace.log ./url-test_t22 > flow_results/test22_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 22 passed"
-    cp flow_results/test22_output.log flow_results/test22_success.log
-else
-    echo "Test 22 failed"
-    echo "Test 22 failed" >&2
-    cp flow_results/test22_output.log flow_results/test22_fail.log
-    failed=1
-fi
-echo "Test 22 ended"
+# Git URL existence tests (22-28)
+run_exists_test 22 url-test_t22 "$GIT_URL" "href"     "1"
+run_exists_test 23 url-test_t23 "$GIT_URL" "protocol" "1"
+run_exists_test 24 url-test_t24 "$GIT_URL" "host"     "1"
+run_exists_test 25 url-test_t25 "$GIT_URL" "auth"     "1"
+run_exists_test 26 url-test_t26 "$GIT_URL" "hostname" "1"
+run_exists_test 27 url-test_t27 "$GIT_URL" "pathname" "1"
+run_exists_test 28 url-test_t28 "$GIT_URL" "path"     "1"
 
-# Test 23: Protocol validation - ssh
-echo "Test 23 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test23_trace.log ./url-test_t23 > flow_results/test23_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 23 passed"
-    cp flow_results/test23_output.log flow_results/test23_success.log
-else
-    echo "Test 23 failed"
-    echo "Test 23 failed" >&2
-    cp flow_results/test23_output.log flow_results/test23_fail.log
-    failed=1
-fi
-echo "Test 23 ended"
+# Git URL value tests (29-34)
+run_value_test 29 url-test_t29 "$GIT_URL" "protocol" "git"
+run_value_test 30 url-test_t30 "$GIT_URL" "host"     "github.com"
+run_value_test 31 url-test_t31 "$GIT_URL" "hostname" "github.com"
+run_value_test 32 url-test_t32 "$GIT_URL" "auth"     "git"
+run_value_test 33 url-test_t33 "$GIT_URL" "pathname" "jwerle/url.h.git"
+run_value_test 34 url-test_t34 "$GIT_URL" "path"     "jwerle/url.h.git"
 
-# Test 24: Protocol validation - sftp
-echo "Test 24 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test24_trace.log ./url-test_t24 > flow_results/test24_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 24 passed"
-    cp flow_results/test24_output.log flow_results/test24_success.log
-else
-    echo "Test 24 failed"
-    echo "Test 24 failed" >&2
-    cp flow_results/test24_output.log flow_results/test24_fail.log
-    failed=1
-fi
-echo "Test 24 ended"
-
-# Test 25: Protocol validation - ftp
-echo "Test 25 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test25_trace.log ./url-test_t25 > flow_results/test25_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 25 passed"
-    cp flow_results/test25_output.log flow_results/test25_success.log
-else
-    echo "Test 25 failed"
-    echo "Test 25 failed" >&2
-    cp flow_results/test25_output.log flow_results/test25_fail.log
-    failed=1
-fi
-echo "Test 25 ended"
-
-# Test 26: Protocol validation - javascript
-echo "Test 26 started"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test26_trace.log ./url-test_t26 > flow_results/test26_output.log 2>&1
-ret=$?
-if [ $ret -eq 0 ]; then
-    echo "Test 26 passed"
-    cp flow_results/test26_output.log flow_results/test26_success.log
-else
-    echo "Test 26 failed"
-    echo "Test 26 failed" >&2
-    cp flow_results/test26_output.log flow_results/test26_fail.log
-    failed=1
-fi
-echo "Test 26 ended"
+# Protocol validation tests (35-41)
+run_protocol_test 35 url-test_t35 "http"       ""
+run_protocol_test 36 url-test_t36 "https"      ""
+run_protocol_test 37 url-test_t37 "git"        ""
+run_protocol_test 38 url-test_t38 "ssh"        ""
+run_protocol_test 39 url-test_t39 "sftp"       ""
+run_protocol_test 40 url-test_t40 "ftp"        ""
+run_protocol_test 41 url-test_t41 "javascript" ""
 
 exit $failed
 

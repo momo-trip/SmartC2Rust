@@ -1,83 +1,44 @@
 
 #!/bin/bash
 
-failed=0
+# Reformed test cases
+
 mkdir -p flow_results
 
-# Test 1
-echo "Test 1 started"
-output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./markandsweep_t1 1 2>&1)
-test1_status=$?
-if [ $test1_status -eq 0 ]; then
-    echo "$output" > flow_results/test1_success.log
-    echo "Test 1 passed"
-else
-    echo "$output" > flow_results/test1_fail.log
-    echo "Test 1 failed"
-    echo "Test 1 failed" >&2
-    failed=1
-fi
-echo "Test 1 ended"
+failed=0
 
-# Test 2
-echo "Test 2 started"
-output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log ./markandsweep_t2 2 2>&1)
-test2_status=$?
-if [ $test2_status -eq 0 ]; then
-    echo "$output" > flow_results/test2_success.log
-    echo "Test 2 passed"
-else
-    echo "$output" > flow_results/test2_fail.log
-    echo "Test 2 failed"
-    echo "Test 2 failed" >&2
-    failed=1
-fi
-echo "Test 2 ended"
+run_test() {
+    local test_num=$1
+    local binary="./test_markandsweep_t${test_num}"
 
-# Test 3
-echo "Test 3 started"
-output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log ./markandsweep_t3 3 2>&1)
-test3_status=$?
-if [ $test3_status -eq 0 ]; then
-    echo "$output" > flow_results/test3_success.log
-    echo "Test 3 passed"
-else
-    echo "$output" > flow_results/test3_fail.log
-    echo "Test 3 failed"
-    echo "Test 3 failed" >&2
-    failed=1
-fi
-echo "Test 3 ended"
+    echo "Test ${test_num} started"
 
-# Test 4
-echo "Test 4 started"
-output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log ./markandsweep_t4 4 2>&1)
-test4_status=$?
-if [ $test4_status -eq 0 ]; then
-    echo "$output" > flow_results/test4_success.log
-    echo "Test 4 passed"
-else
-    echo "$output" > flow_results/test4_fail.log
-    echo "Test 4 failed"
-    echo "Test 4 failed" >&2
-    failed=1
-fi
-echo "Test 4 ended"
+    if [ ! -f "$binary" ]; then
+        echo "Test ${test_num} failed" >&2
+        echo "Binary $binary not found" > "flow_results/test${test_num}_fail.log"
+        failed=1
+        echo "Test ${test_num} ended"
+        return
+    fi
 
-# Test 5
-echo "Test 5 started"
-output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test5_trace.log ./markandsweep_t5 5 2>&1)
-test5_status=$?
-if [ $test5_status -eq 0 ]; then
-    echo "$output" > flow_results/test5_success.log
-    echo "Test 5 passed"
-else
-    echo "$output" > flow_results/test5_fail.log
-    echo "Test 5 failed"
-    echo "Test 5 failed" >&2
-    failed=1
-fi
-echo "Test 5 ended"
+    output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log "$binary" "$test_num" 2>&1)
+    exit_code=$?
+
+    if [ $exit_code -eq 0 ]; then
+        echo "Test ${test_num} passed"
+        echo "$output" > "flow_results/test${test_num}_success.log"
+    else
+        echo "Test ${test_num} failed" >&2
+        echo "$output" > "flow_results/test${test_num}_fail.log"
+        failed=1
+    fi
+
+    echo "Test ${test_num} ended"
+}
+
+for i in 1 2 3 4 5; do
+    run_test "$i"
+done
 
 exit $failed
 

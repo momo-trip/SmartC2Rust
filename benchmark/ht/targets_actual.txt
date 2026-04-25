@@ -1,0 +1,5 @@
+main:/root/SmartC2Rust/trans/trans_c_0000/ht/samples/dump.c:50
+main:/root/SmartC2Rust/trans/trans_c_0000/ht/samples/stats.c:70
+main:/root/SmartC2Rust/trans/trans_c_0000/ht/samples/lsearch.c:21
+main:/root/SmartC2Rust/trans/trans_c_0000/ht/samples/bsearch.c:49
+main:/root/SmartC2Rust/trans/trans_c_0000/ht/samples/demo.c:31

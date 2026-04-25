@@ -3,60 +3,106 @@
 
 # Reformed test cases
 
-cd "$(dirname "$0")"
+mkdir -p flow_results
 
 failed=0
 
-# Directories for test results
-ACTUAL_DIR="actual"
-EXPECTED_DIR="expected"
-mkdir -p flow_results
-mkdir -p "${ACTUAL_DIR}"
+# -------------------------------------------------------------------
+# Test 1: Default AES (AES128) build, run ./test_aes128.elf
+# -------------------------------------------------------------------
+test_num=1
+binary=test_aes128.elf
+echo "Test ${test_num} started"
 
-# ============ Test 1: Default AES (AES128) ============
-echo "Test 1 started"
-
-output_file="${ACTUAL_DIR}/test1_output.log"
-expected_file="${EXPECTED_DIR}/test1_output.log"
-log_file="flow_results/test1_output.log"
-
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./test_aes_t1 > "${output_file}" 2>&1
-test1_exit=$?
-
-test1_failed=0
-
-if [ $test1_exit -ne 0 ]; then
-    test1_failed=1
-    echo "Test binary exited with code ${test1_exit}" > "${log_file}"
-fi
-
-if [ -f "${expected_file}" ]; then
-    line_num=0
-    failure_details=""
-    while IFS= read -r expected_line; do
-        line_num=$((line_num + 1))
-        [ -z "$expected_line" ] && continue
-        actual_line=$(sed -n "${line_num}p" "${output_file}")
-        if [[ ! "$actual_line" == "$expected_line"* ]]; then
-            test1_failed=1
-            failure_details="${failure_details}Line ${line_num} does not match\nExpected: ${expected_line}\nActual: ${actual_line}\n\n"
-        fi
-    done < "${expected_file}"
-fi
-
-if [ $test1_failed -eq 0 ]; then
-    echo "Test 1 passed"
-    echo "AES test case 1 (default AES128) passed successfully" > flow_results/test1_success.log
-    cat "${output_file}" >> flow_results/test1_success.log
-else
-    echo "Test 1 failed"
-    echo "Test 1 failed" >&2
+if [ ! -x "./${binary}" ]; then
+    echo "Test ${test_num} failed" >&2
+    echo "Binary ./${binary} not found or not executable" > "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} ended"
     failed=1
-    echo -e "AES test case 1 (default AES128) failed:\n\n${failure_details}" > flow_results/test1_fail.log
-    cat "${output_file}" >> flow_results/test1_fail.log
+else
+    tmp_out="flow_results/test${test_num}_output.log"
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./${binary} > "${tmp_out}" 2>&1
+    rc=$?
+
+    # Validate: expect an AES128 run with SUCCESS messages
+    if [ $rc -eq 0 ] && grep -q "Testing AES128" "${tmp_out}" \
+        && grep -q "CBC encrypt: SUCCESS" "${tmp_out}" \
+        && grep -q "CBC decrypt: SUCCESS" "${tmp_out}" \
+        && grep -q "ECB encrypt: SUCCESS" "${tmp_out}"; then
+        echo "Test ${test_num} passed"
+        cp "${tmp_out}" "flow_results/test${test_num}_success.log"
+        echo "Test ${test_num} ended"
+    else
+        echo "Test ${test_num} failed" >&2
+        cp "${tmp_out}" "flow_results/test${test_num}_fail.log"
+        echo "Test ${test_num} ended"
+        failed=1
+    fi
 fi
 
-echo "Test 1 ended"
+# -------------------------------------------------------------------
+# Test 2: AES192 build, run ./test_aes192.elf
+# -------------------------------------------------------------------
+test_num=2
+binary=test_aes192.elf
+echo "Test ${test_num} started"
+
+if [ ! -x "./${binary}" ]; then
+    echo "Test ${test_num} failed" >&2
+    echo "Binary ./${binary} not found or not executable" > "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} ended"
+    failed=1
+else
+    tmp_out="flow_results/test${test_num}_output.log"
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./${binary} > "${tmp_out}" 2>&1
+    rc=$?
+
+    if [ $rc -eq 0 ] && grep -q "Testing AES192" "${tmp_out}" \
+        && grep -q "CBC encrypt: SUCCESS" "${tmp_out}" \
+        && grep -q "CBC decrypt: SUCCESS" "${tmp_out}" \
+        && grep -q "ECB encrypt: SUCCESS" "${tmp_out}"; then
+        echo "Test ${test_num} passed"
+        cp "${tmp_out}" "flow_results/test${test_num}_success.log"
+        echo "Test ${test_num} ended"
+    else
+        echo "Test ${test_num} failed" >&2
+        cp "${tmp_out}" "flow_results/test${test_num}_fail.log"
+        echo "Test ${test_num} ended"
+        failed=1
+    fi
+fi
+
+# -------------------------------------------------------------------
+# Test 3: AES256 build, run ./test_aes256.elf
+# -------------------------------------------------------------------
+test_num=3
+binary=test_aes256.elf
+echo "Test ${test_num} started"
+
+if [ ! -x "./${binary}" ]; then
+    echo "Test ${test_num} failed" >&2
+    echo "Binary ./${binary} not found or not executable" > "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} ended"
+    failed=1
+else
+    tmp_out="flow_results/test${test_num}_output.log"
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./${binary} > "${tmp_out}" 2>&1
+    rc=$?
+
+    if [ $rc -eq 0 ] && grep -q "Testing AES256" "${tmp_out}" \
+        && grep -q "CBC encrypt: SUCCESS" "${tmp_out}" \
+        && grep -q "CBC decrypt: SUCCESS" "${tmp_out}" \
+        && grep -q "ECB encrypt: SUCCESS" "${tmp_out}"; then
+        echo "Test ${test_num} passed"
+        cp "${tmp_out}" "flow_results/test${test_num}_success.log"
+        echo "Test ${test_num} ended"
+    else
+        echo "Test ${test_num} failed" >&2
+        cp "${tmp_out}" "flow_results/test${test_num}_fail.log"
+        echo "Test ${test_num} ended"
+        failed=1
+    fi
+fi
 
 exit $failed
 

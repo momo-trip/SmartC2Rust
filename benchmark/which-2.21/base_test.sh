@@ -19,8 +19,8 @@ run_test() {
     local test_passed=false
 
     echo "Running test #${current_test}: $test_name"
-    echo "Test Case #$current_test: Started" >> /home/ubuntu/portable/out_flow_c.log
-    echo "Test Case #$current_test: Started" >> /home/ubuntu/portable/out_flow_rust.log
+    echo "Test Case #$current_test: Started" >> /root/SmartC2Rust/benchmark/which-2.21/out_flow_c.log
+    echo "Test Case #$current_test: Started" >> /root/SmartC2Rust/benchmark/which-2.21/out_flow_rust.log
     output=$(eval $command 2>&1)
     exit_code=$?
 
@@ -102,7 +102,7 @@ else
     echo "Some tests failed." >&2
     echo "Failed test cases:" >&2
     for ((i=1; i<=total_tests; i++)); do
-        if ! grep -q "Test Case #$i: Started" /home/ubuntu/portable/out_flow_c.log; then
+        if ! grep -q "Test Case #$i: Started" /root/SmartC2Rust/benchmark/which-2.21/out_flow_c.log; then
             echo "Test Case #$i failed" >&2
         fi
     done

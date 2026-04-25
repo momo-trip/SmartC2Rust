@@ -1,0 +1,2 @@
+main:/root/SmartC2Rust/trans/trans_c_0000/time-1.9/src/time.c:761
+main:/root/SmartC2Rust/trans/trans_c_0000/time-1.9/tests/time-aux.c:343

@@ -1,217 +1,272 @@
 
 #!/bin/bash
+# Reformed test cases
 
-# Reformed test cases for FastestWebsiteEver
+cd "$(dirname "$0")"
+
 failed=0
-
 mkdir -p flow_results
 
-# Cleanup function to kill server processes and free port 80
+# Choose an available free TCP port (avoid port 80 conflicts with external services).
+pick_free_port() {
+    local port
+    for port in 18080 18081 18082 18083 18084 18085 18090 18091 18092 18093; do
+        if ! ss -ltn 2>/dev/null | awk '{print $4}' | grep -Eq "(^|:)${port}$"; then
+            if [ -z "$(lsof -ti :${port} 2>/dev/null)" ]; then
+                echo "$port"
+                return 0
+            fi
+        fi
+    done
+    echo "18080"
+    return 0
+}
+
 cleanup_port() {
-    sudo lsof -ti :80 | xargs -r sudo kill -9 2>/dev/null
+    local port=$1
+    local retries=0
+    while [ $retries -lt 15 ]; do
+        local pids
+        pids=$(lsof -ti :${port} 2>/dev/null)
+        if [ -z "$pids" ]; then
+            if ! ss -ltn 2>/dev/null | awk '{print $4}' | grep -Eq "(^|:)${port}$"; then
+                return 0
+            fi
+        else
+            for pid in $pids; do
+                kill -9 "$pid" 2>/dev/null
+            done
+        fi
+        sleep 1
+        retries=$((retries + 1))
+    done
+    return 0
+}
+
+wait_for_server() {
+    # $1 = pid, $2 = max seconds, $3 = port
+    local pid=$1
+    local max=$2
+    local port=$3
+    local elapsed=0
+    while [ $elapsed -lt $max ]; do
+        if ! ps -p $pid > /dev/null 2>&1; then
+            return 1
+        fi
+        local code
+        code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 1 http://localhost:${port} 2>/dev/null)
+        if [ "$code" = "200" ]; then
+            return 0
+        fi
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    return 1
+}
+
+stop_server() {
+    local pid=$1
+    if [ -z "$pid" ]; then
+        return
+    fi
+    kill $pid 2>/dev/null
     sleep 1
+    if ps -p $pid > /dev/null 2>&1; then
+        kill -9 $pid 2>/dev/null
+    fi
+    local retries=0
+    while ps -p $pid > /dev/null 2>&1 && [ $retries -lt 10 ]; do
+        sleep 1
+        retries=$((retries + 1))
+    done
 }
 
-# Kill any existing cpkthttp processes
-cleanup_all() {
-    sudo pkill -9 -f 'cpkthttp_t' 2>/dev/null
-    cleanup_port
+# Build a per-testcase binary that listens on a chosen port by patching PORT in main.c
+build_binary_with_port() {
+    local binname=$1
+    local port=$2
+    local srcfile="server/c/main_${binname}.c"
+    sed -E "s/#define[[:space:]]+PORT[[:space:]]+\"[0-9]+\"/#define PORT \"${port}\"/" server/c/main.c > "$srcfile"
+    if [ ! -f "server/${binname}" ]; then
+        clang -O2 -finstrument-functions -g -gdwarf-4 -o "server/${binname}" "$srcfile"
+        return $?
+    fi
+    return 0
 }
 
-# Initial cleanup
-cleanup_all
+run_server_test() {
+    # $1 = test num, $2 = binary name, $3 = port
+    local tn=$1
+    local binname=$2
+    local port=$3
+    local log_file="flow_results/test${tn}_tmp.log"
+    : > "$log_file"
 
-###############################################################################
-# Test 1: Server startup
-###############################################################################
+    cleanup_port $port
+
+    cd server
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/../flow_results/test${tn}_trace.log ./${binname} > server_log_t${tn}.txt 2>&1 &
+    local spid=$!
+    cd ..
+
+    wait_for_server $spid 15 $port
+    local waitret=$?
+
+    if ! ps -p $spid > /dev/null 2>&1 || [ $waitret -ne 0 ]; then
+        echo "Server startup failed" >> "$log_file"
+        cat server/server_log_t${tn}.txt >> "$log_file" 2>/dev/null
+        stop_server $spid
+        rm -f server/server_log_t${tn}.txt
+        SERVER_PID=""
+        LOG_FILE_RET="$log_file"
+        return 1
+    fi
+
+    echo "Server started (PID: $spid) on port $port" >> "$log_file"
+    SERVER_PID=$spid
+    LOG_FILE_RET="$log_file"
+    return 0
+}
+
+# Prepare per-test binaries each listening on a unique high port
+PORT1=$(pick_free_port)
+build_binary_with_port cpkthttp_t1 $PORT1
+
+PORT2=18081
+while ss -ltn 2>/dev/null | awk '{print $4}' | grep -Eq "(^|:)${PORT2}$" || [ "$PORT2" = "$PORT1" ]; do
+    PORT2=$((PORT2 + 1))
+done
+build_binary_with_port cpkthttp_t2 $PORT2
+
+PORT3=18082
+while ss -ltn 2>/dev/null | awk '{print $4}' | grep -Eq "(^|:)${PORT3}$" || [ "$PORT3" = "$PORT1" ] || [ "$PORT3" = "$PORT2" ]; do
+    PORT3=$((PORT3 + 1))
+done
+build_binary_with_port cpkthttp_t3 $PORT3
+
+########################################
+# Test 1: Server starts, basic request returns HTTP 200 with proper content
+########################################
 echo "Test 1 started"
-test1_log=""
-test1_pass=1
+TEST_NUM=1
 
-cd server
+run_server_test $TEST_NUM cpkthttp_t1 $PORT1
+start_ok=$?
+LOG_FILE="$LOG_FILE_RET"
+test1_ok=1
 
-# Start the server in the background with tracing
-test1_log+="Starting server cpkthttp_t1...\n"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/../flow_results/test1_trace.log sudo -E ./cpkthttp_t1 > server_log.txt 2>&1 &
-SERVER_PID=$!
-
-# Wait for the server to start
-sleep 2
-
-# Check if the server started successfully
-if ! ps -p $SERVER_PID > /dev/null 2>&1; then
-    # The server may have been started by sudo as a child process
-    # Try to find it by name
-    SERVER_PID=$(pgrep -f cpkthttp_t1 | head -1)
-    if [ -z "$SERVER_PID" ]; then
-        test1_log+="Server startup failed\n"
-        test1_log+="Server log:\n"
-        test1_log+=$(cat server_log.txt 2>/dev/null)
-        test1_pass=0
-    fi
-fi
-
-if [ "$test1_pass" -eq 1 ]; then
-    # Verify server is actually listening on port 80
-    if sudo lsof -i :80 >/dev/null 2>&1; then
-        test1_log+="Server started successfully (PID: $SERVER_PID)\n"
-        test1_log+="Server is listening on port 80\n"
-    else
-        test1_log+="Server process exists but not listening on port 80\n"
-        test1_pass=0
-    fi
-fi
-
-cd ..
-
-if [ "$test1_pass" -eq 1 ]; then
-    echo "Test 1 passed"
-    echo -e "$test1_log" > flow_results/test1_success.log
+if [ $start_ok -ne 0 ]; then
+    test1_ok=0
 else
-    echo "Test 1 failed"
+    OUTPUT_FILE="test_output_t1.bin"
+    curl_output=$(curl -s -w "%{http_code}" --max-time 5 http://localhost:${PORT1} -o "$OUTPUT_FILE")
+    HTTP_CODE=${curl_output: -3}
+    echo "HTTP code: $HTTP_CODE" >> "$LOG_FILE"
+    if [ "$HTTP_CODE" != "200" ]; then
+        echo "HTTP code not 200: $HTTP_CODE" >> "$LOG_FILE"
+        cat server/server_log_t1.txt >> "$LOG_FILE" 2>/dev/null
+        test1_ok=0
+    else
+        RESPONSE_SIZE=$(stat -c%s "$OUTPUT_FILE" 2>/dev/null)
+        echo "Response size: $RESPONSE_SIZE" >> "$LOG_FILE"
+        if [ -z "$RESPONSE_SIZE" ] || [ "$RESPONSE_SIZE" -lt 100 ]; then
+            echo "Abnormal response size: $RESPONSE_SIZE bytes" >> "$LOG_FILE"
+            test1_ok=0
+        fi
+    fi
+    rm -f "$OUTPUT_FILE"
+    stop_server $SERVER_PID
+    rm -f server/server_log_t1.txt
+fi
+cleanup_port $PORT1
+
+if [ $test1_ok -eq 1 ]; then
+    echo "Test 1 passed"
+    mv "$LOG_FILE" "flow_results/test${TEST_NUM}_success.log"
+else
     echo "Test 1 failed" >&2
-    echo -e "$test1_log" > flow_results/test1_fail.log
+    mv "$LOG_FILE" "flow_results/test${TEST_NUM}_fail.log"
     failed=1
 fi
 echo "Test 1 ended"
 
-###############################################################################
-# Test 2: Client request - HTTP 200 and response size >= 100 bytes
-###############################################################################
+########################################
+# Test 2: Multiple sequential requests succeed
+########################################
 echo "Test 2 started"
-test2_log=""
-test2_pass=1
+TEST_NUM=2
 
-OUTPUT_FILE="server/test_output_t2.bin"
+run_server_test $TEST_NUM cpkthttp_t2 $PORT2
+start_ok=$?
+LOG_FILE="$LOG_FILE_RET"
+test2_ok=1
 
-test2_log+="Sending HTTP request to localhost:80...\n"
-curl_output=$(curl -s -w "%{http_code}" http://localhost:80 -o "$OUTPUT_FILE" 2>&1)
-curl_exit=$?
-
-if [ $curl_exit -ne 0 ]; then
-    test2_log+="curl command failed with exit code $curl_exit\n"
-    test2_log+="curl output: $curl_output\n"
-    test2_pass=0
-fi
-
-if [ "$test2_pass" -eq 1 ]; then
-    HTTP_CODE=${curl_output: -3}
-    test2_log+="HTTP response code: $HTTP_CODE\n"
-
-    if [ "$HTTP_CODE" != "200" ]; then
-        test2_log+="Request failed: expected HTTP 200, got $HTTP_CODE\n"
-        test2_pass=0
-    fi
-fi
-
-if [ "$test2_pass" -eq 1 ]; then
-    RESPONSE_SIZE=$(stat -c%s "$OUTPUT_FILE" 2>/dev/null)
-    test2_log+="Response size: $RESPONSE_SIZE bytes\n"
-
-    if [ -z "$RESPONSE_SIZE" ] || [ "$RESPONSE_SIZE" -lt 100 ]; then
-        test2_log+="Abnormal response size: ${RESPONSE_SIZE:-0} bytes (expected >= 100)\n"
-        test2_pass=0
-    else
-        test2_log+="Request successful: received $RESPONSE_SIZE bytes\n"
-    fi
-
-    FILE_TYPE=$(file -b "$OUTPUT_FILE" 2>/dev/null)
-    test2_log+="Received file type: $FILE_TYPE\n"
-fi
-
-rm -f "$OUTPUT_FILE"
-
-if [ "$test2_pass" -eq 1 ]; then
-    echo "Test 2 passed"
-    echo -e "$test2_log" > flow_results/test2_success.log
+if [ $start_ok -ne 0 ]; then
+    test2_ok=0
 else
-    echo "Test 2 failed"
+    for i in 1 2 3 4 5; do
+        code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:${PORT2})
+        echo "Request $i: $code" >> "$LOG_FILE"
+        if [ "$code" != "200" ]; then
+            test2_ok=0
+        fi
+    done
+    stop_server $SERVER_PID
+    rm -f server/server_log_t2.txt
+fi
+cleanup_port $PORT2
+
+if [ $test2_ok -eq 1 ]; then
+    echo "Test 2 passed"
+    mv "$LOG_FILE" "flow_results/test${TEST_NUM}_success.log"
+else
     echo "Test 2 failed" >&2
-    echo -e "$test2_log" > flow_results/test2_fail.log
+    mv "$LOG_FILE" "flow_results/test${TEST_NUM}_fail.log"
     failed=1
 fi
 echo "Test 2 ended"
 
-###############################################################################
-# Test 3: Multiple requests - 5 sequential requests all return 200
-###############################################################################
+########################################
+# Test 3: Server terminates gracefully on SIGTERM
+########################################
 echo "Test 3 started"
-test3_log=""
-test3_pass=1
+TEST_NUM=3
 
-test3_log+="Testing 5 sequential requests...\n"
-for i in 1 2 3 4 5; do
-    resp_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80 2>&1)
-    curl_exit=$?
-    test3_log+="Request $i: HTTP $resp_code (curl exit: $curl_exit)\n"
+run_server_test $TEST_NUM cpkthttp_t3 $PORT3
+start_ok=$?
+LOG_FILE="$LOG_FILE_RET"
+test3_ok=1
 
-    if [ $curl_exit -ne 0 ]; then
-        test3_log+="Request $i: curl failed with exit code $curl_exit\n"
-        test3_pass=0
-    elif [ "$resp_code" != "200" ]; then
-        test3_log+="Request $i: expected HTTP 200, got $resp_code\n"
-        test3_pass=0
-    fi
-    sleep 0.5
-done
-
-if [ "$test3_pass" -eq 1 ]; then
-    echo "Test 3 passed"
-    echo -e "$test3_log" > flow_results/test3_success.log
+if [ $start_ok -ne 0 ]; then
+    test3_ok=0
 else
-    echo "Test 3 failed"
+    code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:${PORT3})
+    echo "Pre-terminate request code: $code" >> "$LOG_FILE"
+    if [ "$code" != "200" ]; then
+        test3_ok=0
+    fi
+    kill $SERVER_PID
+    sleep 2
+    if ps -p $SERVER_PID > /dev/null 2>&1; then
+        echo "Server did not terminate with SIGTERM, force killing" >> "$LOG_FILE"
+        kill -9 $SERVER_PID 2>/dev/null
+        test3_ok=0
+    else
+        echo "Server terminated normally" >> "$LOG_FILE"
+    fi
+    rm -f server/server_log_t3.txt
+fi
+cleanup_port $PORT3
+
+if [ $test3_ok -eq 1 ]; then
+    echo "Test 3 passed"
+    mv "$LOG_FILE" "flow_results/test${TEST_NUM}_success.log"
+else
     echo "Test 3 failed" >&2
-    echo -e "$test3_log" > flow_results/test3_fail.log
+    mv "$LOG_FILE" "flow_results/test${TEST_NUM}_fail.log"
     failed=1
 fi
 echo "Test 3 ended"
-
-###############################################################################
-# Test 4: Server termination
-###############################################################################
-echo "Test 4 started"
-test4_log=""
-test4_pass=1
-
-# Find the server PID (it may have been started under sudo)
-SERVER_PID=$(pgrep -f cpkthttp_t1 | head -1)
-
-if [ -z "$SERVER_PID" ]; then
-    test4_log+="No server process found to terminate\n"
-    test4_pass=0
-else
-    test4_log+="Terminating server (PID: $SERVER_PID)...\n"
-    sudo kill $SERVER_PID
-    sleep 2
-
-    if ps -p $SERVER_PID > /dev/null 2>&1; then
-        test4_log+="Server did not terminate gracefully, force killing...\n"
-        sudo kill -9 $SERVER_PID
-        sleep 1
-        if ps -p $SERVER_PID > /dev/null 2>&1; then
-            test4_log+="Server termination failed even with SIGKILL\n"
-            test4_pass=0
-        else
-            test4_log+="Server force terminated\n"
-        fi
-    else
-        test4_log+="Server terminated normally\n"
-    fi
-fi
-
-# Final cleanup
-rm -f server/server_log.txt
-
-if [ "$test4_pass" -eq 1 ]; then
-    echo "Test 4 passed"
-    echo -e "$test4_log" > flow_results/test4_success.log
-else
-    echo "Test 4 failed"
-    echo "Test 4 failed" >&2
-    echo -e "$test4_log" > flow_results/test4_fail.log
-    failed=1
-fi
-echo "Test 4 ended"
 
 exit $failed
 
