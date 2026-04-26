@@ -31,7 +31,7 @@ location for user projects, mirroring how the bundled samples live under
 `benchmark/`. Keeping this convention means you can follow the Step 1–6
 commands from the main README with only the project name changed.
 
-​```
+```
 /root/SmartC2Rust/
 ├── benchmark/
 │   └── ...
@@ -43,7 +43,7 @@ commands from the main README with only the project name changed.
         ├── targets.txt     # Entry-point specification (you write this)
         ├── run_test.sh     # 
         └── base_test.sh    # Original test script (you write this)
-​```
+```
 
 `myproj` is just a placeholder — use whatever name you like for your
 project directory. Throughout the rest of this guide, replace `myproj`
