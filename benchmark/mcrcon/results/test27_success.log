@@ -1,2 +1,1 @@
-Warning: invalid packet size (5). Must over 10 and less than 4096.
-Authentication failed!
+Output: 'Connection lost.', Exit: 1

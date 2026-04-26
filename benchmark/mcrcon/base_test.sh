@@ -105,19 +105,9 @@ class SpecialMockRCONServer:
     def handle_client(self, client_socket, addr):
         try:
             self.request_count += 1
-            
-            # Special test cases
-            if self.request_count % 5 == 2:
-                # Send invalid packet size
-                self.send_invalid_packet_size(client_socket)
-                return
-            elif self.request_count % 7 == 3:
-                # Suddenly disconnect
-                client_socket.close()
-                return
-            else:
-                # Normal processing
-                self.handle_normal_request(client_socket)
+            # Always do normal processing.
+            # Abnormal cases are triggered by specific commands.
+            self.handle_normal_request(client_socket)
                     
         except Exception as e:
             print(f"Client handling error: {e}")
@@ -258,7 +248,6 @@ fi
 current_test=2
 log_test_start $current_test
 output=$(./mcrcon -v 2>&1)
-echo "$output" > "expected/test2.log"
 if [[ "$output" == *"mcrcon"* ]]; then
     echo "Test #${current_test} passed: Version information"
     echo "$output" > "results/test${current_test}_success.log"
@@ -446,7 +435,7 @@ current_test=16
 log_test_start $current_test
 output=$(timeout 5 ./mcrcon -H 192.0.2.1 -p password -P 25575 "say test" 2>&1)
 exit_code=$?
-if [[ "$output" == *"timeout"* ]] || [[ "$output" == *"connect"* ]] || [[ "$output" == *"failed"* ]] || [[ "$output" == *"Connection"* ]] || [[ "$output" == *"refused"* ]] || [[ $exit_code -eq 124 ]] || [[ -z "$output" ]]; then
+if [[ "$output" == *"timeout"* ]] || [[ "$output" == *"connect"* ]] || [[ "$output" == *"failed"* ]] || [[ "$output" == *"Connection"* ]] || [[ "$output" == *"refused"* ]] || [[ $exit_code -eq 124 ]]; then
     echo "Test #${current_test} passed: Connection timeout/failure (exit code: $exit_code)"
     echo "Output: '$output'" > "results/test${current_test}_success.log"
     ((passed_tests++))
@@ -472,7 +461,7 @@ if [ "$SERVER_RUNNING" = true ]; then
     echo "Debug: mcrcon exit code: $exit_code"
     echo "Debug: mcrcon output: '$output'"
     
-    if [[ "$output" == *"Command executed"* ]] || [[ "$output" == *"Hello"* ]] || [[ "$output" == *"executed"* ]] || [[ $exit_code -eq 0 ]] || [[ "$output" == *"Authentication failed"* ]]; then
+    if [[ "$output" == *"Command executed"* ]] || [[ "$output" == *"Hello"* ]] || [[ "$output" == *"executed"* ]] || [[ $exit_code -eq 0 ]]; then
         echo "Test #${current_test} passed: Successful authentication and command"
         echo "$output" > "results/test${current_test}_success.log"
         ((passed_tests++))
@@ -491,7 +480,7 @@ if [ "$SERVER_RUNNING" = true ]; then
     echo "Debug: Time taken: ${time_diff}s"
     echo "Debug: Output: '$output'"
     
-    if [[ $time_diff -ge 1 ]] || [[ "$output" == *"executed"* ]]; then
+    if [[ $time_diff -ge 1 ]] && [[ "$output" == *"executed"* ]]; then
         echo "Test #${current_test} passed: Multiple commands with wait time"
         echo "$output" > "results/test${current_test}_success.log"
         ((passed_tests++))
@@ -517,9 +506,15 @@ if [ "$SERVER_RUNNING" = true ]; then
     current_test=20
     log_test_start $current_test
     output=$(timeout 3 ./mcrcon -r -H localhost -P $MOCK_PORT -p test "say test" 2>&1)
-    echo "Test #${current_test} passed: Raw packet mode (executed)"
-    echo "$output" > "results/test${current_test}_success.log"
-    ((passed_tests++))
+    exit_code=$?
+    if [ $exit_code -eq 0 ] && [ -n "$output" ]; then
+        echo "Test #${current_test} passed: Raw packet mode"
+        echo "$output" > "results/test${current_test}_success.log"
+        ((passed_tests++))
+    else
+        echo "Test #${current_test} failed: Raw packet mode" >&2
+        echo "Output: '$output', Exit code: $exit_code" > "results/test${current_test}_fail.log"
+    fi
 
     # Test 21: Disable colors
     current_test=21
@@ -538,29 +533,37 @@ if [ "$SERVER_RUNNING" = true ]; then
     current_test=22
     log_test_start $current_test
     output=$(timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test "colortest" 2>&1)
-    echo "Test #${current_test} passed: Color processing test (executed)"
-    echo "$output" > "results/test${current_test}_success.log"
-    ((passed_tests++))
+    exit_code=$?
+    if [ $exit_code -eq 0 ] && [[ "$output" == *"Green"* || "$output" == *"Red"* ]]; then
+        echo "Test #${current_test} passed: Color processing test"
+        echo "$output" > "results/test${current_test}_success.log"
+        ((passed_tests++))
+    else
+        echo "Test #${current_test} failed: Color processing test" >&2
+        echo "Output: '$output', Exit code: $exit_code" > "results/test${current_test}_fail.log"
+    fi
 
     # Test 23: Terminal mode
     current_test=23
     log_test_start $current_test
-    echo -e "say Hello Terminal\nQ\n" | timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test -t 2>&1 > /tmp/terminal_output.log
-    if [ -f /tmp/terminal_output.log ]; then
+    echo -e "say Hello Terminal\nQ\n" | timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test -t > /tmp/terminal_output.log 2>&1
+    exit_code=$?
+    if [ $exit_code -ne 124 ] && [ -f /tmp/terminal_output.log ]; then
         echo "Test #${current_test} passed: Terminal mode"
         cat /tmp/terminal_output.log > "results/test${current_test}_success.log"
         ((passed_tests++))
     else
         echo "Test #${current_test} failed: Terminal mode" >&2
-        echo "No output file created" > "results/test${current_test}_fail.log"
+        echo "Exit: $exit_code" > "results/test${current_test}_fail.log"
+        [ -f /tmp/terminal_output.log ] && cat /tmp/terminal_output.log >> "results/test${current_test}_fail.log"
     fi
 
 else
-    # Skip tests if server is not running
+    # Server not running — record as failures
     for skip_test in {17..23}; do
         current_test=$skip_test
-        echo "Test #${current_test} skipped: Server not running"
-        echo "Server not running" > "results/test${current_test}_skip.log"
+        echo "Test #${current_test} failed: Server not running" >&2
+        echo "Server not running" > "results/test${current_test}_fail.log"
     done
 fi
 
@@ -569,14 +572,22 @@ echo "=== Special Tests for Coverage Improvement Started ==="
 # Test 24: SIGINT handling test
 current_test=24
 log_test_start $current_test
-timeout 1 bash -c './mcrcon -H localhost -P '$MOCK_PORT' -p test -t &
+./mcrcon -H localhost -P $MOCK_PORT -p test -t &
 PID=$!
 sleep 0.5
 kill -INT $PID 2>/dev/null
-wait $PID 2>/dev/null' || true
-echo "Test #${current_test} passed: SIGINT handling test (executed)"
-echo "SIGINT test completed" > "results/test${current_test}_success.log"
-((passed_tests++))
+sleep 1
+if ! kill -0 $PID 2>/dev/null; then
+    echo "Test #${current_test} passed: SIGINT handling test"
+    echo "Process terminated cleanly after SIGINT" > "results/test${current_test}_success.log"
+    ((passed_tests++))
+else
+    echo "Test #${current_test} failed: SIGINT handling test" >&2
+    echo "Process did not terminate after SIGINT" > "results/test${current_test}_fail.log"
+    kill -9 $PID 2>/dev/null
+fi
+wait $PID 2>/dev/null
+
 
 # Test 25: Large number for wait parameter (errno test)
 current_test=25
@@ -597,50 +608,84 @@ if [ "$SERVER_RUNNING" = true ]; then
     current_test=26
     log_test_start $current_test
     output=$(timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test "invalidpacket" 2>&1)
-    echo "Test #${current_test} passed: Invalid packet size test (executed)"
-    echo "$output" > "results/test${current_test}_success.log"
-    ((passed_tests++))
+    exit_code=$?
+    # Server intentionally sends invalid responses periodically; mcrcon should
+    # either complete (rc=0) or terminate cleanly without hanging (rc != 124)
+    if [ $exit_code -ne 124 ]; then
+        echo "Test #${current_test} passed: Invalid packet size test"
+        echo "Output: '$output', Exit: $exit_code" > "results/test${current_test}_success.log"
+        ((passed_tests++))
+    else
+        echo "Test #${current_test} failed: Invalid packet size test (timed out)" >&2
+        echo "Output: '$output', Exit: $exit_code" > "results/test${current_test}_fail.log"
+    fi
 
     # Test 27: Connection disconnect test
     current_test=27
     log_test_start $current_test
     output=$(timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test "disconnect" 2>&1)
-    echo "Test #${current_test} passed: Connection disconnect test (executed)"
-    echo "$output" > "results/test${current_test}_success.log"
-    ((passed_tests++))
+    exit_code=$?
+    if [ $exit_code -ne 124 ]; then
+        echo "Test #${current_test} passed: Connection disconnect test"
+        echo "Output: '$output', Exit: $exit_code" > "results/test${current_test}_success.log"
+        ((passed_tests++))
+    else
+        echo "Test #${current_test} failed: Connection disconnect test (timed out)" >&2
+        echo "Output: '$output', Exit: $exit_code" > "results/test${current_test}_fail.log"
+    fi
 
     # Test 28: Large packet test
     current_test=28
     log_test_start $current_test
     VERY_LONG_CMD="say $(printf 'A%.0s' {1..1000})"
     output=$(timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test "$VERY_LONG_CMD" 2>&1)
-    echo "Test #${current_test} passed: Large packet test (executed)"
-    echo "$output" > "results/test${current_test}_success.log"
-    ((passed_tests++))
+    exit_code=$?
+    if [ $exit_code -ne 124 ]; then
+        echo "Test #${current_test} passed: Large packet test"
+        echo "Output: '$output', Exit: $exit_code" > "results/test${current_test}_success.log"
+        ((passed_tests++))
+    else
+        echo "Test #${current_test} failed: Large packet test (timed out)" >&2
+        echo "Output: '$output', Exit: $exit_code" > "results/test${current_test}_fail.log"
+    fi
 
     # Test 29: Terminal mode with long input
     current_test=29
     log_test_start $current_test
     LONG_INPUT=$(printf 'A%.0s' {1..1000})
-    echo -e "${LONG_INPUT}\nQ\n" | timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test -t 2>&1 > /tmp/long_input_output.log
-    echo "Test #${current_test} passed: Terminal mode with long input (executed)"
-    cat /tmp/long_input_output.log > "results/test${current_test}_success.log" 2>/dev/null || true
-    ((passed_tests++))
+    echo -e "${LONG_INPUT}\nQ\n" | timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test -t > /tmp/long_input_output.log 2>&1
+    exit_code=$?
+    if [ $exit_code -ne 124 ] && [ -f /tmp/long_input_output.log ]; then
+        echo "Test #${current_test} passed: Terminal mode with long input"
+        cat /tmp/long_input_output.log > "results/test${current_test}_success.log"
+        ((passed_tests++))
+    else
+        echo "Test #${current_test} failed: Terminal mode with long input" >&2
+        echo "Exit: $exit_code" > "results/test${current_test}_fail.log"
+        [ -f /tmp/long_input_output.log ] && cat /tmp/long_input_output.log >> "results/test${current_test}_fail.log"
+    fi
 
     # Test 30: Terminal mode with closed stdin
     current_test=30
     log_test_start $current_test
-    echo -e "\nQ\n" | timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test -t < /dev/null 2>&1 > /tmp/closed_stdin_output.log
-    echo "Test #${current_test} passed: Terminal mode with closed stdin (executed)"
-    cat /tmp/closed_stdin_output.log > "results/test${current_test}_success.log" 2>/dev/null || true
-    ((passed_tests++))
+    timeout 3 ./mcrcon -H localhost -P $MOCK_PORT -p test -t < /dev/null > /tmp/closed_stdin_output.log 2>&1
+    exit_code=$?
+    if [ $exit_code -ne 124 ] && [ -f /tmp/closed_stdin_output.log ]; then
+        echo "Test #${current_test} passed: Terminal mode with closed stdin"
+        cat /tmp/closed_stdin_output.log > "results/test${current_test}_success.log"
+        ((passed_tests++))
+    else
+        echo "Test #${current_test} failed: Terminal mode with closed stdin" >&2
+        echo "Exit: $exit_code" > "results/test${current_test}_fail.log"
+        [ -f /tmp/closed_stdin_output.log ] && cat /tmp/closed_stdin_output.log >> "results/test${current_test}_fail.log"
+    fi
 
 else
-    # Skip tests if server is not running
+    # Server not running — record as failures
     for skip_test in {26..30}; do
         current_test=$skip_test
-        echo "Test #${current_test} skipped: Server not running"
-        echo "Server not running" > "results/test${current_test}_skip.log"
+        echo "Test #${current_test} failed: Server not running" >&2
+        echo "Server not running" > "results/test${current_test}_fail.log"
     done
 fi
 
@@ -679,4 +724,7 @@ if [ $pass_rate -ne 100 ]; then
             echo "  Test #${i}" >&2
         fi
     done
+    exit 1
 fi
+
+exit 0
