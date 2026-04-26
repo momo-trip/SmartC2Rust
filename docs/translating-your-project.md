@@ -27,32 +27,24 @@ substituting the benchmark paths with the paths to your own project.
 ## 2. Project layout
 
 Place your project under `SmartC2Rust/program/`. This is the standard
-location for user projects, mirroring how the bundled samples live under
-`benchmark/`. Keeping this convention means you can follow the Step 1–6
+location for user projects. Keeping this convention means you can follow the Step 1–6
 commands from the main README with only the project name changed.
 
 ```
 /root/SmartC2Rust/
-├── benchmark/
-│   └── ...
-└── program/                # Your projects go here
+└── program/                
     └── myproj/             # One directory per project
         ├── src/            # Your C source tree (must build as-is)
         │   ├── main.c
         │   └── ...
         ├── targets.txt     # Entry-point specification (you write this)
-        ├── run_test.sh     # 
+        ├── run_test.sh     
         └── base_test.sh    # Original test script (you write this)
 ```
 
 `myproj` is just a placeholder — use whatever name you like for your
 project directory. Throughout the rest of this guide, replace `myproj`
 with your actual project name.
-
-> **Note:** The internal directory layout under `program/myproj/` (i.e.
-> `src/`, `targets.txt`, etc.) follows the same conventions used by the
-> bundled benchmarks. Looking at `benchmark/avl/` as a reference is the
-> fastest way to understand the expected structure.
 
 ---
 
