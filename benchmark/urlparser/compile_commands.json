@@ -91,11 +91,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/test-0d9f56.o",
+      "/tmp/test-9282cd.o",
       "test.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/urlparser",
     "file": "/root/SmartC2Rust/benchmark/urlparser/test.c",
-    "output": "/tmp/test-0d9f56.o"
+    "output": "/tmp/test-9282cd.o"
   }
 ]

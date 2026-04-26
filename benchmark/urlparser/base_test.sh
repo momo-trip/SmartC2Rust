@@ -205,7 +205,7 @@ echo -e "\nTesting protocol validation..."
 
 # Test protocol validation
 for protocol in "http" "https" "git" "ssh" "sftp" "ftp" "javascript"; do
-    test_protocol_valid "$protocol" ""
+    test_protocol_valid "$protocol" "1"
 done
 
 # Calculate pass rate

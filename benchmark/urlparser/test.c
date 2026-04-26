@@ -24,17 +24,9 @@ void check_component_exists(const url_data_t *data, const char *component_name) 
 
 // Validate protocol
 int check_protocol(const char *protocol) {
-    // Remove extra ":" from protocol name
-    char protocol_clean[256] = {0};
-    strncpy(protocol_clean, protocol, sizeof(protocol_clean) - 1);
-    
-    // Remove trailing colon if present
-    char *colon = strchr(protocol_clean, ':');
-    if (colon) *colon = '\0';
-    
-    int is_valid = url_is_protocol(protocol_clean);
-    printf("DEBUG: Protocol %s validation result: %d\n", protocol_clean, is_valid);
-    printf("PROTOCOL_VALID %s: %d\n", protocol_clean, is_valid);
+    int is_valid = url_is_protocol(protocol);
+    printf("DEBUG: Protocol %s validation result: %d\n", protocol, is_valid);
+    printf("PROTOCOL_VALID %s: %d\n", protocol, is_valid);
     return is_valid;
 }
 
@@ -56,10 +48,10 @@ int main(int argc, char *argv[]) {
     char *input = argv[1];
     
     // Process protocol validation command
-    if (strncmp(input, "CHECK_PROTOCOL:", 14) == 0) {
-        char *protocol = input + 14;  // Get the part after "CHECK_PROTOCOL:"
+    if (strncmp(input, "CHECK_PROTOCOL:", 15) == 0) {
+        char *protocol = input + 15;  // Get the part after "CHECK_PROTOCOL:"
         int result = check_protocol(protocol);
-        return !result; // Return 0 if protocol is valid
+        return !result;
     }
 
     // Process URL parsing
