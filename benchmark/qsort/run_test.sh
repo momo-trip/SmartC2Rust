@@ -11,20 +11,12 @@ run_test() {
     local test_array=$2
     local expected_sorted_array=$3
     local test_name=$4
+    local binary="./bin/qsort_test_t${test_num}"
 
     echo "Test ${test_num} started"
 
-    local binary="./bin/qsort_test_t${test_num}"
-    if [ ! -x "$binary" ]; then
-        echo "Test ${test_num} failed" >&2
-        echo "Binary $binary not found" > "flow_results/test${test_num}_fail.log"
-        failed=1
-        echo "Test ${test_num} ended"
-        return
-    fi
-
     local output
-    output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log $binary ${test_num} ${test_array} 2>&1)
+    output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log $binary $test_num $test_array 2>&1)
     local exit_code=$?
 
     local sorted_line
@@ -32,20 +24,25 @@ run_test() {
 
     local log_file
     if [ "$sorted_line" = "$expected_sorted_array" ] && [ $exit_code -eq 0 ]; then
-        echo "Test ${test_num} passed"
         log_file="flow_results/test${test_num}_success.log"
+        echo "Test ${test_num} passed"
+        echo "Command: $binary $test_num $test_array" > "$log_file"
+        echo "Test name: $test_name" >> "$log_file"
+        echo "Output: $output" >> "$log_file"
+        echo "Expected sorted array: $expected_sorted_array" >> "$log_file"
+        echo "Actual sorted array: $sorted_line" >> "$log_file"
+        echo "Exit code: $exit_code" >> "$log_file"
     else
-        echo "Test ${test_num} failed" >&2
         log_file="flow_results/test${test_num}_fail.log"
+        echo "Test ${test_num} failed" >&2
+        echo "Command: $binary $test_num $test_array" > "$log_file"
+        echo "Test name: $test_name" >> "$log_file"
+        echo "Output: $output" >> "$log_file"
+        echo "Expected sorted array: $expected_sorted_array" >> "$log_file"
+        echo "Actual sorted array: $sorted_line" >> "$log_file"
+        echo "Exit code: $exit_code" >> "$log_file"
         failed=1
     fi
-
-    echo "Command: $binary ${test_num} ${test_array}" > "$log_file"
-    echo "Test name: ${test_name}" >> "$log_file"
-    echo "Output: $output" >> "$log_file"
-    echo "Expected sorted array: ${expected_sorted_array}" >> "$log_file"
-    echo "Actual sorted array: ${sorted_line}" >> "$log_file"
-    echo "Exit code: ${exit_code}" >> "$log_file"
 
     echo "Test ${test_num} ended"
 }

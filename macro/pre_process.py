@@ -27,7 +27,6 @@ import chardet
 from pycparser import c_parser, c_ast
 import replicate
 from typing import List, Any
-from google.generativeai.protos import Content, Part
 from anthropic import InternalServerError
 import subprocess
 from typing import Union, Dict
@@ -47,6 +46,7 @@ import atexit
 from pathlib import Path
 from typing import Optional
 from concurrent.futures import ProcessPoolExecutor
+# from google.generativeai.protos import Content, Part
 # import google.generativeai as genai  
 # from openai import RateLimitError, APIError
 # from testGen.main import print_hello
@@ -460,9 +460,6 @@ def reformat_genifai_testcases(snap_dir, raw_dir, target_dir, database_dir, run_
             prompt.extend([error])
 
 
-
-    print("*********** End of reforamt ***********")
-
     output['run_test_path'] = run_test_path
     return output
             
@@ -769,8 +766,6 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
             prompt.extend(["", "## Error:"])
             prompt.extend([error])
 
-    print("*********** End of reforamt ***********")
-
     output['run_test_path'] = run_test_path
     return output
             
@@ -896,7 +891,7 @@ def set_golden_dir(original_dir):
     tasks = []
     for log_path in log_paths:
         test_number = get_test_number(log_path)
-        print(test_number)
+        #print(test_number)
         golden_flow_path = f"{golden_dir}/test{test_number}_golden_flow.txt"
         tasks.append((log_path, base_dir, golden_flow_path, False))
 
