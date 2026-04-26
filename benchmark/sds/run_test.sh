@@ -38,32 +38,25 @@ total_tests=${#test_cases[@]}
 
 for i in $(seq 1 $total_tests); do
     test_name="${test_cases[$((i-1))]}"
-    binary="./sds-test_t${i}"
+    binary="./test_sds_t${i}"
 
     echo "Test ${i} started"
 
-    tmp_log="flow_results/test${i}_output.log"
+    tmp_log="flow_results/test${i}_tmp.log"
     LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${i}_trace.log "$binary" "$test_name" > "$tmp_log" 2>&1
     exit_code=$?
 
     if [ $exit_code -eq 0 ]; then
+        echo "Test ${i}: $test_name - PASSED"
+        mv "$tmp_log" "flow_results/test${i}_success.log"
         echo "Test ${i} passed"
-        {
-            echo "Test passed: $test_name"
-            echo "--- output ---"
-            cat "$tmp_log"
-        } > "flow_results/test${i}_success.log"
     else
+        echo "Test ${i}: $test_name - FAILED" >&2
+        mv "$tmp_log" "flow_results/test${i}_fail.log"
         echo "Test ${i} failed" >&2
-        {
-            echo "Test failed: $test_name with exit code $exit_code"
-            echo "--- output ---"
-            cat "$tmp_log"
-        } > "flow_results/test${i}_fail.log"
         failed=1
     fi
 
-    rm -f "$tmp_log"
     echo "Test ${i} ended"
 done
 

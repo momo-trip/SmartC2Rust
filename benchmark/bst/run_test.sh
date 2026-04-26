@@ -23,35 +23,38 @@ trim_whitespace() {
     echo "$1" | sed 's/[[:space:]]*$//' | sed -z 's/\n*$//'
 }
 
-# ---------------- Test 1 ----------------
+# Test 1: Verify full output of BST operations
 echo "Test 1 started"
-ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./test_bst_t1)
+
 TRIMMED_EXPECTED=$(trim_whitespace "$EXPECTED_OUTPUT")
+ACTUAL_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./test_bst_t1)
+rc=$?
 TRIMMED_ACTUAL=$(trim_whitespace "$ACTUAL_OUTPUT")
 
-if [ "$TRIMMED_EXPECTED" = "$TRIMMED_ACTUAL" ]; then
-    {
-        echo "Test 1 passed"
-        echo "Expected:"
-        echo "$TRIMMED_EXPECTED"
-        echo "Actual:"
-        echo "$TRIMMED_ACTUAL"
-    } > flow_results/test1_success.log
+{
+    echo "Return code: $rc"
+    echo "Expected output (after trim):"
+    echo "$TRIMMED_EXPECTED"
+    echo ""
+    echo "Actual output (after trim):"
+    echo "$TRIMMED_ACTUAL"
+    echo ""
+    echo "Differences:"
+    diff <(echo "$TRIMMED_EXPECTED") <(echo "$TRIMMED_ACTUAL")
+} > /tmp/test1_output.log 2>&1
+
+if [ $rc -eq 0 ] && [ "$TRIMMED_EXPECTED" = "$TRIMMED_ACTUAL" ]; then
+    cp /tmp/test1_output.log flow_results/test1_success.log
     echo "Test 1 passed"
 else
-    {
-        echo "Test 1 failed"
-        echo "Expected:"
-        echo "$TRIMMED_EXPECTED"
-        echo "Actual:"
-        echo "$TRIMMED_ACTUAL"
-        echo "Differences:"
-        diff <(echo "$TRIMMED_EXPECTED") <(echo "$TRIMMED_ACTUAL")
-    } > flow_results/test1_fail.log
+    cp /tmp/test1_output.log flow_results/test1_fail.log
     echo "Test 1 failed" >&2
     failed=1
 fi
+
 echo "Test 1 ended"
+
+rm -f /tmp/test1_output.log
 
 exit $failed
 

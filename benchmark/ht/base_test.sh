@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+failed=0
 
 rm -rf samples/output
 mkdir -p samples/output
@@ -10,11 +10,20 @@ run_and_verify() {
     local test_name="$1"
     local output_file="$2"
     local command="$3"
+    local filename expected_file
     
     echo "=== Test $test_name ==="
     echo "Running: $command"
     eval "$command"
+    local rc=$?
     
+    if [ $rc -ne 0 ]; then
+        echo "✗ command failed with exit $rc"
+        failed=1
+        echo ""
+        return
+    fi
+
     filename=$(basename "$output_file")
     expected_file="expected/$filename"
     
@@ -25,9 +34,11 @@ run_and_verify() {
         else
             echo "✗ $filename differs from expected:"
             diff "$expected_file" "$output_file"
+            failed=1
         fi
     else
         echo "! Expected file $expected_file not found"
+        failed=1
     fi
     echo ""
 }
@@ -57,4 +68,4 @@ run_and_verify "5" "samples/output/stats-words.txt" "./stats <samples/words.txt 
 # Test 6: stats with similar.txt
 run_and_verify "6" "samples/output/stats-similar.txt" "./stats <samples/similar.txt >samples/output/stats-similar.txt"
 
-echo 'All tests completed!'
+exit $failed

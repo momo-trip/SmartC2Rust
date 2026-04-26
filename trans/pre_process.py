@@ -1778,7 +1778,7 @@ def merge_different_meta_dir(target_dir, old_meta_dir, meta_dir, old_div_meta_di
         write_json(div_meta_path, div_meta_data)
 
 
-def allrust_preprocess_main(config): #process_type, user_id, original_dir, target_path, llm_choice, claude_api_key, azure_endpoint): 
+def allrust_preprocess_main(config):
 
     ############################################
     ##### Configuration
@@ -1891,13 +1891,7 @@ def allrust_preprocess_main(config): #process_type, user_id, original_dir, targe
     flag_build_path) = extract_all_paths(paths)
 
 
-
     ############################################
-
-    #c_run_path, run_test_path, run_all_path, target_funcs = get_setting_data(config_data, raw_dir)  # created_paths,    # target, # translation_dir,    #c_run_path = f"{raw_dir}/{target}/{run_file}"
-    # normalize_translation_metadata(meta_dir, raw_dir)
-    # sys.exit(0)
-
     if process_type == "meta":
 
         #******************************************************************
@@ -1914,19 +1908,17 @@ def allrust_preprocess_main(config): #process_type, user_id, original_dir, targe
         copy_directory(original_dir, raw_dir)
         grant_permissions(target_dir) 
 
-        print(run_test_path)
-        print(run_all_path)
-        print(build_path)
-        #grant_permissions(raw_dir)  # 
+        # print(run_test_path)
+        # print(run_all_path)
+        # print(build_path)
 
         # I don't think it's needed in the real environment; only for testing
         compile_json_path = get_compile_json(target_dir)
         # all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, v_dep_json_path, compile_json_path = handle_paths(all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, None, compile_json_path) # , cfg_path
         #
         print(original_dir)
-        #print(os.path.abspath(target_dir))
+        # print(os.path.abspath(target_dir))
 
-        #
         recreate_directory(meta_dir)
         recreate_directory(div_meta_dir)
 
@@ -1972,8 +1964,7 @@ def allrust_preprocess_main(config): #process_type, user_id, original_dir, targe
         # Should I revert the metafiles as well? (Although I don't think it's necessary in the actual API)
         normalize_metafiles(meta_dir, raw_dir, all_macros_path, taken_macros_path, guards_path)        
 
-        #normalize_dep_data(dep_json_path, raw_dir) # added
-
+        #　normalize_dep_data(dep_json_path, raw_dir)
         # remove_unordered_meta(meta_dir, raw_dir, target)
 
         end_time = time.time()

@@ -5,7 +5,6 @@
 
 failed=0
 
-# Directory settings
 EXPECTED_DIR="./expected"
 RESULTS_DIR="./test-results"
 TEMP_DIR="./test-temp"
@@ -18,6 +17,7 @@ mkdir -p "$RESULTS_DIR"
 mkdir -p "$TEMP_DIR"
 mkdir -p "$FLOW_DIR"
 
+# Normalization function
 normalize() {
     local input_file="$1"
     local output_file="$2"
@@ -28,123 +28,185 @@ normalize() {
         sed 's/exit([0-9][0-9]*)/exit(XXXX)/g' > "$output_file"
 }
 
-# -------------------- Test 1: Compile and execute hello.c --------------------
-test_num=1
-echo "Test ${test_num} started"
-LOG_FILE="$FLOW_DIR/test${test_num}_run.log"
-temp_file="$TEMP_DIR/test${test_num}_raw.txt"
+##############################
+# Test 1: Execute hello.c
+##############################
+echo "Test 1 started"
+log_file="$FLOW_DIR/test1_run.log"
+temp_file="$TEMP_DIR/test1_raw.txt"
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_c4_t1 $HELLO_C > "$temp_file" 2>&1
-rc=$?
-cp "$temp_file" "$LOG_FILE"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test1_trace.log ./c4_t1 $HELLO_C > "$temp_file" 2>&1
+run_status=$?
 
-test1_pass=0
-if [ $rc -eq 0 ]; then
-    normalize "$temp_file" "$RESULTS_DIR/test${test_num}_result.txt"
-    if diff -q "$RESULTS_DIR/test${test_num}_result.txt" "$EXPECTED_DIR/test${test_num}_result.txt" >/dev/null; then
-        test1_pass=1
+{
+    echo "--- Test 1: Compile and execute hello.c ---"
+    echo "Exit: $run_status"
+    echo "--- Raw output ---"
+    cat "$temp_file"
+} > "$log_file"
+
+if [ $run_status -eq 0 ]; then
+    normalize "$temp_file" "$RESULTS_DIR/test1_result.txt"
+    if diff -q "$RESULTS_DIR/test1_result.txt" "$EXPECTED_DIR/test1_result.txt" >/dev/null; then
+        echo "Test 1 passed"
+        cat "$log_file" > "$FLOW_DIR/test1_success.log"
+        rm -f "$log_file"
+    else
+        echo "Test 1 failed" >&2
+        {
+            cat "$log_file"
+            echo "--- Expected ---"
+            cat "$EXPECTED_DIR/test1_result.txt"
+            echo "--- Actual ---"
+            cat "$RESULTS_DIR/test1_result.txt"
+            echo "--- Diff ---"
+            diff "$EXPECTED_DIR/test1_result.txt" "$RESULTS_DIR/test1_result.txt"
+        } > "$FLOW_DIR/test1_fail.log"
+        rm -f "$log_file"
+        failed=1
     fi
-fi
-
-if [ $test1_pass -eq 1 ]; then
-    echo "Test ${test_num} passed"
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_success.log"
 else
-    echo "Test ${test_num} failed" >&2
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_fail.log"
+    echo "Test 1 failed" >&2
+    cat "$log_file" > "$FLOW_DIR/test1_fail.log"
+    rm -f "$log_file"
     failed=1
 fi
-echo "Test ${test_num} ended"
+echo "Test 1 ended"
 
-# -------------------- Test 2: Intermediate code for hello.c --------------------
-test_num=2
-echo "Test ${test_num} started"
-LOG_FILE="$FLOW_DIR/test${test_num}_run.log"
-temp_file="$TEMP_DIR/test${test_num}_raw.txt"
+##############################
+# Test 2: Display intermediate code for hello.c
+##############################
+echo "Test 2 started"
+log_file="$FLOW_DIR/test2_run.log"
+temp_file="$TEMP_DIR/test2_raw.txt"
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_c4_t2 -s $HELLO_C > "$temp_file" 2>&1
-rc=$?
-cp "$temp_file" "$LOG_FILE"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test2_trace.log ./c4_t2 -s $HELLO_C > "$temp_file" 2>&1
+run_status=$?
 
-test2_pass=0
-if [ $rc -eq 0 ]; then
-    normalize "$temp_file" "$RESULTS_DIR/test${test_num}_result.txt"
-    if diff -q "$RESULTS_DIR/test${test_num}_result.txt" "$EXPECTED_DIR/test${test_num}_result.txt" >/dev/null; then
-        test2_pass=1
+{
+    echo "--- Test 2: Display intermediate code for hello.c ---"
+    echo "Exit: $run_status"
+    echo "--- Raw output ---"
+    cat "$temp_file"
+} > "$log_file"
+
+if [ $run_status -eq 0 ]; then
+    normalize "$temp_file" "$RESULTS_DIR/test2_result.txt"
+    if diff -q "$RESULTS_DIR/test2_result.txt" "$EXPECTED_DIR/test2_result.txt" >/dev/null; then
+        echo "Test 2 passed"
+        cat "$log_file" > "$FLOW_DIR/test2_success.log"
+        rm -f "$log_file"
+    else
+        echo "Test 2 failed" >&2
+        {
+            cat "$log_file"
+            echo "--- Expected ---"
+            cat "$EXPECTED_DIR/test2_result.txt"
+            echo "--- Actual ---"
+            cat "$RESULTS_DIR/test2_result.txt"
+            echo "--- Diff ---"
+            diff "$EXPECTED_DIR/test2_result.txt" "$RESULTS_DIR/test2_result.txt"
+        } > "$FLOW_DIR/test2_fail.log"
+        rm -f "$log_file"
+        failed=1
     fi
-fi
-
-if [ $test2_pass -eq 1 ]; then
-    echo "Test ${test_num} passed"
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_success.log"
 else
-    echo "Test ${test_num} failed" >&2
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_fail.log"
+    echo "Test 2 failed" >&2
+    cat "$log_file" > "$FLOW_DIR/test2_fail.log"
+    rm -f "$log_file"
     failed=1
 fi
-echo "Test ${test_num} ended"
+echo "Test 2 ended"
 
-# -------------------- Test 3: Compile and execute arginc.c --------------------
-test_num=3
-echo "Test ${test_num} started"
-LOG_FILE="$FLOW_DIR/test${test_num}_run.log"
-temp_file="$TEMP_DIR/test${test_num}_raw.txt"
+##############################
+# Test 3: Compile and execute arginc.c
+##############################
+echo "Test 3 started"
+log_file="$FLOW_DIR/test3_run.log"
+temp_file="$TEMP_DIR/test3_raw.txt"
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_c4_t3 $ARGINC_C > "$temp_file" 2>&1
-rc=$?
-cp "$temp_file" "$LOG_FILE"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test3_trace.log ./c4_t3 $ARGINC_C > "$temp_file" 2>&1
+run_status=$?
 
-normalize "$temp_file" "$RESULTS_DIR/test${test_num}_result.txt"
+{
+    echo "--- Test 3: Compile and execute arginc.c ---"
+    echo "Exit: $run_status"
+    echo "--- Raw output ---"
+    cat "$temp_file"
+} > "$log_file"
 
-test3_pass=0
+normalize "$temp_file" "$RESULTS_DIR/test3_result.txt"
+
 expected_exit=0
-if [ -f "$EXPECTED_DIR/test${test_num}_exit_code.txt" ]; then
-    expected_exit=$(cat "$EXPECTED_DIR/test${test_num}_exit_code.txt")
+if [ -f "$EXPECTED_DIR/test3_exit_code.txt" ]; then
+    expected_exit=$(cat "$EXPECTED_DIR/test3_exit_code.txt")
 fi
 
-if [ "$rc" = "$expected_exit" ]; then
-    if diff -q "$RESULTS_DIR/test${test_num}_result.txt" "$EXPECTED_DIR/test${test_num}_result.txt" >/dev/null; then
-        test3_pass=1
-    fi
-fi
-
-if [ $test3_pass -eq 1 ]; then
-    echo "Test ${test_num} passed"
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_success.log"
+if [ "$run_status" = "$expected_exit" ] && diff -q "$RESULTS_DIR/test3_result.txt" "$EXPECTED_DIR/test3_result.txt" >/dev/null; then
+    echo "Test 3 passed"
+    cat "$log_file" > "$FLOW_DIR/test3_success.log"
+    rm -f "$log_file"
 else
-    echo "Test ${test_num} failed" >&2
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_fail.log"
+    echo "Test 3 failed" >&2
+    {
+        cat "$log_file"
+        echo "--- Expected exit: $expected_exit ---"
+        echo "--- Expected ---"
+        cat "$EXPECTED_DIR/test3_result.txt"
+        echo "--- Actual ---"
+        cat "$RESULTS_DIR/test3_result.txt"
+        echo "--- Diff ---"
+        diff "$EXPECTED_DIR/test3_result.txt" "$RESULTS_DIR/test3_result.txt"
+    } > "$FLOW_DIR/test3_fail.log"
+    rm -f "$log_file"
     failed=1
 fi
-echo "Test ${test_num} ended"
+echo "Test 3 ended"
 
-# -------------------- Test 4: Intermediate code for arginc.c --------------------
-test_num=4
-echo "Test ${test_num} started"
-LOG_FILE="$FLOW_DIR/test${test_num}_run.log"
-temp_file="$TEMP_DIR/test${test_num}_raw.txt"
+##############################
+# Test 4: Display intermediate code for arginc.c
+##############################
+echo "Test 4 started"
+log_file="$FLOW_DIR/test4_run.log"
+temp_file="$TEMP_DIR/test4_raw.txt"
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_c4_t4 -s $ARGINC_C > "$temp_file" 2>&1
-rc=$?
-cp "$temp_file" "$LOG_FILE"
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test4_trace.log ./c4_t4 -s $ARGINC_C > "$temp_file" 2>&1
+run_status=$?
 
-test4_pass=0
-if [ $rc -eq 0 ]; then
-    normalize "$temp_file" "$RESULTS_DIR/test${test_num}_result.txt"
-    if diff -q "$RESULTS_DIR/test${test_num}_result.txt" "$EXPECTED_DIR/test${test_num}_result.txt" >/dev/null; then
-        test4_pass=1
+{
+    echo "--- Test 4: Display intermediate code for arginc.c ---"
+    echo "Exit: $run_status"
+    echo "--- Raw output ---"
+    cat "$temp_file"
+} > "$log_file"
+
+if [ $run_status -eq 0 ]; then
+    normalize "$temp_file" "$RESULTS_DIR/test4_result.txt"
+    if diff -q "$RESULTS_DIR/test4_result.txt" "$EXPECTED_DIR/test4_result.txt" >/dev/null; then
+        echo "Test 4 passed"
+        cat "$log_file" > "$FLOW_DIR/test4_success.log"
+        rm -f "$log_file"
+    else
+        echo "Test 4 failed" >&2
+        {
+            cat "$log_file"
+            echo "--- Expected ---"
+            cat "$EXPECTED_DIR/test4_result.txt"
+            echo "--- Actual ---"
+            cat "$RESULTS_DIR/test4_result.txt"
+            echo "--- Diff ---"
+            diff "$EXPECTED_DIR/test4_result.txt" "$RESULTS_DIR/test4_result.txt"
+        } > "$FLOW_DIR/test4_fail.log"
+        rm -f "$log_file"
+        failed=1
     fi
-fi
-
-if [ $test4_pass -eq 1 ]; then
-    echo "Test ${test_num} passed"
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_success.log"
 else
-    echo "Test ${test_num} failed" >&2
-    mv "$LOG_FILE" "$FLOW_DIR/test${test_num}_fail.log"
+    echo "Test 4 failed" >&2
+    cat "$log_file" > "$FLOW_DIR/test4_fail.log"
+    rm -f "$log_file"
     failed=1
 fi
-echo "Test ${test_num} ended"
+echo "Test 4 ended"
 
 exit $failed
 
