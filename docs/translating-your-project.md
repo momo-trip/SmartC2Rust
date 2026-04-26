@@ -46,9 +46,102 @@ commands from the main README with only the project name changed.
 project directory. Throughout the rest of this guide, replace `myproj`
 with your actual project name.
 
+
+---
+## 3. Setting up the build
+### 3.1 Required compiler flags
+
+SmartC2Rust relies on instrumentation and debug information embedded in the
+compiled binary (used for capturing golden execution flows in Step 2 and
+for static analysis in later steps). You must therefore build your project
+with `clang` and a specific set of flags.
+
+#### Required
+
+| Flag | Why it is needed |
+|------|------------------|
+| `clang` (as `CC`) | The instrumentation and DWARF handling assume clang. |
+| `-finstrument-functions` | Inserts entry/exit hooks used to record execution flows. |
+| `-g -gdwarf-4` | Emits DWARF 4 debug info used by the analyzers. |
+
+
+#### How to integrate them
+
+Edit your project's `Makefile` (or equivalent build configuration) so that
+the compiler and flags above are applied to **every** translation unit.
+
+
+### 3.2 Writing `c_build.sh`
+
+`c_build.sh` is a build wrapper script that the pipeline invokes to build
+your project. Its required side-effect is to produce a
+**`compile_commands.json`** at the project root. The macro and C parsers
+read this file to recover include paths and macro definitions for each
+translation unit; the pipeline will fail without it.
+
+How you produce `compile_commands.json` is up to your build system —
+`c_build.sh` is just the entry point that runs the build.
+
+Place the script at `program/myproj/c_build.sh` and make it executable
+(`chmod +x c_build.sh`).
+
+#### Required interface
+
+The script must accept an optional first argument:
+
+- `c_build.sh init` — clean any previous build artifacts, then build.
+  Called once before the first translation run.
+- `c_build.sh` (no argument) — incremental build. Called repeatedly
+  during the repair loops.
+
+After either form returns, `compile_commands.json` must exist at the
+project root.
+
+#### Producing `compile_commands.json`
+
+Pick the approach that matches your build system:
+
+**Make (or any build system without native support):** wrap the build
+with [`bear`](https://github.com/rizsotto/Bear), which intercepts compiler
+invocations and writes them to `compile_commands.json`.
+
+```bash
+#!/bin/bash
+option=${1:-"build"}
+
+if [ "$option" = "init" ]; then
+    make clean
+fi
+
+bear -- make
+```
+
+**CMake:** enable native export with `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`.
+CMake writes `compile_commands.json` into the build directory, so symlink
+or copy it to the project root.
+
+```bash
+#!/bin/bash
+option=${1:-"build"}
+
+if [ "$option" = "init" ]; then
+    rm -rf build
+    cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+fi
+
+cmake --build build
+ln -sf build/compile_commands.json compile_commands.json
+```
+
+**Other build systems:** anything works, as long as the result is a
+valid `compile_commands.json` at the project root. Some build tools
+(e.g. Ninja via `ninja -t compdb`, Bazel via `bazel-compdb`) have their
+own export mechanisms; otherwise fall back to wrapping with `bear`.
+
+
 ---
 
-## 3. Writing `targets.txt`
+## 4. Writing `targets.txt`
 
 `targets.txt` lists the C functions that will be translated to Rust and
 called from C via FFI. Each line has the form:
@@ -90,7 +183,7 @@ designed.
 
 ---
 
-## 4. Writing the base test script
+## 5. Writing the base test script
 
 The base test script is what Step 1 reformats into individual test cases.
 It should:
@@ -138,7 +231,37 @@ individual cases. See
 
 ---
 
-## 5. Running Steps 1–6 on your project
+## 6. Tuning `config.json` for your project
+
+Two fields in `config.json` are worth thinking about for non-benchmark
+projects:
+
+### `average`
+
+The maximum number of source lines per translation unit. Larger values
+produce fewer, bigger units (less LLM overhead per unit but more risk of
+hitting context limits and harder repair); smaller values produce more,
+smaller units (more LLM calls but easier per-unit reasoning).
+
+Rough starting points:
+
+- Small/simple projects (< 1k LOC): `200`–`400`
+- Medium projects: `400` (the default used for benchmarks)
+- Larger projects with deep call graphs: try `400` first; reduce if the
+  compile-repair step struggles to converge.
+
+### `ffi_strategy`
+
+- `"minimize"` (default) — translate into idiomatic safe Rust. Best for
+  command-line tools where `main` is the entry point and there is no
+  external C consumer.
+- `"preserve"` — keep C-compatible signatures via FFI. Use when the
+  translated functions must be callable from existing C code, e.g. when
+  you are translating a library.
+
+---
+
+## 7. Running Steps 1–6 on your project
 
 Below are the same six steps from the main README, with benchmark-specific
 paths replaced by `/root/SmartC2Rust/program/myproj`. Adjust the paths to match your setup.
@@ -220,34 +343,3 @@ The translated Rust crate is at:
 ```
 /root/SmartC2Rust/trans/workspace_s_repair_0000_myproj/myproj/trans_rust/
 ```
-
----
-
-## 7. Tuning `config.json` for your project
-
-Two fields in `config.json` are worth thinking about for non-benchmark
-projects:
-
-### `average`
-
-The maximum number of source lines per translation unit. Larger values
-produce fewer, bigger units (less LLM overhead per unit but more risk of
-hitting context limits and harder repair); smaller values produce more,
-smaller units (more LLM calls but easier per-unit reasoning).
-
-Rough starting points:
-
-- Small/simple projects (< 1k LOC): `200`–`400`
-- Medium projects: `400` (the default used for benchmarks)
-- Larger projects with deep call graphs: try `400` first; reduce if the
-  compile-repair step struggles to converge.
-
-### `ffi_strategy`
-
-- `"minimize"` (default) — translate into idiomatic safe Rust. Best for
-  command-line tools where `main` is the entry point and there is no
-  external C consumer.
-- `"preserve"` — keep C-compatible signatures via FFI. Use when the
-  translated functions must be callable from existing C code, e.g. when
-  you are translating a library.
-
