@@ -55,6 +55,7 @@ from anthropic import InternalServerError
 import replicate
 # import google.generativeai as genai
 # from google.generativeai.protos import Content, Part
+
 from clang.cindex import (
     Index, 
     CursorKind, 
@@ -140,6 +141,7 @@ from llm_api import (
     adjust_prompt,
     check_excluded,
     is_empty_string,
+    calc_claude_cost_from_file,
 )
 
 from c_parser_api import (
@@ -1910,14 +1912,13 @@ def obtain_rust_interface(rust_source_file): #generate_tags_rust(rust_source_fil
             func_signature = ' '.join(parts[4:])  # Reconstruct the function signature
             func_signature = re.sub(r'\s*\{', '', func_signature)
             functions[func_name] = func_signature
+                        
+            # # Extract the full signature
+            # match = re.search(r'/\^(.*?)\$/', func_pattern)
+            # if match:
+            #     full_signature = match.group(1).strip()
+            #     print(full_signature)
             
-            """
-            # Extract the full signature
-            match = re.search(r'/\^(.*?)\$/', func_pattern)
-            if match:
-                full_signature = match.group(1).strip()
-                print(full_signature)
-            """
          
     # Print the functions list for debugging
     #print(json.dumps(functions, indent=2, ensure_ascii=False))
@@ -5419,7 +5420,11 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         output = {
             'work_dir' : work_dir
         }
-        print("--------- End of s_repair process ---------")
+
+        if os.path.exists(token_path):
+            cost = calc_claude_cost_from_file(token_path)
+            print(f"Total cost: ${cost['total_cost_usd']:.2f}")
+        print("\n\n++++++++++++++= End of s_repair process ++++++++++++++=\n")
 
 
 if __name__ == "__main__":

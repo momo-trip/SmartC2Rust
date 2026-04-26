@@ -3,7 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import re
 from typing import Dict, List, Tuple, Set, Any
-import openai # check version
+import openai
 import copy           
 from copy import deepcopy
 from collections import defaultdict, deque
@@ -26,7 +26,6 @@ import tiktoken
 import chardet
 from pycparser import c_parser, c_ast
 import replicate
-#import google.generativeai as genai  
 from typing import List, Any
 from google.generativeai.protos import Content, Part
 from anthropic import InternalServerError
@@ -47,9 +46,10 @@ import time
 import atexit
 from pathlib import Path
 from typing import Optional
+from concurrent.futures import ProcessPoolExecutor
+# import google.generativeai as genai  
 # from openai import RateLimitError, APIError
 # from testGen.main import print_hello
-from concurrent.futures import ProcessPoolExecutor
 
 full_regions = []
 

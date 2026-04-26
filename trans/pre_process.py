@@ -25,7 +25,6 @@ from pydantic import BaseModel
 import anthropic
 from anthropic import InternalServerError
 import replicate
-import google.generativeai as genai
 from google.generativeai.protos import Content, Part
 from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
@@ -40,6 +39,7 @@ from clang.cindex import (
 )
 from collections import defaultdict
 
+# import google.generativeai as genai
 # from openai import RateLimitError, APIError
 # from testGen.main import print_hello
 

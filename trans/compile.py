@@ -122,6 +122,7 @@ from llm_api import (
     find_matching_path,
     adjust_prompt,
     ask_correspondence,
+    calc_claude_cost_from_file,
 )
 
 from c_parser_api import (
@@ -7744,7 +7745,10 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
         output = {
             'work_dir' : work_dir
         }
-        #print(f"----------- Translation cfg for {target} ended -----------")
+        
+        if os.path.exists(token_path):
+            cost = calc_claude_cost_from_file(token_path)
+            print(f"Total cost: ${cost['total_cost_usd']:.2f}")
         print(f"\n\n++++++++++++++= End of translation ({target}) ++++++++++++++=")
 
         print(f"\nNext action:")
