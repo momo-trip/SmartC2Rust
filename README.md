@@ -208,6 +208,19 @@ python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} 
 - `trans/chats_0000_c_repair/{program}/`: LLM interaction prompt logs for the semantics-repair step
 
 
+## Translating your own C project
+
+The Step 1–6 procedure above assumes one of the bundled benchmarks under
+`benchmark/`. To translate your own C project, see
+[docs/translating-your-project.md](docs/translating-your-project.md), which
+covers:
+
+- Project layout requirements
+- Writing `targets.txt` and the base test script
+- Adapting the Step 1–6 commands to arbitrary paths
+- Tips for tuning `average` and choosing an `ffi_strategy`
+
+
 ## LLM model
 The default model is Claude Opus 4.7 (Anthropic).
 
