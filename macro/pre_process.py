@@ -521,6 +521,8 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
         f"  - Please create all code considering the directory structure where the files are located.",
         f"  - In particular, please write the shell script considering the directory structure, noting that the shell file execution will be done automatically outside the code in the directory where the shell file is located using ./{{shell_file_name.sh}}.",
         f"  - Do not use subshells '( )' for test execution. Run commands directly and check each command's result.",
+        f"  - Each testcase must be independently executable. A testcase MUST NOT rely on background processes, files, or other state created by previous testcases. If a testcase needs a background process (e.g., a server), it must start its own instance at the beginning and tear it down at the end.",  # added
+        f"  - Pass conditions must verify functional behavior, not merely that the binary did not crash or that a process is alive. Preserve any output comparison, string matching, or response validation from the original test script.",
         #"  - Each testcase should clean up its own binary after execution.",
         f"  - Do not use 'set -e'. Instead, track failures with a variable.",
         f"  - Initialize 'failed=0' at the top of the script.",

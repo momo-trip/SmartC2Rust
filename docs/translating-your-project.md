@@ -172,15 +172,6 @@ that case you will likely want `"ffi_strategy": "preserve"` in
 [`docs/ffi-boundary.md`](./ffi-boundary.md) for how the FFI boundary is
 designed.
 
-### Common pitfalls
-
-- Off-by-one line numbers — include the line containing `{` and the line
-  containing the matching `}`.
-- Paths that are absolute or that include `./` — keep them relative and
-  clean.
-- Listing functions that are `static inline` in headers — these are not
-  good entry points; pick a regular `.c`-defined function instead.
-
 ---
 
 ## 5. Writing the base test script

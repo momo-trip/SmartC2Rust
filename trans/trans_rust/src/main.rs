@@ -20,3 +20,58 @@ use std::process::{Command, Stdio};
 }
 
 
+
+    rust_buffer_trim_left(&mut buf.borrow_mut());
+    rust_equal("Hello\n\n ", &buffer_string_as_str(&buf.borrow()));
+
+    let buf = rust_buffer_new_with_copy(sample).expect("buffer_new_with_copy failed");
+    rust_buffer_trim_right(&mut buf.borrow_mut());
+    rust_equal("  Hello", &buffer_string_as_str(&buf.borrow()));
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    use std::io::Write;
+
+    let result = run_selected_test(&args);
+
+    std::io::stdout().flush().unwrap();
+    std::process::exit(result);
+}
+
+
+    rust_equal("Hello\n\n ", &buffer_string_as_str(&buf.borrow()));
+
+    let buf = rust_buffer_new_with_copy(sample).expect("buffer_new_with_copy failed");
+    rust_buffer_trim_right(&mut buf.borrow_mut());
+    rust_equal("  Hello", &buffer_string_as_str(&buf.borrow()));
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    use std::io::Write;
+
+    let result = run_selected_test(&args);
+
+    std::io::stdout().flush().unwrap();
+    std::process::exit(result);
+}
+
+
+    rust_equal("Hello\n\n ", &buffer_string_as_str(&buf.borrow()));
+
+    let buf = rust_buffer_new_with_copy(sample).expect("buffer_new_with_copy failed");
+    rust_buffer_trim_right(&mut buf.borrow_mut());
+    rust_equal("  Hello", &buffer_string_as_str(&buf.borrow()));
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    use std::io::Write;
+
+    let result = run_selected_test(&args);
+
+    std::io::stdout().flush().unwrap();
+    std::process::exit(result);
+}
+

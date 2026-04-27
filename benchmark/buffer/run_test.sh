@@ -8,7 +8,7 @@ mkdir -p flow_results
 
 EXPECTED_DIR="expected"
 
-run_test_case() {
+run_test() {
     local test_num=$1
     local binary="./test_t${test_num}"
     local expected_file="${EXPECTED_DIR}/expected_values_${test_num}.txt"
@@ -18,68 +18,63 @@ run_test_case() {
 
     echo "Test ${test_num} started"
 
-    if [ ! -x "${binary}" ]; then
-        echo "Binary ${binary} not found or not executable" > "${fail_log}"
+    if [ ! -x "$binary" ]; then
+        echo "Test ${test_num} failed: binary ${binary} not found" >&2
+        echo "Binary ${binary} not found" > "$fail_log"
         echo "Test ${test_num} failed" >&2
-        echo "Test ${test_num} failed"
-        failed=1
         echo "Test ${test_num} ended"
+        failed=1
         return
     fi
 
-    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ${binary} ${test_num} > "${tmp_log}" 2>&1
-    local exit_code=$?
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log "$binary" "$test_num" > "$tmp_log" 2>&1
+    local rc=$?
+
+    if [ $rc -ne 0 ]; then
+        echo "Binary exited with status ${rc}" >> "$tmp_log"
+        mv "$tmp_log" "$fail_log"
+        echo "Test ${test_num} failed" >&2
+        echo "Test ${test_num} ended"
+        failed=1
+        return
+    fi
+
+    if [ ! -f "$expected_file" ]; then
+        echo "Expected file ${expected_file} not found" >> "$tmp_log"
+        mv "$tmp_log" "$fail_log"
+        echo "Test ${test_num} failed" >&2
+        echo "Test ${test_num} ended"
+        failed=1
+        return
+    fi
 
     local actual_output
-    actual_output=$(cat "${tmp_log}")
-
-    if [ ! -f "${expected_file}" ]; then
-        {
-            echo "Expected values file not found: ${expected_file}"
-            echo "Actual output:"
-            echo "${actual_output}"
-        } > "${fail_log}"
-        rm -f "${tmp_log}"
-        echo "Test ${test_num} failed" >&2
-        echo "Test ${test_num} failed"
-        failed=1
-        echo "Test ${test_num} ended"
-        return
-    fi
-
+    actual_output=$(cat "$tmp_log")
     local expected_output
-    expected_output=$(cat "${expected_file}")
+    expected_output=$(cat "$expected_file")
 
-    if [ ${exit_code} -eq 0 ] && [ "${actual_output}" = "${expected_output}" ]; then
-        {
-            echo "Test ${test_num} passed"
-            echo "=== Output ==="
-            echo "${actual_output}"
-        } > "${success_log}"
-        rm -f "${tmp_log}"
+    if [ "$actual_output" = "$expected_output" ]; then
+        mv "$tmp_log" "$success_log"
         echo "Test ${test_num} passed"
     else
         {
-            echo "Test ${test_num} failed"
-            echo "Exit code: ${exit_code}"
-            echo "=== Expected ==="
-            echo "${expected_output}"
-            echo "=== Actual ==="
-            echo "${actual_output}"
-            echo "=== Diff ==="
-            diff <(echo "${expected_output}") <(echo "${actual_output}")
-        } > "${fail_log}"
-        rm -f "${tmp_log}"
+            echo "=== EXPECTED ==="
+            echo "$expected_output"
+            echo "=== ACTUAL ==="
+            echo "$actual_output"
+            echo "=== DIFF ==="
+            diff <(echo "$expected_output") <(echo "$actual_output")
+        } >> "$tmp_log"
+        mv "$tmp_log" "$fail_log"
         echo "Test ${test_num} failed" >&2
-        echo "Test ${test_num} failed"
         failed=1
     fi
 
     echo "Test ${test_num} ended"
 }
 
-for i in $(seq 1 17); do
-    run_test_case $i
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17; do
+    run_test "$i"
 done
 
 exit $failed
