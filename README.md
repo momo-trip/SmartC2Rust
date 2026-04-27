@@ -65,16 +65,6 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 | `average` | Maximum number of source lines per translation unit. |
 | `ffi_strategy` | Translation strategy: `"preserve"` (C-compatible via FFI) or `"minimize"` (safe, idiomatic Rust; default) |
 
-## Entry point selection
-
-Each benchmark program has a `targets.txt` file in `benchmark/{program}/targets.txt` that specifies which C functions to be the entry point. The entry points are the C functions that will be replaced by their translated Rust equivalents and called from C via FFI.
-The `targets.txt` lists function names with their source locations in the format:
-`function_name:path/to/file.c:start_line:end_line`
-
-**Note:** For the benchmark programs, the entry point is set to the main function.
-
-See [docs/ffi-boundary.md](docs/ffi-boundary.md) for details on how the FFI boundary is designed.
-
 
 ## Artifact notes
 ### Macro handling
@@ -85,7 +75,14 @@ In the paper, we focus on command-line tools, where the entry point can be trans
 
 
 ## Translation procedure
-### Step 1: Prepare the test script
+### Step 1: Prepare inputs
+Before running the iterative cycle, prepare two inputs: a 
+standardized test script (`run_test.sh`) and an entry point 
+specification (`targets.txt`). For benchmark programs, both are 
+provided under `benchmark/{program}/`.
+
+
+#### Step 1.1: Prepare the test script
 Prepares a standardized test script (`run_test.sh`) so that the 
 subsequent iterative cycle can run automatically. You can either 
 write `run_test.sh` manually or generate it using the LLM-assisted 
@@ -110,6 +107,15 @@ python3 pre_process.py /root/SmartC2Rust/benchmark/{program} reformat base /root
 **Output (LLM-assisted reformatter):**
 - `<c_source_dir>/run_test.sh`: reformatted test script with individual test cases
 - `macro/chats_0000_reformat/{program}/`: LLM interaction prompt logs for the reformatting step
+
+#### Step 1.2: Prepare the entry point specification
+Each benchmark program has a `targets.txt` file in `benchmark/{program}/targets.txt` that specifies which C functions to be the entry point. The entry points are the C functions that will be replaced by their translated Rust equivalents and called from C via FFI.
+The `targets.txt` lists function names with their source locations in the format:
+`function_name:path/to/file.c:start_line:end_line`
+
+**Note:** For the benchmark programs, the entry point is set to the main function.
+
+See [docs/ffi-boundary.md](docs/ffi-boundary.md) for details on how the FFI boundary is designed.
 
 
 ### Step 2: Get golden flows
