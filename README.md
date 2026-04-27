@@ -85,21 +85,29 @@ In the paper, we focus on command-line tools, where the entry point can be trans
 
 
 ## Translation procedure
-### Step 1: Reformat test cases
-Reformats the original test script into individual test cases using the LLM so that the subsequent iterative cycle can run automatically.
+### Step 1: Prepare the test script
+Prepares a standardized test script (`run_test.sh`) so that the 
+subsequent iterative cycle can run automatically. You can either 
+write `run_test.sh` manually or generate it using the LLM-assisted 
+reformatter.
 See [docs/reformat-testcases.md](docs/reformat-testcases.md) for details.
+
+For benchmark programs, an existing test script (`base_test.sh`) is 
+provided under each `benchmark/{program}/` directory and can be 
+passed to the LLM-assisted reformatter:
+
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/benchmark/{program} reformat base /root/SmartC2Rust/benchmark/{program}/base_test.sh
 ```
 
-**Input:**
+**Input (LLM-assisted reformatter):**
 - `<c_source_dir>`: Path to the benchmark program directory (e.g., `/root/SmartC2Rust/benchmark/avl`)
 - `reformat`: Processing mode — reformats test cases
 - `base`: Test type — uses the base test script as input
 - `<base_test_script>`: Path to the original test script (e.g., `benchmark/avl/base_test.sh`)
 
-**Output:**
+**Output (LLM-assisted reformatter):**
 - `<c_source_dir>/run_test.sh`: reformatted test script with individual test cases
 - `macro/chats_0000_reformat/{program}/`: LLM interaction prompt logs for the reformatting step
 
