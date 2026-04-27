@@ -87,20 +87,11 @@ Required at the top: `failed=0` and `mkdir -p flow_results`. Required
 at the bottom: `exit $failed`. Each test must use a unique binary 
 (`{program}_t1`, `{program}_t2`, ...) built by `c_build.sh`.
 
-For server-client benchmarks, start a fresh server **under 
-`LD_PRELOAD`** at the beginning of each test, drive it with the 
-client, then tear it down before the next test. The server is the 
-code under test, so it gets the trace; the client is just a trigger.
-
-
 
 ## Option 2: LLM-assisted automated reformatting
 
 The LLM-assisted reformatter takes the original test script as input 
-and produces `run_test.sh` automatically. This works well for typical 
-CLI benchmarks (single binary, deterministic I/O, exit-code-based 
-pass/fail).
-
+and produces `run_test.sh` automatically. 
 For benchmark programs, we provide `base_test.sh` under each 
 `benchmark/{program}/` directory, which can be used directly as input 
 to the reformatter.
