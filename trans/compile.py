@@ -1228,8 +1228,8 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     write_file(rust_path, refined_rust_code)
 
     prompt = []
-    prompt.extend([f"The following Rust code (lines {init_rust_end}-{last_rust_end} in {rust_path}) was generated from the original C code.", #今、元のCコードから変換され以下のRustコードが生成されました。",
-                   "Please refine this code to be more idiomatic Rust, focusing on safety and aligning it with Rust's principles rather than making it a direct translation from C.", #"Cの直接的な移植は避け、よりRustらしく安全性を考慮したコードにrefineしてください。",
+    prompt.extend([f"The following Rust code (lines {init_rust_end}-{last_rust_end} in {rust_path}) was generated from the original C code.",
+                   "Please refine this code to be more idiomatic Rust, focusing on safety and aligning it with Rust's principles rather than making it a direct translation from C.",
                    #"Please start writing the complete code from c_block_start = 1, even if no changes are made to the code."
                    ])
     
@@ -1860,8 +1860,8 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface): # ,
     write_file(rust_path, refined_rust_code)
 
     prompt = []
-    prompt.extend([f"The following Rust code (lines {init_rust_end}-{last_rust_end} in {rust_path}) was generated from the original C code.", #今、元のCコードから変換され以下のRustコードが生成されました。",
-                   "Please refine this code to be more idiomatic Rust, focusing on safety and aligning it with Rust's principles rather than making it a direct translation from C.", #"Cの直接的な移植は避け、よりRustらしく安全性を考慮したコードにrefineしてください。",
+    prompt.extend([f"The following Rust code (lines {init_rust_end}-{last_rust_end} in {rust_path}) was generated from the original C code.",
+                   "Please refine this code to be more idiomatic Rust, focusing on safety and aligning it with Rust's principles rather than making it a direct translation from C.",
                    #"Please start writing the complete code from c_block_start = 1, even if no changes are made to the code."
                    ])
 
@@ -2660,7 +2660,7 @@ def retrieve_current_code(modified_list, raw_dir):
             del item['added']
 
 
-    print(f"unpacked? {template_path}, {with_type_A}, {added_list}") # ValueError: too many values to unpack (expected 3)一回起きた。なんでだ
+    print(f"unpacked? {template_path}, {with_type_A}, {added_list}") # ValueError: too many values to unpack (expected 3)
 
     for item in modified_list: 
         if 'current_code' in item:
@@ -3775,7 +3775,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                             if ongoing_in_mode_flag is True:
                                 sum_modified_list.extend(modified_list)
                         """
-                        if not(repair_target == "build" and repair_count == 1):  ## if not(repair_target == "build" and repair_count == 1) and ongoing_in_mode_flag is False:  # ongoing_in_mode_flag is False:っていらないよね？
+                        if not(repair_target == "build" and repair_count == 1):  ## if not(repair_target == "build" and repair_count == 1) and ongoing_in_mode_flag is False:
 
                             sequences = []
                             seen_sequences = set()
@@ -3800,7 +3800,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                             prompt = []
 
                             if FFI_STRATEGY == "preserve":
-                                prompt.extend([f"Please provide the actual modified_data for the previously identified locations in {seq_string} file using modify_data mode.", #"f"Please write the actual modifications for the {seq_string} file in modify_data mode.", #f"modified_dataのモードで、{seq_string}のファイルの実際の修正の内容を書いてください。",
+                                prompt.extend([f"Please provide the actual modified_data for the previously identified locations in {seq_string} file using modify_data mode.",
                                                 "",
                                                 "## Response rules:",
                                                 "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
@@ -3845,7 +3845,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                             ])
                             
                             else:
-                                prompt.extend([f"Please provide the actual modified_data for the previously identified locations in {seq_string} file using modify_data mode.", #"f"Please write the actual modifications for the {seq_string} file in modify_data mode.", #f"modified_dataのモードで、{seq_string}のファイルの実際の修正の内容を書いてください。",
+                                prompt.extend([f"Please provide the actual modified_data for the previously identified locations in {seq_string} file using modify_data mode.", 
                                                 "",
                                                 "## Response rules:",
                                                 "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
@@ -3965,7 +3965,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                 prompt = []
 
                                 if FFI_STRATEGY == "preserve":
-                                    prompt.extend([f"Continue writing the actual modifications for the file {seq_string} in modify_data mode.", #prompt.extend([f"引き続き、modified_dataのモードで、{seq_string}のファイルの実際の修正の内容を書いてください。",
+                                    prompt.extend([f"Continue writing the actual modifications for the file {seq_string} in modify_data mode.",
                                             "",
                                             "## Response rules:",
                                             "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
@@ -4010,7 +4010,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                             ])
 
                                 else:
-                                    prompt.extend([f"Continue writing the actual modifications for the file {seq_string} in modify_data mode.", #prompt.extend([f"引き続き、modified_dataのモードで、{seq_string}のファイルの実際の修正の内容を書いてください。",
+                                    prompt.extend([f"Continue writing the actual modifications for the file {seq_string} in modify_data mode.",
                                             "",
                                             "## Response rules:",
                                             "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
@@ -4424,7 +4424,6 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
     prompt = []
     repair_prompt = []
 
-    # Cサイドについて、もともと、記録してある呼び出し関数を取得
     rust_flow = []
     rust_flow_dict = {}
 
@@ -6682,7 +6681,7 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
             def_key = f"{name}:{def_file_path}:{def_start_line}" #:{def_start_column}"
 
             if def_key not in meta_data:
-                #raise ValueError("ここは何かがおかしいので後で必ずcheck")
+                #raise ValueError("We need check here!")
                 continue
 
             if 'rust_code' not in meta_data[def_key]:
