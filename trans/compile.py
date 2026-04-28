@@ -1518,10 +1518,10 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
 
 
 
-def translate_llm_minimize(convert_element, one_unit, rust_path, interface): # , start_line, end_line
+def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     
     llm_interface = interface.llm_interface
-    output_max = llm_interface.output_max   #4000 # output_max = 4000 # per 1 response
+    output_max = llm_interface.output_max
 
     target_path = interface.target_path
     work_dir = interface.work_dir
@@ -1537,9 +1537,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface): # ,
     original_dir = interface.original_target_dir
     target_dir = interface.target_dir
     is_program_path = interface.is_program_path
-
-    #macro_path = interface.macro_path
-    #all_macro_path = interface.all_macro_path
 
     # set the initial prompt
     prompt = []    
@@ -1598,7 +1595,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface): # ,
     #add_prompt.extend(sole_prompt) # This part isn't needed, right..?
     """
 
-    c_code = get_unit_code(one_unit) # , original_dir, target_dir
+    c_code = get_unit_code(one_unit)
     
     c_path = f"{database_dir}/tmp.c"
     write_file(c_path, c_code)
@@ -1609,13 +1606,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface): # ,
     prompt, sole_prompt = get_context_prompt('divided_type', prompt, one_unit, dep_json_path, is_program_path, 
                                               original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path) #  macro_path, all_macro_path  # , build_list_path
     add_prompt.extend(sole_prompt)
-    # print(sole_prompt)
-    # print(prompt)
-    # print(one_unit)
-    # print(dep_json_path)
-    # print(div_meta_dir)
-    # print(rust_output_dir)
-    # print(build_path)
 
     if len(target_function) != 0:  #len(target_function) == 0:
         # prompt.extend([
@@ -1658,7 +1648,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface): # ,
     ])
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
-    directory_structure = get_dir_struct("translation", work_dir, None)  #rust_output_dir)
+    directory_structure = get_dir_struct("translation", work_dir, None)
     prompt.extend([directory_structure, ""])
 
     prompt.extend(["", "## Module structure of the Rust program:"])
@@ -1905,10 +1895,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface): # ,
     prompt.extend(["\nPlease provide your response in the following JSON format:"])
     prompt.extend([refine_template])
 
-
-    #c_code = read_specific_lines(c_path, part['start_line'], part['end_line']) #c_code = read_file(c_path)
-    #c_code = read_file(div_c_path)
-    #rust_code = get_lined_code(rust_path, work_dir)
     rust_code = get_lined_specific_code(database_dir, f"{database_dir}/unrefined.rs", init_rust_end, last_rust_end)
 
     prompt.extend([
@@ -2257,8 +2243,6 @@ def repair_total(convert_element, prompt, c_path, rust_path, exp_data, error): #
 
         ongoing_count += 1
 
-    #return toml_submit, build_submit
-
 
 def rust_compile(target_directory):
     print("locally rust_compile")
@@ -2329,8 +2313,6 @@ def create_rust_base_json(c_path, meta_dir, label, div_start_line):
                     "end_line": elem['end_line'] - div_start_line + 1, # Some items do not have end_line
                     "rust_code": None,
                 }
-
-                #new_json['components'] = new_comps
                 new_data.append(new_json) # The structure is transformed here into a flat connection
 
     tmp_rust_path = "rust_tmp.json"
@@ -4406,14 +4388,6 @@ def get_rust_items(item_data):
     return rust_code
 
 
-# rust_refs = {}
-# independent_macros = {}
-# ifdefs = {}
-
-# i_at_least_found = False
-# g_at_least_found = False
-# if_at_least_found = False
-# r_at_least_found = False
 
 def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, is_program_path,
                          div_meta_dir, original_dir, build_path, conv_type, 
@@ -5866,12 +5840,6 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
         exp_path = obtain_exp_path(rust_path, average)
         exp_data = read_json(exp_path)
 
-        if rust_path == "modified_rust/src/urlparser/test_c/parts0_h.rs":
-            print("-----")
-            #"modified_rust/src/build.rs": 1,
-            #"modified_rust/src/urlparser/url_h/parts0_h.rs": 2,
-            #"modified_rust/src/urlparser/test_c/parts0_h.rs": 2
-
         repair_count = 0  # Or default value
         sum_input = 0
         sum_output = 0
@@ -5896,10 +5864,6 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
         result_json[target][trial_id]['output_token'][rust_path] = sum_output
 
         file_count += 1
-
-    # print(rust_path)
-    # print(result_json[target][trial_id]['input_token'][rust_path])
-    # print(exp_path)
 
     #sum_repair_count / file_count
     if file_count == 0:
@@ -6045,7 +6009,7 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
                           lib_path, rust_lib_h_path, rust_output_dir, raw_dir, target_dir, target_path, llm_interface, rust_edition):
     
     
-    functions = parse_function_info(target_path, work_dir)  #target_path, raw_dir)
+    functions = parse_function_info(target_path, work_dir)
 
     prompt = [
         f"The following directory ({work_dir}) is created for calling Rust functions from a C program.",
@@ -6462,7 +6426,7 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
             #f"  Step 1. Create an empty implementation of the C FFI boundary functions as a Rust functions in the Rust library file: {lib_path}.",
             #f"  Step 2. Create the Rust library code.",
             f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function callable.",
-            f"  Step 3. Replace the target C function implementations in {target_dir} with calls to the corresponding Rust stub functions.", #f"  Step 4. Modify the C code ({target_dir}) to build it so it can be called from C."
+            f"  Step 3. Replace the target C function implementations in {target_dir} with calls to the corresponding Rust stub functions.", 
             f"          For examples: - Include the Rust header file created in step 2.",
             f"                        - Update build scripts to link the Rust library.",
             f"                        - Comment out the target C function.",
@@ -6615,7 +6579,6 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
         # if name not in target_macros:
         #     continue
 
-        #usage_location = app['usage_location']
         file_path = item['definition']['file_path']
         start_line = item['definition']['start_line']
         start_column = item['definition']['start_column']
@@ -6693,12 +6656,10 @@ def update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_pa
     updates = []
 
     for macro_key, macro in taken_macros.items():
-        #print(macro)
         name = macro['name']
         if name not in target_macros:
             continue
 
-        #usage_location = app['usage_location']
         file_path = macro['definition']['file_path']
         start_line = macro['definition']['start_line']
         start_column = macro['definition']['start_column']
