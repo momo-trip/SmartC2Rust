@@ -66,7 +66,7 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 | `ffi_strategy` | Translation strategy: `"preserve"` (C-compatible via FFI) or `"minimize"` (safe, idiomatic Rust; default) |
 
 
-## Artifact notes
+## Notes
 ### Macro handling
 When scaling to larger programs, performing macro analysis from scratch with LLMs becomes impractical due to cost considerations. Therefore, we introduce a more structured approach by classifying macros into constant and conditional categories based on parser results. The LLM is then used to refine the translated code, ensuring consistency, successful compilation, and integration across translation units.
 
