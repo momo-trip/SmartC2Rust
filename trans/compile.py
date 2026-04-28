@@ -5254,14 +5254,6 @@ def initialize(translation_type, original_dir, rust_output_dir, work_dir, target
         build_path = rust_output_dir + '/build.rs'
         delete_file(build_path)
 
-    # print(raw_dir)
-    # print(root_dir)
-
-    # copy the root dir
-    # delete_directory(raw_dir)
-    # clone_directory(root_dir, raw_dir)
-
-
     if not FROM_PART:
         delete_file(map_path)
     delete_file(f"{database_dir}/tmp_data.json")
@@ -5557,7 +5549,6 @@ def insert_division(dep_json_path, target, line_path, average):
     write_json(line_path, line_data)
 
 
-
 def create_units(dep_json_path):
     dep_json = read_json(dep_json_path)
     for item in dep_json:
@@ -5730,9 +5721,6 @@ def reflect_toml_modification(rsp_json):
 
 def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, database_dir, target, exec_time):
 
-    # print("temporary for get_compile_report")
-    # return 
-#def calculate_equivalence_rate(dep_json_path, meta_dir, target):
     c_paths = []
     
     dep_json = read_json(dep_json_path)
@@ -5790,7 +5778,7 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
     result_json = read_json(result_path)
 
     # Inherit from moment_path
-    moment_json = read_json(moment_path)  #result_json[target]['current_count'] = moment_json[target]['current_count']
+    moment_json = read_json(moment_path)
 
     """
     if target not in moment_json:
@@ -5909,10 +5897,10 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
 
         file_count += 1
 
-    print("-------")
-    print(rust_path)
-    print(result_json[target][trial_id]['input_token'][rust_path])
-    print(exp_path)
+    # print(rust_path)
+    # print(result_json[target][trial_id]['input_token'][rust_path])
+    # print(exp_path)
+
     #sum_repair_count / file_count
     if file_count == 0:
         result_json[target][trial_id]['compile_average'] = sum_repair_count
@@ -6632,22 +6620,12 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
         start_line = item['definition']['start_line']
         start_column = item['definition']['start_column']
 
-        # print("Iru?")
-        # #if not file_path.startswith("/usr"):
-        # print(is_program_path)
-        # print(file_path)
-
         file_path = f"{TRANS_HOME}/trans_c_0000/{file_path}"
-
-        # print(file_path)
 
         c_file_path = file_path.replace("trans_c_0000", f"workspace_0000_{target}")
         if is_system_file(c_file_path, program_files):
             continue
         
-        # print(is_program_path)
-        # print(use_file_path)
-
         if file_path not in apps_by_files:
             apps_by_files[file_path] = []
 
@@ -6725,22 +6703,12 @@ def update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_pa
         start_line = macro['definition']['start_line']
         start_column = macro['definition']['start_column']
 
-        # print("Iru?")
-        # #if not file_path.startswith("/usr"):
-        # print(is_program_path)
-        # print(file_path)
-
         file_path = f"{TRANS_HOME}/trans_c_0000/{file_path}"
-
-        # print(file_path)
 
         c_file_path = file_path.replace("trans_c_0000", f"workspace_0000_{target}")
         if is_system_file(c_file_path, program_files):
             continue
         
-        # print(is_program_path)
-        # print(use_file_path)
-
         if file_path not in apps_by_files:
             apps_by_files[file_path] = []
 
@@ -7372,7 +7340,7 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
     # insert build.rs
     generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_json_path, 
                       flag_path, target_dir, is_program_path, 
-                      independent_const_build_path, flag_build_path, clang_args_json_path) # copy_file(build_template_path, build_rs_path)  #
+                      independent_const_build_path, flag_build_path, clang_args_json_path)
 
     # update metadata for build.rs
     update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_path, independent_const_build_path, flag_build_path, is_program_path)
@@ -7532,12 +7500,12 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
 
 
 # I don't think this is needed in production
-def handle_paths(dep_json_path): # , compile_json_path # , cfg_path
-    paths = [dep_json_path]  # , compile_json_path
+def handle_paths(dep_json_path):
+    paths = [dep_json_path] 
     paths = [f"{MACRO_HOME}/{item}".replace("trans", "macro") for item in paths]
-    dep_json_path = paths[0]  # , compile_json_path
+    dep_json_path = paths[0]
 
-    return dep_json_path  #, compile_json_path
+    return dep_json_path
 
 
 
@@ -7582,12 +7550,6 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     else:
         raise ValueError("cargo-modules not found")
 
-    # print("-------")
-    # #print(execute_error)
-    # #print(execute_out)
-    # print(iteration_count)
-    # print("-------")
-
     # Create PathConfig
     paths = create_path_config(
         user_id=user_id,
@@ -7603,7 +7565,7 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     rust_lib_h_path,
     run_test_path,
     run_all_path,
-    raw_dir,  #
+    raw_dir,
     target_dir, 
     work_dir, 
     original_c_code_dir,
@@ -7621,7 +7583,6 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
 
     macro_finder, 
     database_dir, 
-    #lib_path, 
 
     dep_json_path, 
     list_path, 
@@ -7668,13 +7629,6 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     
     independent_const_build_path, 
     flag_build_path) = extract_all_paths(paths)
-
-    # print(original_dir)
-    # print(c_code_dir)
-    # c_code = get_unit_code(one_unit, original_dir, target_dir)
-    # print(c_code)
-
-    # get_build_rs_config(rust_output_dir, build_config_path)  # run_all_path, 
 
     if process_type == "trans":
 
