@@ -376,12 +376,6 @@ def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, 
     # Inherit from moment_path
     moment_json = read_json(moment_path)  #result_json[target]['current_count'] = moment_json[target]['current_count']
 
-    """
-    if target not in moment_json:
-        moment_json[target] = {}
-    if 'current_count' not in moment_json[target]:
-        moment_json[target]['current_count'] = 0
-    """
     if not os.path.exists(f"{database_dir}/s_repair_count.json"):
         write_json(f"{database_dir}/s_repair_count.json", {})
 
@@ -5342,7 +5336,6 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
 
     if process_type == "s_repair":
 
-        # create_backup_directory(work_dir)
         set_s_repair_dir(compile_dir, target, work_dir)
 
         signal.signal(signal.SIGINT, signal_handler)
@@ -5392,7 +5385,7 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         explore_time = 0
         notes = []
 
-        # initialize
+        # Initialize
         initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) 
 
         # Repair function errors

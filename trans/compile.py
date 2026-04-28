@@ -631,9 +631,9 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
     f_used = False
     i_used = False
 
-    #print(components_included)
+    # print(components_included)
     data = {}
-    for c_item in components_included: #one_unit:  # components_included    #for collect_type in ["non_function", "function"]:
+    for c_item in components_included:
         c_name = c_item['name']
         c_path = c_item['file_path']
         start_line = c_item['start_line']
@@ -641,7 +641,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
 
         if c_path not in data:
             data[c_path] = []
-        data[c_path].append(c_item) #(start_line, end_line))
+        data[c_path].append(c_item)
 
         """
         # Maybe put a sys_macro flag in here and change added_prompt based on that
@@ -652,7 +652,6 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
     dependencies = {}
     for file_path, c_items in data.items():
         meta_path = obtain_metadata(file_path, div_meta_dir, False, True, "def")
-        # print(meta_path)
 
         if meta_path not in cashed:
             meta_data = obtain_metadata(file_path, div_meta_dir, False, False, "def")
@@ -667,7 +666,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
                                             g_at_least_found, global_vars, t_at_least_found, targets, seen,
                                             g_used, f_used, i_used)
         
-        #prompt = dependencies["prompt"]
+        # prompt = dependencies["prompt"]
         cashed = dependencies["cashed"]
         t_at_least_found = dependencies["t_at_least_found"]
         targets = dependencies["targets"]
@@ -698,10 +697,10 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
         else:
             added_prompt.extend([
                 "- FFI boundary functions:",
-                "    - The following functions already have stub implementations. Only replace the body of rust_main(args: Vec<String>) -> i32. Do NOT modify rust_main_wrapper, parse_args, or their signatures. Do NOT create any new function named rust_main.",
-                f"    - rust_main MUST call std::io::stdout().flush() before returning, to flush Rust's stdout buffer before control returns to C.",
+                "    - The following functions already have stub implementations. Only replace the body of rust_main_<identifer>(args: Vec<String>) -> i32. Do NOT modify rust_main_wrapper, parse_args, or their signatures. Do NOT create any new function named rust_main_<identifer>.",
+                f"    - rust_main_<identifer> MUST call std::io::stdout().flush() before returning, to flush Rust's stdout buffer before control returns to C.",
                 "    - Functions:",
-                "      - rust_main",
+                "      - rust_main_<identifer>",
             ])
             
         for target_name, target_info in targets.items():
@@ -723,11 +722,6 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
             added_prompt.extend([f"      - {target_name} (callee):"])
             added_prompt.append(f"            <- callers: {', '.join(callers)}")
             """
-
-    """
-    # ifdef statement   # Maybe insert the sys_macro flag here and change added_prompt
-    if_at_least_found, ifdefs = collect_ifdef_dependencies(cashed, c_item, meta_dir, components_included, if_at_least_found, ifdefs)
-    """
 
     if if_at_least_found:
         ifdef_list = ", ".join(ifdefs)
@@ -929,7 +923,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                 #"- Avoid using unsafe, and achieve equivalent functionality by using the Rust standard library or crates safely.", 
                 #"- Please never use unsafe, raw pointers, or manual memory management.",
                 "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.", 
-                "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                 "          - Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                 "          - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                 #"          - Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
@@ -1074,7 +1068,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     # "- Perform the translation corresponding to the initially presented C original code. Even if you know the entire program, do not add or extend code beyond the presented C source code.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                    "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                    "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                     #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
@@ -1242,7 +1236,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                     #"- In particular, do NOT use unsafe or raw pointers. Instead, please use appropriate safe alternatives like Box, Arc, Vec, and others.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                    "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                    "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                     #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
@@ -1335,7 +1329,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                    "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                    "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                     #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
@@ -1555,8 +1549,8 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 #"- Avoid using unsafe, and achieve equivalent functionality by using the Rust standard library or crates safely.", 
                 #"- Please never use unsafe, raw pointers, or manual memory management.",
                 "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.", 
-                "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
-                "          - The rust_main entry point: declared as pub extern \"C\" fn rust_main() with #[no_mangle] so that C main() can call it. This is the only FFI boundary in this project. Stub implementation MUST remain unchanged until you are explicitly instructed to replace it with the actual implementation. Do NOT implement the actual logic of it.",
+                "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                "          - The rust_main_<identifier> entry point: declared as pub extern \"C\" fn rust_main_<identifier>() with #[no_mangle] so that C main() can call it. This is the only FFI boundary in this project. Stub implementation MUST remain unchanged until you are explicitly instructed to replace it with the actual implementation. Do NOT implement the actual logic of it.",
                 #"                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                 #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                 #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
@@ -1584,16 +1578,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 "- When representing backslashes as character literals, escape the backslash once in the source code and again in the character literal, resulting in two backslashes.",
                 "- About functions, when translating C functions to Rust, please implement all functions as standalone functions without using Rust's methods or impl blocks.",
     ])
-    """
-    common_law = get_prompt_template(output_max)
-    prompt.extend(common_law)
-    """
-
-    """
-    #if WITH_CONDENSED:
-    prompt, sole_prompt = get_c_prompts(prompt, div_c_path, meta_dir, 'divided_type') # , build_path, build_list_path
-    #add_prompt.extend(sole_prompt) # This part isn't needed, right..?
-    """
 
     c_code = get_unit_code(one_unit)
     
@@ -1660,7 +1644,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     current_c_block_end = 0
 
     ref_files = []
-    #ref_files = get_ref_files(c_path, dep_json_path)
+    # ref_files = get_ref_files(c_path, dep_json_path)
 
     ongoing_flag = False
     no_omission = None
@@ -1670,7 +1654,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     ongoing_count = 0
 
     exp_data = {}
-
 
     init_rust_end = count_file_lines(rust_path) + 1
 
@@ -1699,7 +1682,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     # "- Perform the translation corresponding to the initially presented C original code. Even if you know the entire program, do not add or extend code beyond the presented C source code.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                    "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                    "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "            - Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     #"            - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                     "    - For everything else, write in safe Rust without calling C functions through FFI.",
@@ -1733,21 +1716,21 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     "- IMPORTANT: This Rust code is a LIBRARY, not a standalone binary. You MUST NEVER define a function named main or fn main() on the Rust side. The Rust 'main' entry-point functions are called from the C-side main functions as library functions.",
                 ])
 
-                #"""
                 prompt.extend(["  - Entry point functions:"])
                 for func in target_function:
                     prompt.extend([f"    - {func}"])
-                #"""
+
             
             prompt.extend(["\n## FFI boundary functions:"])
             for func in functions:
-                prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
+                prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})")
             
             prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
             prompt.extend([convert_template])
 
             c_code = get_lined_specific_code(database_dir, c_path, current_c_block_end, total_end)
             #c_code = get_lined_code(c_path, work_dir)
+
             prompt.extend([
                 #f"\n## C source code ({c_path}):",
                 f"\n## C source code (lines {current_c_block_end} - {total_end} in the file {c_path}):",
@@ -1864,7 +1847,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     #"- In particular, do NOT use unsafe or raw pointers. Instead, please use appropriate safe alternatives like Box, Arc, Vec, and others.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                    "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                    "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "              - Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     #"              - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                     "    - For everything else, write in safe Rust without calling C functions through FFI.",
@@ -1902,14 +1885,14 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         rust_code
     ])
 
-    #c_code = get_lined_code(c_path, work_dir)
+    # c_code = get_lined_code(c_path, work_dir)
     prompt.extend([
-        f"\n## C code segment:", ## C source code:", #({c_path})
+        f"\n## C code segment:",
         c_code
     ])
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
-    directory_structure = get_dir_struct("translation", work_dir, None)  #rust_output_dir)
+    directory_structure = get_dir_struct("translation", work_dir, None)
     prompt.extend([directory_structure, ""])
 
     prompt.extend(["", "## Module structure of the Rust program:"])
@@ -1919,10 +1902,9 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     save_prompt = prompt
 
     ref_files = []
-    #ref_files = get_ref_files(c_path, dep_json_path)
+    # ref_files = get_ref_files(c_path, dep_json_path)
 
     ongoing_flag = False
-    #ongoing_count = 0
 
     # Initialize here
     # copy_file(rust_path, f"{database_dir}/unrefined.rs")
@@ -1952,7 +1934,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                    "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                    "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "          - Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     #"          - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                     "    - For everything else, write in safe Rust without calling C functions through FFI.",
@@ -3428,7 +3410,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                             f"- Identify and fix the file that fundamentally resolves the error, not limited to {rust_path}. If necessary, use read_data mode to check the program's content.",
                             #"- In modification, do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                             "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                            "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                            "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                             "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                             "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                             #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
@@ -3460,7 +3442,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                             f"- Identify and fix the file that fundamentally resolves the error, not limited to {rust_path}. If necessary, use read_data mode to check the program's content.", 
                             #"- In modification, do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                             "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                            "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                            "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                             #"                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                             "               - The rust_main entry point: declared as pub extern \"C\" fn rust_main() with #[no_mangle] so that C main() can call it. This is the only FFI boundary in this project.",
                             #"               - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
@@ -3815,7 +3797,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                                 #""
                                                 #"- In modification, do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", "- In modifications, please avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
                                                 "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                                                "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                                                "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                                                 "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                                                 "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                                                 #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
@@ -3860,7 +3842,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                                 #""
                                                 #"- In modification, do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", "- In modifications, please avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
                                                 "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                                                "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                                                "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                                                 "               - Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                                                 #"               - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                                                 "    - For everything else, write in safe Rust without calling C functions through FFI.",
@@ -3980,7 +3962,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                             #"",
                                             #"- In modification, do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.","- In modifications, please avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
                                             "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                                            "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                                            "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                                             "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                                             "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                                             #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
@@ -4025,7 +4007,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                             #"",
                                             #"- In modification, do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.","- In modifications, please avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
                                             "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
-                                            "    - Exception: Permit minimal unsafe blocks strictly limited to the following two categories.",
+                                            "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                                             "               - Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                                             #"               - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                                             "    - For everything else, write in safe Rust without calling C functions through FFI.",
@@ -4749,54 +4731,15 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
                    build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,  # , build_list_path
                    trial_id, rust_build_path, llm_interface, rust_edition,  # , c_lib_path
                    c_rust_path, rust_c_path, is_program_path
-                   ): #rust_path = "modified_" + c_path  # div_c_path
+                   ):
     
     ###############################
     ###### Propmt generation
     ###############################
 
     # May need the parent path first
-    rust_path = lib_path # generate_strict_rust_path(c_path, rust_output_dir, False) #, None) #rust_path = generate_rust_path(c_path, rust_output_dir, False) #, None)
+    rust_path = lib_path
 
-    """   
-    # read data from dependencies.json # Need to process in chunks like block_unit, but on the other hand,
-    dep_json = read_json(dep_json_path)
-    div_flag = False
-    for dep in dep_json:
-        if c_path == dep['source']:    
-            if 'div_parts' in dep:
-                div_flag = True
-                parts = dep['div_parts'] # Assuming already sorted by 'parts_order' (order of divided module units)
-                if error is not None:
-                    parts = update_order(return_path, parts)
-    """
-
-    # if div_flag:
-    #     for part in parts:
-    #         div_c_path = part['source']
-
-    """
-    # global reflect_path 
-    # reflect_path = div_c_path # This is surprisingly important?
-
-    div_rust_path = rust_path #generate_strict_rust_path(div_c_path, rust_output_dir, True) #,generate_rust_path(div_c_path, rust_output_dir, True) #, c_path) #div_rust_path = obtain_rust_path(div_c_path, rust_output_dir) #bor['rust_path']
-    parent_c_path = update_parent_path(div_c_path, dep_json_path)
-    update_path_map(map_path, div_c_path, div_rust_path, parent_c_path, rust_path)
-    """
-
-    # exp_data = set_exp_data(div_rust_path, average, exp_dir, target, log_file_path, trial_id, moment_path)
-
-    """
-    # This causes a 400 error with robot (D I 400). Apparently it's a filtering policy. Strange-!!
-    lined_c_path = "lined.c"
-    write_file(lined_c_path, c_code)
-    rust_add_line_numbers(lined_c_path, 0)
-    c_code = read_file(lined_c_path)
-    """
-
-    # with open(f"{database_dir}/translated_files.txt", 'a') as output_file: # Open output file in append mode
-    #     output_file.write(f"{div_rust_path}\n")
-    
     ###############################
     ###### Translation
     ###############################
@@ -4875,7 +4818,6 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         'rust_build_path' : rust_build_path
     }
 
-
     interface = TransConfig(
         rust_path=rust_path,
         rust_c_path=rust_c_path,
@@ -4929,8 +4871,6 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
     c_mod_files = []
     rust_mod_files = []
     
-    #c_mod_files.append(div_c_path) # Add itself first
-
     ###############################
     ## Correspondence mapping
     ###############################
@@ -4940,7 +4880,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
     ## Need handling for when repair was not needed in repair_execute
     modified_c_keys = merge_with_initial(one_unit, modified_c_keys)
 
-    modified_lines = {} # This isn't needed anymore, right?
+    modified_lines = {}
     #answer_path = f"{database_dir}/answer.json"
     answer_path = f"{work_dir}/answer.json"
 
@@ -5057,9 +4997,6 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
 ####################################################
 
 
-# // Enable {item['name']}_defined flag if the environment variable is set
-# let abled_feature = format!("{{}}_defined", "{item['name']}");
-
 
 macro_template = f"""{{
     "answer" : {{
@@ -5070,7 +5007,6 @@ macro_template = f"""{{
     "ongoing" : true or false,
 }}
 """
-
 
 def update_order(return_path, initial_order):
     updated_order = []
@@ -5286,25 +5222,9 @@ def initialize(translation_type, original_dir, rust_output_dir, work_dir, target
 
     # division type # Currently, this only affects divide.py. After that, metadata has been manipulated and it becomes U or D, so division type is not involved
     # global LLM_DIV, RULE_DIV
-
-    """
-    if div_type == 'L':
-        LLM_DIV = True
-    elif div_type == 'R':
-        RULE_DIV = True
-    """
-
-    """
-    if debug_type == 'D':
-        DEBUG_LLM = True
-    elif debug_type == 'F': # DEBUG 'F'alse
-        DEBUG_LLM = False
-    """ 
     
     if not os.path.exists(moment_path):
         write_json(moment_path, {})
-    #return average
-
 
 
 #########################################################
@@ -5435,7 +5355,6 @@ def get_source_element_id(source_path, target_item):
 
 
 def get_child_div(start_line, source_path):
-    #div_c_path = None
     dep_json = read_json(dep_json_path)
     for item in dep_json:
         if 'div_parts' not in item:
@@ -5669,7 +5588,6 @@ def show_iteration_counts(archive_dir, result_path, dep_json_path, meta_dir, dat
         print(f"{rust_path}: {iteration_dict[rust_path]}")
     
     end_time = time.time()
-    #exec_time = 9257.932838916779
     exec_time = end_time - start_time
     print(f"Execution Time: {exec_time} seconds")
 
@@ -5754,12 +5672,6 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
     # Inherit from moment_path
     moment_json = read_json(moment_path)
 
-    """
-    if target not in moment_json:
-        moment_json[target] = {}
-    if 'current_count' not in moment_json[target]:
-        moment_json[target]['current_count'] = 0
-    """
     trial_id = "trial_" + str(moment_json[target]['current_count'] - 1)
 
     if result_json is None:
@@ -6028,7 +5940,7 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
         #f"  - Please write the answer in the following JSON format.",
     ]
     prompt.extend(["",
-                   f"## Rules:",
+                   f"## Rules",
                    f"When responding, please strictly apply all the specified rules below and provide only the answer that follows the rules.",
                    "- The project layout is as follows:",
                    f"  - Shell script to build the Rust code: {rust_build_path}",
@@ -6044,8 +5956,8 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
                    f"    - Do NOT modify or regenerate Cargo.toml - it already has the correct dependencies.",
                    f"    - Do NOT modify or regenerate build.rs - it already has the correct build configuration.",
                    f"    - Only create or modify the Rust source files (e.g., src/lib.rs) and C header files.",
-                   f"- Exception: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
-                   #f"- Exception: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
+                   f"- EXCEPTION: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
+                   #f"- EXCEPTION: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
                    f"      - Do NOT remove any files from config_paths. All .c files must remain in config_paths to ensure complete macro detection.",
                    f"      - Add the blocklist to BOTH builder instances in build.rs (the main bindings builder and the detect_all_macros builder).",
                    f"- If the target function is named 'main', rename it to a unique name on the Rust side by appending '_main' to the filename (stripped of its extension, with non-alphanumeric characters replaced by '_'), and prefix with the parent directory name if a collision occurs.",
@@ -6068,7 +5980,7 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
     #code = read_file(run_test_path)
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
-    directory_structure = get_dir_struct("translation", work_dir, None)  #rust_output_dir)
+    directory_structure = get_dir_struct("translation", work_dir, None)
     prompt.extend([directory_structure, ""])
 
     ongoing_flag = None
@@ -6082,8 +5994,8 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
     sum_slice_list = []
     sum_modified_list = []
     read_prompt = None
-    while (1):
 
+    while (1):
         if ongoing_flag is False:
             break
 
@@ -6141,10 +6053,8 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
                 read_prompt.extend([f'{file_code}\n'])
 
         
-        prompt = ["Please continue your answer."
-        ]
-
         prompt = [
+            "Please continue your answer."
             #"The following directory is created for calling Rust functions from a C program.",
             "Please complete the following steps:",
             f"  Step 1. Create stub implementations of the target C functions as Rust functions in the Rust library file ({lib_path}).",
@@ -6161,7 +6071,7 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
             #f"  - Please write the answer in the following JSON format.",
         ]
         prompt.extend(["",
-                    f"## Rules:",
+                    f"## Rules",
                     f"When responding, please strictly apply all the specified rules below and provide only the answer that follows the rules.",
                     "- The project layout is as follows:",
                     f"  - Shell script to build the Rust code: {rust_build_path}",
@@ -6177,8 +6087,8 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
                     f"    - Do NOT modify or regenerate Cargo.toml - it already has the correct dependencies.",
                     f"    - Do NOT modify or regenerate build.rs - it already has the correct build configuration.",
                     f"    - Only create or modify the Rust source files (e.g., src/lib.rs) and C header files.",
-                    f"- Exception: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
-                    #f"- Exception: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
+                    f"- EXCEPTION: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
+                    #f"- EXCEPTION: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
                     f"      - Do NOT remove any files from config_paths. All .c files must remain in config_paths to ensure complete macro detection.",
                     f"      - Add the blocklist to BOTH builder instances in build.rs (the main bindings builder and the detect_all_macros builder).",
                     f"- Use Rust {rust_edition} edition.",
@@ -6273,32 +6183,20 @@ pub extern "C" fn rust_main_wrapper(
 def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir,
                           lib_path, rust_lib_h_path, rust_output_dir, raw_dir, target_dir, target_path, llm_interface, rust_edition):
     
-    functions = parse_function_info(target_path, work_dir)  #target_path, raw_dir)
+    functions = parse_function_info(target_path, work_dir)
 
     prompt = [
         f"The following directory ({work_dir}) is created for calling Rust functions from a C program.",
         "Please complete the following steps:",
-        f"  Step 1. Create stub implementations of the Rust main wrapper function in the Rust library file ({lib_path}), i.e., create pub extern \"C\" fn rust_main_wrapper(argc: i32, argv: *const *const std::os::raw::c_char) -> i32. Also create a safe parse_args function and a rust_main(args: Vec<String>) -> i32 function.",
-        f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function callable by writing extern int rust_main_wrapper(int argc, char *argv[]);.",
-        f"  Step 3. Replace the C main() function implementations in {target_dir} with a thin wrapper: int main(int argc, char *argv[]) {{ return rust_main_wrapper(argc, argv); }}",
+        f"  Step 1. Create stub implementations of the Rust main wrapper function in the Rust library file ({lib_path}), i.e., create pub extern \"C\" fn rust_main_wrapper_<identifier>(argc: i32, argv: *const *const std::os::raw::c_char) -> i32. Also create a safe parse_args function and a rust_main_<identifier>(args: Vec<String>) -> i32 function.",
+        f"          Note that <identifier> is derived from the C source file containing the corresponding main() function and must be unique across all main() functions listed under 'Target C main functions for step 1', so that each main() maps to a distinct rust_main_<identifier> / rust_main_wrapper_<identifier> pair with no name collisions; however, if there is only one main() function in the project, omit the <identifier> suffix entirely and use rust_main / rust_main_wrapper.",
+        f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function callable by writing extern int rust_main_wrapper_<identifier>(int argc, char *argv[]);.",
+        f"  Step 3. Replace the C main() function implementations in {target_dir} with a thin wrapper: int main(int argc, char *argv[]) {{ return rust_main_wrapper_<identifier>(argc, argv); }}",
         f"  Step 4. Update build scripts to link the Rust library. Include the Rust header file created in step 2. Also, add the Rust static library file as a build dependency of C binary targets, so that C binaries are automatically relinked when the Rust library is updated."    
-        # f"  Step 1. Create stub implementations of the Rust main function in the Rust library file ({lib_path}), i.e., create pub extern \"C\" fn rust_main().",
-        # #f"  Step 1. Create an empty implementation of the C FFI boundary functions as a Rust functions in the Rust library file: {lib_path}.",
-        # #f"  Step 2. Create the Rust library code.",
-        # #f"  Step 2. Replace the C main() function in {target_dir} with a thin wrapper that calls rust_main().",
-        # f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function () callable by writing extern void rust_main(void);.",
-        # f"  Step 3. Replace the the C main() function implementations in {target_dir} with a thin wrapper: int main() {{ rust_main(); return 0; }}", #f"  Step 4. Modify the C code ({target_dir}) to build it so it can be called from C."
-        # f"  Step 4. Update build scripts to link the Rust library. Include the Rust header file created in step 2. Also, add the Rust static library file as a build dependency of C binary targets, so that C binaries are automatically relinked when the Rust library is updated."
-        # f"          For examples: - Include the Rust header file created in step 2.",
-        # f"                        - Update build scripts to link the Rust library.",
-        #f"                        - Comment out the C main function.",
-        # "## How to modify each testcase:",
-        # f"  - At the beginning of each testcase, output \"Test {{test_num}} started\" to standard output.",
-        # f"  - At the end of each testcase, output \"Test {{test_num}} ended\" to standard output.",
-        #f"  - Please write the answer in the following JSON format.",
     ]
+
     prompt.extend(["",
-                   f"## Rules:",
+                   f"## Rules",
                    f"When responding, please strictly apply all the specified rules below and provide only the answer that follows the rules.",
                    "- The project layout is as follows:",
                    f"  - Shell script to build the Rust code: {rust_build_path}",
@@ -6308,22 +6206,22 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
                    f"  - Original C program directory: {target_dir}",
                    f"  - Corresponding Rust program directory: {rust_output_dir}",
                    #f"- In step 1, do NOT implement the actual logic. The goal at this stage is only to make the project compile successfully.",
-                   f"- In step 1, the stub of rust_main should be an empty function body. Do NOT call back into any C function. Do NOT declare extern blocks to call C functions.",
+                   f"- In step 1, the stub of rust_main_<identifier> should be an empty function body. Do NOT call back into any C function. Do NOT declare extern blocks to call C functions.",
                    f"- In step 1, the Rust library must define three functions:",
                    f"    - unsafe fn parse_args(argc: i32, argv: *const *const std::os::raw::c_char) -> Vec<String> — converts C argc/argv to safe Rust Vec<String>.",
-                   f"    - fn rust_main(args: Vec<String>) -> i32 — the main logic, entirely safe Rust. The stub should have an empty body that calls std::io::stdout().flush() and returns 0.", #The stub should have an empty body returning 0.",
-                   #f"    - rust_main must call `use std::io::Write; std::io::stdout().flush().unwrap();` before returning, to flush Rust's stdout buffer before control returns to C.",
-                   f"    - #[unsafe(no_mangle)] pub extern \"C\" fn rust_main_wrapper(argc: i32, argv: *const *const std::os::raw::c_char) -> i32 — the FFI entry point that calls parse_args then rust_main.",
+                   f"    - fn rust_main_<identifier>(args: Vec<String>) -> i32 — the main logic, entirely safe Rust. The stub should have an empty body that calls std::io::stdout().flush() and returns 0.", #The stub should have an empty body returning 0.",
+                   #f"    - rust_main_<identifier> must call `use std::io::Write; std::io::stdout().flush().unwrap();` before returning, to flush Rust's stdout buffer before control returns to C.",
+                   f"    - #[unsafe(no_mangle)] pub extern \"C\" fn rust_main_wrapper_<identifier>(argc: i32, argv: *const *const std::os::raw::c_char) -> i32 — the FFI entry point that calls parse_args then rust_main.",
                    f"    - In short, the lib.rs output for step 1 MUST match the following template exactly:", f"{code_snippet}",
-                   f"- The unsafe code must be confined to parse_args only. rust_main must be 100% safe Rust.",
+                   f"- The unsafe code must be confined to parse_args only. rust_main_<identifier> must be 100% safe Rust.",
                    #f"- In step 3, please comment out the C call section, since it's no longer necessary.",
                    f"- IMPORTANT: Do NOT overwrite existing Rust build configuration files in the Rust library ({rust_output_dir}).",
                    f"    - The {rust_output_dir} directory already contains pre-configured build files (Cargo.toml, build.rs).",
                    f"    - Do NOT modify or regenerate Cargo.toml - it already has the correct dependencies.",
                    f"    - Do NOT modify or regenerate build.rs - it already has the correct build configuration.",
                    f"    - Only create or modify the Rust source files (e.g., src/lib.rs) and C header files.",
-                   f"- Exception: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
-                   #f"- Exception: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
+                   f"- EXCEPTION: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
+                   #f"- EXCEPTION: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
                    f"      - Do NOT remove any files from config_paths. All .c files must remain in config_paths to ensure complete macro detection.",
                    f"      - Add the blocklist to BOTH builder instances in build.rs (the main bindings builder and the detect_all_macros builder).",
                    #f"- If the target function is named 'main', rename it to a unique name on the Rust side by appending '_main' to the filename (stripped of its extension, with non-alphanumeric characters replaced by '_'), and prefix with the parent directory name if a collision occurs.",
@@ -6336,17 +6234,17 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
                    f"## Target C main functions for step 1:",
     ])
     for func in functions:
-        prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
+        prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})")
     
 
     prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",  
     ])
     prompt.extend([link_template])
 
-    #code = read_file(run_test_path)
+    # code = read_file(run_test_path)
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
-    directory_structure = get_dir_struct("translation", work_dir, None)  #rust_output_dir)
+    directory_structure = get_dir_struct("translation", work_dir, None)
     prompt.extend([directory_structure, ""])
 
     ongoing_flag = None
@@ -6360,8 +6258,8 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
     sum_slice_list = []
     sum_modified_list = []
     read_prompt = None
-    while (1):
 
+    while (1):
         if ongoing_flag is False:
             break
 
@@ -6435,8 +6333,9 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
             # f"  - At the end of each testcase, output \"Test {{test_num}} ended\" to standard output.",
             #f"  - Please write the answer in the following JSON format.",
         ]
+
         prompt.extend(["",
-                    f"## Rules:",
+                    f"## Rules",
                     f"When responding, please strictly apply all the specified rules below and provide only the answer that follows the rules.",
                     "- The project layout is as follows:",
                     f"  - Shell script to build the Rust code: {rust_build_path}",
@@ -6452,8 +6351,8 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
                     f"    - Do NOT modify or regenerate Cargo.toml - it already has the correct dependencies.",
                     f"    - Do NOT modify or regenerate build.rs - it already has the correct build configuration.",
                     f"    - Only create or modify the Rust source files (e.g., src/lib.rs) and C header files.",
-                    f"- Exception: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
-                    #f"- Exception: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
+                    f"- EXCEPTION: If the build error originates from build.rs itself (e.g., bindgen failure, missing bindings.rs generation, commented-out error messages, incorrect paths, or other build script issues), you SHOULD fix build.rs to resolve the root cause rather than working around it in lib.rs.",
+                    #f"- EXCEPTION: If bindgen fails with \"redefinition\" or \"conflicting types\" errors in build.rs, you may add .blocklist_function() or .blocklist_item() calls to the existing builder chains in build.rs to resolve symbol collisions.",
                     f"      - Do NOT remove any files from config_paths. All .c files must remain in config_paths to ensure complete macro detection.",
                     f"      - Add the blocklist to BOTH builder instances in build.rs (the main bindings builder and the detect_all_macros builder).",
                     f"- Use Rust {rust_edition} edition.",
@@ -6468,15 +6367,6 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
             prompt.extend(["", "## Response to the previous request:"])
             prompt.extend(read_prompt)
             read_prompt = None # Initialization
-
-        """
-        if mode != "read_data":
-            error, std_out = run_script_wo_log(run_test_path, 10, True, None, "both") #, progress_queue, iteration_count, max_iterations, log_dir)
-            std_out = run_script_pty(run_test_path)
-
-            if error is None:
-                break
-        """
 
     print("*********** End of reforamt ***********")
 
@@ -6729,8 +6619,6 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
     ######################################
     ## header inclusion
     ######################################
-    # Made automatic
-    
     # headers = get_headers(dep_json_path, target_dir)
     entries = get_entry_points(target_dir, is_program_path)
 
@@ -6769,15 +6657,6 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
     with open(build_rs_path, 'w') as f:
         f.write(modified_content)
 
-    # print(f"Successfully generated {build_rs_path} with {len(headers)} header(s)")
-    # for i, header in enumerate(headers, 1):
-    #     print(f"  {i}. {header}")
-
-    ######################################
-    ## ifdef inclusion
-    ######################################
-    # Made automatic
-    # To make it automatic, I think the current way is fine, but we cannot know what exactly the LLM itself is setting
 
     ######################################
     ## clang flags inclusion
@@ -6864,7 +6743,7 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
 
 
 # Build the Rust project and extract cargo:warning and cargo:rustc-cfg
-def get_build_rs_config(rust_output_dir, build_config_path):  # run_all_path, 
+def get_build_rs_config(rust_output_dir, build_config_path):
     
     print(rust_output_dir)
 
