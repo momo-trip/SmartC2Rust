@@ -174,50 +174,8 @@ designed.
 
 ---
 
-## 5. Writing the base test script
-
-The base test script is what Step 1 reformats into individual test cases.
-It should:
-
-- Build the original C program (or assume it is already built).
-- Run the program on one or more inputs.
-- Exit with status `0` on success and non-zero on failure.
-
-A minimal example:
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-cd "$(dirname "$0")"
-
-# Build
-make -C src
-
-# Run a few test cases
-./src/myproj  input1.txt > out1.txt
-diff -q out1.txt expected1.txt
-
-./src/myproj  input2.txt > out2.txt
-diff -q out2.txt expected2.txt
-
-echo "OK"
-```
-
-### What makes a good base test script
-
-- **Deterministic.** Avoid timestamps, random seeds, or unordered output.
-  If unavoidable, normalize the output before diffing.
-- **Self-contained.** The script should not depend on environment state
-  outside the project directory.
-- **Granular.** Multiple small test cases are better than one big one —
-  they give the semantics-repair step (Step 6) more signal about which
-  behaviors regressed.
-- **Fast.** Each iteration of the repair loop re-runs the tests, so long
-  test suites significantly increase translation cost and time.
-
-The reformatting step (Step 1) uses the LLM to split this script into
-individual cases. See
+## 5. Writing the test script
+See
 [`docs/reformat-testcases.md`](./reformat-testcases.md) for details.
 
 ---
@@ -226,20 +184,6 @@ individual cases. See
 
 Two fields in `config.json` are worth thinking about for non-benchmark
 projects:
-
-### `average`
-
-The maximum number of source lines per translation unit. Larger values
-produce fewer, bigger units (less LLM overhead per unit but more risk of
-hitting context limits and harder repair); smaller values produce more,
-smaller units (more LLM calls but easier per-unit reasoning).
-
-Rough starting points:
-
-- Small/simple projects (< 1k LOC): `200`–`400`
-- Medium projects: `400` (the default used for benchmarks)
-- Larger projects with deep call graphs: try `400` first; reduce if the
-  compile-repair step struggles to converge.
 
 ### `ffi_strategy`
 

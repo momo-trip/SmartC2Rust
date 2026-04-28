@@ -73,8 +73,12 @@ When scaling to larger programs, performing macro analysis from scratch with LLM
 ### FFI strategy
 In the paper, we focus on command-line tools, where the entry point can be translated using a minimize strategy. In contrast, when translating library functions in isolation, FFI interfaces are often unavoidable for interoperability with existing C code. Therefore, we provide two modes (`"preserve"` or `"minimize"`) to support both use cases.
 
+---
 
 ## Translation procedure
+
+---
+
 ### Step 1: Prepare inputs
 Before running the iterative cycle, prepare two inputs: a 
 standardized test script (`run_test.sh`) and an entry point 
@@ -117,7 +121,7 @@ The `targets.txt` lists function names with their source locations in the format
 
 See [docs/ffi-boundary.md](docs/ffi-boundary.md) for details on how the FFI boundary is designed.
 
-
+---
 ### Step 2: Get golden flows
 Executes the original C program to record golden execution flows as the ground truth.
 ```bash
@@ -132,6 +136,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
 - `<c_source_dir>/golden/`: directory for saving golden execution flows
 
 
+---
 ### Step 3: Pre-processing for parsing
 Resolves and analyzes macros, extracting per-file metadata such as function signatures, types, and macro definitions.
 ```bash
@@ -153,6 +158,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off
 - `macro/div_metadata_0000/{program}/`: per-block metadata for translation units
 
 
+---
 ### Step 4: Pre-processing for segmentation
 Performs static analysis to build call graphs and dependency information for segmenting the code into translation units.
 ```bash
@@ -176,6 +182,8 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root
 - `trans/database_0000/{program}/`: translation database
     - `block_output.txt`: Block output file tracking translation units (e.g., `database_0000/avl/block_output.txt`)
 
+
+---
 ### Step 5: Compilation-repair
 Translates C code to Rust and iteratively repairs compilation errors using LLM feedback.
 ```bash
@@ -202,6 +210,7 @@ python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Ru
 - `trans/chats_0000_trans/{program}/`: LLM interaction prompt logs for the compile-repair step
 
 
+---
 ### Step 6: Semantics-repair
 Verifies and repairs the semantic equivalence of the translated Rust code by comparing its behavior against the golden flows. Note that this step also fixes compilation errors that arise during the repair process.
 ```bash
@@ -222,6 +231,7 @@ python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} 
 - `trans/chats_0000_c_repair/{program}/`: LLM interaction prompt logs for the semantics-repair step
 
 
+---
 ## Translating your own C project
 
 The Step 1–6 procedure above assumes one of the bundled benchmarks under
@@ -234,14 +244,14 @@ covers:
 - Adapting the Step 1–6 commands to arbitrary paths
 - Tips for tuning `average` and choosing an `ffi_strategy`
 
-
+---
 ## LLM model
 The default model is Claude Opus 4.7 (Anthropic).
 
 **Note:** Only Claude models are actively maintained and tested. Other LLM backends (GPT, Gemini, Llama) are included in the codebase but have not been recently verified and may not work as expected.
 
 
-
+---
 ## Repository structure
 
 ### SmartC2Rust
@@ -284,6 +294,7 @@ SmartC2Rust/
     ├── macro_finder/       #   Preprocessor directive tracker
     └── macro_analyzer/     #   Macro definition analyzer
 ```
+
 
 ## Paper
 
