@@ -5435,14 +5435,14 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         explore_time = 0
         notes = []
 
+        """
         # Repair function errors
         check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                         raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                         dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                         llm_interface, progress_queue, max_iterations, False
                         )  
-        sys.exit(0)
-
+        """
         set_s_repair_dir(compile_dir, target, work_dir)
 
         signal.signal(signal.SIGINT, signal_handler)
