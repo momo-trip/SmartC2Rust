@@ -577,9 +577,6 @@ def get_target_function(one_unit, target_path):
     with open(target_path, 'r') as f:
         target_functions = [line.strip() for line in f if line.strip()]
 
-    # print(target_path)
-    # print(one_unit)
-
     target_list = []
     for item in one_unit:
         if 'name' in item:
@@ -697,7 +694,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
         else:
             added_prompt.extend([
                 "- FFI boundary functions:",
-                "    - The following functions already have stub implementations. Only replace the body of rust_main_<identifer>(args: Vec<String>) -> i32. Do NOT modify rust_main_wrapper, parse_args, or their signatures. Do NOT create any new function named rust_main_<identifer>.",
+                "    - The following functions already have stub implementations. Only replace the body of rust_main_<identifer>(args: Vec<String>) -> i32. Do NOT modify rust_main_wrapper_<identifer>, parse_args, or their signatures. Do NOT create any new function named rust_main_<identifer>.",
                 f"    - rust_main_<identifer> MUST call std::io::stdout().flush() before returning, to flush Rust's stdout buffer before control returns to C.",
                 "    - Functions:",
                 "      - rust_main_<identifer>",
@@ -1600,11 +1597,12 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         # ])
 
         prompt.extend([
-            "- For the following entry point function, translate it as the Rust entry point named 'rust_main'.",
-            "- If a stub implementation of rust_main already exists, delete the stub first, then write the actual implementation as a complete replacement.",
+            "- For the following entry point function, translate it as the Rust entry point named 'rust_main_<identifer>'.",
+            "- If a stub implementation of rust_main_<identifer> already exists, delete the stub first, then write the actual implementation as a complete replacement.",
+            f" Note that <identifier> is derived from the C source file containing the corresponding main() function and set to be unique across all main() functions, so that each main() maps to a distinct rust_main_<identifier> / rust_main_wrapper_<identifier> pair with no name collisions; however, if there is only one main() function in the project, the <identifier> suffix is entirely omitted.",
             "- When translating the C main function, obtain command-line arguments using std::env::args() in Rust instead of receiving argc/argv from C.",
             "- Do NOT use raw pointers (*const, *mut) for argument handling. Use Vec<String> or &[String] instead.",
-            "- IMPORTANT: The entry point function must be #[no_mangle] pub extern \"C\" fn rust_main(). This is the only FFI boundary. All other functions should be pure safe Rust with no extern or #[no_mangle].",
+            "- IMPORTANT: The entry point function must be #[no_mangle] pub extern \"C\" fn rust_main_<identifer>(). This is the only FFI boundary. All other functions should be pure safe Rust with no extern or #[no_mangle].",
         ])
 
         prompt.extend(["  - Entry point functions:"])
@@ -3444,7 +3442,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                             "- In modification, do not use unsafe, raw pointers, or manual memory management as much as possible.",
                             "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                             #"                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
-                            "               - The rust_main entry point: declared as pub extern \"C\" fn rust_main() with #[no_mangle] so that C main() can call it. This is the only FFI boundary in this project.",
+                            "               - The rust_main_<identifer> entry point: declared as pub extern \"C\" fn rust_main_<identifer>() with #[no_mangle] so that C main() can call it. This is the only FFI boundary in this project.",
                             #"               - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
                             #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                             #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
@@ -5926,7 +5924,8 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
     prompt = [
         f"The following directory ({work_dir}) is created for calling Rust functions from a C program.",
         "Please complete the following steps:",
-        f"  Step 1. Create stub implementations of the target C functions as Rust functions in the Rust library file ({lib_path}).",
+        #f"  Step 1. Create stub implementations of the target C functions as Rust functions in the Rust library file ({lib_path}).",
+        f"  Step 1. Update the Rust library file ({lib_path}) so that it includes stub implementations of the target C functions as Rust functions.",
         #f"  Step 1. Create an empty implementation of the C FFI boundary functions as a Rust functions in the Rust library file: {lib_path}.",
         #f"  Step 2. Create the Rust library code.",
         f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function callable.",
@@ -6057,7 +6056,8 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
             "Please continue your answer."
             #"The following directory is created for calling Rust functions from a C program.",
             "Please complete the following steps:",
-            f"  Step 1. Create stub implementations of the target C functions as Rust functions in the Rust library file ({lib_path}).",
+            #f"  Step 1. Create stub implementations of the target C functions as Rust functions in the Rust library file ({lib_path}).",
+            f"  Step 1. Update the Rust library file ({lib_path}) so that it includes stub implementations of the target C functions as Rust functions.",
             #f"  Step 1. Create an empty implementation of the C FFI boundary functions as a Rust functions in the Rust library file: {lib_path}.",
             #f"  Step 2. Create the Rust library code.",
             f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function callable.",
@@ -6161,7 +6161,7 @@ unsafe fn parse_args(argc: i32, argv: *const *const c_char) -> Vec<String> {{
         .collect()
 }}
 
-fn rust_main(args: Vec<String>) -> i32 {{
+fn rust_main_<identifer>(args: Vec<String>) -> i32 {{
     // Stub implementation
 
     use std::io::Write;
@@ -6170,12 +6170,12 @@ fn rust_main(args: Vec<String>) -> i32 {{
 }}
 
 #[unsafe(no_mangle)]
-pub extern "C" fn rust_main_wrapper(
+pub extern "C" fn rust_main_wrapper_<identifer>(
     argc: i32,
     argv: *const *const c_char,
 ) -> i32 {{
     let args = unsafe {{ parse_args(argc, argv) }};
-    rust_main(args)
+    rust_main_<identifer>(args)
 }}
 ```"""
 
@@ -6188,7 +6188,7 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
     prompt = [
         f"The following directory ({work_dir}) is created for calling Rust functions from a C program.",
         "Please complete the following steps:",
-        f"  Step 1. Create stub implementations of the Rust main wrapper function in the Rust library file ({lib_path}), i.e., create pub extern \"C\" fn rust_main_wrapper_<identifier>(argc: i32, argv: *const *const std::os::raw::c_char) -> i32. Also create a safe parse_args function and a rust_main_<identifier>(args: Vec<String>) -> i32 function.",
+        f"  Step 1. Update the Rust library file ({lib_path}) so that it includes stub implementations of the Rust main wrapper function, i.e., create pub extern \"C\" fn rust_main_wrapper_<identifier>(argc: i32, argv: *const *const std::os::raw::c_char) -> i32. Also create a safe parse_args function and a rust_main_<identifier>(args: Vec<String>) -> i32 function.",
         f"          Note that <identifier> is derived from the C source file containing the corresponding main() function and must be unique across all main() functions listed under 'Target C main functions for step 1', so that each main() maps to a distinct rust_main_<identifier> / rust_main_wrapper_<identifier> pair with no name collisions; however, if there is only one main() function in the project, omit the <identifier> suffix entirely and use rust_main / rust_main_wrapper.",
         f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function callable by writing extern int rust_main_wrapper_<identifier>(int argc, char *argv[]);.",
         f"  Step 3. Replace the C main() function implementations in {target_dir} with a thin wrapper: int main(int argc, char *argv[]) {{ return rust_main_wrapper_<identifier>(argc, argv); }}",
@@ -6211,7 +6211,7 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
                    f"    - unsafe fn parse_args(argc: i32, argv: *const *const std::os::raw::c_char) -> Vec<String> — converts C argc/argv to safe Rust Vec<String>.",
                    f"    - fn rust_main_<identifier>(args: Vec<String>) -> i32 — the main logic, entirely safe Rust. The stub should have an empty body that calls std::io::stdout().flush() and returns 0.", #The stub should have an empty body returning 0.",
                    #f"    - rust_main_<identifier> must call `use std::io::Write; std::io::stdout().flush().unwrap();` before returning, to flush Rust's stdout buffer before control returns to C.",
-                   f"    - #[unsafe(no_mangle)] pub extern \"C\" fn rust_main_wrapper_<identifier>(argc: i32, argv: *const *const std::os::raw::c_char) -> i32 — the FFI entry point that calls parse_args then rust_main.",
+                   f"    - #[unsafe(no_mangle)] pub extern \"C\" fn rust_main_wrapper_<identifier>(argc: i32, argv: *const *const std::os::raw::c_char) -> i32 — the FFI entry point that calls parse_args then rust_main_<identifer>.",
                    f"    - In short, the lib.rs output for step 1 MUST match the following template exactly:", f"{code_snippet}",
                    f"- The unsafe code must be confined to parse_args only. rust_main_<identifier> must be 100% safe Rust.",
                    #f"- In step 3, please comment out the C call section, since it's no longer necessary.",
@@ -6320,7 +6320,9 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
             #"The following directory is created for calling Rust functions from a C program.",
             "Please complete the following steps:",
             #f"  Step 1. Create stub implementations of the target C functions as Rust functions in the Rust library file ({lib_path}).",
-            f"  Step 1. Create stub implementations of the Rust main function in the Rust library file ({lib_path}), i.e., create #[no_mangle] pub extern \"C\" fn rust_main() with no arguments. Command-line arguments will be obtained via std::env::args() in Rust, not passed from C.",
+            #f"  Step 1. Create stub implementations of the Rust main function in the Rust library file ({lib_path}), i.e., create #[no_mangle] pub extern \"C\" fn rust_main_<identifer>() with no arguments. Command-line arguments will be obtained via std::env::args() in Rust, not passed from C.",
+            #f"  Step 1. Update the Rust library file ({lib_path}) so that it includes stub implementations of the Rust main function, i.e., create #[no_mangle] pub extern \"C\" fn rust_main_<identifer>() with no arguments. Command-line arguments will be obtained via std::env::args() in Rust, not passed from C.",
+            f"  Step 1. Update the Rust library file ({lib_path}) so that it includes stub implementations of #[unsafe(no_mangle)] pub extern \"C\" fn rust_main_wrapper_<identifier>(argc: i32, argv: *const *const std::os::raw::c_char) -> i32, a safe parse_args function, and rust_main_<identifier>(args: Vec<String>) -> i32. These signatures are FROZEN — only the body of rust_main_<identifier> may be modified.",
             #f"  Step 1. Create an empty implementation of the C FFI boundary functions as a Rust functions in the Rust library file: {lib_path}.",
             #f"  Step 2. Create the Rust library code.",
             f"  Step 2. Create a C header file ({rust_lib_h_path}) that makes the Rust library function callable.",
@@ -7339,7 +7341,6 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
         record_remaining(finished, c_order, components, remained_block_path)
 
 
-# I don't think this is needed in production
 def handle_paths(dep_json_path):
     paths = [dep_json_path] 
     paths = [f"{MACRO_HOME}/{item}".replace("trans", "macro") for item in paths]
@@ -7347,6 +7348,10 @@ def handle_paths(dep_json_path):
 
     return dep_json_path
 
+
+def save_target_path(target_path, target_dir):
+    dest = os.path.join(target_dir, "actual_targets.txt")
+    shutil.copyfile(target_path, dest)
 
 
 def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_dir, target_path, rust_edition, llm_choice, claude_api_key, azure_endpoint):
@@ -7541,7 +7546,7 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
                 clone_directory(given_meta_dir, meta_dir)
                 clone_directory(given_div_meta_dir, div_meta_dir)
 
-            print(original_dir)
+            # print(original_dir)
             denormalize_translation_metadata(meta_dir, os.path.abspath(original_dir), True) #os.path.abspath(target_dir))
             denormalize_translation_metadata(div_meta_dir, os.path.abspath(original_dir), True) #, os.path.abspath(target_dir))
 
@@ -7581,6 +7586,9 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
 
         if resume is False:
             clang_args_json_path = f"{database_dir}/file_clang_args.json"
+
+            save_target_path(target_path, target_dir)
+
             if FFI_STRATEGY == "preserve":
                 build_rs_path, lib_path, toml_path = setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
                             chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, # , root_dir

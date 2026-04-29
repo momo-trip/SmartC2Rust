@@ -2815,10 +2815,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
     rust_c_path = interface.rust_c_path
     c_rust_path = interface.c_rust_path
 
-    #rust_log_path = interface.rust_log_path
-    #golden_flow_path = interface.golden_flow_path
-    #o_run_path = interface.o_run_path
-
     test_number = interface.test_number
     error_log = interface.error_log
     #log_choice = interface.log_choice
@@ -3087,8 +3083,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                             #"- When responding in 'modify_data' mode, the modified_code content must not contain any omissions as it will be copied directly.",
                         ])
                             
-                prompt.extend(["Please select only one of the three modes when responding and generate your response accordingly."]) 
-        
 
         if execute_error is not None or execute_out is not None:
             #prompt.extend(["", "- The result executed in execute_command mode is as follows:"])
@@ -3118,7 +3112,9 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
 
         if ongoing_flag is False or ongoing_flag is None:
             prompt.extend(["",
-                        "## Response modes:",
+                        "## Response modes",
+                        "Please select only one of the three modes when responding and generate your response accordingly.",
+                        "",
                         "1. In 'read_data' mode:",
                         "### Purpose:",
                         "- Returns the content of the specified file as it is.",
@@ -4442,7 +4438,9 @@ def get_given_num(c_io_dir):
     
     test_numbers = []
     for filename in os.listdir(flow_dir):
-        match = re.match(r'test(\d+)_(success|fail)\.log', filename)
+        #match = re.match(r'test(\d+)_(success|fail)\.log', filename)
+        match = re.match(r'test(\d+)_trace\.log', filename)
+
         if match:
             test_numbers.append(int(match.group(1)))
     
@@ -4505,7 +4503,8 @@ def get_smallest_fail_id(given_test_number, c_io_dir, error):
         success_path = f"{c_io_dir}/flow_results/test{str(test_id)}_success.log"
         fail_path = f"{c_io_dir}/flow_results/test{str(test_id)}_fail.log"
 
-        if os.path.exists(fail_path):
+        print(success_path)
+        if not os.path.exists(success_path): #os.path.exists(fail_path):
             test_number = test_id
             break
 
@@ -4627,6 +4626,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
     print(error)
     print("\n======= std_out =======")
     print(std_out)
+    print("\n==============")
 
     check_count = 1 
     judge_count = 0
@@ -4642,13 +4642,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         
         interface.repair_count = 1
 
-        # error = True
-        # part_modify_count = 1
-
-        #while (1):
-        # delete_file(success_path)
-        # delete_file(fail_path)
-
         ###############################
         ## Repair semantics
         ###############################
@@ -4663,8 +4656,10 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
             # Correct compilation errors to generall
             print("Fixing general error")
 
+        """
         if os.path.exists(success_path) is True: 
             break
+        """
 
         # fail flow acquisition
         # if flow_on:
@@ -4672,19 +4667,12 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
 
         # ready for repair and repair
         interface.test_number = test_number
-        interface.error_log = error_log #item['error_log']
+        interface.error_log = error_log 
         interface.error = error
         interface.std_out = std_out
 
         interface.repair_count = repair_count
         interface.flow_path = rust_flow_path
-
-        """
-        flow_path = f"{mix_io_dir}/flows/test{test_number}.txt"
-        # Repair work
-        if not flow_on:
-            write_file(flow_path, "")
-        """
 
         modified_c_keys = set()
         repair_count, modified_c_keys = repair_semantics("semantics", interface)
@@ -4692,11 +4680,8 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         delete_all_log(given_test_number, c_io_dir)
         error, std_out, repair_count = run_script(run_path, 100, True, None, "both", None, repair_count, None, None, mode)
         judge_count += 1
+
         print(f"Judging at {repair_count}: run_path: {run_path} mode: {mode}, ongoing_flag: {ongoing_flag}, error: {error}")
-        """
-        if error is None: # and mode != "read_data":  # This feels like a big change though  # if error is None and mode != "read_data" and ongoing_flag is False:
-            break
-        """
         test_number = get_smallest_fail_id(given_test_number, c_io_dir, error)
 
         """
@@ -4786,20 +4771,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         #update_c_rust_metadata(sum_answer_data, c_rust_path, rust_c_path) # mod_files, 
         update_c_rust_metadata(rust_output_dir, meta_dir, database_dir, sum_answer_data, c_rust_path, rust_c_path)
         """
-        
-        """
-        print("Running...")
-        clear_rust_flow(rust_log_path, rust_flow_path)
-        error, std_out = run_script_flow(run_path, given_time, True, None, "both", rust_log_path, golden_flow_path) # #run_script(run_path, given_time, True, None, "both")
-        print("run_script_flow in a loop")
-
-        clear_rust_flow(rust_log_path, rust_flow_path)
-        if target != 'yank':
-            std_out = run_script_pty(run_path, given_time)
-        print("In a loop")
-
-        write_file("repair_count.txt", str(judge_count))
-        """
 
         part_modify_count += 1
         if part_modify_count > 50:
@@ -4807,6 +4778,11 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         judge_count += 1
 
     print(f"Finished of functional_check, judge count: {judge_count}, given_test_number: {given_test_number}")
+
+
+def sanitize_identifier(file_path):
+    stem = os.path.splitext(os.path.basename(file_path))[0]
+    return re.sub(r'[^a-zA-Z0-9_]', '_', stem)
 
 
 def convert_cargo_toml_to_binary(toml_path: str, target_name: str) -> None:
@@ -4889,65 +4865,119 @@ reformat_response = f"""# In "modify_data" mode
 }}
 """
 
-
 def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                             raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                             dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
-                            llm_interface, progress_queue, max_iterations
+                            llm_interface, progress_queue, max_iterations, target_path
                             ):
     
     lib_path = f"{rust_io_dir}/src/lib.rs" 
-    main_path = f"{rust_io_dir}/src/main.rs"
-    if os.path.exists(lib_path):
-        os.rename(lib_path, main_path)
-        
     build_rs_path = rust_io_dir + '/build.rs'
     toml_path = f"{rust_io_dir}/Cargo.toml"
     rust_binary_path = f"{rust_io_dir}/target/release/{target}"
 
     convert_cargo_toml_to_binary(toml_path, target)
 
-    prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to a standalone binary. Please apply the following modifications to the Rust code below. Follow these rules and steps STRICTLY:",
-                "",
-                "## Strict rules",
-                f"Step A: Modification to {main_path}",
-                "  1. Rename the function `rust_main` to `main`.",
-                "  2. Replace the argument signature of `main`:",
-                "     - If `rust_main` takes `Vec<String>` or `args: Vec<String>`, keep that parameter but populate it inside `main` via `let args: Vec<String> = std::env::args().collect();`.",
-                "     - `main` function signature MUST be exactly: `fn main()` (no parameters, no return type, or return `()`).",
-                "     - If the original `rust_main` returned `i32`, exit with that code using `std::process::exit(code)` at the end.",
-                "  3. Remove the entire `parse_args` function (or any helper that parses `argc`/`argv` from raw pointers).",
-                "  4. Remove the entire `rust_main_wrapper` function (the `extern \"C\"` entry point).",
-                "  5. Remove any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes/modifiers in the code being transformed.",
-                "  6. Keep ALL other functions, types, constants, modules, and imports exactly as they are.",
-                "  7. Keep the body of `rust_main` (now `main`) EXACTLY the same, except for the argument population line added at the top.",
-                "",
-                # f"Step B: Modification to {toml_path}",
-                # "1. If there is a `[lib]` section, remove it entirely.",
-                # "2. Add a `[[bin]]` section with:",
-                # f"   - `name = \"{target}\"`",
-                # "   - `path = \"src/main.rs\"`",
-                # "3. If `crate-type` is specified anywhere, remove it.",
-                # "4. Keep ALL other sections (`[package]`, `[dependencies]`, `[features]`, `[profile.*]`, etc.) exactly as they are.",
-                # "5. Keep all dependency names and version specifications unchanged.",
-                # "",
-                f"Step B: Modification to {run_test_path}",
-                f" 1. Replace invocations of the C binary (which internally calls the Rust FFI wrapper) with direct invocations of the Rust binary.",
-                f"    - The Rust binary is located at: `{rust_binary_path}`",
-                "  2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
-                "  3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
-                "  4. If the C binary was invoked with arguments, pass the same arguments to the Rust binary.",
-                "  5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
+    target_functions = []
+    with open(target_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(':')
+            if len(parts) >= 3:
+                target_functions.append({
+                    'name': parts[0],
+                    'file_path': parts[1],
+                    'start_line': int(parts[2]),
+                })
+                
+    if len(target_functions) == 1:
+        main_path = f"{rust_io_dir}/src/main.rs"
+        if os.path.exists(lib_path):
+            os.rename(lib_path, main_path)
+            
+        prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to a standalone binary. Please apply the following modifications to the Rust code below. Follow these rules and steps STRICTLY:",
+                    "",
+                    "## Strict rules",
+                    f"Step A: Modification to {main_path}",
+                    "  1. Rename the function `rust_main` to `main`.",
+                    "  2. Replace the argument signature of `main`:",
+                    "     - If `rust_main` takes `Vec<String>` or `args: Vec<String>`, keep that parameter but populate it inside `main` via `let args: Vec<String> = std::env::args().collect();`.",
+                    "     - `main` function signature MUST be exactly: `fn main()` (no parameters, no return type, or return `()`).",
+                    "     - If the original `rust_main` returned `i32`, exit with that code using `std::process::exit(code)` at the end.",
+                    "  3. Remove the entire `parse_args` function (or any helper that parses `argc`/`argv` from raw pointers).",
+                    "  4. Remove the entire `rust_main_wrapper` function (the `extern \"C\"` entry point).",
+                    "  5. Remove any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes/modifiers in the code being transformed.",
+                    "  6. Keep ALL other functions, types, constants, modules, and imports exactly as they are.",
+                    "  7. Keep the body of `rust_main` (now `main`) EXACTLY the same, except for the argument population line added at the top.",
+                    "",
+                    # f"Step B: Modification to {toml_path}",
+                    # "1. If there is a `[lib]` section, remove it entirely.",
+                    # "2. Add a `[[bin]]` section with:",
+                    # f"   - `name = \"{target}\"`",
+                    # "   - `path = \"src/main.rs\"`",
+                    # "3. If `crate-type` is specified anywhere, remove it.",
+                    # "4. Keep ALL other sections (`[package]`, `[dependencies]`, `[features]`, `[profile.*]`, etc.) exactly as they are.",
+                    # "5. Keep all dependency names and version specifications unchanged.",
+                    # "",
+                    f"Step B: Modification to {run_test_path}",
+                    f" 1. Replace invocations of the C binary (which internally calls the Rust FFI wrapper) with direct invocations of the Rust binary.",
+                    f"    - The Rust binary is located at: `{rust_binary_path}`",
+                    "  2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
+                    "  3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
+                    "  4. If the C binary was invoked with arguments, pass the same arguments to the Rust binary.",
+                    "  5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
+                    ]
+
+    else:
+        identifiers = [sanitize_identifier(func['file_path']) for func in target_functions]
+        bin_dir = f"{rust_io_dir}/src/bin"
+
+        prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to multiple standalone binaries (one binary per sample). The original {lib_path} contains one rust_main_<identifier> per sample, and each must become its own binary file under {bin_dir}/. Follow these rules and steps STRICTLY:",
+                    "",
+                    "## Strict rules",
+                    f"Step A: Modification to {lib_path} and {bin_dir}/",
+                    f"  1. For each rust_main_<identifier> currently defined in {lib_path}, create {bin_dir}/<identifier>.rs containing exactly:",
+                    "         use trans_rust::*;",
+                    "         fn main() {",
+                    "             let args: Vec<String> = std::env::args().collect();",
+                    "             let code: i32 = { /* body of rust_main_<identifier> here, copied verbatim */ };",
+                    "             std::process::exit(code);",
+                    "         }",
+                    "     The function header `fn rust_main_<identifier>(args: Vec<String>) -> i32 {` is replaced by `fn main() { ... let code: i32 = {`, and the closing `}` of the original function becomes `}; std::process::exit(code); }`. The body itself is copied UNCHANGED.",
+                    f"  2. From {lib_path}, REMOVE the following items:",
+                    "       - All rust_main_<identifier> functions (now moved to bin files)",
+                    "       - The parse_args function",
+                    "       - All rust_main_wrapper_<identifier> functions",
+                    "       - Any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes/modifiers",
+                    f"  3. Keep ALL other items in {lib_path} (types, helper functions, constants, imports, modules) exactly as they are. Add `pub` to any item that becomes referenced from a bin file but was not previously public.",
+                    "  4. The bin files must NOT contain copies of shared types or helpers — those stay in lib.rs and are imported via `use trans_rust::*;`.",
+                    "",
+                    f"Step B: Modification to {run_test_path}",
+                    "  1. Replace each invocation of a C binary with the corresponding Rust binary. The mapping is:",
                 ]
+
+        for func in target_functions:
+            identifier = sanitize_identifier(func['file_path'])
+            rust_bin = f"{rust_io_dir}/target/release/{identifier}"
+            prompt.append(f"       - C binary derived from {func['file_path']} → {rust_bin}")
+
+        prompt.extend([
+                    "  2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
+                    "  3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
+                    "  4. If a C binary was invoked with arguments, pass the same arguments to the Rust binary.",
+                    "  5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
+                ])
 
 
     prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",])
     prompt.extend([reformat_response])
 
-    code = read_file(main_path)
-
-    prompt.extend([f"## Rust code ({main_path}):",])
-    prompt.extend([code])
+    if len(target_functions) == 1:
+        code = read_file(main_path)
+        prompt.extend([f"## Rust code ({main_path}):",])
+        prompt.extend([code])
 
     code = read_file(run_test_path)
 
@@ -4960,7 +4990,6 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
     write_file(f"{database_dir}/directry_structure.txt", directory_structure)
     directory_structure = trim_code(f"{database_dir}/directry_structure.txt", directory_structure, 10000)
     prompt.extend([directory_structure, ""])
-
 
     # ongoing_flag = None
     # error = None
@@ -5091,42 +5120,76 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                     read_prompt.extend([f"Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"])
                     read_prompt.extend([f'{file_code}\n'])
 
-            prompt = []
-            prompt.extend(["Please continue your response."])
-            prompt.extend([
-                "Please follow the rules below when modifying the program.",
-                "\n## Modification rules:",
-                "### Step A: Modification to src/main.rs",
-                "1. Rename the function `rust_main` to `main`.",
-                "2. If `rust_main` takes `args: Vec<String>`, populate it inside `main` via `let args: Vec<String> = std::env::args().collect();`.",
-                "3. The `main` function signature MUST be exactly: `fn main()` (no parameters).",
-                "4. If the original `rust_main` returned `i32`, exit with that code using `std::process::exit(code)` at the end.",
-                "5. Remove the entire `parse_args` function.",
-                "6. Remove the entire `rust_main_wrapper` function.",
-                "7. Remove any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes.",
-                "8. Keep ALL other functions, types, constants, modules, and imports exactly as they are.",
-                "9. Keep the body of `rust_main` (now `main`) EXACTLY the same, except for the argument population line added at the top.",
-                "",
-                # "### Step B: Modification to Cargo.toml",
-                # "1. If there is a `[lib]` section, remove it entirely.",
-                # f"2. Add a `[[bin]]` section with `name = \"{target}\"` and `path = \"src/main.rs\"`.",
-                # "3. If `crate-type` is specified anywhere, remove it.",
-                # "4. Keep ALL other sections (`[package]`, `[dependencies]`, etc.) exactly as they are.",
-                # "5. Keep all dependency names and version specifications unchanged.",
-                # "",
-                "### Step B: Modification to run_test.sh",
-                #f"1. Replace invocations of the C binary with direct invocations of the Rust binary at `./target/release/{target}`.",
-                f"1. Replace invocations of the C binary with direct invocations of the Rust binary at `{rust_binary_path}`.",
-                "2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
-                "3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
-                "4. Pass the same arguments to the Rust binary that were passed to the C binary.",
-                "5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
-            ])
+            if len(target_functions) == 1:
+                prompt = []
+                prompt.extend([
+                    "Please continue your response.",
+                    "Please follow the rules below when modifying the program.",
+                    "\n## Modification rules:",
+                    "### Step A: Modification to src/main.rs",
+                    "1. Rename the function `rust_main` to `main`.",
+                    "2. If `rust_main` takes `args: Vec<String>`, populate it inside `main` via `let args: Vec<String> = std::env::args().collect();`.",
+                    "3. The `main` function signature MUST be exactly: `fn main()` (no parameters).",
+                    "4. If the original `rust_main` returned `i32`, exit with that code using `std::process::exit(code)` at the end.",
+                    "5. Remove the entire `parse_args` function.",
+                    "6. Remove the entire `rust_main_wrapper` function.",
+                    "7. Remove any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes.",
+                    "8. Keep ALL other functions, types, constants, modules, and imports exactly as they are.",
+                    "9. Keep the body of `rust_main` (now `main`) EXACTLY the same, except for the argument population line added at the top.",
+                    "",
+                    # "### Step B: Modification to Cargo.toml",
+                    # "1. If there is a `[lib]` section, remove it entirely.",
+                    # f"2. Add a `[[bin]]` section with `name = \"{target}\"` and `path = \"src/main.rs\"`.",
+                    # "3. If `crate-type` is specified anywhere, remove it.",
+                    # "4. Keep ALL other sections (`[package]`, `[dependencies]`, etc.) exactly as they are.",
+                    # "5. Keep all dependency names and version specifications unchanged.",
+                    # "",
+                    "### Step B: Modification to run_test.sh",
+                    #f"1. Replace invocations of the C binary with direct invocations of the Rust binary at `./target/release/{target}`.",
+                    f"1. Replace invocations of the C binary with direct invocations of the Rust binary at `{rust_binary_path}`.",
+                    "2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
+                    "3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
+                    "4. Pass the same arguments to the Rust binary that were passed to the C binary.",
+                    "5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
+                ])
 
+            else:
+                prompt = []
+                prompt.extend([
+                    "Please continue your response.",
+                    "Please follow the rules below when modifying the program.",
+                    "\n## Modification rules:",
+                    f"### Step A: Modification to {lib_path} and {rust_io_dir}/src/bin/",
+                    f"1. For each rust_main_<identifier> currently defined in {lib_path}, create {rust_io_dir}/src/bin/<identifier>.rs containing exactly:",
+                    "       use trans_rust::*;",
+                    "       fn main() {",
+                    "           let args: Vec<String> = std::env::args().collect();",
+                    "           let code: i32 = { /* body of rust_main_<identifier>, copied verbatim */ };",
+                    "           std::process::exit(code);",
+                    "       }",
+                    f"2. From {lib_path}, REMOVE all rust_main_<identifier> functions, the parse_args function, all rust_main_wrapper_<identifier> functions, and any `#[no_mangle]`, `#[unsafe(no_mangle)]`, `extern \"C\"`, or `pub extern \"C\"` attributes.",
+                    f"3. Keep ALL other items in {lib_path} (types, helpers, constants, imports, modules) exactly as they are. Add `pub` only to items that become referenced from a bin file.",
+                    "4. The bin files must NOT duplicate shared types or helpers — those stay in lib.rs and are imported via `use trans_rust::*;`.",
+                    "5. Keep each function body EXACTLY the same as the original rust_main_<identifier>, except for the argument population line at the top.",
+                    "",
+                    f"### Step B: Modification to {run_test_path}",
+                    "1. Replace each invocation of a C binary with the corresponding Rust binary. The mapping is:",
+                ])
+
+                for func in target_functions:
+                    prompt.extend([f"   - C binary derived from {func['file_path']} → {rust_io_dir}/target/release/{sanitize_identifier(func['file_path'])}"])
+
+                prompt.extend([
+                    "2. Keep all test cases, expected outputs, and comparison logic exactly the same.",
+                    "3. Keep the structure of the script (function definitions, loops, variable assignments) identical.",
+                    "4. Pass the same arguments to each Rust binary that were passed to its corresponding C binary.",
+                    "5. Keep all shebang lines, environment variable setup, and cleanup logic unchanged.",
+                ])
+
+                
             prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",
             ])
             prompt.extend([reformat_response])
-
 
         if mode == 'modify_data':
             print(f"In mode: {mode}")
@@ -5244,10 +5307,9 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     # Create PathConfig
     paths = create_path_config(
         user_id=user_id,
-        original_dir=compile_dir, #original_dir,
+        original_dir=compile_dir,
         process_type=process_type,
-        work_dir=None, #work_dir,
-        #def_json_path=def_json_path,
+        work_dir=None,
     )
 
     (target,
@@ -5256,7 +5318,7 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     rust_lib_h_path,
     run_test_path,
     run_all_path,
-    raw_dir,  #
+    raw_dir,
     target_dir, 
     work_dir, 
     c_code_dir,
@@ -5310,7 +5372,6 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     map_path, 
     call_path, 
     persistent_dir, 
-    #build_rs_path, 
 
     chat_dir,
     history_path,
@@ -5322,11 +5383,9 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     independent_const_build_path, 
     flag_build_path) = extract_all_paths(paths)
 
-
     mix_io_dir = work_dir
     c_io_dir = f"{work_dir}/{target}"
     rust_io_dir = f"{work_dir}/trans_rust"
-
 
     ################################
     #### Semantics repiar
@@ -5335,15 +5394,6 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     created_paths = []  # Temporary workaround
 
     if process_type == "s_repair":
-
-        set_s_repair_dir(compile_dir, target, work_dir)
-
-        signal.signal(signal.SIGINT, signal_handler)
-        start_time = time.time()
-        log_file_path = set_log(log_dir, llm_choice, target, logging_path, 's_repair', DEBUG_LLM)
-        
-        # atexit.register(get_report)
-        setup_rust_trace(work_dir)
 
         init_prompt_count(count_path)
 
@@ -5385,6 +5435,23 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         explore_time = 0
         notes = []
 
+        # Repair function errors
+        check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+                        raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
+                        dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
+                        llm_interface, progress_queue, max_iterations, False
+                        )  
+        sys.exit(0)
+
+        set_s_repair_dir(compile_dir, target, work_dir)
+
+        signal.signal(signal.SIGINT, signal_handler)
+        start_time = time.time()
+        log_file_path = set_log(log_dir, llm_choice, target, logging_path, 's_repair', DEBUG_LLM)
+        
+        # atexit.register(get_report)
+        setup_rust_trace(work_dir)
+
         # Initialize
         initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) 
 
@@ -5396,11 +5463,14 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
                         )  
 
         if FFI_STRATEGY == "minimize":
+            target_path = f"{target_dir}/actual_targets.txt"
+            print(target_path)
+
             # Produce the final standalone binary
             produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                             raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                             dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
-                            llm_interface, progress_queue, max_iterations
+                            llm_interface, progress_queue, max_iterations, target_path
                             )  
 
             # Repair function errors
