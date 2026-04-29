@@ -2437,8 +2437,6 @@ def rust_filter_flow_log(log_path, out_json_path):
 
 
 
-
-
 def modify_cargo(rust_io_dir, inspect_dir, inspect_core_dir):
     print(f"rust_io_dir: {rust_io_dir}")
     print(f"inspect_dir: {inspect_dir}")
@@ -2465,17 +2463,9 @@ def modify_cargo(rust_io_dir, inspect_dir, inspect_core_dir):
         # If [dependencies] section does not exist, add it
         content += '\n[dependencies]\n'
     
-    # Add function_inspector dependency
-    #dependency_line = f'{lib_name} = {{ path = "../{lib_name}" }}\n{core_lib_name} = {{ path = "../{core_lib_name}" }}'
-#     dependency_line = f'''{lib_name} = {{ path = "../{lib_name}" }}
-# {core_lib_name} = {{ path = "../{core_lib_name}" }}
-# tracing = "0.1"
-# tracing-subscriber = {{ version = "0.3", features = ["env-filter", "json"] }}'''
-
     dependency_line = ""
     #f'''tracing = "0.1"
 #tracing-subscriber = {{ version = "0.3", features = ["env-filter", "json"] }}'''
-
 
     # Check if dependency already exists
     if f'{lib_name}' not in content:
@@ -3609,8 +3599,7 @@ def get_equivalent(modifications):
     return is_equivalent
 
 
-
-def reformat_flow(repair_target, interface):  #target_dir, entry, original_run_path, original_execute_path, meta_dir, dep_json_path, exp_data, repair_count): # div_start_line, 
+def reformat_flow(repair_target, interface): 
 
     mix_io_dir = interface['mix_io_dir']
     exp_data = interface['exp_data']
@@ -3629,11 +3618,10 @@ def reformat_flow(repair_target, interface):  #target_dir, entry, original_run_p
         flow_path = interface['flow_path']
 
     if repair_target != "get_analysis":
-        # This should be fine, right?
         run_path = run_all_path
         print(f"run_path is {run_path}")
 
-    execute_path = f"{mix_io_dir}/execute.sh" #get_execute_path(run_path) #interface['execute_path']
+    execute_path = f"{mix_io_dir}/execute.sh"
     if not os.path.exists(execute_path):
         #create_rust_build_path(run_path, c_io_dir)
         #create_file(run_path)
@@ -3981,7 +3969,7 @@ def reformat_flow(repair_target, interface):  #target_dir, entry, original_run_p
         repair_count += 1
 
     # Put this on hold for now
-    #check_dif(target_dir)
+    # check_dif(target_dir)
 
     iteration_dict[repair_target] = repair_count
 
@@ -4366,10 +4354,10 @@ def get_fail_flow_old(test_report, test_number, rust_log_path, rust_flow_path, g
                 f.write(str(line) + '\n')
                 rust_flow_data += str(line) + '\n'
 
-        flow_path = f"{mix_io_dir}/analysis/{test_name}.json"  #answer_{test_name}.json"
+        flow_path = f"{mix_io_dir}/analysis/{test_name}.json"
     
         exp_data = {}
-        exp_data['experiment_path'] = "reformat.c"  #experiment_path
+        exp_data['experiment_path'] = "reformat.c"
         exp_data['file_path'] = "reformat.c" 
         exp_data['repair_count'] = 0
         exp_data['average'] = 0
@@ -4404,7 +4392,7 @@ def find_rust_log_path(work_dir, base_name):
     return None, None
 
 
-def get_fail_flow(work_dir, test_number):  #  golden_flow_path, rust_flow_path, rust_log_path
+def get_fail_flow(work_dir, test_number): 
     print("Getting flow data")
 
     test_number = str(test_number)
@@ -4417,7 +4405,7 @@ def get_fail_flow(work_dir, test_number):  #  golden_flow_path, rust_flow_path, 
 
     rust_flow_path = f"{rust_log_dir}/test{test_number}_flow.txt"
 
-    parse_trace(rust_log_path, None, rust_flow_path, True) # binary_path: str, 
+    parse_trace(rust_log_path, None, rust_flow_path, True) 
 
     return rust_flow_path
 
@@ -4531,7 +4519,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
 
     # check semantics
     exp_data = {}
-    exp_data['experiment_path'] = "whole.rs"  #experiment_path
+    exp_data['experiment_path'] = "whole.rs"
     exp_data['file_path'] = "whole.rs" 
     exp_data['repair_count'] = 0
     exp_data['average'] = 0
@@ -5229,13 +5217,13 @@ def rename_paths(c_run_path, run_test_path, run_all_path, created_paths, target_
         target_new_files.append(item)
 
 
-    return c_run_path, run_test_path, run_all_path, new_files, target_new_files  #created_paths
+    return c_run_path, run_test_path, run_all_path, new_files, target_new_files 
 
 
-def initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path):  # c_io_dir, rust_io_dir, o_meta_dir, o_dep_json_path, io_list_path, c_flow_path, c_log_path, rust_flow_path, rust_log_path, 
+def initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path):
     
-    delete_directory(chat_dir)  # chats_s_repair
-    create_directory(chat_dir)  # chats_s_repair
+    delete_directory(chat_dir) 
+    create_directory(chat_dir) 
 
     data = read_json(logging_path)
     data["prompt_id"] = str(0).zfill(4)
