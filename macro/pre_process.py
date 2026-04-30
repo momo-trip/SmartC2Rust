@@ -1042,7 +1042,6 @@ def macro_main(config):
 
     macro_finder, 
     database_dir, 
-    #lib_path, 
 
     dep_json_path, 
     list_path, 
@@ -1078,7 +1077,6 @@ def macro_main(config):
     map_path, 
     call_path, 
     persistent_dir, 
-    #build_rs_path, 
 
     chat_dir,
     history_path,

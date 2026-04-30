@@ -311,7 +311,7 @@ def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, buil
     if (MANUAL_FIRST or not MANUAL) or not DEBUG_LLM:
         print("Creating each module file")
         
-        #create_file(build_rs_path) #delete_file(lib_path) # Why is this needed? # Why did I try to delete it
+        #create_file(build_rs_path) #delete_file(lib_path)
         with open(lib_path, "w") as lib_file:
             lib_file.write(f"#![allow(non_upper_case_globals)]\n")
             lib_file.write(f"#![allow(non_camel_case_types)]\n")
@@ -360,7 +360,7 @@ def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, buil
     if (MANUAL_FIRST or not MANUAL) or not DEBUG_LLM:
         print("Creating each module file")
         
-        #create_file(build_rs_path) #delete_file(lib_path) # Why is this needed? # Why did I try to delete it
+        #create_file(build_rs_path) #delete_file(lib_path)
         with open(lib_path, "w") as lib_file:
             lib_file.write(f"#![allow(non_upper_case_globals)]\n")
             lib_file.write(f"#![allow(non_camel_case_types)]\n")
@@ -1603,7 +1603,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         prompt.extend([
             "- For the following entry point function, translate it as the Rust entry point named 'rust_main_<identifer>'.",
             "- If a stub implementation of rust_main_<identifer> already exists, delete the stub first, then write the actual implementation as a complete replacement.",
-            f" Note that <identifier> is derived from the C source file containing the corresponding main() function and set to be unique across all main() functions, so that each main() maps to a distinct rust_main_<identifier> / rust_main_wrapper_<identifier> pair with no name collisions; however, if there is only one main() function in the project, the <identifier> suffix is entirely omitted.",
+            f"  Note that <identifier> is derived from the C source file containing the corresponding main() function and set to be unique across all main() functions, so that each main() maps to a distinct rust_main_<identifier> / rust_main_wrapper_<identifier> pair with no name collisions; however, if there is only one main() function in the project, the <identifier> suffix is entirely omitted.",
             "- When translating the C main function, obtain command-line arguments using std::env::args() in Rust instead of receiving argc/argv from C.",
             "- Do NOT use raw pointers (*const, *mut) for argument handling. Use Vec<String> or &[String] instead.",
             "- IMPORTANT: The entry point function must be #[no_mangle] pub extern \"C\" fn rust_main_<identifer>(). This is the only FFI boundary. All other functions should be pure safe Rust with no extern or #[no_mangle].",
@@ -2242,13 +2242,12 @@ def rust_compile(target_directory):
     
     return error
 
-# I am not fully sure whether this JSON format for passing data is the right one. Reducing it further would make it much smaller in volume, but if it is reduced too much, it may end up lacking sufficient information.
+
 def create_rust_base_json(c_path, meta_dir, label, div_start_line):
     c_data = obtain_metadata(c_path, meta_dir, False, False, "def")
 
     # It might be better to present this block by block.
     # Because there are conditional blocks and such
-    # For macro variables, I think preparing only the define should be enough
 
     if div_start_line is None:
         div_start_line = 1
@@ -3489,7 +3488,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                     "",
                                     "## Response rules",
                                     f"- Identify and fix the file that fundamentally resolves the error, not limited to {rust_path}. If necessary, use read_data mode to check the program's content.", 
-                                    "- Since I will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification in modify_data mode. Do not write \"modified_data\"",
+                                    "- Since we will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification in modify_data mode. Do not write \"modified_data\"",
                                     #"- Because we have the goal to have memory-safe Rust code to enhance security, please avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
                                     #"- When translating C raw pointers to Rust, use appropriate safe representations such as references, slices, Option, Box, Rc, Arc, etc.",
                                     #f"- The content of the corrected code in 'modified_data' must not contain any omissions because we execute the provided code directly. Do NOT use comments like \"// Implementation omitted for brevity\" or similar.",
@@ -3534,7 +3533,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                 "### Format:",
                                 "- Insert the filename, start line, and end line of the change location to be inserted into the values of the \"file_path\", \"start_line\", and \"end_line\" keys in JSON format data.",
                                 f"- For file_path, write a relative path in the format '{work_dir}/path/to/file'", #f"- For file_path, write a relative path starting from {work_dir}.",
-                                "- Since I will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification. Do not write \"modified_data\".",
+                                "- Since we will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification. Do not write \"modified_data\".",
                                 "",
                                 "3. In 'execute_command' mode:",
                                 "### Purpose:",
@@ -3595,7 +3594,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                                 "- Set the value of \"no_simplification\" to True if the functionality intended before modification exists completely without any omission and simplification. Set it to False otherwise.",
                                 "- If the target file for editing is a JSON file, set the \"is_JSON\" flag to True and insert the modified JSON data into \"modified_data\"",
                                 #""
-                                #"- Since I will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification. Do not write \"modified_data\".",
+                                #"- Since we will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification. Do not write \"modified_data\".",
                                 "",
                                 "3. In 'execute_command' mode:",
                                 "### Purpose:",
@@ -4516,9 +4515,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
 
         ##### cfg states (originated in Rust/build.rs)
         ifdef_key_name = f"IFDEF:{file_path}:{start_line}"
-        if ifdef_key_name in meta_data:            
-            # ifdef_flag = True 
-            # if ifdef_flag is True:                  
+        if ifdef_key_name in meta_data:                            
             macro_name = meta_data[ifdef_key_name]['name']  # Since it's IFDEF, use name instead of macro_name  
             ifdefs.add(macro_name) 
             if_at_least_found = True

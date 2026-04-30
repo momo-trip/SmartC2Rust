@@ -2879,29 +2879,29 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                 if error_log is not None:
 
                     if FFI_STRATEGY == "preserve":
-                        prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
-                                    f"To ensure equivalence between the pre- and post-translation code, I called the Rust main function via FFI from C test cases, but test{test_number} is not passing.",
+                        prompt.extend([f"We have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                    f"To ensure equivalence between the pre- and post-translation code, we called the Rust main function via FFI from C test cases, but test{test_number} is not passing.",
                                     f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the error and make test{test_number} pass.",
                                     f"For incremental fixes, please provide a solution specifically for test{test_number} at this time.",
                                     "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",
                                 ])  
                     else:
-                         prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
-                                    f"To ensure equivalence between the pre- and post-translation code, I conducted the same testcases for both C and Rust programs, but test{test_number} is not passing.",
+                         prompt.extend([f"We have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                    f"To ensure equivalence between the pre- and post-translation code, we conducted the same testcases for both C and Rust programs, but test{test_number} is not passing.",
                                     f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the error and make test{test_number} pass.",
                                     f"For incremental fixes, please provide a solution specifically for test{test_number} at this time.",
                                     "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",
                                 ])                   
                 else:
                     if FFI_STRATEGY == "preserve":
-                        prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
-                                        "To ensure equivalence between the pre- and post-translation code, I called the Rust main function via FFI from C test cases, but errors are occurring.",
+                        prompt.extend([f"We have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                        "To ensure equivalence between the pre- and post-translation code, we called the Rust main function via FFI from C test cases, but errors are occurring.",
                                         f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the errors.",
                                         "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",                               
                                         ])
                     else:
-                        prompt.extend([f"I have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
-                                        f"To ensure equivalence between the pre- and post-translation code, I conducted the same testcases for both C and Rust programs, but test{test_number} is not passing.",
+                        prompt.extend([f"We have translated a memory-vulnerable C program ({c_io_dir}) to a memory-safe Rust program ({rust_io_dir}).",
+                                        f"To ensure equivalence between the pre- and post-translation code, we conducted the same testcases for both C and Rust programs, but test{test_number} is not passing.",
                                         f"Please modify the Rust program ({rust_io_dir}) to fundamentally resolve the errors.",
                                         "When answering, please follow the response rules below and generate a response using only one of the following three response modes:",                               
                                         ])
@@ -3118,7 +3118,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                         "### Format:",
                         "- Insert the filename, start line, and end line of the change location to be inserted into the values of the \"file_path\", \"start_line\", and \"end_line\" keys in JSON format data.",
                         f"- For file_path, write a relative path in the format '{work_dir}/path/to/file'", #f"- For file_path, write a relative path starting from {work_dir}.",
-                        "- Since I will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification. Do not write \"modified_data\".",
+                        "- Since we will ask about the actual modifications later, for now, please only specify the \"start_line\" and \"end_line\" that need modification. Do not write \"modified_data\".",
                         "",
                         "3. In 'execute_command' mode:",
                         "### Purpose:",
@@ -4243,7 +4243,6 @@ def get_flow_data(rust_log_path, rust_flow_path, golden_flow_path):
                 f.write(str(line) + '\n')
 
 
-# I think it would be better to ask about correspondence. It will probably become broad, though. After narrowing the scope first
 def compare_io(rust_log_path, c_flow_path, rust_flow_path, o_meta_dir, golden_flow_path):
 
     #rust_filter_flow_log(rust_log_path, rust_flow_path)
@@ -4289,7 +4288,6 @@ def compare_io(rust_log_path, c_flow_path, rust_flow_path, o_meta_dir, golden_fl
 
     # pending
     # On the other hand, also look at intermediate progress (for this, correspondence needs to be checked)
-    # I feel like it is difficult to define this part precisely. It might be better to extract function names and measure the (relative) call order in the logs
     for item in moment_rust_flows:
         file_path = item['file_path']
         #start_line = item['start_line']  # this may cause a key_error
@@ -4751,7 +4749,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
             #if label != "function":
             reverse_tmp(answer_path, mod_rust_path, label)
 
-            # I want sum_answer_data to merge the data of answer_path.
             answer_data = read_json(answer_path)
             merge_json(sum_answer_data, answer_data)
 

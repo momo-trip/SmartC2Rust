@@ -1483,11 +1483,13 @@ def generate_build_setup(taken_macros_path, independent_const_build_path, flag_b
     ind_consts = set() #[]
     flags = set() #[]
 
+    print(taken_macros_path)
+
     for macro_key, item in macros.items():
-        if item['is_const'] is True and item['is_independent'] is True:
+        if item['is_const'] is True and item['is_independent'] is True and item['definition']['file_path'] not in ["undefined", "unknown"]:
             ind_consts.add(item['name'])
 
-        if item['is_flag'] is True:
+        if item['is_flag'] is True and item['definition']['file_path'] not in ["undefined", "unknown"]:
             flags.add(item['name'])
 
     independents = {}
@@ -1497,6 +1499,8 @@ def generate_build_setup(taken_macros_path, independent_const_build_path, flag_b
     flag_macros = {}
     flag_macros['flags'] = list(flags)
     write_json(flag_build_path, flag_macros)
+
+    print(flag_build_path)
 
 
 def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, target_dir, meta_dir, div_meta_dir, database_dir, dep_json_path, # raw_dir,  
