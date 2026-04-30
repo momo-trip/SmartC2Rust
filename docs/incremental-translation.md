@@ -37,7 +37,7 @@ more C functions / files are replaced by Rust equivalents, and the FFI shims
 that used to call into C are deleted (or flipped to call from C into Rust,
 if there are still C callers).
 
-
+---
 ## How it works
 ### Initial run (resume `off`)
 

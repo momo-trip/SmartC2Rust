@@ -598,7 +598,7 @@ def get_target_function(one_unit, target_path):
 # For C, request actions with respect to definition locations that are expected to be determined later.
 # Note that c_path is used not as the actual file itself, but as something for retrieving meta_dir, so there is a potential intuitive mismatch in the fact that div_c_path does not need to physically exist.
 def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_path, 
-                       original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path):  # , macro_path, all_macro_path# , build_list_path
+                       original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target):  # , macro_path, all_macro_path# , build_list_path
 
     added_prompt = []
     cashed = {}
@@ -660,7 +660,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
         dependencies = collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, is_program_path,
                                             div_meta_dir, original_dir, build_path, conv_type, 
                                             i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, 
-                                            g_at_least_found, global_vars, t_at_least_found, targets, seen,
+                                            g_at_least_found, global_vars, t_at_least_found, targets, seen, target,
                                             g_used, f_used, i_used)
         
         # prompt = dependencies["prompt"]
@@ -719,7 +719,8 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
             added_prompt.extend([f"      - {target_name} (callee):"])
             added_prompt.append(f"            <- callers: {', '.join(callers)}")
             """
-
+    
+    # ifdef statements
     if if_at_least_found:
         ifdef_list = ", ".join(ifdefs)
         added_prompt.extend([
@@ -738,7 +739,8 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
         for ifdef_statement in ifdefs:
             added_prompt.append(f"    - {ifdef_statement}")
         """
-
+    
+    # global variables
     if g_at_least_found:
         global_vars_list = ", ".join(global_vars)
 
@@ -898,6 +900,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     original_dir = interface.original_target_dir
     target_dir = interface.target_dir
     is_program_path = interface.is_program_path
+    target = interface.target
 
     #macro_path = interface.macro_path
     #all_macro_path = interface.all_macro_path
@@ -970,7 +973,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     target_function = get_target_function(one_unit, target_path)
 
     prompt, sole_prompt = get_context_prompt('divided_type', prompt, one_unit, dep_json_path, is_program_path, 
-                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path) #  macro_path, all_macro_path  # , build_list_path
+                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target) #  macro_path, all_macro_path  # , build_list_path
     add_prompt.extend(sole_prompt)
     # print(sole_prompt)
     # print(prompt)
@@ -1528,6 +1531,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     original_dir = interface.original_target_dir
     target_dir = interface.target_dir
     is_program_path = interface.is_program_path
+    target = interface.target
 
     # set the initial prompt
     prompt = []    
@@ -1585,7 +1589,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     target_function = get_target_function(one_unit, target_path)
 
     prompt, sole_prompt = get_context_prompt('divided_type', prompt, one_unit, dep_json_path, is_program_path, 
-                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path) #  macro_path, all_macro_path  # , build_list_path
+                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target) #  macro_path, all_macro_path  # , build_list_path
     add_prompt.extend(sole_prompt)
 
     if len(target_function) != 0:  #len(target_function) == 0:
@@ -4372,7 +4376,7 @@ def get_rust_items(item_data):
 def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, is_program_path,
                          div_meta_dir, original_dir, build_path, conv_type, 
                          i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, 
-                         g_at_least_found, global_vars, t_at_least_found, targets, seen,
+                         g_at_least_found, global_vars, t_at_least_found, targets, seen, target,
                          g_used, f_used, i_used): #, meta_dir, convert_type, key_string, dep_json_path):
     
     prompt = []
@@ -4411,15 +4415,11 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
             
         if 'uses' in meta_data[key_name]:
             uses_list = meta_data[key_name]['uses']
-            
-            # if target_name == "MSEC_PER_TICK":
-            #     print(uses_list)
-            #     sys.exit(0)
-
+        
             for use_item in uses_list:
                 use_file_path = use_item['file_path']
 
-                c_use_file_path = use_file_path.replace("trans_c_0000", "workspace_0000_time-1.9")
+                c_use_file_path = use_file_path.replace("trans_c_0000", f"workspace_0000_{target}")
                 if is_system_file(c_use_file_path, program_files):
                     continue
                 # if original_dir not in use_file_path: # Not filtered out in the uses section # Needs checking
@@ -4482,10 +4482,6 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                         f_used = True
                                 
 
-                #rust_flow, new_rust_flow_list = refer_rust_flows(c_path, uses_list, key_string) #rust_flow = item['rust_flow'] 
-                #rust_flow_dict[function_name] = rust_flow
-        
-
         ###############################
         #### Definition itself
         ###############################
@@ -4524,28 +4520,22 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
         ##### cfg states (originated in Rust/build.rs)
         ifdef_key_name = f"IFDEF:{file_path}:{start_line}"
         if ifdef_key_name in meta_data:            
-            # ifdef_flag = get_ifdef_flag(meta_data[ifdef_key_name])  # uses c_item
-            ifdef_flag = True 
-
-            if ifdef_flag is True: 
-                #print(meta_data[key_name])   
-                macro_name = meta_data[key_name]['name']  # Since it's IFDEF, use name instead of macro_name
-                # macro_name = meta_data[key_name]['macro_name']        
-                ifdefs.add(macro_name) 
-                if_at_least_found = True
-                #continue
-
-        """
-        ifdef_flag = get_ifdef_flag(meta_data[key_name])
-
-        if ifdef_flag is True:
-            if c_item['name'] not in ifdefs:
-                ifdefs[c_item['name']] = set()
-            ifdefs[c_item['name']].add(target_name) 
+            # ifdef_flag = True 
+            # if ifdef_flag is True:                  
+            macro_name = meta_data[ifdef_key_name]['name']  # Since it's IFDEF, use name instead of macro_name  
+            ifdefs.add(macro_name) 
             if_at_least_found = True
-        """
 
-    #repair_prompt = prompt
+        if_key_name = f"IF:{file_path}:{start_line}"
+        if if_key_name in meta_data:
+            if "condition" in meta_data[if_key_name]:     
+                if "defined" in meta_data[if_key_name]["condition"]:
+                    for macro_item in meta_data[if_key_name]["macros"]:
+                        macro_name = macro_item['name'] 
+                        ifdefs.add(macro_name) 
+                        if_at_least_found = True
+
+    # repair_prompt = prompt
     dependencies = {
         "prompt": prompt,
         "cashed": cashed,
@@ -4565,11 +4555,12 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
         "f_used" : f_used,
         "i_used" : i_used,
     }
-    return dependencies  #prompt, cashed, i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, g_at_least_found, global_vars  # , repair_prompt
+
+    return dependencies 
 
 
 
-def get_rust_function_name(name_key, c_rust_map): #func_name, c_rust_map):
+def get_rust_function_name(name_key, c_rust_map):
     #print("Mapping c rust map ...")
     return c_rust_map[name_key]
 
@@ -4726,9 +4717,9 @@ def insert_unimplemented(c_path, answer_path):
 def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, original_dir, 
                    target_path, chat_dir, token_path, time_path, progress_queue, log_dir, max_iterations,
                    meta_dir, div_meta_dir, dep_json_path, rust_output_dir, 
-                   build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,  # , build_list_path
-                   trial_id, rust_build_path, llm_interface, rust_edition,  # , c_lib_path
-                   c_rust_path, rust_c_path, is_program_path
+                   build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,
+                   trial_id, rust_build_path, llm_interface, rust_edition, 
+                   c_rust_path, rust_c_path, is_program_path, target
                    ):
     
     ###############################
@@ -4780,6 +4771,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         log_dir=log_dir,
         max_iterations=max_iterations,
         is_program_path=is_program_path,
+        target=target,
     )
 
     if FFI_STRATEGY == "preserve":
@@ -4852,7 +4844,8 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         progress_queue=progress_queue,
         log_dir=log_dir,
         max_iterations=max_iterations,
-        target_path=target_path
+        target_path=target_path,
+        target=target,
     )
 
     ###############################
@@ -7272,6 +7265,7 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
         progress_queue=progress_queue,
         log_dir=log_dir,
         max_iterations=max_iterations,
+        target=target,
     )
 
 
@@ -7332,10 +7326,10 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
         translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, original_dir,
                        target_path, chat_dir, token_path, time_path, progress_queue, log_dir, max_iterations,
                        meta_dir, div_meta_dir, dep_json_path, rust_output_dir, 
-                       build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,  # , build_list_path
-                       trial_id, rust_build_path, llm_interface, rust_edition,  # , c_lib_path
-                       c_rust_path, rust_c_path, is_program_path
-                       )  #organize_json_unit(c_path, dep_json_path) 
+                       build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,
+                       trial_id, rust_build_path, llm_interface, rust_edition,
+                       c_rust_path, rust_c_path, is_program_path, target
+                       ) 
         
         finished.append(one_unit)
         record_remaining(finished, c_order, components, remained_block_path)
