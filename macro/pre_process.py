@@ -537,6 +537,8 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
         f"  - At the end of the script, use 'exit $failed' so that the script returns non-zero if any test failed.",
         f"  - When executing each testcase binary, in order to captures function call flow traces for each testcase separately, please prepend the following environment variables to the execution command:",
         f"        LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test{{{{test_num}}}}_trace.log ./binary_name",
+        f"  - Do not add, restore, or extend anything beyond what {base_run_path} actively executes. Use ONLY {base_run_path} as reference. Ignore any other test scripts in the same directory.",
+        f"  - Preserve the validation logic of {base_run_path} exactly.",
         # f"  - At the beginning of each testcase, output \"Test {{test_num}} started\" to standard output.",
         # f"  - At the end of each testcase, output \"Test {{test_num}} ended\" to standard output.",
         # f"  - If the testcase succeeds, output \"Test {{test_num}} passed\" to standard output.",
@@ -703,6 +705,9 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
                 f"  - When a test fails, output the failure message to stderr (e.g., echo \"Test N failed\" >&2).",
                 f"  - Please delete '|| true' if it is used. Each test command should fail naturally so that real errors are detected.",
                 f"  - At the end of the script, use 'exit $failed' so that the script returns non-zero if any test failed.",
+                #"",
+                f"  - Do not add, restore, or extend anything beyond what {base_run_path} actively executes. Use ONLY {base_run_path} as reference. Ignore any other test scripts in the same directory.",
+                f"  - Preserve the validation logic of {base_run_path} exactly.",
             ])
 
             prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",
@@ -753,6 +758,9 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
                 f"  - When a test fails, output the failure message to stderr (e.g., echo \"Test N failed\" >&2).",
                 f"  - Please delete '|| true' if it is used. Each test command should fail naturally so that real errors are detected.",
                 f"  - At the end of the script, use 'exit $failed' so that the script returns non-zero if any test failed.",
+                #"",
+                f"  - Do not add, restore, or extend anything beyond what {base_run_path} actively executes. Use ONLY {base_run_path} as reference. Ignore any other test scripts in the same directory.",
+                f"  - Preserve the validation logic of {base_run_path} exactly.",
             ])
             
             prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",

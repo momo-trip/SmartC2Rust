@@ -6,114 +6,57 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-mkdir -p flow_results
-
 failed=0
 
-############################################
-# Test 1: AES128 (default)
-############################################
+mkdir -p flow_results
+
+ACTUAL_DIR="actual"
+EXPECTED_DIR="expected"
+mkdir -p "${ACTUAL_DIR}"
+
+# -------------------- Test 1: Default AES128 --------------------
 test_num=1
 echo "Test ${test_num} started"
-log_file="flow_results/test${test_num}_run.log"
-: > "${log_file}"
 
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_aes_t1 > "${log_file}" 2>&1
-rc=$?
+output_file="${ACTUAL_DIR}/test${test_num}_output.log"
+expected_file="${EXPECTED_DIR}/test${test_num}_output.log"
+success_log="flow_results/test${test_num}_success.log"
+fail_log="flow_results/test${test_num}_fail.log"
 
-t1_ok=1
-if [ $rc -ne 0 ]; then
-    t1_ok=0
+test_failed=0
+failure_details=""
+
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_t1.elf > "${output_file}" 2>&1
+
+if [ ! -f "${expected_file}" ]; then
+    echo "Expected file not found: ${expected_file}" >&2
+    failure_details="Expected file not found: ${expected_file}\n"
+    test_failed=1
 fi
 
-# Verify expected output strings for AES128
-if ! grep -q "Testing AES128" "${log_file}"; then t1_ok=0; fi
-if ! grep -q "CBC encrypt: SUCCESS!" "${log_file}"; then t1_ok=0; fi
-if ! grep -q "CBC decrypt: SUCCESS!" "${log_file}"; then t1_ok=0; fi
-if ! grep -q "CTR encrypt: SUCCESS!" "${log_file}"; then t1_ok=0; fi
-if ! grep -q "CTR decrypt: SUCCESS!" "${log_file}"; then t1_ok=0; fi
-if ! grep -q "ECB encrypt: SUCCESS!" "${log_file}"; then t1_ok=0; fi
-if ! grep -q "ECB decrypt: SUCCESS!" "${log_file}"; then t1_ok=0; fi
-if ! grep -q "ECB encrypt verbose:" "${log_file}"; then t1_ok=0; fi
+line_num=0
+while IFS= read -r expected_line; do
+    line_num=$((line_num + 1))
+    [ -z "$expected_line" ] && continue
+    actual_line=$(sed -n "${line_num}p" "${output_file}")
+    if [[ ! "$actual_line" == "$expected_line"* ]]; then
+        test_failed=1
+        echo "Line ${line_num} does not match"
+        echo "Expected: $expected_line"
+        echo "Actual: $actual_line"
+        failure_details="${failure_details}Line ${line_num} does not match\nExpected: ${expected_line}\nActual: ${actual_line}\n\n"
+    fi
+done < "${expected_file}"
 
-if [ $t1_ok -eq 1 ]; then
-    cp "${log_file}" "flow_results/test${test_num}_success.log"
+if [ $test_failed -eq 0 ]; then
     echo "Test ${test_num} passed"
+    echo "AES test case ${test_num} passed successfully" > "${success_log}"
 else
-    cp "${log_file}" "flow_results/test${test_num}_fail.log"
     echo "Test ${test_num} failed" >&2
+    echo -e "AES test case ${test_num} failed:\n\n${failure_details}" > "${fail_log}"
     failed=1
 fi
-echo "Test ${test_num} ended"
 
-############################################
-# Test 2: AES192
-############################################
-test_num=2
-echo "Test ${test_num} started"
-log_file="flow_results/test${test_num}_run.log"
-: > "${log_file}"
-
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_aes_t2 > "${log_file}" 2>&1
-rc=$?
-
-t2_ok=1
-if [ $rc -ne 0 ]; then
-    t2_ok=0
-fi
-
-if ! grep -q "Testing AES192" "${log_file}"; then t2_ok=0; fi
-if ! grep -q "CBC encrypt: SUCCESS!" "${log_file}"; then t2_ok=0; fi
-if ! grep -q "CBC decrypt: SUCCESS!" "${log_file}"; then t2_ok=0; fi
-if ! grep -q "CTR encrypt: SUCCESS!" "${log_file}"; then t2_ok=0; fi
-if ! grep -q "CTR decrypt: SUCCESS!" "${log_file}"; then t2_ok=0; fi
-if ! grep -q "ECB encrypt: SUCCESS!" "${log_file}"; then t2_ok=0; fi
-if ! grep -q "ECB decrypt: SUCCESS!" "${log_file}"; then t2_ok=0; fi
-if ! grep -q "ECB encrypt verbose:" "${log_file}"; then t2_ok=0; fi
-
-if [ $t2_ok -eq 1 ]; then
-    cp "${log_file}" "flow_results/test${test_num}_success.log"
-    echo "Test ${test_num} passed"
-else
-    cp "${log_file}" "flow_results/test${test_num}_fail.log"
-    echo "Test ${test_num} failed" >&2
-    failed=1
-fi
-echo "Test ${test_num} ended"
-
-############################################
-# Test 3: AES256
-############################################
-test_num=3
-echo "Test ${test_num} started"
-log_file="flow_results/test${test_num}_run.log"
-: > "${log_file}"
-
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log ./test_aes_t3 > "${log_file}" 2>&1
-rc=$?
-
-t3_ok=1
-if [ $rc -ne 0 ]; then
-    t3_ok=0
-fi
-
-if ! grep -q "Testing AES256" "${log_file}"; then t3_ok=0; fi
-if ! grep -q "CBC encrypt: SUCCESS!" "${log_file}"; then t3_ok=0; fi
-if ! grep -q "CBC decrypt: SUCCESS!" "${log_file}"; then t3_ok=0; fi
-if ! grep -q "CTR encrypt: SUCCESS!" "${log_file}"; then t3_ok=0; fi
-if ! grep -q "CTR decrypt: SUCCESS!" "${log_file}"; then t3_ok=0; fi
-if ! grep -q "ECB encrypt: SUCCESS!" "${log_file}"; then t3_ok=0; fi
-if ! grep -q "ECB decrypt: SUCCESS!" "${log_file}"; then t3_ok=0; fi
-if ! grep -q "ECB encrypt verbose:" "${log_file}"; then t3_ok=0; fi
-
-if [ $t3_ok -eq 1 ]; then
-    cp "${log_file}" "flow_results/test${test_num}_success.log"
-    echo "Test ${test_num} passed"
-else
-    cp "${log_file}" "flow_results/test${test_num}_fail.log"
-    echo "Test ${test_num} failed" >&2
-    failed=1
-fi
 echo "Test ${test_num} ended"
 
 exit $failed
