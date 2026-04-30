@@ -198,7 +198,7 @@ python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Ru
 - `trans`: Processing mode — performs C-to-Rust translation with iterative compilation repair
 - `<metadata_dir>`: Enriched metadata from Step 4 (e.g., `trans/metadata_0000/avl`)
 - `<div_metadata_dir>`: Block-level metadata from Step 4 (e.g., `trans/div_metadata_0000/avl`)
-- `off`: Debug flag
+- `off`: Resume flag. `on` to resume from previously translated blocks instead of starting over (see [`docs/incremental-translation.md`](docs/incremental-translation.md)).
 - `<block_output>`: Block file tracking recording translation units  (e.g., `database_0000/avl/block_output.txt`)
 
 **Output:**

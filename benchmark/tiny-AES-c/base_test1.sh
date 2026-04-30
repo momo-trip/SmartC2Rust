@@ -96,11 +96,11 @@ if [ $? -eq 0 ]; then
 fi
 
 # commented for Rust conditional compilation
-# # Test case 2: AES192
-# run_test 2 "aes192"
-# if [ $? -eq 0 ]; then
-#     ((passed_tests++))
-# fi
+# Test case 2: AES192
+run_test 2 "aes192"
+if [ $? -eq 0 ]; then
+    ((passed_tests++))
+fi
 
 # # Test case 3: AES256
 # run_test 3 "aes256"
