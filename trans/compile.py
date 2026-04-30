@@ -4359,11 +4359,9 @@ def get_ifdef_flag(item_data):
 
 def get_rust_items(item_data):
     rust_code = None
-
-    #"""
+    
     if 'rust_code' in item_data and 'content' in item_data['rust_code']:
         rust_code = item_data['rust_code']['content']
-    #"""
 
     """
     if 'rust_code' in item_data: # and 'content' in item_data['rust_code']:
@@ -4516,7 +4514,6 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
             g_at_least_found = True
             continue
 
-        
         ##### cfg states (originated in Rust/build.rs)
         ifdef_key_name = f"IFDEF:{file_path}:{start_line}"
         if ifdef_key_name in meta_data:            
