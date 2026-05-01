@@ -1,0 +1,14 @@
+     ../src/c.l \
+     ../src/main.c \
+     ../src/parser.c \
+     ../src/symbol.c \
+     ../src/output.c \
+     ../src/posix.c \
+     ../gnu/error.c \
+     ../gnu/obstack.c \
+     ../gnu/xalloc-die.c \
+     ../gnu/xalloc-die.c \
+     ../src/wordsplit/wordsplit.c \
+     ../src/parseopt/help.c \
+     ../src/parseopt/optset.c \
+     ../src/parseopt/parseopt.c
