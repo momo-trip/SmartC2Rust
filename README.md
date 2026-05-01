@@ -161,6 +161,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off
 ---
 ### Step 4: Pre-processing for segmentation
 Performs static analysis to build call graphs and dependency information for segmenting the code into translation units.
+
 ```bash
 cd /root/SmartC2Rust/trans
 python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root/SmartC2Rust/benchmark/{program}/targets.txt /root/SmartC2Rust/macro/metadata_0000/{program} /root/SmartC2Rust/macro/div_metadata_0000/{program} /root/SmartC2Rust/macro/trans_c_0000/{program}
@@ -215,12 +216,12 @@ python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Ru
 Verifies and repairs the semantic equivalence of the translated Rust code by comparing its behavior against the golden flows. Note that this step also fixes compilation errors that arise during the repair process.
 ```bash
 cd /root/SmartC2Rust/trans
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_{program}/{program} s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_{program}/{program}
 ```
 
 **Input:**
-- `<workspace_dir>`: Path to the translation workspace (e.g., `trans/workspace_0000_avl/avl`)
 - `s_repair`: Processing mode — semantic equivalence repair
+- `<workspace_dir>`: Path to the translation workspace (e.g., `trans/workspace_0000_avl/avl`)
 
 
 **Output:**

@@ -40,7 +40,7 @@ int main(void)
 	test_encrypt_ctr() + test_decrypt_ctr() +
 	test_decrypt_ecb() + test_encrypt_ecb();
     test_encrypt_ecb_verbose();
-
+    
     return exit;
 }
 

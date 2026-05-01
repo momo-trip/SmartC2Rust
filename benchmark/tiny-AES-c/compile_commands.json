@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Wall",
+      "-Os",
+      "-c",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-DAES192=1",
+      "-o",
+      "aes.o",
+      "aes.c"
+    ],
+    "directory": "/root/SmartC2Rust/benchmark/tiny-AES-c",
+    "file": "/root/SmartC2Rust/benchmark/tiny-AES-c/aes.c",
+    "output": "/root/SmartC2Rust/benchmark/tiny-AES-c/aes.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Wall",
+      "-Os",
+      "-c",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-DAES192=1",
+      "-o",
+      "test.o",
+      "test.c"
+    ],
+    "directory": "/root/SmartC2Rust/benchmark/tiny-AES-c",
+    "file": "/root/SmartC2Rust/benchmark/tiny-AES-c/test.c",
+    "output": "/root/SmartC2Rust/benchmark/tiny-AES-c/test.o"
+  }
+]

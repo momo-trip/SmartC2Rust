@@ -100,14 +100,10 @@ from utils_api import (
 )
 
 from llm_api import (
-    #RepairConfig,
     TransConfig,
     CorConfig,
     LLMInterface,
     init_prompt_count, 
-    #set_exp_data,
-    # repair_test,
-    # repair_branch,
     occupy_llm,
     configure_llm,
     shutdown_llm,
@@ -127,16 +123,12 @@ from llm_api import (
 
 from c_parser_api import (
     analyze_dependencies,
-    #analyze_function,
     analyze_call_relationship,
     p_f,
-    #parse_files_c,
     get_files_list,
-    #analyze_macros_llm,
     detect_include_guards,
     delete_guards,
     delete_macro_defs,
-    #generate_build_rs,
     generate_cargo_toml,
     generate_run_all_path,
     generate_header_paths_rust_code,
@@ -152,7 +144,6 @@ from c_parser_api import (
 
 from rust_parser_api import (
     parse_files_rust,
-    #update_rust_block,
     get_rust_interface,
     rust_find_function_end,
     update_c_rust_metadata,
@@ -183,16 +174,12 @@ WITH_CONDENSED = WITH_FILES = False
 INSERT_FILES = False
 INSERT_FILES_REPAIR = False
 
-REPAIR_MEMORIZED = True # True #True (It runs even without this...!? No, that shouldn't be the case)
-# Set REPAIR_MEMORIZED & WITH_CONDENSED to True.
+REPAIR_MEMORIZED = True
 
-FROM_PART = False #True #False #False
+FROM_PART = False #True
 REPAIR_MAX = 500
 LLM_DIV = False
 RULE_DIV = True
-
-RANDOM_TYPE = False
-#PLAIN_TYPE = False
 
 MOD_LINE = True #False # Modify line by line
 MOD_PARSE = not(MOD_LINE) # Modify per parse unit
@@ -282,8 +269,7 @@ tracing-subscriber = {{ version = "0.3", features = ["env-filter", "json"] }}'''
         f.write(content)
 
 
-
-def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, build_rs_path
+def create_rust_libdir(work_dir, rust_output_dir):
     #delete_directory(rust_output_dir)
     commands = [f"cargo new {rust_output_dir} --lib"]
     output, error = execute_command(commands)
@@ -293,7 +279,7 @@ def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, buil
         print("Error:", error)
     
     # (re-)create rust directory # insert build.rs
-    lib_path = f"{rust_output_dir}/src/lib.rs" #lib_path = rust_output_dir + '/src/lib.rs'  #interface.lib_path'] #f"{rust_output_dir}/src/lib.rs" #interface.lib_path']
+    lib_path = f"{rust_output_dir}/src/lib.rs" 
     build_rs_path = rust_output_dir + '/build.rs'
     toml_path = f"{rust_output_dir}/Cargo.toml"
 
@@ -307,11 +293,9 @@ def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, buil
     base_path = find_highest_source(work_dir)
     lowest_dir = os.path.basename(os.path.normpath(base_path))
 
-    #"""
     if (MANUAL_FIRST or not MANUAL) or not DEBUG_LLM:
         print("Creating each module file")
         
-        #create_file(build_rs_path) #delete_file(lib_path)
         with open(lib_path, "w") as lib_file:
             lib_file.write(f"#![allow(non_upper_case_globals)]\n")
             lib_file.write(f"#![allow(non_camel_case_types)]\n")
@@ -319,21 +303,13 @@ def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, buil
             lib_file.write(f"\n")
             lib_file.write(f"include!(concat!(env!(\"OUT_DIR\"), \"/bindings.rs\"));\n")  # Write include! in the file that wants to use the contents of bindings.rs
 
-
-        #with open(lib_path, "w") as lib_file: # Temporarily separated
-        #    lib_file.write(f"pub mod {target};\n")  #(f"pub mod {lowest_dir};\n")
-    #"""
-    
-    #copy_file(build_template_path, build_rs_path)
     add_tracing(rust_output_dir, toml_path)
 
-    return build_rs_path, lib_path, toml_path  #, b
+    return build_rs_path, lib_path, toml_path 
 
 
+def create_rust_libdir(work_dir, rust_output_dir):
 
-
-def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, build_rs_path
-    #delete_directory(rust_output_dir)
     commands = [f"cargo new {rust_output_dir} --lib"]
     output, error = execute_command(commands)
     if output:
@@ -342,21 +318,19 @@ def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, buil
         print("Error:", error)
     
     # (re-)create rust directory # insert build.rs
-    lib_path = f"{rust_output_dir}/src/lib.rs" #lib_path = rust_output_dir + '/src/lib.rs'  #interface.lib_path'] #f"{rust_output_dir}/src/lib.rs" #interface.lib_path']
+    lib_path = f"{rust_output_dir}/src/lib.rs"
     build_rs_path = rust_output_dir + '/build.rs'
     toml_path = f"{rust_output_dir}/Cargo.toml"
 
-    #delete_file(lib_path)
     recreate_file(lib_path)
 
-    # Remove git files  # added
+    # Remove git files
     remove_git_directory(rust_output_dir)
 
     # Create each file
     base_path = find_highest_source(work_dir)
     lowest_dir = os.path.basename(os.path.normpath(base_path))
 
-    #"""
     if (MANUAL_FIRST or not MANUAL) or not DEBUG_LLM:
         print("Creating each module file")
         
@@ -367,17 +341,10 @@ def create_rust_libdir(work_dir, rust_output_dir): # , build_template_path, buil
             lib_file.write(f"#![allow(non_snake_case)]\n")
             lib_file.write(f"\n")
             lib_file.write(f"include!(concat!(env!(\"OUT_DIR\"), \"/bindings.rs\"));\n")  # Write include! in the file that wants to use the contents of bindings.rs
-
-
-        #with open(lib_path, "w") as lib_file: # Temporarily separated
-        #    lib_file.write(f"pub mod {target};\n")  #(f"pub mod {lowest_dir};\n")
-    #"""
     
-    #copy_file(build_template_path, build_rs_path)
     add_tracing(rust_output_dir, toml_path)
 
-    return build_rs_path, lib_path, toml_path  #, b
-
+    return build_rs_path, lib_path, toml_path
 
 
 def create_rust_bindir(work_dir, rust_output_dir):
@@ -423,11 +390,11 @@ def create_rust_bindir(work_dir, rust_output_dir):
 def get_existing_lib_paths(work_dir, rust_output_dir):
     
     # (re-)create rust directory # insert build.rs
-    lib_path = f"{rust_output_dir}/src/lib.rs" #lib_path = rust_output_dir + '/src/lib.rs'  #interface.lib_path'] #f"{rust_output_dir}/src/lib.rs" #interface.lib_path']
+    lib_path = f"{rust_output_dir}/src/lib.rs"
     build_rs_path = rust_output_dir + '/build.rs'
     toml_path = f"{rust_output_dir}/Cargo.toml"
 
-    return build_rs_path, lib_path, toml_path  #, b
+    return build_rs_path, lib_path, toml_path
 
 
 def write_lib(lib_path, targetectory, target):
@@ -437,11 +404,11 @@ def write_lib(lib_path, targetectory, target):
 
     if (MANUAL_FIRST or not MANUAL) or not DEBUG_LLM:
 
-        with open(lib_path, "a") as lib_file: #with open(lib_path, "w") as lib_file:
+        with open(lib_path, "a") as lib_file:
             lib_file.write(f"\n\n")
             lib_file.write(f"// added a module\n")
             mod_name = change_hyphn(target)
-            lib_file.write(f"pub mod {mod_name};\n") #lib_file.write(f"pub mod {target};\n")
+            lib_file.write(f"pub mod {mod_name};\n")
 
 
 def add_module_declaration(mod_path, module_name):
@@ -450,7 +417,7 @@ def add_module_declaration(mod_path, module_name):
     Do not add it if the declaration already exists
     """
     new_mod_name = change_hyphn(module_name)
-    declaration = f"pub mod {new_mod_name};"  #declaration = f"pub mod {module_name};"
+    declaration = f"pub mod {new_mod_name};"
     
     # Read existing declarations
     existing_declarations = set()
@@ -545,31 +512,6 @@ refine_template = f"""{{
 """
 
 
-# refine_template = f"""
-# {{
-#     "rust_code": "The Rust code in the response. Since it will be executed as-is, absolutely no omissions or placeholders should be included. Write the actual implementation so that it can be copied and pasted.",
-#     "c_block_start": The starting line number of the corresponding C block in the original C code for \"rust_code\",
-#     "c_block_end": The ending line number of the corresponding C block in the original C code for \"rust_code\",
-#     "no_omission": True if the response code contains no omissions and can be executed as-is. Otherwise, False,
-#     "current_block_complete": True if the response \"rust_code\" fully implements the functionality of the original C code from c_block_start to c_block_end without any mocking or simplifications. Otherwise, False.,
-#     "ongoing": true if the response is split into multiple parts and there is still remaining JSON data, false otherwise,
-#     "unsafe_count": The number of unsafe blocks in the answered \"rust_code\",
-#     "unsafe_used": True if `unsafe` is used at least once in the provided \"rust_code\". Otherwise, False.,
-#     "refined_completed" : True if the code has been successfully refined to proper Rust style with improved safety and adherence to Rust principles; otherwise, false,
-#     "reason": An explanation of the response. The explanation must absolutely include a justification regarding the use of `unsafe` (either proof that it is not used or a compelling reason why its use is unavoidable)."
-# }}
-# """
-
-# If the ongoing flag is false, this should be True only when the answer code fully implements all functionality present in the original C code without any mocks or simplifications. If any partially implemented parts remain, it should be False. If the answer code is long and the ongoing flag is true, then this should apply only to the current part (the presented rust_code block): True only when all corresponding functionality of the original C code is fully implemented in this part with no mocks or simplifications at all; otherwise False.
-
-# For the presented rust_code block (or only the current part if the ongoing flag is true), set this to true only when all corresponding functionality of the original C code is fully implemented and no mocks or simplifications (such as TODOs or stub implementations) are included at all; otherwise false.
-# If the ongoing flag is true, this applies only to the current part (the presented rust_code block): True only when all corresponding functionality of the original C code is fully implemented and no mocks or simplifications are included at all; otherwise False.
-
-# True only if everything is an actual implementation and the code can be provided as-is. Otherwise False.
-
-# Please aim for False.
-
-
 def get_target_function(one_unit, target_path):
     print("Getting FFI boundary functions...")
 
@@ -628,7 +570,6 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
     f_used = False
     i_used = False
 
-    # print(components_included)
     data = {}
     for c_item in components_included:
         c_name = c_item['name']
@@ -732,13 +673,6 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
             "    - Do NOT skip or merge #[cfg] attributes even if the code inside different #ifdef blocks looks identical. Different configurations will be tested separately, and each block must be independently compilable.",
             f"    - Macros: {ifdef_list}"
         ])
-        # for target_name, value in ifdefs.items():
-        #     for ifdef_statement in ifdefs[target_name]:
-        #         added_prompt.append(f"    {ifdef_statement}")
-        """
-        for ifdef_statement in ifdefs:
-            added_prompt.append(f"    - {ifdef_statement}")
-        """
     
     # global variables
     if g_at_least_found:
@@ -804,7 +738,6 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
         for caller_name, rust_item in rust_refs.items():
             added_prompt.extend([f"      - {caller_name} (caller):"])
 
-            #seen = set() # Remove duplicates
             callee_name = rust_item['name']
             callee_rust_code = rust_item['rust_code']
             if 'category' in rust_item and rust_item['category'] is not None:
@@ -813,8 +746,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
 
             else:
                 added_prompt.append(f"         - {callee_name} (callee): {callee_rust_code}") 
-            #seen.add(callee_name) 
-    
+
     
     #############################################################################
     ###### Access rules
@@ -844,7 +776,6 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
 
 
     prompt.extend(added_prompt)
-    #print(prompt)
     return prompt, added_prompt
 
 
@@ -853,11 +784,6 @@ def get_rust_context_prompt(conv_type, one_unit, dep_json_path, meta_dir, rust_o
     
     c_rust_map = read_json(c_rust_path)
 
-    # It might be better to insert a parse phase here once -> Actually, if blocks are updated, won’t it be automatically updated?
-    #get_rust_signature(meta_dir)  # Was it this function?
-
-    #global module_list
-    #module_list = []
     sum_conv_prompt = []
     sum_rep_prompt = []
 
@@ -866,7 +792,6 @@ def get_rust_context_prompt(conv_type, one_unit, dep_json_path, meta_dir, rust_o
 
     cashed = {}
 
-    #for collect_type in ["non_function", "function"]:
     for c_item in one_unit:
         c_name = c_item['name']
         c_path = c_item['file_path']
@@ -877,14 +802,13 @@ def get_rust_context_prompt(conv_type, one_unit, dep_json_path, meta_dir, rust_o
         sum_conv_prompt.extend(convert_prompt)
         sum_rep_prompt.extend(repair_prompt)
 
-    #prompt.extend(sum_conv_prompt)
-    return sum_rep_prompt #prompt, sum_rep_prompt
+    return sum_rep_prompt
 
 
-def translate_llm(convert_element, one_unit, rust_path, interface): # , start_line, end_line
+def translate_llm(convert_element, one_unit, rust_path, interface):
     
     llm_interface = interface.llm_interface
-    output_max = llm_interface.output_max #4000 # output_max = 4000 # per 1 response
+    output_max = llm_interface.output_max
 
     target_path = interface.target_path
     work_dir = interface.work_dir
@@ -901,9 +825,6 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     target_dir = interface.target_dir
     is_program_path = interface.is_program_path
     target = interface.target
-
-    #macro_path = interface.macro_path
-    #all_macro_path = interface.all_macro_path
 
     # set the initial prompt
     prompt = []    
@@ -953,18 +874,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                 "- About functions, when translating C functions to Rust, please implement all functions as standalone functions without using Rust's methods or impl blocks.",
     ])
 
-    """
-    common_law = get_prompt_template(output_max)
-    prompt.extend(common_law)
-    """
-
-    """
-    #if WITH_CONDENSED:
-    prompt, sole_prompt = get_c_prompts(prompt, div_c_path, meta_dir, 'divided_type') # , build_path, build_list_path
-    #add_prompt.extend(sole_prompt) # This part isn't needed, right..?
-    """
-
-    c_code = get_unit_code(one_unit) # , original_dir, target_dir
+    c_code = get_unit_code(one_unit)
     
     c_path = f"{database_dir}/tmp.c"
     write_file(c_path, c_code)
@@ -975,15 +885,8 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     prompt, sole_prompt = get_context_prompt('divided_type', prompt, one_unit, dep_json_path, is_program_path, 
                                               original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target) #  macro_path, all_macro_path  # , build_list_path
     add_prompt.extend(sole_prompt)
-    # print(sole_prompt)
-    # print(prompt)
-    # print(one_unit)
-    # print(dep_json_path)
-    # print(div_meta_dir)
-    # print(rust_output_dir)
-    # print(build_path)
 
-    if len(target_function) != 0:  #len(target_function) == 0:
+    if len(target_function) != 0:
         prompt.extend([
             "- For the following entry point functions within the FFI boundary functions, make them callable from C code as they will be called directly from C code as entry points.",
             "- For the entry point functions, if a stub implementation already exists, delete the stub implementation first, then write the actual implementation as a complete replacement of it.",
@@ -991,24 +894,21 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
             "- IMPORTANT: This Rust code is a LIBRARY, not a standalone binary. You MUST NEVER define a function named main or fn main() on the Rust side. The Rust 'main' entry-point functions are called from the C-side main functions as library functions.",
         ])
 
-        #"""
         prompt.extend(["  - Entry point functions:"])
         for func in target_function:
             prompt.extend([f"    - {func}"])
-        #"""
 
     functions = parse_function_info(target_path, work_dir)
     prompt.extend(["\n## FFI boundary functions:"])
     for func in functions:
-        prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
+        prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})")
     
 
     prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
     prompt.extend([convert_template])
 
     prompt.extend([
-        #f"\n## C source code ({c_path}):",
-        f"\n## C code segment:", # ## C source code:",
+        f"\n## C code segment:", 
         c_code
     ])
 
@@ -1018,7 +918,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     ])
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
-    directory_structure = get_dir_struct("translation", work_dir, None)  #rust_output_dir)
+    directory_structure = get_dir_struct("translation", work_dir, None) 
     prompt.extend([directory_structure, ""])
 
     prompt.extend(["", "## Module structure of the Rust program:"])
@@ -1030,17 +930,13 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     current_c_block_end = 0
 
     ref_files = []
-    #ref_files = get_ref_files(c_path, dep_json_path)
-
     ongoing_flag = False
     no_omission = None
     rsp_json = {}
     current_block_complete = None
     refined_completed = None
     ongoing_count = 0
-
     exp_data = {}
-
 
     init_rust_end = count_file_lines(rust_path) + 1
 
@@ -1052,8 +948,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                 break
             print("Keep going to receive Rust code.")
 
-            prompt = [#"Please continue writing the translated code.",
-                        f"Please translate the remaining code from after line {current_c_block_end} as shown below. Do NOT translate any code before line {current_c_block_end}.",
+            prompt = [f"Please translate the remaining code from after line {current_c_block_end} as shown below. Do NOT translate any code before line {current_c_block_end}.",
                     "Keep following the translation rules.",
                     "",
                     "## Translation rules:",
@@ -1105,11 +1000,9 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                     "- IMPORTANT: This Rust code is a LIBRARY, not a standalone binary. You MUST NEVER define a function named main or fn main() on the Rust side. The Rust 'main' entry-point functions are called from the C-side main functions as library functions.",
                 ])
 
-                #"""
                 prompt.extend(["  - Entry point functions:"])
                 for func in target_function:
                     prompt.extend([f"    - {func}"])
-                #"""
             
             prompt.extend(["\n## FFI boundary functions:"])
             for func in functions:
@@ -1119,9 +1012,8 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
             prompt.extend([convert_template])
 
             c_code = get_lined_specific_code(database_dir, c_path, current_c_block_end, total_end)
-            #c_code = get_lined_code(c_path, work_dir)
+
             prompt.extend([
-                #f"\n## C source code ({c_path}):",
                 f"\n## C source code (lines {current_c_block_end} - {total_end} in the file {c_path}):",
                 c_code
             ])
@@ -1130,8 +1022,8 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
         exp_data['phase'] = 'convert'
         if ongoing_count == 0:
 
-            if INSERT_FILES: #WITH_FILES:
-                if len(ref_files) != 0: #first_touch:
+            if INSERT_FILES:
+                if len(ref_files) != 0:
                     rust_ref_files = []
                     for ref in ref_files:
                         ref_rust_path = get_rust_path(ref, map_path)
@@ -1140,10 +1032,10 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
 
                     history_path = []
                     base_rust_path = remove_base_path(rust_path, rust_output_dir)
-                    history_path.append(base_rust_path) #history_path.append(rust_path)
+                    history_path.append(base_rust_path)
                     history_path.extend(rust_ref_files)
                     
-                    rsp_json = ask_llm(prompt, history_path, llm_interface) #code_blocks = extract_code_blocks(response)
+                    rsp_json = ask_llm(prompt, history_path, llm_interface)
                     if 'c_block_end' in rsp_json:
                         c_block_end = rsp_json['c_block_end']
                         current_c_block_end = c_block_end 
@@ -1161,7 +1053,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                 prompt.extend([structure, ""])
                 
 
-            rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+            rsp_json = ask_llm(prompt, "continue", llm_interface) 
             if 'c_block_end' in rsp_json:
                 c_block_end = rsp_json['c_block_end']
                 current_c_block_end = c_block_end 
@@ -1173,16 +1065,14 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
         toml_submit = False
         build_submit = False
 
-        if 'rust_code' in rsp_json: #len(rsp_blocks) > 0:
-            append_rust_path(rust_path, rsp_json['rust_code']) #toml_submit, build_submit = update_rust_path(rust_path, rsp_json, rust_output_dir)
+        if 'rust_code' in rsp_json:
+            append_rust_path(rust_path, rsp_json['rust_code'])
         
-        if 'toml' in rsp_json: #if len(rsp_json) > 1:
+        if 'toml' in rsp_json:
             if rsp_json['toml'] is not None:
                 # Here, rewrite the entire Cargo.toml
                 cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
-                #write_toml(rsp_json['toml'], cargo_toml_path) # Write TOML data to file
 
-                # Instead of rewriting the entire Cargo.toml, merge into it
                 existing_data = load_toml_file(cargo_toml_path)
                 merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
                 updated_toml_data = toml.dumps(existing_data)  # Convert the overwritten data to TOML format
@@ -1190,7 +1080,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
 
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
-            #ongoing_flag = search_key('ongoing', rsp_json)
+
         else:
             print("Should include ongoing flag") 
         
@@ -1259,7 +1149,6 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
                     f"- If the response is split into multiple parts and there is still remaining JSON data, write a boolean value of True for the 'ongoing' key. If the JSON data is the final part, write a boolean value of False for the 'ongoing' key.",
                 ])
     
-    # get_context_prompt
     prompt.extend(sole_prompt)
 
     prompt.extend(["\n## FFI boundary functions:"])
@@ -1269,10 +1158,6 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
     prompt.extend(["\nPlease provide your response in the following JSON format:"])
     prompt.extend([refine_template])
 
-
-    #c_code = read_specific_lines(c_path, part['start_line'], part['end_line']) #c_code = read_file(c_path)
-    #c_code = read_file(div_c_path)
-    #rust_code = get_lined_code(rust_path, work_dir)
     rust_code = get_lined_specific_code(database_dir, f"{database_dir}/unrefined.rs", init_rust_end, last_rust_end)
 
     prompt.extend([
@@ -1280,9 +1165,8 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
         rust_code
     ])
 
-    #c_code = get_lined_code(c_path, work_dir)
     prompt.extend([
-        f"\n## C code segment:", ## C source code:", #({c_path})
+        f"\n## C code segment:",
         c_code
     ])
 
@@ -1432,23 +1316,17 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
             
             exp_data['repair_count'] = 0
             exp_data['phase'] = 'convert'
-
-            # prompt.extend([convert_template])
-
-            # structure = get_cargo_modules(rust_output_dir)
-            # prompt.extend([structure, ""])
             
         if rust_block_start is not None and rust_block_end is not None:
             #rust_code = get_lined_specific_code("unrefined.rs", rust_block_start, rust_block_end)
             #rust_code = get_lined_code(f"{database_dir}/unrefined.rs", work_dir)
             rust_code = read_file(f"{database_dir}/unrefined.rs")
             prompt.extend([
-                #f"\n## Unrefined Rust code（{rust_block_start} - {rust_block_end} lines）:",
                 f"\n## Unrefined Rust code:",
                 rust_code
             ])
             
-        rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+        rsp_json = ask_llm(prompt, "continue", llm_interface)
         
         if 'c_block_end' in rsp_json:
             c_block_end = rsp_json['c_block_end']
@@ -1464,16 +1342,14 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
         toml_submit = False
         build_submit = False
 
-        if 'rust_code' in rsp_json: #len(rsp_blocks) > 0:
-           append_rust_path(rust_path, rsp_json['rust_code']) #toml_submit, build_submit = update_rust_path(rust_path, rsp_json, rust_output_dir)
+        if 'rust_code' in rsp_json: 
+           append_rust_path(rust_path, rsp_json['rust_code'])
         
-        if 'toml' in rsp_json: #if len(rsp_json) > 1:
+        if 'toml' in rsp_json: 
             if rsp_json['toml'] is not None:
                 # Here, rewrite the entire Cargo.toml
                 cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
-                #write_toml(rsp_json['toml'], cargo_toml_path) # Write TOML data to file
 
-                # Instead of rewriting the entire Cargo.toml, merge into it
                 existing_data = load_toml_file(cargo_toml_path)
                 merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
                 updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
@@ -1481,7 +1357,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
 
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
-            #ongoing_flag = search_key('ongoing', rsp_json)
+
         else:
             print("Should include ongoing flag") 
         
@@ -1500,16 +1376,10 @@ def translate_llm(convert_element, one_unit, rust_path, interface): # , start_li
 
         iteration_dict[rust_path] = 1
 
-        # if refined_completed is True:
-        #     break
         if not ongoing_flag:
             break
 
-
         ongoing_count += 1
-
-    # return toml_submit, build_submit
-
 
 
 def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
@@ -1592,14 +1462,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                                               original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target) #  macro_path, all_macro_path  # , build_list_path
     add_prompt.extend(sole_prompt)
 
-    if len(target_function) != 0:  #len(target_function) == 0:
-        # prompt.extend([
-        #     "- For the following entry point functions within the FFI boundary functions, make them callable from C code as they will be called directly from C code as entry points.",
-        #     "- For the entry point functions, if a stub implementation already exists, delete the stub implementation first, then write the actual implementation as a complete replacement of it.",
-        #     "- If the entry point function is named 'main', its Rust function name should be made unique by appending _main to the filename (stripped of its extension, with non-alphanumeric characters replaced by _). If a collision still occurs, prefix the parent directory name.",
-        #     "- IMPORTANT: This Rust code is a LIBRARY, not a standalone binary. You MUST NEVER define a function named main or fn main() on the Rust side. The Rust 'main' entry-point functions are called from the C-side main functions as library functions.",
-        # ])
-
+    if len(target_function) != 0:
         prompt.extend([
             "- For the following entry point function, translate it as the Rust entry point named 'rust_main_<identifer>'.",
             "- If a stub implementation of rust_main_<identifer> already exists, delete the stub first, then write the actual implementation as a complete replacement.",
@@ -1623,8 +1486,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     prompt.extend([convert_template])
 
     prompt.extend([
-        #f"\n## C source code ({c_path}):",
-        f"\n## C code segment:", # ## C source code:",
+        f"\n## C code segment:",
         c_code
     ])
 
@@ -1646,7 +1508,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     current_c_block_end = 0
 
     ref_files = []
-    # ref_files = get_ref_files(c_path, dep_json_path)
 
     ongoing_flag = False
     no_omission = None
@@ -1710,7 +1571,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     # f"I'm saying this again because it's important: Do not try to convert everything at once. Keep the code included in 'rust_code' within {output_max} tokens for one part. Please strictly follow this instruction.",
                     ]
 
-            if len(target_function) != 0:  #len(target_function) == 0:
+            if len(target_function) != 0:
                 prompt.extend([
                     "- For the following entry point functions within the FFI boundary functions, make them callable from C code as they will be called directly from C code as entry points.",
                     "- For the entry point functions, if a stub implementation already exists, delete the stub implementation first, then write the actual implementation as a complete replacement of it.",
@@ -1731,10 +1592,8 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
             prompt.extend([convert_template])
 
             c_code = get_lined_specific_code(database_dir, c_path, current_c_block_end, total_end)
-            #c_code = get_lined_code(c_path, work_dir)
 
             prompt.extend([
-                #f"\n## C source code ({c_path}):",
                 f"\n## C source code (lines {current_c_block_end} - {total_end} in the file {c_path}):",
                 c_code
             ])
@@ -1907,11 +1766,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     # ref_files = get_ref_files(c_path, dep_json_path)
 
     ongoing_flag = False
-
-    # Initialize here
-    # copy_file(rust_path, f"{database_dir}/unrefined.rs")
-    # delete_file(rust_path)
-
     rust_block_start = None
     rust_block_end = None
     current_c_block_end = 0
@@ -2037,13 +1891,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
             
             exp_data['repair_count'] = 0
             exp_data['phase'] = 'convert'
-
-            # prompt.extend([f"- In summary, please respond in the following JSON format."])
-            # prompt.extend([convert_template])
-
-            # prompt.extend(["", "## Target Rust module structure:"])
-            # structure = get_cargo_modules(rust_output_dir)
-            # prompt.extend([structure, ""])
             
         if rust_block_start is not None and rust_block_end is not None:
             #rust_code = get_lined_specific_code("unrefined.rs", rust_block_start, rust_block_end)
@@ -2055,7 +1902,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 rust_code
             ])
             
-        rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+        rsp_json = ask_llm(prompt, "continue", llm_interface)
         
         if 'c_block_end' in rsp_json:
             c_block_end = rsp_json['c_block_end']
@@ -2113,10 +1960,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         if not ongoing_flag:
             break
 
-
         ongoing_count += 1
-
-    # return toml_submit, build_submit
 
 
 def repair_total(convert_element, prompt, c_path, rust_path, exp_data, error): # , start_line, end_line
@@ -2146,7 +1990,6 @@ def repair_total(convert_element, prompt, c_path, rust_path, exp_data, error): #
 
     ongoing_count = 0
 
-    #initial_rust_code = 
     while (1):
         exp_data['structure_repair'] = True
         if "repair_count" in item:
@@ -2204,9 +2047,7 @@ def repair_total(convert_element, prompt, c_path, rust_path, exp_data, error): #
             if rsp_json['toml'] is not None:
                 # Here, rewrite the entire Cargo.toml
                 cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
-                #write_toml(rsp_json['toml'], cargo_toml_path)  # Write TOML data to file
 
-                # Instead of rewriting the entire Cargo.toml, merge into it
                 existing_data = load_toml_file(cargo_toml_path)
                 merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
                 updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
@@ -2255,7 +2096,7 @@ def create_rust_base_json(c_path, meta_dir, label, div_start_line):
         div_start_line = 0
 
     new_data = []
-    #if BLOCK_MAP:
+
     for item in c_data:
         if item['block_type'] != label:
             continue
@@ -2308,14 +2149,12 @@ def insert_rust_def(file_path, element, rust_code):
     meta_data, meta_path = obtain_metadata(file_path, meta_dir, False, None, "def")
     for item in meta_data:
         if item['name'] == element:
-            #item['rust_code'] = rust_code
             item['rust_code']['content'] = rust_code
             item['rust_macro_define'] = rust_code
         
         if 'components' in item:
             for com in item['components']:
                 if com['name'] == element:
-                    #com['rust_code'] = rust_code
                     com['rust_code']['content'] = rust_code
                     com['rust_macro_define'] = rust_code
 
@@ -2373,10 +2212,9 @@ def get_start_from_persable_id(tmp_item):
     start_line = None
     end_line = None
 
-    #persable_count = {}
     for file_path, unit_items in persable_units.items():
         for unit_item in unit_items:
-            if tmp_item['persable_id'] == unit_item['persable_id']: ## ??
+            if tmp_item['persable_id'] == unit_item['persable_id']:
                 start_line = unit_item['start_line']
                 end_line = unit_item['end_line']
                 break
@@ -2403,7 +2241,6 @@ def merge_conds_rust_metadata(c_path, tmp_rust_path):
         # Process the main item
         if c_item['name'] in tmp_data_dict:
             tmp_item = tmp_data_dict[c_item['name']]
-            #c_item['rust_code'] = tmp_item['rust_code']
             c_item['rust_code']['content'] = tmp_item['rust_code']
 
         # Process components
@@ -2468,7 +2305,7 @@ def refer_parse_types(c_path, meta_dir):
         return []
     
     for item in meta_data:
-        if item['block_type'] == "conditional": # and item['macro_type'] == "redefined":  #  What does this even mean..
+        if item['block_type'] == "conditional":
             conds_flag = True
         elif item['block_type'] == "others":
             others_flag = True
@@ -2477,9 +2314,9 @@ def refer_parse_types(c_path, meta_dir):
 
         if 'components' in item:
             for com in item['components']:
-                if 'block_type' in com and com['block_type'] == "conditional": # and com['macro_type'] == "redefined":
+                if 'block_type' in com and com['block_type'] == "conditional":
                     conds_flag = True
-                if com['category'] in ['macro_func', 'macro_var', 'data_type', 'global_var']: #['macro_func', 'data_type', 'global_var']:
+                if com['category'] in ['macro_func', 'macro_var', 'data_type', 'global_var']:
                     others_flag = True
                 if com['category'] == 'function':
                     funcs_flag = True
@@ -2535,12 +2372,7 @@ def retrieve_current_code(modified_list, raw_dir):
     template_path = 'tmp_template.json'
 
     for item in modified_list:
-        # If the key exists, delete it
-        # if 'modified_data' in item:
-        #    del item['modified_data']
-
-        # It's better not to modify the file paths when showing to the LLM, to avoid confusion # When split into smaller parts, would it only reference the rust_path of the parent part? (Might be better to properly handle the selection of file paths to modify)
-        rust_path = rust_output_dir + "/" + item['file_path'] #item['file_path'] = rust_output_dir + "/" + "src" + "/" + item['file_path']
+        rust_path = rust_output_dir + "/" + item['file_path']
         c_path = get_c_path(rust_path, raw_dir)
         rust_meta_data, rust_meta_path = obtain_metadata(c_path, meta_dir, True, None, "def")
         if 'start_line' in item:
@@ -2561,19 +2393,16 @@ def retrieve_current_code(modified_list, raw_dir):
                 if m_item['start_line'] <= start_line <= m_item['end_line']: # Because this might be slightly off with ctags
                     item['current_code'] = m_item['current_code']
                     item['category'] = m_item['category']
-                    #item['start_line'] = m_item['start_line'] # added
                     break
             else:
                 continue
 
-    #Try further subdividing modified_list
-    # ONI
     for item in modified_list: 
         if 'current_code' in item:            
             current_path = 'tmp_current.rs'
             write_file(current_path, item['current_code'])
-            line_count = count_file_lines(current_path) #count_lines_of_code(item['current_code'])
-            if line_count >= 300 and 'category' in item and item['category'] != 'function': #if line_count >= 300 and 'category' in item and item['category'] != 'function':
+            line_count = count_file_lines(current_path)
+            if line_count >= 300 and 'category' in item and item['category'] != 'function':
                 print(f"line_count is {line_count}")
                 item['format_type'] = "A"
                 with_type_A = True
@@ -2581,7 +2410,7 @@ def retrieve_current_code(modified_list, raw_dir):
             delete_file(current_path)
         
         else:
-            item['current_code'] = None # Add in the case of "added"
+            item['current_code'] = None
 
     if with_type_A:
         for item in modified_list:
@@ -2624,9 +2453,6 @@ def retrieve_current_code(modified_list, raw_dir):
         if 'added' in item:
             del item['added']
 
-
-    print(f"unpacked? {template_path}, {with_type_A}, {added_list}") # ValueError: too many values to unpack (expected 3)
-
     for item in modified_list: 
         if 'current_code' in item:
             del item['current_code']
@@ -2660,50 +2486,40 @@ def get_file_prompt(c_path, meta_dir):
     return prompt
 
 
-def insert_modified_plain(mod): #current_code_length
 
+def insert_modified_plain(mod):
     last_count = count_file_lines(mod['file_path'])
 
     print("current_code_found is True in insert_modified_data()")
-    part_03_code = read_specific_lines(mod['file_path'], mod['end_line'] + 1, last_count) # mod['start_line'] + current_code_length
+    part_last_code = read_specific_lines(mod['file_path'], mod['end_line'] + 1, last_count)
 
-
-    print(last_count)
     delete_lines(mod['file_path'], mod['start_line'], last_count)
 
-    #sprint(last_count)
-    #print(part_03_code)
     append_file(mod['file_path'], '\n')
     append_file(mod['file_path'], mod['modified_data'])
 
     append_file(mod['file_path'], '\n')
-    append_file(mod['file_path'], part_03_code)
+    append_file(mod['file_path'], part_last_code)
 
 
-
-
-def insert_modified_data(mod): #current_code_length
-
+def insert_modified_data(mod):
     last_count = count_file_lines(mod['file_path'])
 
     if mod['current_code_found'] == True:
         print("current_code_found is True in insert_modified_data()")
-        part_code = read_specific_lines(mod['file_path'], mod['current_end_line'] + 1, last_count) # mod['start_line'] + current_code_length
+        part_code = read_specific_lines(mod['file_path'], mod['current_end_line'] + 1, last_count)
 
     else:
         print("current_code_found is False in insert_modified_data()")
         part_code = read_specific_lines(mod['file_path'], mod['start_line'], last_count)
 
-    print(last_count)
     delete_lines(mod['file_path'], mod['start_line'], last_count)
 
-    #print(last_count)
     append_file(mod['file_path'], '\n')
     data = mod['modified_data']
     if isinstance(data, (list, dict)):
         data = json.dumps(data, indent=4, ensure_ascii=False)
     append_file(mod['file_path'], data)
-    #append_file(mod['file_path'], mod['modified_data'])
 
     append_file(mod['file_path'], '\n')
     append_file(mod['file_path'], part_code)
@@ -2830,20 +2646,12 @@ line_template = f"""{{
 }}
 """
 
-# "modification_part": {{
-#                 "current": (the number of the current part),
-#             }},
-
-# "total": (the total number of parts),
-# "total": (the total number of parts),
-
-
 def get_modification_files(template_json):
     modification_files = set()
     modification_by_file = {}
 
     for item in template_json:
-        rust_path =item['file_path']   #rust_output_dir + "/" + item['file_path'] 
+        rust_path =item['file_path']
         modification_files.add(rust_path)
         if rust_path not in modification_by_file:
             modification_by_file[rust_path] = []
@@ -2854,11 +2662,6 @@ def get_modification_files(template_json):
     return list(modification_files), modification_by_file
 
 def generate_rust_import(rust_path):
-    # rust_path = None
-    # if c_flag:
-    #     rust_path = get_rust_path(file_path, rust_output_dir)
-    # else:
-    #     rust_path = file_path
 
     rust_dir = rust_output_dir + "/" + "src"
     initial_path = remove_base_path(rust_path, rust_dir)
@@ -3183,11 +2986,9 @@ def transform_tmp(tmp_rust_path, label):
 def reverse_tmp(answer_path, mod_rust_path, label, database_dir):
     
     json_data = read_json(answer_path)
-
     if json_data is None:
         return 
 
-    #if label == "function":
     for item in json_data:
         if 'element_id' in item:
             del item['element_id']
@@ -3244,12 +3045,12 @@ def create_execute_path(execute_path):
     os.chmod(execute_path, 0o755)
 
 
-def repair_execute(repair_target, interface): # repair_target, target_dir, entry, original_run_path, original_execute_path, meta_dir, dep_json_path, exp_data, repair_count # div_start_line, 
+def repair_execute(repair_target, interface):
 
     build_path = interface.build_path
     rust_build_path = interface.rust_build_path
     run_test_path = interface.run_test_path
-    run_all_path = interface.run_all_path  #f"{work_dir}/build_rust.sh" # f"{work_dir}/build_rust.sh" #interface.run_path
+    run_all_path = interface.run_all_path
     
     rust_path = interface.rust_path
     repair_count = interface.repair_count
@@ -3277,7 +3078,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
     modified_c_keys = set()
     modified_rust_lines = []
 
-    execute_path = f"{work_dir}/execute.sh" #get_execute_path(run_path) #interface.execute_path
+    execute_path = f"{work_dir}/execute.sh"
     create_execute_path(execute_path)
     execute_dir = os.path.dirname(os.path.normpath(execute_path))
 
@@ -3288,7 +3089,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
         dep_json_path = interface.dep_json_path
         exp_data = interface.exp_data
         rust_path = interface.rust_path
-        lib_path = interface.lib_path #f"{rust_output_dir}/src/lib.rs" #interface.lib_path
+        lib_path = interface.lib_path
     
     elif repair_target == "compile":
         # From compile
@@ -3301,7 +3102,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
         before_count = interface.before_count
 
     elif repair_target == "ask_generates":
-        answer_path = interface.answer_path  #answer_path = f"{work_dir}/answer.json"
+        answer_path = interface.answer_path
         rust_path = interface.rust_path
         meta_dir = interface.meta_dir
         dep_json_path = interface.dep_json_path
@@ -3314,7 +3115,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
     elif repair_target == "ask_correspondence":
         c_path = interface.c_path
         meta_dir = interface.meta_dir
-        answer_path = interface.answer_path   #answer_path = f"{work_dir}/answer.json"
+        answer_path = interface.answer_path
         rust_path = interface.rust_path
         meta_dir = interface.meta_dir
         dep_json_path = interface.dep_json_path
@@ -3367,30 +3168,10 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
             #print(f"ref_files is {ref_files}") # If ref_files are divided, they need to reference the divided ones
 
             add_prompt = []
-            """
-            # Maybe this isn't needed? Should we keep the memory from translation?
-            # Retrieve here. add_prompt is constantly updated
-            add_prompt = get_context_prompt(conv_type, one_unit, dep_json_path, meta_dir, rust_output_dir, build_path, c_rust_path) #rust_path, meta_dir, macro_path, all_macro_path) #prompt.extend(add_prompt)
-            # add_prompt = get_rust_context_prompt(conv_type, one_unit, dep_json_path, meta_dir, rust_output_dir, build_path, c_rust_path) #rust_path, meta_dir, macro_path, all_macro_path) #prompt.extend(add_prompt)
-            """
-
-            """
-            # Stopping the ablation format for now
-            if WITH_CONDENSED_REPAIR:
-                add_prompt = get_rust_context_prompt(rust_path, meta_dir, macro_path, all_macro_path) #prompt.extend(add_prompt)
-            
-            elif WITH_FILES_REPAIR:
-                add_prompt = get_file_prompt(c_path, meta_dir)
-            """
 
             if DEBUG_LLM:
                 iteration_dict[rust_path] = repair_count
                 return
-
-            # If ref_files are divided, they need to reference the divided ones
-            #     <-- add_prompt covers all of this, right..? # ref_files isn't needed, right?
-            # print(f"Updated ref_files is {ref_files}")
-
 
             if repair_count == 1:
                 if before_count is None:
@@ -4127,8 +3908,6 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
                 read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"]) 
                 read_prompt.extend([f'{file_code}\n'])
 
-            #rsp_json = ask_llm(prompt, "continue", interface)
-            #print(rsp_json)
             print("End of rsp_json")
         
         elif mode == 'execute_command':
@@ -4144,9 +3923,6 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
         repair_count += 1
         #modified_file_list.extend(sum_modified_list)
 
-    # Putting this on hold for now
-    #check_dif(target_dir)
-
     iteration_dict[rust_path] = repair_count
     judge_dict[rust_path] = judge_count
     update_judge_dict(rust_path, judge_count, f"{database_dir}/judge.json")
@@ -4156,8 +3932,7 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
         for edite_file in editied_files:
             if edite_file not in seen_files:
                 seen_files.add(edite_file)
-        #return editied_files
-        #return list(seen_files)
+
         return modified_c_keys #, modified_rust_lines
     
     elif repair_target == "ask_generates" or repair_target == "ask_correspondence":
@@ -4167,10 +3942,6 @@ def repair_execute(repair_target, interface): # repair_target, target_dir, entry
     
     return modified_c_keys #, modified_rust_lines
 
-
-#********************************************
-#***** Rust: Prompt for file reference
-#********************************************
 
 def concatanate_rust_files(rust_path_list):
     concatenated_content = ""  # String to hold the concatenated content
@@ -4187,46 +3958,24 @@ def concatanate_rust_files(rust_path_list):
     return concatenated_content
 
 
-#********************************************
-#***** Rust: Prompt for types in DIV_REF
-#********************************************
-
-def show_rust_items(prompt, file_path, json_data): # prompt, file_path, data_types
+def show_rust_items(prompt, file_path, json_data): 
     for item in json_data:
         if item['end_line'] is None:
             continue
         item_code = read_specific_lines(file_path, item['start_line'], item['end_line'])
-        #print(prompt)
         prompt.append(f"    {item_code}")
-        #prompt.extend([f"{item_code}\n"])
-    
+
     return prompt
 
 
-def show_rust_codes(prompt, json_data): # prompt, file_path, data_types
+def show_rust_codes(prompt, json_data):
     for item in json_data:
         print(f"item in show_rust_codes: {item}")
         item_code = item['rust_code']
-        #print(prompt)
-        #prompt.append(f"  {item_code}")
         prompt.append(f"{item_code}") # Better to have no whitespace since the data is copied as-is
     
     return prompt
 
-
-#********************************************
-#***** Rust: Prompt for macros in DIV_REF # C: -> Rust:への変更
-#********************************************
-
-"""
-// Enable the corresponding feature if each environment variable is not set
-for (var, feature) in &features {{
-    if env::var(var).is_err() {{
-        println!("cargo:rustc-cfg=feature=\\"{{}}\\", feature);
-        println!("{{}} is not defined, enabling feature {{}}", var, feature);
-    }}
-}}
-"""
 
 # This needs to look at all_macro_path
 def refer_macro_define(all_macro_path, type_signal, defined_flag): # file_path, meta_dir, 
@@ -4239,10 +3988,8 @@ def refer_macro_define(all_macro_path, type_signal, defined_flag): # file_path, 
             first_json = entries[0]
             #print(first_json)
             if 'macro_det' in first_json and first_json['macro_det'] == type_signal:
-                found_macros.append(first_json) #macro)
+                found_macros.append(first_json)
         
-    #print("------------")
-    #print(found_macros)
     return found_macros
 
 
@@ -4251,8 +3998,6 @@ def get_rust_code(source_path, target_item):
 
     meta_data, meta_path = obtain_metadata(source_path, meta_dir, False, None, "def")
     for item in meta_data:
-        #print(meta_path)
-        #print(item)
         if item['element_id'] == target_item['element_id']:
             if 'rust_code' in item:
                 target_rust_code = item['rust_code']['content']
@@ -4300,11 +4045,6 @@ def get_macro_define(macro_path, all_macro_path, item):
     return rust_code
 
 
-#*************************************************
-#***** Rust: Prompt for function dignatures in DIV_REF
-#*************************************************
-
-
 def get_target_flag(item_data):
     target_flag = False
 
@@ -4313,7 +4053,6 @@ def get_target_flag(item_data):
 
         print(target_flag)
     return target_flag
-
 
 
 def get_independent_flag(item_data):
@@ -4349,9 +4088,6 @@ def get_ifdef_flag(item_data):
 
     if 'ifdef_statement' in item_data:
         ifdef_flag = item_data['ifdef_statement']
-        #ifdef_flag = True
-
-        print(ifdef_flag)
     return ifdef_flag
 
 
@@ -4374,7 +4110,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                          div_meta_dir, original_dir, build_path, conv_type, 
                          i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, 
                          g_at_least_found, global_vars, t_at_least_found, targets, seen, target,
-                         g_used, f_used, i_used): #, meta_dir, convert_type, key_string, dep_json_path):
+                         g_used, f_used, i_used):
     
     prompt = []
     repair_prompt = []
@@ -4553,9 +4289,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
     return dependencies 
 
 
-
 def get_rust_function_name(name_key, c_rust_map):
-    #print("Mapping c rust map ...")
     return c_rust_map[name_key]
 
 
@@ -4624,7 +4358,6 @@ def collect_rust_dependencies(cashed, c_item, dep_json_path, meta_dir, build_pat
     # Delete the keys after the iteration
     for key in keys_to_delete:
         del rust_refs[key]
-
 
     if at_least_found:
         prompt.extend([
@@ -4713,87 +4446,81 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
                    meta_dir, div_meta_dir, dep_json_path, rust_output_dir, 
                    build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,
                    trial_id, rust_build_path, llm_interface, rust_edition, 
-                   c_rust_path, rust_c_path, is_program_path, target
+                   c_rust_path, rust_c_path, is_program_path, target, repair_only
                    ):
     
     ###############################
-    ###### Propmt generation
-    ###############################
-
-    # May need the parent path first
-    rust_path = lib_path
-
-    ###############################
     ###### Translation
     ###############################
+    
+    # May need the parent path first
+    rust_path = lib_path
     exp_data = {}
     repair_count = 0
     execute_path = f"{work_dir}/execute.sh"
     explore_time = 0
     notes = []
+    
+    if repair_only is False:
 
-    interface = TransConfig(
-        rust_c_path=rust_c_path,
-        c_rust_path=c_rust_path,
-        target_path=target_path,
-        raw_dir=raw_dir,
-        rust_output_dir=rust_output_dir,
-        select=False,
-        target_dir=target_dir,
-        work_dir=work_dir,
-        database_dir=database_dir,
-        cov_target="function",
-        original_target_dir=original_dir,
-        build_path=build_path,
-        rust_build_path=rust_build_path,
-        run_test_path=run_test_path,
-        run_all_path=run_all_path,
-        execute_path=execute_path,
-        meta_dir=meta_dir,
-        div_meta_dir=div_meta_dir,
-        dep_json_path=dep_json_path,
-        exp_data=exp_data,
-        llm_interface=llm_interface,
-        chat_dir=chat_dir,
-        repair_count=repair_count,
-        rust_edition=rust_edition,
-        token_path=token_path,
-        time_path=time_path,
-        explore_time=explore_time,
-        notes=notes,
-        progress_queue=progress_queue,
-        log_dir=log_dir,
-        max_iterations=max_iterations,
-        is_program_path=is_program_path,
-        target=target,
-    )
+        interface = TransConfig(
+            rust_c_path=rust_c_path,
+            c_rust_path=c_rust_path,
+            target_path=target_path,
+            raw_dir=raw_dir,
+            rust_output_dir=rust_output_dir,
+            select=False,
+            target_dir=target_dir,
+            work_dir=work_dir,
+            database_dir=database_dir,
+            cov_target="function",
+            original_target_dir=original_dir,
+            build_path=build_path,
+            rust_build_path=rust_build_path,
+            run_test_path=run_test_path,
+            run_all_path=run_all_path,
+            execute_path=execute_path,
+            meta_dir=meta_dir,
+            div_meta_dir=div_meta_dir,
+            dep_json_path=dep_json_path,
+            exp_data=exp_data,
+            llm_interface=llm_interface,
+            chat_dir=chat_dir,
+            repair_count=repair_count,
+            rust_edition=rust_edition,
+            token_path=token_path,
+            time_path=time_path,
+            explore_time=explore_time,
+            notes=notes,
+            progress_queue=progress_queue,
+            log_dir=log_dir,
+            max_iterations=max_iterations,
+            is_program_path=is_program_path,
+            target=target,
+        )
 
-    if FFI_STRATEGY == "preserve":
-        translate_llm('divided_type', one_unit, rust_path, interface)
+        if FFI_STRATEGY == "preserve":
+            translate_llm('divided_type', one_unit, rust_path, interface)
 
-    else:
-        translate_llm_minimize('divided_type', one_unit, rust_path, interface)
+        else:
+            translate_llm_minimize('divided_type', one_unit, rust_path, interface)
 
-    # After conversion, generate blocks once: for build.rs, lib.rs
-    # update_rust_block(rust_path, meta_dir, map_path)  #div_c_path, div_rust_path, meta_dir)
+        # After conversion, generate blocks once: for build.rs, lib.rs
+        # update_rust_block(rust_path, meta_dir, map_path)  #div_c_path, div_rust_path, meta_dir)
 
-    ##################################################################
-    # Currently, the division units are determined on the C side, so I thought it might also be possible to determine division units driven by the Rust code
-    ##################################################################
+
+    ###############################
+    ###### Iterative repair
+    ###############################
 
     # compile & repair
     before_count = None
 
-    #div_start_line = part['start_line']
-    repair_count = 2 # Setting this to 2 to carry over memory. # 1 # 'divided_type', add_prompt, div_c_path, div_rust_path, meta_dir, dep_json_path, div_start_line, exp_data, before_count # convert_element, add_prompt, c_path, rust_path, meta_dir, dep_json_path, div_start_line, exp_data, before_count
+    repair_count = 2 # Setting this to 2 to carry over memory. # 1　
     interface = {
         'convert_element': 'divided_type',
-        #'add_prompt': add_prompt,
-        #'c_path': div_c_path,
-        #'rust_path': div_rust_path,
         'meta_dir': meta_dir,
         'dep_json_path': dep_json_path,
-        #'div_start_line': div_start_line,
         'exp_data': exp_data,
         'repair_count': repair_count,
         'before_count': before_count,
@@ -4822,8 +4549,6 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         rust_build_path=rust_build_path,
         run_test_path=run_test_path,
         run_all_path=run_all_path,
-        #run_gdb_path=run_gdb_path,
-        #run_val_path=run_val_path,
         meta_dir=meta_dir,
         div_meta_dir=div_meta_dir,
         dep_json_path=dep_json_path,
@@ -4831,9 +4556,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         repair_count=repair_count,
         rust_edition=rust_edition,
         execute_path=execute_path,
-        #cmd_list=cmd_list,
         explore_time=explore_time,
-        #cmd_exe=cmd_exe,
         notes=notes,
         progress_queue=progress_queue,
         log_dir=log_dir,
@@ -4842,12 +4565,8 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         target=target,
     )
 
-    ###############################
-    ###### Iterative repair
-    ###############################
-
     modified_c_keys = set()
-    modified_c_keys = repair_execute('compile', interface)  # "divided_type"
+    modified_c_keys = repair_execute('compile', interface)
     
     # Enumerate c_key elements that did not correspond to modified locations, and calculate unmodified_lines. Treat all other code lines as modified lines
     modified_rust_lines = get_modified_rust_lines(modified_c_keys, c_rust_path, meta_dir)
@@ -4866,30 +4585,20 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
     modified_c_keys = merge_with_initial(one_unit, modified_c_keys)
 
     modified_lines = {}
-    #answer_path = f"{database_dir}/answer.json"
     answer_path = f"{work_dir}/answer.json"
 
-    #for label in ["function"]: #["function", "others", "conditional"]:
     grouped_c_keys = get_grouped_c_keys(modified_c_keys, 10)
 
     for c_key_json in grouped_c_keys:
-        #prompt.extend(c_code)
-        #prompt.extend(modified_lines) 
-        
         repair_count = 1
         interface = {
             'convert_element': 'divided_type',
-            #'c_path': mod_c_path,
-            #'rust_path': mod_rust_path,
             'meta_dir': meta_dir,
             'dep_json_path': dep_json_path,
-            #'div_start_line': div_start_line,
             'exp_data': exp_data,
-            #'modified_files': modified_files,
             'target_dir': rust_output_dir,
             'raw_dir' : raw_dir,
             'rust_build_path' : rust_build_path,
-            #'label' : label,
             'repair_count' : repair_count,
             'answer_path' : answer_path
         }
@@ -4897,14 +4606,12 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         interface = CorConfig(
             one_unit=one_unit,
             answer_path=answer_path,
-            #label=label,
             modified_lines=modified_lines,
-            key_json=c_key_json,  # tmp_json_data=tmp_json_data
+            key_json=c_key_json,
             rust_path=rust_path,
             raw_dir=raw_dir,
             rust_output_dir=rust_output_dir,
             select=False,
-            #llm_choice=llm_choice,
             llm_interface=llm_interface,
             target_dir=target_dir,
             chat_dir=chat_dir,
@@ -4918,8 +4625,6 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
             rust_build_path=rust_build_path,
             run_test_path=run_test_path,
             run_all_path=run_all_path,
-            #run_gdb_path=run_gdb_path,
-            #run_val_path=run_val_path,
             meta_dir=meta_dir,
             div_meta_dir=div_meta_dir,
             dep_json_path=dep_json_path,
@@ -4927,15 +4632,12 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
             repair_count=repair_count,
             rust_edition=rust_edition,
             execute_path=execute_path,
-            #cmd_list=cmd_list,
             explore_time=explore_time,
-            #cmd_exe=cmd_exe,
             notes=notes,
             progress_queue=progress_queue,
             log_dir=log_dir,
             max_iterations=max_iterations,
             repair_max=REPAIR_MAX,
-            #tmp_json_data=tmp_json_data
         )
 
         delete_file(answer_path)
@@ -4945,8 +4647,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         print(f"------ End of asking about the correspondence ------")
 
         # reverse answer_data
-        #if label != "function":
-        mod_rust_path = rust_path # This should be fine, right?
+        mod_rust_path = rust_path
         reverse_tmp(answer_path, mod_rust_path, None, database_dir)
 
         # Want to merge the data from answer_path into sum_answer_data.
@@ -4957,7 +4658,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
             elif 'modified_data' in answer_data:
                 answer_data = answer_data['modified_data']
 
-        merge_list(sum_answer_data, answer_data)  # merge_json(sum_answer_data, answer_data)
+        merge_list(sum_answer_data, answer_data) 
 
 
     ###############################
@@ -4969,17 +4670,6 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
     # update metadata
     update_metadata_with_rust(sum_answer_data, div_meta_dir, database_dir)
 
-    # update c rust metadata
-    # update_c_rust_metadata(rust_output_dir, meta_dir, database_dir, sum_answer_data, c_rust_path, rust_c_path) # mod_files, 
-
-    # for mod_rust_path in rust_mod_files:
-    #     update_rust_block(mod_rust_path, meta_dir, map_path)  #update_rust_block(div_rust_path, meta_dir, map_path)  #div_c_path, div_rust_path, meta_dir) # Adding should be fine, right?
-
-    return #None, None
-
-
-
-####################################################
 
 
 
@@ -5284,9 +4974,6 @@ def approximate_parts(dep_json_path, meta_dir, adjusted_average):
         for i in range(len(new_parts) - 1):
             new_parts[i]['end_line'] = new_parts[i + 1]['start_line'] - 1
 
-        # Sort
-        # At this point, new_parts is fully constructed
-        # After sorting, 'include' needs to be populated (but is sorting already done? Proceeding under the assumption it is for now)
         # Sort by start_line
         new_parts = sorted(new_parts, key=lambda x: x['start_line'])
 
@@ -5448,19 +5135,21 @@ def alphanumeric_sort_key(file_name): # Extract numeric parts to sort a mix of n
     return [int(text) if text.isdigit() else text.lower() for text in re.split('([0-9]+)', file_name)]
 
 
-def filter_block_path(block_path, old_block_path):
-    old_blocks = set()
-    with open(old_block_path, 'r') as f:
+def filter_block_path(block_path, previous_block_path):
+    print(f"Filtered {block_path} (using {previous_block_path})")
+
+    previous_blocks = set()
+    with open(previous_block_path, 'r') as f:
         for line in f:
             line = line.strip()
             if line:
-                old_blocks.add(line)
+                previous_blocks.add(line)
     
     new_lines = []
     with open(block_path, 'r') as f:
         for line in f:
             line = line.strip()
-            if line and line not in old_blocks:
+            if line and line not in previous_blocks:
                 new_lines.append(line)
     
     # Overwrite block_path with only the new entries (so subsequent processing can use it as-is)
@@ -5468,13 +5157,13 @@ def filter_block_path(block_path, old_block_path):
         for line in new_lines:
             f.write(line + '\n')
     
-    if not new_lines:
-        raise ValueError("No new blocks found. Skipping.")
-
+    # if not new_lines:
+    #     raise ValueError("No new blocks found. Skipping.")
+    
 
 # Group by average line count and write to JSON
 # Store the grouped block_start_line, block_end_line, and the components contained within them
-def divide(average, block_path, block_group_path, target_dir, original_dir, resume, old_block_path):
+def divide(average, block_path, block_group_path, target_dir, original_dir, resume, previous_block_path):
     """
     Divide blocks into groups based on the average line count
     
@@ -5484,10 +5173,6 @@ def divide(average, block_path, block_group_path, target_dir, original_dir, resu
         block_group_path: Path to the JSON file where grouped data will be saved
     """
     print("Dividing blocks...")
-    
-    # If this is a resume type, consider only the new ones.
-    if resume is True:
-        filter_block_path(block_path, old_block_path)
 
     # Read block_path line by line
     blocks = []
@@ -5723,8 +5408,7 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
 
     write_json(result_path, result_json)
 
-
-    ######### updating result.json
+    ######### updating result.json #########
     result_json = read_json(result_path)
     moment_json = read_json(moment_path)
     trial_id = "trial_" + str(moment_json[target]['current_count'] - 1) # Same for moment_path as well
@@ -5741,7 +5425,6 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
         sum_input = 0
         sum_output = 0
 
-        #repair_count = exp_data['trials'][-1] # Last element # build.rs is not working properly.
         if exp_data is not None and 'trials' in exp_data and exp_data['trials']:
             repair_count = exp_data['trials'][-1]['repair_count']
             print(repair_count)
@@ -5762,7 +5445,6 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
 
         file_count += 1
 
-    #sum_repair_count / file_count
     if file_count == 0:
         result_json[target][trial_id]['compile_average'] = sum_repair_count
     else:
@@ -5785,6 +5467,9 @@ def get_c_order(block_group_path):
     c_order = []
     components = {}
     group_data = read_json(block_group_path)
+
+    if group_data is None:
+        return [], {}
 
     for item in group_data:
         c_order.append(str(item['group_id']))
@@ -5846,7 +5531,7 @@ def parse_function_info(target_path, target_dir):
         
         file_path = f"{parts[1]}"
         file_path = file_path.replace(f"{TRANS_HOME}/trans_c_0000/", "")
-        file_path = f"{target_dir}/{file_path}"  #f"{target_dir}/{parts[1]}"
+        file_path = f"{target_dir}/{file_path}"
 
         if len(parts) >= 3: #4:
             functions.append({
@@ -5862,7 +5547,6 @@ def parse_function_info(target_path, target_dir):
         raise ValueError(f"No exists: {functions}")
 
     return functions
-
 
 
 link_template = f"""# In "modify_data" mode
@@ -6091,43 +5775,7 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
             prompt.extend(read_prompt)
             read_prompt = None # Initialization
 
-        """
-        if mode != "read_data":
-            error, std_out = run_script_wo_log(run_test_path, 10, True, None, "both") #, progress_queue, iteration_count, max_iterations, log_dir)
-            std_out = run_script_pty(run_test_path)
-
-            if error is None:
-                break
-        """
-
     print("*********** End of reforamt ***********")
-
-
-"""
-// C side
-extern void rust_main(void);  // without arguments
-
-int main() {
-    rust_main();
-    return 0;
-}
-
-// Rust side
-#[no_mangle]
-pub extern "C" fn rust_main() {
-    let args: Vec<String> = std::env::args().collect();
-    // The argument has already been obtained on the Rust side. No need to get it from C
-}
-"""
-
-"""
-// C side
-extern int rust_main_wrapper(int argc, char* argv[]);
-
-int main(int argc, char* argv[]) {{
-    return rust_main_wrapper(argc, argv);
-}}
-"""
 
 
 code_snippet = f"""```rust
@@ -6228,8 +5876,6 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
     ])
     prompt.extend([link_template])
 
-    # code = read_file(run_test_path)
-
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
     directory_structure = get_dir_struct("translation", work_dir, None)
     prompt.extend([directory_structure, ""])
@@ -6288,7 +5934,6 @@ def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_te
 
         elif mode == 'read_data':
             print(f"In mode: {mode}")
-            #output = run_read_script(execute_path, 50, True, None, "both")
             read_prompt = ["The content obtained in read_data mode is as follows.", ""]
             
             for see_path in sum_target_list:
@@ -6444,19 +6089,13 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
 
     global_vars = read_json(global_path)
 
-    # target_macros = []
-    # for item in global_vars:
-    #     target_macros.append(item['name'])
-        
     appearances = {}
     apps_by_files = {}
     program_files = set(read_json(is_program_path))
     updates = []
 
-    for item in global_vars: #.items():
+    for item in global_vars:
         name = item['var_name']
-        # if name not in target_macros:
-        #     continue
 
         file_path = item['definition']['file_path']
         start_line = item['definition']['start_line']
@@ -6470,11 +6109,6 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
         
         if file_path not in apps_by_files:
             apps_by_files[file_path] = []
-
-        # if name in ind_const_macros['independent']:
-        #     macro_type = "independent_const"
-        # else:
-        #     macro_type = "flag"
 
         apps_by_files[file_path].append({
             "name" : name,
@@ -6497,11 +6131,9 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
             def_file_path = item['file_path']
             def_start_line = item['start_line']
             def_start_column = item['start_column']
-            #macro_type = item['macro_type']
-            def_key = f"{name}:{def_file_path}:{def_start_line}" #:{def_start_column}"
+            def_key = f"{name}:{def_file_path}:{def_start_line}"
 
             if def_key not in meta_data:
-                #raise ValueError("We need check here!")
                 continue
 
             if 'rust_code' not in meta_data[def_key]:
@@ -6579,7 +6211,7 @@ def update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_pa
             def_start_line = item['start_line']
             def_start_column = item['start_column']
             macro_type = item['macro_type']
-            macro_key = f"{name}:{def_file_path}:{def_start_line}" #:{def_start_column}"
+            macro_key = f"{name}:{def_file_path}:{def_start_line}"
 
             if macro_key not in meta_data:
                 #raise ValueError("Something is wrong here, must check later")
@@ -6601,7 +6233,7 @@ def update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_pa
 
 def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_json_path, 
                       flag_path, target_dir, is_program_path, 
-                      independent_const_build_path, flag_build_path, clang_args_json_path): # copy_file(build_template_path, build_rs_path)  #
+                      independent_const_build_path, flag_build_path, clang_args_json_path):
 
     copy_file(build_template_path, build_rs_path)
 
@@ -6646,7 +6278,6 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
     with open(build_rs_path, 'w') as f:
         f.write(modified_content)
 
-
     ######################################
     ## clang flags inclusion
     ######################################
@@ -6671,7 +6302,6 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
                 args.append(f"-I{abs_path}")
         file_clang_args[file_path] = args
 
-    #clang_args_json_path = os.path.join(os.path.dirname(build_rs_path), "file_clang_args.json")
     write_json(clang_args_json_path, file_clang_args)
     
     # ← Read content here
@@ -6730,7 +6360,6 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
         f.write(content)
 
 
-
 # Build the Rust project and extract cargo:warning and cargo:rustc-cfg
 def get_build_rs_config(rust_output_dir, build_config_path):
     
@@ -6770,12 +6399,6 @@ def get_build_rs_config(rust_output_dir, build_config_path):
     print(f"Detected {len(macros)} macros")
     print(f"Set {len(cfg_flags)} cfg flags")
     print(f"Written to: {build_config_path}")
-    
-    # return {
-    #     "macros": macros,
-    #     "cfg_flags": cfg_flags,
-    #     "output_path": output_path,
-    # }
 
 
 def generate_global_code(global_path, lib_path):
@@ -6843,8 +6466,6 @@ def turn_off_warning(build_rs_path):
     print(f"Warnings turned off in: {build_rs_path}")
 
 
-
-
 def generate_blocklist_code(functions):
     """Generate code for calling blocklist_function"""
     if not functions:
@@ -6893,7 +6514,7 @@ def check_cargo_modules_installed():
     return False
 
 
-def insert_is_target(target_dir, marker, meta_dir, div_meta_dir): # target_path, 
+def insert_is_target(target_dir, marker, meta_dir, div_meta_dir):
     """
     Recursively search files under target_dir,
     detect lines containing marker comments
@@ -6980,42 +6601,22 @@ def insert_is_target(target_dir, marker, meta_dir, div_meta_dir): # target_path,
 
 
 def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
-                        chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, # , root_dir
-                        average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition, # build_list_path, 
-                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
+                        chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir,
+                        average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition,
+                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,
                         time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                         rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
-                        is_program_path, resume, old_block_path, marker, trial_id, taken_macros_path,
+                        is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
                         independent_const_build_path, flag_build_path, clang_args_json_path):
 
-    ##
-    # c_order, components = get_c_order(block_group_path)
-    # print(c_order)
-    # print(components)
-    # print(block_group_path)
-    ##
-
-    #trial_id = set_moment_path(moment_path, average, log_file_path, target)
-    
-    print(block_path)
-    print(average)
-    divide(average, block_path, block_group_path, target_dir, original_dir, resume, old_block_path) 
-    print(f"c_run_path is {run_test_path}, rust_build_path is {rust_build_path}") #rust_build_path = f"{rust_output_dir}/rust_build.sh"
-
-    """
-    c_order, components = get_c_order(block_group_path)
-    print(block_group_path)
-    print(c_order)
-    """
+    divide(average, block_path, block_group_path, target_dir, original_dir, resume, previous_block_path) 
+    print(f"c_run_path is {run_test_path}, rust_build_path is {rust_build_path}")
 
     # create rust library dir and rust_build_path
     build_rs_path, lib_path, toml_path = create_rust_libdir(work_dir, rust_output_dir) 
     create_rust_build_path(rust_build_path)
 
     insert_is_target(original_dir, marker, meta_dir, div_meta_dir)
-
-    # insert 'rust_source' in json data in dep_json_path
-    #insert_rust_source(dep_json_path) 
 
     #####################################
     ## Pre-compilation check
@@ -7038,7 +6639,6 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
     generate_cargo_toml(toml_path)
 
     # insert run_all.sh
-    # print(run_all_path)
     generate_run_all_path(run_all_path, run_all_template_path, target)
 
     # insert Rust library link code
@@ -7054,8 +6654,6 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
 
     update_global_metadata(target, div_meta_dir, database_dir, global_path, is_program_path)
     """
-
-    # 
     rust_path = lib_path
     
     repair_count = 1
@@ -7069,8 +6667,6 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
         "list_path" : list_path,
         "meta_dir" : meta_dir,
         "dep_json_path" : dep_json_path,
-        #"conds_status_path" : conds_status_path,
-        #"c_lib_path" : c_lib_path,
         "repair_count" : repair_count
     }
 
@@ -7087,8 +6683,6 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
         raw_dir=raw_dir,
         rust_output_dir=rust_output_dir,
         select=False,
-        #test_type=test_type,
-        #llm_choice=llm_choice,
         llm_interface=llm_interface,
         target_dir=target_dir,
         chat_dir=chat_dir,
@@ -7102,8 +6696,6 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
         rust_build_path=rust_build_path,
         run_test_path=run_test_path,
         run_all_path=run_all_path,
-        #run_gdb_path=run_gdb_path,
-        #run_val_path=run_val_path,
         meta_dir=meta_dir,
         div_meta_dir=div_meta_dir,
         dep_json_path=dep_json_path,
@@ -7111,51 +6703,43 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
         repair_count=repair_count,
         rust_edition=rust_edition,
         execute_path=execute_path,
-        #cmd_list=cmd_list,
         test_path=None,
         file_path=None,
         test_id=None,
         function_name=None,
         main_flag=None,
         explore_time=explore_time,
-        #cmd_exe=cmd_exe,
         notes=notes,
         progress_queue=progress_queue,
         log_dir=log_dir,
         max_iterations=max_iterations,
     )
 
-    #"""
-    #repair_target = 'compile'  # temprary at this moment
-    modified_c_keys = repair_execute('compile', interface)  #"build", target_dir, entry, origin_run_path, execute_path, meta_dir, dep_json_path, exp_data, repair_count)
-    #"""
+    modified_c_keys = repair_execute('compile', interface)
 
     # listup configuration
-    get_build_rs_config(rust_output_dir, build_config_path)  # run_all_path, 
+    get_build_rs_config(rust_output_dir, build_config_path)
     
-    return build_rs_path, lib_path, toml_path #, trial_id
-
-
+    return build_rs_path, lib_path, toml_path
 
 
 def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
-                        chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, # , root_dir
-                        average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition, # build_list_path, 
-                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
+                        chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir,
+                        average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition,
+                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,
                         time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                         rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
-                        is_program_path, resume, old_block_path, marker, trial_id, taken_macros_path,
+                        is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
                         independent_const_build_path, flag_build_path, clang_args_json_path):
 
-    divide(average, block_path, block_group_path, target_dir, original_dir, resume, old_block_path) 
-    print(f"c_run_path is {run_test_path}, rust_build_path is {rust_build_path}") #rust_build_path = f"{rust_output_dir}/rust_build.sh"
+    divide(average, block_path, block_group_path, target_dir, original_dir, resume, previous_block_path) 
+    print(f"c_run_path is {run_test_path}, rust_build_path is {rust_build_path}")
 
     # create rust bin dir and rust_build_path
-    #build_rs_path, main_path, toml_path = create_rust_bindir(work_dir, rust_output_dir) 
     build_rs_path, lib_path, toml_path = create_rust_libdir(work_dir, rust_output_dir) 
     create_rust_build_path(rust_build_path)
 
-    insert_is_target(original_dir, marker, meta_dir, div_meta_dir) # target_path, 
+    insert_is_target(original_dir, marker, meta_dir, div_meta_dir)
 
     #####################################
     ## Pre-compilation check
@@ -7178,7 +6762,6 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
     generate_cargo_toml(toml_path)
 
     # insert run_all.sh
-    # print(run_all_path)
     generate_run_all_path(run_all_path, run_all_template_path, target)
 
     # insert Rust library link code
@@ -7187,7 +6770,6 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
 
     # update blocklist
     update_blocklist(rust_lib_h_path, build_rs_path)
-
 
     rust_path = lib_path
     
@@ -7202,8 +6784,6 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
         "list_path" : list_path,
         "meta_dir" : meta_dir,
         "dep_json_path" : dep_json_path,
-        #"conds_status_path" : conds_status_path,
-        #"c_lib_path" : c_lib_path,
         "repair_count" : repair_count
     }
 
@@ -7220,8 +6800,6 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
         raw_dir=raw_dir,
         rust_output_dir=rust_output_dir,
         select=False,
-        #test_type=test_type,
-        #llm_choice=llm_choice,
         llm_interface=llm_interface,
         target_dir=target_dir,
         chat_dir=chat_dir,
@@ -7235,8 +6813,6 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
         rust_build_path=rust_build_path,
         run_test_path=run_test_path,
         run_all_path=run_all_path,
-        #run_gdb_path=run_gdb_path,
-        #run_val_path=run_val_path,
         meta_dir=meta_dir,
         div_meta_dir=div_meta_dir,
         dep_json_path=dep_json_path,
@@ -7244,14 +6820,12 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
         repair_count=repair_count,
         rust_edition=rust_edition,
         execute_path=execute_path,
-        #cmd_list=cmd_list,
         test_path=None,
         file_path=None,
         test_id=None,
         function_name=None,
         main_flag=None,
         explore_time=explore_time,
-        #cmd_exe=cmd_exe,
         notes=notes,
         progress_queue=progress_queue,
         log_dir=log_dir,
@@ -7259,14 +6833,12 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
         target=target,
     )
 
-
-    modified_c_keys = repair_execute('compile', interface)  #"build", target_dir, entry, origin_run_path, execute_path, meta_dir, dep_json_path, exp_data, repair_count)
+    modified_c_keys = repair_execute('compile', interface)
 
     # listup configuration
-    get_build_rs_config(rust_output_dir, build_config_path)  # run_all_path, 
+    get_build_rs_config(rust_output_dir, build_config_path)
     
-    return build_rs_path, lib_path, toml_path #, trial_id
-
+    return build_rs_path, lib_path, toml_path
 
 
 def record_remaining(finished_units, c_order, components, remained_block_path):
@@ -7292,7 +6864,7 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
                   run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
                   time_path, map_path, block_path, block_group_path, remained_block_path, progress_queue, max_iterations, llm_interface,
                   rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
-                  is_program_path, resume, old_block_path, marker, build_rs_path, lib_path, toml_path, trial_id
+                  is_program_path, resume, previous_block_path, marker, build_rs_path, lib_path, toml_path, trial_id
                   ): # output_file_path# def dfs_sort_files(dep_json_path, output_file_path): # , rust_build_path
 
     #####################################
@@ -7306,24 +6878,41 @@ def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir
 
     c_order, components = get_c_order(block_group_path)
     print(c_order)
-    finished = []
-    for c_id in c_order: # Add "test": null to all files in the initial state
-        one_unit = components[c_id]
-        exp_data = {}
-        error = None
-        return_path = f"{database_dir}/return.txt"
+    print(len(c_order))
 
-        #set_convert_type(moment_path, target, 'divided', llm_choice)
-        translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, original_dir,
-                       target_path, chat_dir, token_path, time_path, progress_queue, log_dir, max_iterations,
-                       meta_dir, div_meta_dir, dep_json_path, rust_output_dir, 
-                       build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,
-                       trial_id, rust_build_path, llm_interface, rust_edition,
-                       c_rust_path, rust_c_path, is_program_path, target
-                       ) 
+    exp_data = {}
+    error = None
+    return_path = f"{database_dir}/return.txt"
+
+    if len(c_order) > 0:
+        finished = []
+        for c_id in c_order: # Add "test": null to all files in the initial state
+            one_unit = components[c_id]
+
+            #set_convert_type(moment_path, target, 'divided', llm_choice)
+            translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, original_dir,
+                        target_path, chat_dir, token_path, time_path, progress_queue, log_dir, max_iterations,
+                        meta_dir, div_meta_dir, dep_json_path, rust_output_dir, 
+                        build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,
+                        trial_id, rust_build_path, llm_interface, rust_edition,
+                        c_rust_path, rust_c_path, is_program_path, target, False
+                        ) 
+            
+            finished.append(one_unit)
+            record_remaining(finished, c_order, components, remained_block_path)
+    
+    else:
+        if resume is False:
+            raise ValueError(f"{block_group_path} must have at least one element.")
         
-        finished.append(one_unit)
-        record_remaining(finished, c_order, components, remained_block_path)
+        one_unit = []
+        translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, original_dir,
+                        target_path, chat_dir, token_path, time_path, progress_queue, log_dir, max_iterations,
+                        meta_dir, div_meta_dir, dep_json_path, rust_output_dir, 
+                        build_path, lib_path, build_config_path, run_test_path, run_all_path, error, return_path, exp_data,
+                        trial_id, rust_build_path, llm_interface, rust_edition,
+                        c_rust_path, rust_c_path, is_program_path, target, True
+                        ) 
 
 
 def handle_paths(dep_json_path):
@@ -7339,7 +6928,120 @@ def save_target_path(target_path, target_dir):
     shutil.copyfile(target_path, dest)
 
 
-def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_dir, target_path, rust_edition, llm_choice, claude_api_key, azure_endpoint):
+def merge_previous_metadata(previous_meta_dir, meta_dir):
+    """
+    Carry over `rust_code` fields from previous_meta_dir into meta_dir.
+    For each JSON file in previous_meta_dir, find the corresponding file
+    in meta_dir and copy `rust_code` from entries that share the same
+    `definition` identifier.
+
+    Args:
+        previous_meta_dir: Directory containing the previous metadata
+        meta_dir: Directory containing the current metadata (merge target)
+    """
+    print(f"Merging {previous_meta_dir} with {meta_dir}...")
+
+    previous_path = Path(previous_meta_dir)
+    meta_path = Path(meta_dir)
+
+    if not previous_path.exists():
+        print(f"Previous metadata directory does not exist: {previous_path}")
+        return
+
+    previous_json_files = list(previous_path.rglob("*.json"))
+    print(f"Found {len(previous_json_files)} JSON files in previous metadata")
+
+    merged_count = 0
+    skipped_count = 0
+
+    for prev_json_file in previous_json_files:
+        relative = prev_json_file.relative_to(previous_path)
+        target_json_file = meta_path / relative
+
+        if not target_json_file.exists():
+            print(f"  Skip (no counterpart in meta_dir): {relative}")
+            skipped_count += 1
+            continue
+
+        prev_data = read_json(prev_json_file)
+        target_data = read_json(target_json_file)
+
+        # Build a lookup of previous items keyed by 'definition'.
+        # Includes top-level items as well as nested 'uses' and 'components' items
+        # so rust_code can be carried over wherever it lived previously.
+        prev_lookup = {}
+        for prev_item in prev_data:
+            if 'definition' in prev_item and 'rust_code' in prev_item:
+                prev_lookup[prev_item['definition']] = prev_item['rust_code']
+
+            """
+            for callee_item in prev_item.get('uses', []):
+                if 'definition' in callee_item and 'rust_code' in callee_item:
+                    prev_lookup[callee_item['definition']] = callee_item['rust_code']
+
+            for comp_item in prev_item.get('components', []):
+                if 'definition' in comp_item and 'rust_code' in comp_item:
+                    prev_lookup[comp_item['definition']] = comp_item['rust_code']
+
+                for callee_item in comp_item.get('uses', []):
+                    if 'definition' in callee_item and 'rust_code' in callee_item:
+                        prev_lookup[callee_item['definition']] = callee_item['rust_code']
+            """
+
+        # Apply rust_code from prev_lookup to matching entries in target_data.
+        carried = 0
+        for item in target_data:
+            if 'definition' in item and item['definition'] in prev_lookup:
+                item['rust_code'] = prev_lookup[item['definition']]
+                carried += 1
+
+            """
+            for callee_item in item.get('uses', []):
+                if 'definition' in callee_item and callee_item['definition'] in prev_lookup:
+                    callee_item['rust_code'] = prev_lookup[callee_item['definition']]
+                    carried += 1
+
+            for comp_item in item.get('components', []):
+                if 'definition' in comp_item and comp_item['definition'] in prev_lookup:
+                    comp_item['rust_code'] = prev_lookup[comp_item['definition']]
+                    carried += 1
+
+                for callee_item in comp_item.get('uses', []):
+                    if 'definition' in callee_item and callee_item['definition'] in prev_lookup:
+                        callee_item['rust_code'] = prev_lookup[callee_item['definition']]
+                        carried += 1
+            """
+
+        write_json(target_json_file, target_data)
+        merged_count += 1
+        print(f"  Merged: {relative} ({carried} rust_code entries carried over)")
+
+    print(f"Merge complete: {merged_count} files merged, {skipped_count} skipped")
+
+
+def replace_target_dir(previous_target_dir, work_dir):
+    # print(f"\nReplaced {work_dir} with contents of {previous_target_dir}")
+
+    previous_path = Path(previous_target_dir)
+    target_path = Path(work_dir)
+
+    # Source must exist
+    if not previous_path.exists():
+        print(f"Error: previous target dir does not exist: {previous_path}")
+        sys.exit(1)
+
+    # Remove existing target_dir if present
+    if target_path.exists():
+        shutil.rmtree(target_path)
+    
+    # Make sure parent exists, then copy
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(previous_path, target_path)
+    
+    print(f"\nReplaced {target_path} with contents of {previous_path}")
+
+
+def allrust_compile_main(config): 
 
     ################################
     #### Configuraion
@@ -7360,20 +7062,17 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     azure_endpoint = config["azure_endpoint"]
 
     resume = config["resume"]
-    old_block_path = config["old_block_path"]
-    
+    previous_block_path = config["previous_block_path"]
+    previous_meta_dir = config["previous_meta_dir"]
+    previous_div_meta_dir = config["previous_div_meta_dir"]
+    previous_target_dir = config["previous_target_dir"]
+
     occupy_path = None 
     build_template_path = f"{MACRO_HOME}/template_rust/template_build.rs"
     build_template_path = f"{TRANS_HOME}/template/template_build.rs"
     run_all_template_path = f"{TRANS_HOME}/template/run_all.sh"
 
-    average = config["average"] #400
-
-    """
-    if len(sys.argv) != 2: #3:
-        print("Usage: python3 convert.py <TRANSLATION_TYPE (baseline or preprocessed or cs-prompt)> <AVERAGE average_length>") # <REF_TYPE (I, F)> # <DIV_TYPE (L, R)> # <DEBUG mode or not (D, F)>
-        sys.exit(1)
-    """
+    average = config["average"]
 
     if check_cargo_modules_installed():
         print("Ready to use cargo modules")
@@ -7384,9 +7083,8 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     paths = create_path_config(
         user_id=user_id,
         original_dir=original_dir,
-        process_type=process_type, #None,
+        process_type=process_type,
         work_dir=None,
-        #def_json_path=def_json_path,
     )
 
     (target,
@@ -7448,7 +7146,6 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
     map_path, 
     call_path, 
     persistent_dir, 
-    #build_rs_path, 
 
     chat_dir,
     history_path,
@@ -7513,25 +7210,19 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
         progress_queue = []
         max_iterations = 5
 
-        print(target_dir)
         if resume is False:
-            # initialize  # clone_directory(original_dir, root_dir) # 
+            # initialize
             initialize(translation_type, c_code_dir, rust_output_dir, work_dir, target_dir, raw_dir, database_dir, chat_dir, 
                 map_path, logging_path, count_path, token_path, history_path, rust_c_path, c_rust_path, moment_path)
 
             # Probably not needed in production
-            # dep_json_path = handle_paths(dep_json_path) # , compile_json_path # , cfg_path
-
             if not os.path.exists(meta_dir) or not os.path.exists(div_meta_dir):
-                #"""
                 recreate_directory(meta_dir)
                 recreate_directory(div_meta_dir)
-                #"""
                 
                 clone_directory(given_meta_dir, meta_dir)
                 clone_directory(given_div_meta_dir, div_meta_dir)
 
-            # print(original_dir)
             denormalize_translation_metadata(meta_dir, os.path.abspath(original_dir), True) #os.path.abspath(target_dir))
             denormalize_translation_metadata(div_meta_dir, os.path.abspath(original_dir), True) #, os.path.abspath(target_dir))
 
@@ -7541,13 +7232,6 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
             #denormalize_block_path(block_path, original_dir, os.path.abspath(target_dir)) #denormalize_block_group_path(block_group_path, original_dir, os.path.abspath(target_dir))
 
             clone_compile_json(os.path.abspath(original_dir), f"{TRANS_HOME}/trans_c_0000", f"{TRANS_HOME}/workspace_0000_{target}")
-
-            print(target_dir) # workspace_0000_pp-patterns/pp-patterns
-            print(original_dir) # {TRANS_HOME}/trans_c_0000/pp-patterns
-
-            print(os.path.abspath(target_dir))
-            print(original_dir)
-            print(raw_dir)
 
             """
             error_output, std_output = run_script_wo_log(build_path, 10000, True, None, "build")
@@ -7562,6 +7246,11 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
 
             #generate_is_program(target_dir, dep_json_path, is_program_path)
             denormalize_block_path(is_program_path, f"{TRANS_HOME}/trans_c_0000/{target}", os.path.abspath(target_dir))
+        
+        else:
+            # merge_previous_metadata(previous_meta_dir, meta_dir)
+            merge_previous_metadata(previous_div_meta_dir, div_meta_dir)
+            
 
         #******************************************************************
         #*******       Translation     
@@ -7581,7 +7270,7 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
                             run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
                             time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                             rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
-                            is_program_path, resume, old_block_path, marker, trial_id, taken_macros_path,
+                            is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
                             independent_const_build_path, flag_build_path, clang_args_json_path)
 
             else:
@@ -7591,23 +7280,33 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
                             run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
                             time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                             rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
-                            is_program_path, resume, old_block_path, marker, trial_id, taken_macros_path,
+                            is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
                             independent_const_build_path, flag_build_path, clang_args_json_path)    
             
         else:
+            # If this is a resume type, consider only the new ones.
+            filter_block_path(block_path, previous_block_path)
+            
+            replace_target_dir(previous_target_dir, work_dir)
+
+            copy_file(f"/root/SmartC2Rust/trans/trans_c_0000/{target}/run_test.sh", target_dir)
+            copy_file(f"/root/SmartC2Rust/trans/trans_c_0000/{target}/c_build.sh", target_dir)
+
+            generate_run_all_path(run_all_path, run_all_template_path, target)
+    
             build_rs_path, lib_path, toml_path = get_existing_lib_paths(work_dir, rust_output_dir)
 
-        
+
+
         remained_block_path = f"{database_dir}/block_remained.txt"
         translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
-                    chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, # , root_dir
-                    average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition, # build_list_path, 
-                    run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
+                    chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir,
+                    average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition,
+                    run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,
                     time_path, map_path, block_path, block_group_path, remained_block_path, progress_queue, max_iterations, llm_interface,
                     rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
-                    is_program_path, resume, old_block_path, marker, build_rs_path, lib_path, toml_path, trial_id
-                    ) #if not DIVIDE_ONLY:  # (2) Depth-first search to auto-fix compile Rust and generate the library.  # , raw_dir # output_file_path,
-                    # rust_build_path, 
+                    is_program_path, resume, previous_block_path, marker, build_rs_path, lib_path, toml_path, trial_id
+                    ) 
 
         output = {
             'work_dir' : work_dir
@@ -7619,8 +7318,8 @@ def allrust_compile_main(config): #process_type, user_id, c_code_dir, original_d
         print(f"\n\n++++++++++++++= End of translation ({target}) ++++++++++++++=")
 
         print(f"\nNext action:")
-        print(f"\npython3 semantics.py {TRANS_HOME}/{target_dir} s_repair")
-        
+        print(f"\npython3 semantics.py s_repair {TRANS_HOME}/{target_dir}")
+
 
 
 
@@ -7638,31 +7337,35 @@ if __name__ == "__main__":
     div_meta_dir = str(sys.argv[6])
     block_path = str(sys.argv[7])
     resume = str(sys.argv[8])
+    rust_edition = "2024" # Rust 2024 edition
+    user_id = "0000"
 
-    old_block_path = None
-    new_block_path = None
+    previous_block_path = None
+    previous_meta_dir = None
+    previous_div_meta_dir = None
+    previous_target_dir = None
 
-    if resume is "on":
+    if resume == "on":
         resume = True
-        old_block_path = str(sys.argv[9])
-        #new_block_path = str(sys.argv[9])
+        previous_block_path = str(sys.argv[9])
+        previous_meta_dir = str(sys.argv[10])
+        previous_div_meta_dir = str(sys.argv[11])
+        previous_target_dir = str(sys.argv[12])
+
+        for path in [previous_block_path, previous_meta_dir, previous_div_meta_dir, previous_target_dir]:
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"Path does not exist: {path}")
     else:
         resume = False
 
 
-    rust_edition = "2024" # Rust 2024 edition
-    #target = str(sys.argv[1])
-    #LLM_ON = str(sys.argv[4]) # process_type = "meta"
-
-    user_id = "0000"
-
     config_data = read_json(f"{CONFIG_PATH}")
-    #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
+
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"]
-    TEST_MODE = config_data["test_mode"]
     average = config_data["average"]
+    TEST_MODE = config_data["test_mode"]
     FFI_STRATEGY = config_data["ffi_strategy"]
 
     config = {
@@ -7672,8 +7375,10 @@ if __name__ == "__main__":
         "resume" : resume,
         "target_path": target_path,
         "block_path" : block_path,
-        "old_block_path" : old_block_path,
-        #"new_block_path" : new_block_path,
+        "previous_block_path" : previous_block_path,
+        "previous_meta_dir" : previous_meta_dir,
+        "previous_div_meta_dir" : previous_div_meta_dir,
+        "previous_target_dir" : previous_target_dir,
         "meta_dir": meta_dir,
         "div_meta_dir": div_meta_dir,
         "user_id": user_id,
@@ -7684,5 +7389,4 @@ if __name__ == "__main__":
         "average" : average,
     }
 
-    allrust_compile_main(config)  #process_type, user_id, c_code_dir, original_dir, target_path, rust_edition, llm_choice, claude_api_key, azure_endpoint)
-
+    allrust_compile_main(config)  

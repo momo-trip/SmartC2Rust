@@ -16,18 +16,11 @@ rm -rf ${RESULTS_DIR}
 mkdir -p ${ACTUAL_DIR}
 mkdir -p ${RESULTS_DIR}
 
-# Function to log test start
-log_test_start() {
-    echo "Test Case #$1: Started" | tee -a /home/ubuntu/portable/out_flow_c.log /home/ubuntu/portable/out_flow_rust.log
-}
-
 
 # Test function
 run_test() {
     local test_num=$1
     local build_args=$2
-
-    log_test_start $test_num
 
     local output_file="${ACTUAL_DIR}/test${test_num}_output.log"
     local expected_file="${EXPECTED_DIR}/test${test_num}_output.log"
@@ -36,12 +29,8 @@ run_test() {
     
     echo "Running test case ${test_num}..."
     
-    # Build and run
-    if [ -z "$build_args" ]; then
-        ./c_build.sh && ./test > "${output_file}" 2>&1
-    else
-        ./c_build.sh ${build_args} && ./test > "${output_file}" 2>&1
-    fi
+    # Run
+    ./test.elf > "${output_file}" 2>&1
     
     # Check if each line in the expected file is included as a prefix in the corresponding line of the output file
     local failed=0

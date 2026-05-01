@@ -125,7 +125,6 @@ from llm_api import (
     SemConfig,
     LLMInterface,
     init_prompt_count, 
-    #set_exp_data,
     occupy_llm,
     configure_llm,
     shutdown_llm,
@@ -146,16 +145,12 @@ from llm_api import (
 
 from c_parser_api import (
     analyze_dependencies,
-    #analyze_function,
     analyze_call_relationship,
     p_f,
-    #parse_files_c,
     get_files_list,
-    #analyze_macros_llm,
     detect_include_guards,
     delete_guards,
     delete_macro_defs,
-    #generate_build_rs,
     generate_cargo_toml,
     generate_run_all_path,
     generate_header_paths_rust_code,
@@ -166,7 +161,6 @@ from c_parser_api import (
 
 from rust_parser_api import (
     parse_files_rust,
-    #update_rust_block,
     get_rust_interface,
     rust_find_function_end,
     update_c_rust_metadata,
@@ -182,11 +176,11 @@ CONFIG_PATH = "/root/SmartC2Rust/config.json"
 full_regions = []
 
 DEBUG_LLM = False
-TEST_MODE = None #False #True #False
-FFI_STRATEGY = None # True #False
+TEST_MODE = None
+FFI_STRATEGY = None
 
 REPAIR_MAX = 500
-given_time = 60 #200 # 20 # default 20
+given_time = 60 #200
 
 iteration_dict = {}
 
@@ -374,7 +368,7 @@ def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, 
     result_json = read_json(result_path)
 
     # Inherit from moment_path
-    moment_json = read_json(moment_path)  #result_json[target]['current_count'] = moment_json[target]['current_count']
+    moment_json = read_json(moment_path)
 
     if not os.path.exists(f"{database_dir}/s_repair_count.json"):
         write_json(f"{database_dir}/s_repair_count.json", {})
@@ -383,7 +377,7 @@ def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, 
     if target not in f_count_json:
         f_count_json[target] = 0
     f_count = f_count_json[target]
-    trial_id = "trial_" + str(f_count)  #str(moment_json[target]['current_count'] - 1)
+    trial_id = "trial_" + str(f_count) 
     f_count_json[target] = f_count + 1
     write_json(f"{database_dir}/s_repair_count.json", f_count_json)
 
@@ -394,18 +388,12 @@ def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, 
     if trial_id not in result_json[target]:
         result_json[target][trial_id] = {}
         
-    #avr = moment_json[target][trial_id]['average']
-    destination = archive_dir + "/" + target + "/" + "s_repair_" + trial_id #+ f"_{avr}"
+    destination = archive_dir + "/" + target + "/" + "s_repair_" + trial_id
 
     calculate_execution_time(chat_dir, "time.json", trial_id, target)
 
-    #copy_directory(rust_output_dir, destination)
-    #copy_directory(meta_dir, destination)
     copy_directory(exp_dir, destination)
-    copy_directory(chat_dir, destination)  # added
-    # if os.path.exists(chat_macro_dir):
-    #     copy_directory(chat_macro_dir, destination)  # added
-    #copy_file("judge.json", destination)
+    copy_directory(chat_dir, destination)
 
     copy_directory(mix_io_dir, destination)
     copy_file(log_file_path, destination)
@@ -419,19 +407,10 @@ def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, 
     result_json[target][trial_id]['cwd'] = current_directory
     result_json[target][trial_id]['exec_time'] = exec_time
     result_json[target][trial_id]['archive_dir'] = destination
-    #result_json[target][trial_id]['saved_rust_dir'] = saved_rust_dir
-    #result_json[target][trial_id]['saved_meta_dir'] = saved_meta_dir
-    #result_json[target][trial_id]['saved_log_dir'] = saved_log_dir
     result_json[target][trial_id]['average'] = None #moment_json[target][trial_id]['average']
-
-    # for category in ['conv_type', 'llm_model', 'conv_sum_prompt', 'repair_sum_prompt', 'repair_history', 'conv_show_files', 'repair_show_files', 'log_file_path']: #, 'llm_model'
-    #     if category in moment_json[target][trial_id]:
-    #         result_json[target][trial_id][category] = moment_json[target][trial_id][category]
 
     if trial_id not in result_json[target]:
         result_json[target][trial_id] = {}
-
-    #num = result_json[target]['current_count']
 
     result_json[target][trial_id]['equivalence_average'] = None
     result_json[target][trial_id]['compile_average'] = None # Store the average compile count across all files
@@ -756,25 +735,22 @@ def generate_zombi(target_funcs, target_dir, list_path, meta_dir, type_json_path
             args = func_data['arguments']
             
             arg_names = []
-            for arg in args: #arg_names = [f"{arg['register_type']}, {arg['var_name']}" for arg in args] #arg_names = [f"\"{arg['register_type']}\", {arg['var_name']}" for arg in args] # arg_names = [f"{arg['var_name']}" for arg in args] #[f"{arg['var_type']}, {arg['var_name']}" for arg in args]
-                if arg['var_type'] == "union": #if ('is_incomplete' in arg and arg['is_incomplete'] is True) or arg['var_type'] == "union":  # What should the logic here ultimately be?
+            for arg in args:
+                if arg['var_type'] == "union": 
                     continue
-                formatted_arg =  f"{arg['var_name']}" #f"{arg['register_type']}, {arg['var_name']}"
+                formatted_arg =  f"{arg['var_name']}"
                 arg_names.append(formatted_arg)
 
-            #arg_names = [f"{arg['register_type']}, {arg['var_name']}" for arg in args] #arg_names = [f"\"{arg['register_type']}\", {arg['var_name']}" for arg in args] # arg_names = [f"{arg['var_name']}" for arg in args] #[f"{arg['var_type']}, {arg['var_name']}" for arg in args]
             arg_str = f", {', '.join(arg_names)}" if arg_names else ""
 
             if input_line is not None:
-                # PRINT_INPUT statement to insert at the beginning of the function body
-                #input_indent = ' ' * (len(lines[input_line - 1]) - len(lines[input_line - 1].lstrip()))
                 wrapped_input = f'{prefix}PRINT_INPUT_{len(arg_names)}ARG({file_info}, {func_data["name"]}{arg_str});'
 
             return_var = "result"
 
             arg_names = [f"{arg['var_name']}" for arg in args]  #[f"{arg['base_type']} {arg['var_name']}" for arg in args] #[f"{arg['register_type']}, {arg['var_name']}" for arg in args] #arg_names = [f"\"{arg['register_type']}\", {arg['var_name']}" for arg in args] # arg_names = [f"{arg['var_name']}" for arg in args] #[f"{arg['var_type']}, {arg['var_name']}" for arg in args]
             arg_str = f"{', '.join(arg_names)}" if arg_names else ""
-            #call_statement = f"{arg_prefix}{return_arg['base_type']} {return_var} = {func_data['name']}({arg_str}); {arg_suffix}"
+            
             if return_arg['actual_type'] == "void":
                 call_statement = f"{func_data['rust_function_name']}({arg_str});" # rust_{func_data['rust_function_name']}
                 return_statement = ""
@@ -824,13 +800,10 @@ def generate_zombi(target_funcs, target_dir, list_path, meta_dir, type_json_path
         with open(file_path, 'w') as f:
                 f.writelines(lines)
 
-        # if file_path == "c_io/sample02/main.c":
-        #     print(file_path)
-
     return list(seen_files)
 
          
-def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_dir):  # initial_list_path
+def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_dir):
 
     order = read_compile_order(list_path)  # This is the order.txt before merging
     print(f"order at merge_metadata(): {order}")
@@ -885,9 +858,6 @@ def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_
                     
                     if 'rust_function_name' in item:
                         o_item['rust_function_name'] = item['rust_function_name']
-                        # if item['rust_function_name'] == "rust_newNode":
-                        #     print("aru")
-                            
 
             write_json(o_meta_path, o_meta_data)
 
@@ -897,21 +867,13 @@ def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_
     print(f"io_order at merge_metadata(): {io_order}")
 
     for file_path in io_order:
-        o_meta_data, o_meta_path = get_metadata(file_path, o_meta_dir, None) #False, None, "def") 
+        o_meta_data, o_meta_path = get_metadata(file_path, o_meta_dir, None)
         if o_meta_data is None: # There is a possibility that print_io.h is included
             continue
 
         found = False 
         for o_item in o_meta_data:
-            #item['file_path']
-            # Search from metadata here
-            """
-            parent_path = get_parent_path(file_path, dep_json_path)
-            if parent_path is None:
-                print(o_item['def_file_path'])
-                print("Do we have a parent?")
-                continue
-            """
+
             raw_file_path = remove_base_path(file_path, c_io_dir)
             raw_file_path = f"{raw_dir}/{raw_file_path}"
 
@@ -923,12 +885,6 @@ def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_
                 continue
             
             for item in meta_data:
-                if o_item['def_file_path'] == "workspace_io/io_c/sample02/calculator.c":
-                    print(f"raw_file_path: {raw_file_path}")
-                    print(meta_data)
-                    print(meta_path)
-                    print(o_meta_path)
-
                 if 'rust_function_name' not in item:
                     continue
                     
@@ -938,15 +894,7 @@ def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_
 
                     o_item['rust_function_name'] = item['rust_function_name']
 
-
-                    #found = True
-                    #break
-            #if found:
-            #    break
-
     write_json(o_meta_path, o_meta_data)
-
-
 
 
 def instrument_io(target_funcs, o_dep_json_path, o_run_path, run_test_path, list_path, io_list_path, c_io_dir, o_meta_dir, c_flow_path, c_log_path, target, func_json_path, type_json_path, raw_dir, golden_flow_path, all_struct_path, all_typedef_path, ommited_files): #target_dir, list_path, meta_dir, main_dir):
@@ -974,12 +922,12 @@ def instrument_io(target_funcs, o_dep_json_path, o_run_path, run_test_path, list
     # C: get golden c flows # When to capture this (whether the paths can change or we don't want them to change)
     get_golden_flows(c_io_dir, o_run_path, run_test_path, c_flow_path, c_log_path, o_meta_dir, golden_flow_path)
 
-    ############# From here on, insertion of Rust FFI functions
+    ############# From here on, insertion of Rust FFI functions  #############
 
     rename_directory(c_io_dir, c_io_print)
     rename_directory(c_io_tmp, c_io_dir)
 
-    delete_directory(c_io_print) # Delete it here
+    delete_directory(c_io_print)
 
     # Re-acquire metadata
     previous_ommited_files = ommited_files
@@ -988,17 +936,11 @@ def instrument_io(target_funcs, o_dep_json_path, o_run_path, run_test_path, list
     
     analyze_type(f"{c_io_dir}/{target}", o_dep_json_path, io_list_path, o_meta_dir, type_json_path, all_struct_path, all_typedef_path, plain_used_path, used_path)
 
-    # prepare_print_io(c_io_dir, list_path, meta_dir, main_dir, True, flow_log_path, type_json_path)
-    # # get_execution_flow("all_flow.txt", None, None, None, "flow_moment.txt", meta_dir)
-
-    # Revert metadata from merged state back to original # This might not be necessary
-    #reverse_metadata(meta_dir)
-
     # Merge metadata and original metadata (o_meta)
     merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_dir)
 
     # Prepare for inserting Rust functions
-    create_rustlib_header(target_funcs, c_io_dir, io_list_path, o_meta_dir, previous_ommited_files)  # , "rust_lib.h"
+    create_rustlib_header(target_funcs, c_io_dir, io_list_path, o_meta_dir, previous_ommited_files)
 
     # Insert Rust functions
     log_files = generate_zombi(target_funcs, c_io_dir, io_list_path, o_meta_dir, type_json_path)
@@ -1008,19 +950,16 @@ def instrument_io(target_funcs, o_dep_json_path, o_run_path, run_test_path, list
     write_json("function_used.json", function_used)
 
     header_path = 'print_io.h'
-    #normal_member_counts, struct_member_counts, input_arg_counts, log_files
     normal_member_counts = []
     struct_member_counts = []
     input_arg_counts = []
-    #log_files = []
     fuzz_flag = False
-    #io_modify_header(c_io_dir, target, io_list_path, o_meta_dir, o_run_path, fuzz_flag, c_flow_path, type_json_path, normal_member_counts, struct_member_counts, input_arg_counts, log_files, used_path)  # header_path
 
 
 def modify_build(mix_io_dir, c_io_dir, o_run_path, o_meta_dir, rust_io_dir, run_all_path, run_test_path):
     print("Modifying the build system...")
     exp_data = {}
-    exp_data['experiment_path'] = "build_system.c"  #experiment_path
+    exp_data['experiment_path'] = "build_system.c"
     exp_data['file_path'] = "build_system.c"
     exp_data['repair_count'] = 0
     exp_data['average'] = 0
@@ -1045,7 +984,7 @@ def modify_build(mix_io_dir, c_io_dir, o_run_path, o_meta_dir, rust_io_dir, run_
 def modify_test_run(mix_io_dir, c_io_dir, o_run_path, o_meta_dir, rust_io_dir, run_all_path, run_test_path):
 
     exp_data = {}
-    exp_data['experiment_path'] = "test_run.c"  #experiment_path
+    exp_data['experiment_path'] = "test_run.c"
     exp_data['file_path'] = "test_run.c"
     exp_data['repair_count'] = 0
     exp_data['average'] = 0
@@ -1087,7 +1026,6 @@ def filter_cloned_target_logs(log_path, log_out_path):
     #return '\n'.join(filtered_lines)
 
     solo_id += 1
-
 
 
 def rust_parse_struct_value(struct_str):
@@ -1177,7 +1115,7 @@ def rust_parse_log(log_file_path, rust_flow_path):
     results = []
     call_stack = {}
     
-    for line_idx, line in enumerate(lines): #log_content.split('\n'), start=1): #for line in log_content.split('\n'):
+    for line_idx, line in enumerate(lines): 
         log_line = line_idx + 1
         if not line.strip():
             continue
@@ -1243,10 +1181,9 @@ def rust_parse_log(log_file_path, rust_flow_path):
                         call_stack[function_name] = current_call
                         results.append(current_call)
                         
-                    elif ": exit" in line: #elif ": return=" in line:
+                    elif ": exit" in line:
                         args_dict = get_rust_returns(line_idx, lines)
 
-                        #return_value = line.split("return=")[1].split()[0]
                         output_call = {
                             "name": function_name,
                             "file_path": file_path,
@@ -1254,13 +1191,9 @@ def rust_parse_log(log_file_path, rust_flow_path):
                             "def_start_line": file_line,
                             "log_line" : log_line,
                             "call_type": "output",
-                            "return_value": args_dict #return_value
+                            "return_value": args_dict
                         }
                         results.append(output_call)
-                        
-                    # elif ": exit" in line:
-                    #     if function_name in call_stack:
-                    #         del call_stack[function_name]
     
     write_json(rust_flow_path, results)
 
@@ -1283,8 +1216,6 @@ def rust_parse_log(log_file_path, rust_flow_path):
     insert_test_lines(rust_flow_path, flow_sum_path)
 
     add_depth_to_calls(rust_flow_path)
-    # Initialize the log file here
-    #delete_file(rust_log_path)
 
     return results
 
@@ -1384,7 +1315,7 @@ def c_parse_log_2(log_path: str, c_flow_path: str) -> Dict:
     # Sort by execution order (optional)
     function_calls.sort(key=lambda x: x["line_number"])
     
-    write_json(c_flow_path, function_calls)  #write_json(output_json_path, all_entries)
+    write_json(c_flow_path, function_calls)
 
     return function_calls
 
@@ -1649,7 +1580,6 @@ def run_script_flow(script_path, timeout, dir_move_flag, execute_log_path, optio
                 shell=False #shell=True  # Required for shell scripts
             )
         else:
-            #print("Run with some execute_dir")
             result = subprocess.run(
                 cmd,
                 capture_output=True,
@@ -1672,15 +1602,6 @@ def run_script_flow(script_path, timeout, dir_move_flag, execute_log_path, optio
                     #print(result.stderr)
             print(f"Wrote log file ({execute_log_path})")
 
-        # else:
-        #     if result.stdout:
-        #         print(result.stdout)
-        #     if result.stderr:
-        #         print(result.stderr)
-        #     print("Without log file")
-        # print(f"execute_log_path: {execute_log_path}")
-
-
         # Check for errors
         std_output = result.stdout if result.stdout is not None and result.stdout != "" else None
         error_output = result.stderr if result.stderr is not None and result.stderr != "" else None
@@ -1688,41 +1609,13 @@ def run_script_flow(script_path, timeout, dir_move_flag, execute_log_path, optio
 
         print(f"type(result.stdout): {type(result.stdout)}") 
         print(f"type(result.stderr): {type(result.stderr)}") 
-        
-        # if result.stdout:
-        #     std_output = result.stdout
-        # if result.stdout:
-        #     error_output = result.stderr
 
-        # added the realtime output
-        #pty_output = run_script_pty(script_path)
-        #std_output = pty_output
-
-        """
-        if result.stdout.strip():
-            std_output = f"{result.stdout.strip()}"
-        if result.stdout: #result.returncode != 0:
-            # Combine stderr and stdout if there's an error
-            error_output = result.stderr.strip()
-            # if result.stdout.strip():
-                #error_output += f"\nStdout: {result.stdout.strip()}"
-                #std_output += f"\nStdout: {result.stdout.strip()}"
-
-            print("-------- error_output start ---------")
-            print(result.stderr)
-            print("-------- error_output end ---------")
-            #return error_output
-            return error_output, std_output
-
-        return None, None
-        """
         if process_type == "explore":
             moment_flow_path = 'flow_moment.txt'
             std_output = separate_output_files(std_output, moment_flow_path)
 
         
         if error_output and return_code == 0:
-            #print("\nBuild information:")
             if std_output is None:
                 std_output = error_output
             else:
@@ -1731,21 +1624,6 @@ def run_script_flow(script_path, timeout, dir_move_flag, execute_log_path, optio
         
         if error_output is None and return_code == 1: # Mainly for "translation_testcase"
             error_output = "Return code is 1, indicating abnormal termination."
-
-        
-        # if std_output is not None and isinstance(std_output, str):
-        #     std_output = std_output.split('\n') if std_output else None
-        
-        # if error_output is not None and isinstance(error_output, str):
-        #     error_output = error_output.split('\n') if error_output else None
-
-        # Insert here to be able to retrieve the flow text
-        #save_flow_text(rust_log_path, golden_flow_path) # flow_sum_path, 
-        
-        """
-        # Skip for now
-        # get_flow_data(rust_log_path, rust_flow_path, golden_flow_path)
-        """
         
         return error_output, std_output
 
@@ -1760,14 +1638,14 @@ def run_script_flow(script_path, timeout, dir_move_flag, execute_log_path, optio
 
 
 def get_golden_only(c_log_path, c_flow_path, golden_flow_path, o_meta_dir):
-    c_parse_log(c_log_path, c_flow_path, o_meta_dir, False) #, func_name, func_path, func_line) #, func_name, func_path, func_line)
+    c_parse_log(c_log_path, c_flow_path, o_meta_dir, False) 
 
     copy_file(c_flow_path, golden_flow_path)
 
     golden_flow, file_data = show_flow(golden_flow_path)
     os.makedirs('golden', exist_ok=True)
     for test_name, line_data in file_data.items():
-        with open(f"golden/{test_name}.txt", 'w', encoding='utf-8') as f:  # write_file(f"golden/{test_name}.txt")
+        with open(f"golden/{test_name}.txt", 'w', encoding='utf-8') as f:
             for line in line_data:
                 f.write(line + '\n')
 
@@ -1780,15 +1658,11 @@ def get_golden_flows(c_io_dir, o_run_path, run_test_path, c_flow_path, c_log_pat
     delete_file(c_log_path)
     error, std_out = run_script(o_run_path, given_time, True, None, "both")
 
-    error, std_out = run_script(run_test_path, given_time, True, None, "both") #(run_test_path, given_time, True, c_log_path, "both")
+    error, std_out = run_script(run_test_path, given_time, True, None, "both")
     test_run_dir = os.path.dirname(os.path.normpath(run_test_path))
 
     # This was written with absolute paths, so it's no longer needed
     obtained_c_log_path = f"{test_run_dir}/{c_log_path}"
-    #copy_file(obtained_c_log_path, c_log_path)
-    #print(f"{obtained_c_log_path} -> {c_log_path}")
-
-    # Remove c_flow_path from c_log_path  # filter the result
 
     # Get and display data related to the adjust_opacity function
     solo_path = None # Not sure what this is
@@ -1797,19 +1671,18 @@ def get_golden_flows(c_io_dir, o_run_path, run_test_path, c_flow_path, c_log_pat
     
     print(f"o_run_path: {o_run_path}")
     print(f"run_test_path: {run_test_path}")
-    c_parse_log(c_log_path, c_flow_path, o_meta_dir, True) #, func_name, func_path, func_line) #, func_name, func_path, func_line)
+    c_parse_log(c_log_path, c_flow_path, o_meta_dir, True)
 
     copy_file(c_flow_path, golden_flow_path)
 
     golden_flow, file_data = show_flow(golden_flow_path)
     os.makedirs('golden', exist_ok=True)
     for test_name, line_data in file_data.items():
-        with open(f"golden/{test_name}.txt", 'w', encoding='utf-8') as f:  # write_file(f"golden/{test_name}_golden_flow.txt")
+        with open(f"golden/{test_name}.txt", 'w', encoding='utf-8') as f:
             for line in line_data:
                 f.write(line + '\n')
 
     print(f"Saved golden flows at {golden_flow_path}")
-
 
 
 def obtain_impl_name(file_path, method_name, method_start_line):
@@ -1842,11 +1715,11 @@ def obtain_impl_name(file_path, method_name, method_start_line):
             impl_name = implementations[impl_line]
             break
     
-    return impl_name # , impl_line #method_start_line
+    return impl_name
 
 
-def rust_find_struct_end(file_path, start_line): # , end_line
-    rust_code = read_file(file_path) #, start_line, end_line)
+def rust_find_struct_end(file_path, start_line):
+    rust_code = read_file(file_path)
 
     struct_bounds = []
     lines = rust_code.split('\n')
@@ -1854,10 +1727,6 @@ def rust_find_struct_end(file_path, start_line): # , end_line
     outermost_struct_start = None
 
     # Regex to match struct start and end lines
-    #struct_start_pattern = re.compile(r'^\s*pub\s+struct\s+\w+\s*\{')
-    #struct_end_pattern = re.compile(r'^\s*\}')
-
-    #struct_start_pattern = re.compile(r'^\s*(pub\s+)?struct\s+\w+\s*\{')
     struct_start_pattern = re.compile(r'^\s*(pub\s+)?(struct|enum|type)\s+\w+\s*(\{|\()')
     struct_end_pattern = re.compile(r'^\s*\}')
     
@@ -1877,10 +1746,8 @@ def rust_find_struct_end(file_path, start_line): # , end_line
             return end
     return None
 
-    #return struct_bounds
 
-
-def obtain_rust_interface(rust_source_file): #generate_tags_rust(rust_source_file):
+def obtain_rust_interface(rust_source_file):
     tags_file = "rust_tags"
     delete_file(tags_file)
 
@@ -1907,16 +1774,6 @@ def obtain_rust_interface(rust_source_file): #generate_tags_rust(rust_source_fil
             func_signature = re.sub(r'\s*\{', '', func_signature)
             functions[func_name] = func_signature
                         
-            # # Extract the full signature
-            # match = re.search(r'/\^(.*?)\$/', func_pattern)
-            # if match:
-            #     full_signature = match.group(1).strip()
-            #     print(full_signature)
-            
-         
-    # Print the functions list for debugging
-    #print(json.dumps(functions, indent=2, ensure_ascii=False))
-    
     delete_file(tags_file)
 
     return functions
@@ -1996,24 +1853,21 @@ def rust_find_variable_end(file_path: str, start_line: int) -> int:
     # If the end line is not found, return the last line of the file
     return len(lines)
 
-# flag_file
-def rust_parse_functions(rust_path, meta_dir): # , flag_file  # c_path, raw_dir, #def c_insert_bank_unit(file, full_path, meta_dir, flag_file):
+
+def rust_parse_functions(rust_path, meta_dir):
     
     print(f"************** start parse_files for rust at {rust_path} **************")
 
-    #meta_path_rust = obtain_metadata(c_path, meta_dir, True, True, "def")
     meta_path_rust = get_metadata(rust_path, meta_dir, True)
 
-    tags_file = 'tags_output.txt'    #delete_file(tags_file) 
+    tags_file = 'tags_output.txt'
     delete_file(tags_file)
 
     #ctags --fields=+n -x --c-kinds=+stfp -o tags_output.txt -R rust_sampmle/src/calculator.rs --languages=Rust
     command = f"ctags --fields=+n -x --c-kinds=+stfp -o {tags_file} -R {rust_path} --languages=Rust" # "--c-kinds=+st"
     print(command)
     subprocess.run(command, shell=True, capture_output=True, text=True)
-    #command = f"ctags --languages=Rust --rust-kinds=f -f rust_tags {rust_source_file}"
-    #subprocess.run(["ctags", "--fields=+n", "-x", "--c-kinds=+stfp", "-o", tags_file, "-R", source_file]) # "--c-kinds=+st"
-    
+
     categories = {}  # Initialize a dictionary to hold categories and their elements
     meta_data = []
     with open(rust_path, 'r') as file:
@@ -2040,11 +1894,10 @@ def rust_parse_functions(rust_path, meta_dir): # , flag_file  # c_path, raw_dir,
 
             category = None
             end_line = None # initial value
-            if kind == 'macro': # <- 'macro_func' 
+            if kind == 'macro':
                 category = 'macro_func'
-                #category, end_line = categorize_macros(rust_path, start_line)
-            
-            elif kind in ['static', 'constant', 'variable']: # 'variable' comes from robot. What is this?
+
+            elif kind in ['static', 'constant', 'variable']:
                 category = 'global_var'
                 if kind == 'variable':
                     end_line = rust_find_variable_end(rust_path, start_line)
@@ -2052,32 +1905,17 @@ def rust_parse_functions(rust_path, meta_dir): # , flag_file  # c_path, raw_dir,
                     end_line = rust_find_global_var_end(rust_path, start_line)
 
             elif kind in ['struct', 'enum', 'type']:
-                category = 'data_type' # <- 'data_type' 
+                category = 'data_type'
                 end_line = rust_find_struct_end(rust_path, start_line)
 
-            elif kind == 'function': #in ['function', 'method']:
-                category = 'function' # <- 'function' 
+            elif kind == 'function':
+                category = 'function' 
                 arguments = extract_function_arguments(rust_path, start_line)
-                #end_line = find_function_end(rust_path, start_line)
 
-            elif kind == 'method': #in ['function', 'method']:
+            elif kind == 'method':
                 category = 'function'
                 impl_name = obtain_impl_name(tags_file, element_name, start_line)
                 arguments = extract_function_arguments(rust_path, start_line)
-
-            #else:
-            #    category = 'undefined'
-            """
-            module
-            function
-            struct
-            enum
-            trait
-            impl
-            constant
-            static
-            macro
-            """
             
             if category is None:
                 continue
@@ -2085,10 +1923,8 @@ def rust_parse_functions(rust_path, meta_dir): # , flag_file  # c_path, raw_dir,
             if category not in categories:
                 categories[category] = []
             
-            if category is not None: #chosen_list = ['data_type', 'function', 'macro_func']
-                #if category in chosen_list: # if category in chosen_list:
-                    #item_content = retrieve_content(category, rust_path, start_line, end_line)
-                
+            if category is not None:
+
                 item_data = {
                     "category": category,
                     "name": element_name,
@@ -2110,12 +1946,6 @@ def rust_parse_functions(rust_path, meta_dir): # , flag_file  # c_path, raw_dir,
     rust_interface_list = {}
     rust_interface_list = obtain_rust_interface(rust_path) # Actually, it might be okay to unify tags_file here
 
-    """
-    # Now, adjust the structure for the expected JSON output format
-    structured_output = {}
-    for category, elements in categories.items():
-        structured_output[category] = elements  # Assign the list of elements to their respective category key
-    """
     # Get the directory path of the output file
     output_dir = os.path.dirname(meta_path_rust)
 
@@ -2123,47 +1953,8 @@ def rust_parse_functions(rust_path, meta_dir): # , flag_file  # c_path, raw_dir,
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    write_json(meta_path_rust, meta_data) #structured_output)
+    write_json(meta_path_rust, meta_data)
 
-    """
-    # Work to insert Rust counterparts of cflow functions in c meta_data into Rust meta_data
-    c_meta_data, c_meta_path = obtain_metadata(c_path, meta_dir, False, None, "def")
-    # Rust meta data is not unified into blocks, but is a flat structure
-    # Note: For C, meta data is structured by blocks, so we need to consider functions inside conditionals
-    rust_meta_data = obtain_metadata(c_path, meta_dir, True, False, "def")
-
-    # Insert corresponding items (this is more complex; later used to store Rust function interfaces for other files)
-    for c_item in c_meta_data:
-        if c_item['block_type'] == 'function':
-            #if c_item['category'] in ['function', 'macro_func']:  # simplified category check
-            rust_flows = []
-            if 'function' in rust_meta_data:
-                for rust_item in rust_meta_data['function']:
-                    if c_item['name'] == rust_item['name']:
-                        #print(f"rust_interface_list: {rust_interface_list}")
-                        c_item['rust_interface'] = rust_interface_list[rust_item['name']]
-                        break  # exit loop once a match is found (efficient)
-            
-        elif c_item['block_type'] == 'conventional':
-            if 'function' in c_item or 'macro_func' in c_item:
-                for func in c_item['function']: 
-                    if 'function' in rust_meta_data:
-                        for rust_item in rust_meta_data['function']:
-                            if func['name'] == rust_item['name']:
-                                #print(rust_interface_list)
-                                c_item['rust_interface'] = rust_interface_list[rust_item['name']]
-                                break  # exit loop once a match is found (efficient)
-                    
-                for func in c_item['macro_func']: 
-                    if 'function' in rust_meta_data:
-                        for rust_item in rust_meta_data['function']:
-                            if func['name'] == rust_item['name']:
-                                #print(rust_interface_list)
-                                c_item['rust_interface'] = rust_interface_list[rust_item['name']]
-                                break  # exit loop once a match is found (efficient)
-
-    write_json(c_meta_path, c_meta_data)
-    """
     print("************** end parse_files for rust **************")
 
 
@@ -2208,7 +1999,7 @@ macro_rules! trace_return {
 
 
 def is_target_func(item, target_funcs):
-    key = f"{item['name']}"  #::{item['def_file_path']}"
+    key = f"{item['name']}"
     if key in target_funcs:
         return True
     return False
@@ -2248,10 +2039,6 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
     modified_lines = lines.copy()
         
     # Add use statement at the beginning
-    #use_statement = "use function_inspector::trace_all;\n\n"
-    #use_statement = "use function_inspector::trace_all;\nuse function_inspector_core::StructDisplay;\n"
-    #use_statement = "use function_inspector::trace_all;\nuse function_inspector_core::StructDisplay;\nuse tracing::{info, instrument};\n"
-    #use_statement = "use tracing::{info, instrument};\n"
     use_statement = "use tracing::instrument;\n"
     modified_lines.insert(0, use_statement)
         
@@ -2266,11 +2053,6 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
 
     # Process from the back
     for item in sorted_meta_data:
-        #if item['category'] != 'function':
-        #    continue
-        # if not is_target_func(item, target_funcs):
-        #     continue
-
         if item['category'] == "function":
             name = item['name']
             start_line = item['start_line']
@@ -2290,17 +2072,10 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
             trace_macro = " " * indent + f"#[instrument(name = \"7GqX9B2:::{name}:::{rust_path}:::{start_line}:::\", skip_all)]\n"
             no_mangle_macro = " " * indent + "#[no_mangle]\n" # "#[no_mangle]\n"
             
-
-            # If function name is main, rename to rust_main
             if FFI_STRATEGY == "preserve":
                 if name == 'main':
                     function_line = function_line.replace('fn main', 'fn rust_main')
 
-            if is_pub and is_extern_c:
-                print("Is this unnecessary?")
-                # Case of existing pub extern "C" fn
-                #modified_lines.insert(start_line, no_mangle_macro)
-                #modified_lines.insert(start_line, trace_macro)
             elif is_pub:
                 print("May skipping")
                 if FFI_STRATEGY == "preserve":
@@ -2309,21 +2084,18 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
                         new_function_line = function_line.replace('pub fn', 'pub extern "C" fn')
                         modified_lines[start_line] = new_function_line
                         
-                        ########## Insert here
                         body_start = start_line + 1
                         modified_lines.insert(body_start, " " * (indent + 4) + "initialize_tracing();\n")
                         modified_lines.insert(body_start + 1, " " * (indent + 4) + "let _span = tracing::info_span!(\"rust_main\").entered();\n\n")
-                        
-                        ##########
 
                         modified_lines.insert(start_line, no_mangle_macro)
                         modified_lines.insert(start_line, trace_macro)
 
                         # Insert initialize_tracing function before rust_main
-                        modified_lines.insert(start_line, "\n" + initialize_tracing_fn)  # added Is this the right place?
+                        modified_lines.insert(start_line, "\n" + initialize_tracing_fn)
                     
                     else:
-                        new_function_line = function_line.replace('pub fn', 'pub fn')  #function_line.replace('pub fn', 'pub extern "C" fn')
+                        new_function_line = function_line.replace('pub fn', 'pub fn')
                         modified_lines[start_line] = new_function_line
                         #modified_lines.insert(start_line, no_mangle_macro)
                         modified_lines.insert(start_line, trace_macro)
@@ -2332,7 +2104,7 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
                 else:
                     # Case of pub only
                     if item['name'] == "rust_main":
-                        new_function_line = function_line #function_line.replace('pub fn', 'pub extern "C" fn')
+                        new_function_line = function_line
                         modified_lines[start_line] = new_function_line
                         
                         ########## Insert here
@@ -2346,19 +2118,17 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
                         modified_lines.insert(start_line, trace_macro)
 
                         # Insert initialize_tracing function before rust_main
-                        modified_lines.insert(start_line, "\n" + initialize_tracing_fn)  # added Is this the right place?
+                        modified_lines.insert(start_line, "\n" + initialize_tracing_fn)
                     
 
             else:
                 # Case of a normal function
-                new_function_line = function_line.replace('fn', 'fn')  #function_line.replace('fn', 'pub extern "C" fn')
+                new_function_line = function_line.replace('fn', 'fn')
                 modified_lines[start_line] = new_function_line
-                #modified_lines.insert(start_line, no_mangle_macro)
                 modified_lines.insert(start_line, trace_macro)
                     
             print(f"Modified function: {name}")
-            #print(f"New function line: {new_function_line.strip()}")
-        
+
         if item['category'] == "data_type":
             name = item['name']
             start_line = item['start_line']
@@ -2367,10 +2137,7 @@ def insert_trace_macros(target_funcs, file_path, meta_dir):
             function_line = modified_lines[start_line]
             indent = len(function_line) - len(function_line.lstrip())
 
-
             # Generate trace and no_mangle macros on separate lines
-            # trace_macro = " " * indent + "#[derive(function_inspector::StructDisplay)]\n"
-            #trace_macro = " " * indent + "#[derive(Debug)]\n"
             trace_macro = " " * indent + "" #"#[derive(Debug)]\n"
 
             modified_lines.insert(start_line, trace_macro)
@@ -2587,7 +2354,7 @@ def ask_tetscase_report(error):
     prompt.extend(["", "## Execution log:", error])
 
     exp_data = {}
-    exp_data['experiment_path'] = "ask_report.c"  #experiment_path
+    exp_data['experiment_path'] = "ask_report.c"
     exp_data['file_path'] = "ask_report.c" 
     exp_data['repair_count'] = 0
     exp_data['average'] = 0
@@ -2718,12 +2485,8 @@ functional_modify_template = f"""
 }}
 """
 
-# "overwrite_all" : Flag for full file modification. If true, overwrites the whole file; if false, modifies only the specified lines. To minimize the number of tokens used, please basically write specific lines with this flag 'false'.
-
-
 summary_dict = {}
 called_count = 0
-
 
 # Proposed fix
 def trim_code(target_path, file_code, given_limit, model="gpt-4"):
@@ -2773,14 +2536,13 @@ def trim_code(target_path, file_code, given_limit, model="gpt-4"):
     remaining_tokens = full_tokens - len(encoder.encode(trimmed))
     trimmed += f"\n... ( remaining_tokens is {remaining_tokens}.) Exceeding token limit, content truncated. To view the complete content of {target_path}, please use read_data mode and set file_slice (specified range) to read each section separately."
     
-    print("trimmed")
     return trimmed
 
 
-def repair_semantics(repair_target, interface):  #target_dir, entry, original_run_path, original_execute_path, meta_dir, dep_json_path, exp_data, repair_count): # div_start_line, 
+def repair_semantics(repair_target, interface):
 
     llm_interface = interface.llm_interface
-    output_max = llm_interface.output_max  #3000
+    output_max = llm_interface.output_max
 
     mix_io_dir = interface.mix_io_dir
     exp_data = interface.exp_data
@@ -2789,7 +2551,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
     repair_count = interface.repair_count
     work_dir = interface.work_dir
     database_dir = interface.database_dir
-    #rust_path = interface.rust_path
     flow_on = interface.flow_on
 
     target = interface.target
@@ -2807,7 +2568,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
 
     test_number = interface.test_number
     error_log = interface.error_log
-    #log_choice = interface.log_choice
     flow_path = interface.flow_path
 
     error = interface.error
@@ -2818,13 +2578,11 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
     rust_c_map = read_json(rust_c_path)
     c_rust_path = read_json(c_rust_path)
 
-    execute_path = f"{mix_io_dir}/execute.sh" #get_execute_path(run_path) #interface.execute_path
+    execute_path = f"{mix_io_dir}/execute.sh"
     if not os.path.exists(execute_path):
-        #create_rust_build_path(run_path, c_io_dir)
-        #create_file(run_path)
         create_permissioned_file(execute_path)
-    execute_dir = os.path.dirname(os.path.normpath(execute_path))
 
+    execute_dir = os.path.dirname(os.path.normpath(execute_path))
 
     modified_c_keys = set()
     modified_rust_lines = []
@@ -2836,7 +2594,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
     execute_out = None
     read_prompt = None
 
-    #error = True # Assuming there is an error
     ongoing_flag = None #False
     mode = None
 
@@ -2863,14 +2620,9 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
             break
         """
 
-        #"""
         print(f"Judging at {repair_count}: mode: {mode}, ongoing_flag: {ongoing_flag}") #, error: {error}")
         if mode != "read_data" and ready_to_execute is True: #ongoing_flag is False: # error is None and 
             break
-        #"""
-
-        # if mode == "execute_command" and execute_error is None: #added # koko?
-        #     break
 
         if repair_target == "semantics":
             if repair_count == 1:
@@ -3075,8 +2827,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                             
 
         if execute_error is not None or execute_out is not None:
-            #prompt.extend(["", "- The result executed in execute_command mode is as follows:"])
-
             if execute_out is not None:
                 write_file(f"{database_dir}/execute_out.txt", execute_out)
                 execute_out = trim_code(f"{database_dir}/execute_out.txt", execute_out, 8000) #10000)
@@ -3093,11 +2843,9 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                 execute_error = None # Initialization
         
         if read_prompt is not None:
-            #prompt.extend(["", "## Response to the previous request:"])
             prompt.extend(read_prompt)
             read_prompt = None # Initialization
 
-        #prompt = get_auto_prompt(prompt, execute_path)
         print(f"ongoing_flag is {ongoing_flag}")
 
         if ongoing_flag is False or ongoing_flag is None:
@@ -3134,7 +2882,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                     ])       
             
             prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
-            prompt.extend([functional_template]) #compile_template])
+            prompt.extend([functional_template])
 
             test_code = get_lined_code(run_test_path, mix_io_dir)
             prompt.extend(["", f"## Executed test case ({run_test_path}):", f"{test_code}"])
@@ -3315,19 +3063,19 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
 
                                 if mode == 'modify_data':
                                     if 'answer' in child_rsp_json:
-                                        modified_list = child_rsp_json['answer'] # Maybe it's okay to put the individually converted ones here
+                                        modified_list = child_rsp_json['answer']
                                         if not isinstance(modified_list, list):
                                             modified_list = [modified_list]
                                         sum_modified_list.extend(modified_list)
 
-                                else: # Do we need this?
+                                else:
                                     rsp_json = child_rsp_json
 
                             ready_to_execute = False
                             if 'ready_to_execute' in child_rsp_json:
                                 ready_to_execute = child_rsp_json['ready_to_execute']
 
-                            if ready_to_execute is True or ongoing_in_mode_flag is False: #if ongoing_in_mode_flag is False:
+                            if ready_to_execute is True or ongoing_in_mode_flag is False:
                                 print("Breaking in child modifying loop") 
                                 break
 
@@ -3368,13 +3116,13 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                                     ])
 
                             prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
-                            prompt.extend([functional_modify_template]) # modify_template])
+                            prompt.extend([functional_modify_template])
                         
                             mod_count += 1
 
                         prompt = []
-                        ongoing_in_mode_flag = False # added
-                        ongoing_flag = False # added
+                        ongoing_in_mode_flag = False
+                        ongoing_flag = False
             
 
                 if mode == 'read_data':
@@ -3416,15 +3164,14 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                         "- The `modified_data` content in `modify_data` mode must be directly executable without any omissions.",                        
                         ])
                 
-            rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
-
+            rsp_json = ask_llm(prompt, "continue", llm_interface)
 
         ######################## Advance file by file ########################
 
         print(f"Running program for the mode: {mode}")
         if mode == 'modify_data':
             print(f"In mode: {mode}")
-            part_editied_files = reflect_line_modification(sum_modified_list, rust_io_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            part_editied_files = reflect_line_modification(sum_modified_list, rust_io_dir, database_dir)
             #modified_c_keys = update_modified_keys(modified_c_keys, meta_dir, rust_c_map, part_editied_files)
             editied_files.extend(part_editied_files)
 
@@ -3439,8 +3186,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
             for see_path in sum_target_list:
                 file_code = get_lined_code(see_path, mix_io_dir)
                 read_prompt.extend([f"- Content of the file {see_path}:"]) 
-                #file_code = trimmed_code(see_path, file_code, 100000)
-                #write_file()
                 file_code = trim_code(see_path, file_code, 100000)
                 read_prompt.extend([f'{file_code}\n'])
 
@@ -3449,9 +3194,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                 read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"])
                 read_prompt.extend([f'{file_code}\n'])
 
-            #rsp_json = ask_llm(prompt, "continue", llm_interface)
-
-            #print(rsp_json)
             print("End of rsp_json")
         
         elif mode == 'execute_command':
@@ -3459,8 +3201,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
             print(f"In mode: {mode}")
             execute_error, execute_out = run_script_wo_log(execute_path, given_time, True, None, "both")
             #execute_out = run_script_pty(run_path, given_time)
-            if target != 'yank':
-                execute_out = run_script_pty(execute_path, given_time)
+            execute_out = run_script_pty(execute_path, given_time)
 
             print(f"Stop here: {execute_error}")
             print(f"Stop here: {execute_out}")
@@ -3470,7 +3211,7 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
                 is_covered = get_is_covered(entry, cov_detail_path, target_dir, cov_dir) # target_lineがカバーされているかどうかを検知する
             """
 
-        elif mode == 'gdb_execute': # added
+        elif mode == 'gdb_execute':
             
             print(f"In mode: {mode}")
             breakpoints = None
@@ -3557,9 +3298,6 @@ def repair_semantics(repair_target, interface):  #target_dir, entry, original_ru
 
         repair_count += 1
 
-    # This is on hold for now
-    #check_dif(target_dir)
-
     iteration_dict[repair_target] = repair_count
 
     summary_dict = {}
@@ -3590,7 +3328,6 @@ def get_equivalent(modifications):
             else:
                 json_content = json.loads(item['modified_data'])  # loads for strings
             
-            #write_json(item['file_path'], json_content)
             for entry in json_content:
                 if 'equivalent' in entry:
                     if entry['equivalent'] is False:
@@ -3606,7 +3343,6 @@ def reformat_flow(repair_target, interface):
     c_io_dir = interface['c_io_dir']
     rust_io_dir = interface['rust_io_dir']
     repair_count = interface['repair_count']
-    #rust_path = interface['rust_path']
     llm_interface = interface['llm_interface']
     
     if repair_target == "get_analysis":
@@ -3623,9 +3359,8 @@ def reformat_flow(repair_target, interface):
 
     execute_path = f"{mix_io_dir}/execute.sh"
     if not os.path.exists(execute_path):
-        #create_rust_build_path(run_path, c_io_dir)
-        #create_file(run_path)
         create_permissioned_file(execute_path)
+
     execute_dir = os.path.dirname(os.path.normpath(execute_path))
 
 
@@ -3648,7 +3383,7 @@ def reformat_flow(repair_target, interface):
         if exp_data['repair_count'] == REPAIR_MAX:
             print(f"Force to finish. Hit the REPAIR_MAX ({REPAIR_MAX}).")
             iteration_dict[repair_target] = repair_count
-            sys.exit(1)  #return True
+            sys.exit(1)
         
         print(f"Judging at {repair_count}: mode: {mode}, ongoing_flag: {ongoing_flag}, error: {error}")
         if (mode != "read_data" and ongoing_flag is False) or is_equivalent is False:  # error is None and 
@@ -3751,8 +3486,6 @@ def reformat_flow(repair_target, interface):
               
 
         if execute_error is not None or execute_out is not None:
-            #prompt.extend(["", "- The result of the execute_command mode execution is as follows."])
-
             if execute_out is not None:
                 prompt.extend(["\n## Execution result:",
                             "The result executed in execute_command mode is as follows:"
@@ -3771,7 +3504,6 @@ def reformat_flow(repair_target, interface):
             prompt.extend(read_prompt)
             read_prompt = None # Initialize
 
-        #prompt = get_auto_prompt(prompt, execute_path)
         print(f"ongoing_flag is {ongoing_flag}")
 
         if ongoing_flag is False:
@@ -3817,11 +3549,8 @@ def reformat_flow(repair_target, interface):
                         f"- The shell script can contain multiple commands.",
                         ])
         
-                    
-            
             prompt.extend(["\n## Response format", f"In summary, please respond in the following JSON format:"])
             prompt.extend([autonomous_template])
-            #prompt.extend([see_template])
 
             # if error is not None and error is not True:
             #     prompt.extend(["", "## Error:", error])
@@ -3833,9 +3562,6 @@ def reformat_flow(repair_target, interface):
                 prompt.extend([f"\n## Execution result of {run_path}:", f"{std_out}"]) #, std_out]) #, std_out]) # std_out])
                 #prompt.extend(std_out)
                 std_out = ""
-
-
-        ################################################
 
         prompt = adjust_prompt(prompt)
         print("-------------------------")
@@ -3850,8 +3576,6 @@ def reformat_flow(repair_target, interface):
             create_permissioned_file(execute_path)
             rsp_json = ask_llm(prompt, "continue", llm_interface)
 
-
-        ################################################
         #ongoing_flag = False
         ongoing_in_mode_flag = False
 
@@ -3937,34 +3661,25 @@ def reformat_flow(repair_target, interface):
         if mode == 'modify_data':
             print(f"In mode: {mode}")
             print(f"sum_modified_list at reformate_flow: {sum_modified_list}")
-            reflect_line_modification(sum_modified_list, rust_io_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            reflect_line_modification(sum_modified_list, rust_io_dir, database_dir)
 
         elif mode == 'read_data':
             print(f"In mode: {mode}")
             #output = run_read_script(execute_path, given_time, True, None, "both")
             read_prompt = ["- The information obtained via read_data mode is as follows.", ""] #Even if you had a response with the 'ongoing' flag set to true before this, please make sure to respond once with None in the \"answer\" key of the JSON data for this reply.", 
-                      #"If the 'ongoing' flag is true, after returning None once, please continue responding."]
-            #prompt.extend([none_format])
-
-                        #"Command execution result: ",
-                        #f"{output}", ""]
             
             for see_path in sum_target_list:
                 file_code = get_lined_code(see_path, mix_io_dir)
                 read_prompt.extend([f'Contents of the file {see_path}:'])
                 read_prompt.extend([f'{file_code}\n'])
 
-            #rsp_json = ask_llm(prompt, "continue", llm_interface)
-
-            #print(rsp_json)
             print("End of rsp_json")
         
         elif mode == 'execute_command':
             print(f"In mode: {mode}")
             execute_error, execute_out = run_script(execute_path, given_time, True, None, "both")
             #execute_out = run_script_pty(run_path, given_time)
-            if target != 'yank':
-                execute_out = run_script_pty(execute_path, given_time)
+            execute_out = run_script_pty(execute_path, given_time)
             
         repair_count += 1
 
@@ -4022,7 +3737,6 @@ def print_function_flow(language_key, call_data, pre_lange, post_lange):
     result = []
     current_depth = 0
     
-    # We only keep the index of the last non-equivalent call. Is that okay?
     target_count = 0
     i = 0
     for call in call_data:
@@ -4045,7 +3759,6 @@ def print_function_flow(language_key, call_data, pre_lange, post_lange):
         if not(target_count - pre_lange <= i and i <= target_count + post_lange):
             continue
         
-        print(i)
         # Calculate indentation
         indent = "    " * call_info.get("depth", current_depth)
         
@@ -4219,13 +3932,8 @@ def get_flow_data(rust_log_path, rust_flow_path, golden_flow_path):
 
         }
 
-        if test_name == "test11":
-            reformat_flow("get_analysis", interface)
-        ##repair_execute("get_analysis", interface)
-
     # Put spots for incorrect parts in the answers directory.
     for test_name, line_data in file_data.items():
-        test_name = "test5"
         flow_path = f"{mix_io_dir}/analysis/{test_name}.json"
 
         c_flow, rust_flow = scope_flow(flow_path)
@@ -4245,17 +3953,16 @@ def get_flow_data(rust_log_path, rust_flow_path, golden_flow_path):
 
 def compare_io(rust_log_path, c_flow_path, rust_flow_path, o_meta_dir, golden_flow_path):
 
-    #rust_filter_flow_log(rust_log_path, rust_flow_path)
     rust_parse_log(rust_log_path, rust_flow_path)
 
     result = {}
     result['entire'] = False
 
     moment_c_flows = []
-    moment_c_flows = read_json(c_flow_path)  # c_flow = read_json(c_flow_path)
+    moment_c_flows = read_json(c_flow_path)
 
     moment_rust_flows = []
-    moment_rust_flows = read_json(rust_flow_path) #rust_flow = read_json(rust_flow_path)
+    moment_rust_flows = read_json(rust_flow_path)
 
     golden_flows = []
     golden_flows = read_json(golden_flow_path) 
@@ -4272,7 +3979,6 @@ def compare_io(rust_log_path, c_flow_path, rust_flow_path, o_meta_dir, golden_fl
     # Check whether the final output is the same
     all_success = True
     for item in moment_c_flows:
-        #file_path = item['file_path']
         for glod_item in golden_flows:
             if (glod_item['file_path'] == item['file_path']
                 and glod_item['def_start_line'] == item['def_start_line']
@@ -4290,17 +3996,10 @@ def compare_io(rust_log_path, c_flow_path, rust_flow_path, o_meta_dir, golden_fl
     # On the other hand, also look at intermediate progress (for this, correspondence needs to be checked)
     for item in moment_rust_flows:
         file_path = item['file_path']
-        #start_line = item['start_line']  # this may cause a key_error
-        #name = item['name']
 
-        #for c_item in c_flow:
-
-    #return all_success, moment_c_flows, moment_rust_flows
     return moment_c_flows, moment_rust_flows
 
 
-
-# get_flow_data(rust_log_path, rust_flow_path, golden_flow_path):
 def get_fail_flow_old(test_report, test_number, rust_log_path, rust_flow_path, golden_flow_path):
     print("Getting flow data")
 
@@ -4308,9 +4007,7 @@ def get_fail_flow_old(test_report, test_number, rust_log_path, rust_flow_path, g
     fail_numbers.append(f"test{str(test_number)}")
 
     rust_parse_log(rust_log_path, rust_flow_path)
-    #rust_flow, file_data = show_flow(rust_flow_path)
     if not os.path.exists(rust_flow_path):
-        print("rust_flow_path does not exist. Maybe compilation errors?")
         return
 
     file_data = get_tree_flow("Rust", rust_flow_path)
@@ -4321,7 +4018,6 @@ def get_fail_flow_old(test_report, test_number, rust_log_path, rust_flow_path, g
 
 
     for test_name, line_data in file_data.items():
-        #print(test_name)
         if test_name not in fail_numbers:
             continue
 
@@ -4340,10 +4036,6 @@ def get_fail_flow_old(test_report, test_number, rust_log_path, rust_flow_path, g
             if golden_flow is not None:
                 f.write(golden_flow)
                 f.write("\n")  # Add separator
-                # for line in c_line_data[test_name]:
-                #     f.write(str(line) + '\n')
-                #     golden_flow += str(line) + '\n'
-                # f.write("\n")
             
             # Write Rust program section
             f.write("[Current flow of translated Rust Program]\n")
@@ -4489,7 +4181,6 @@ def get_smallest_fail_id(given_test_number, c_io_dir, error):
         success_path = f"{c_io_dir}/flow_results/test{str(test_id)}_success.log"
         fail_path = f"{c_io_dir}/flow_results/test{str(test_id)}_fail.log"
 
-        print(success_path)
         if not os.path.exists(success_path): #os.path.exists(fail_path):
             test_number = test_id
             break
@@ -4525,29 +4216,19 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
     repair_count = 1
     interface = {
         'convert_element': "semantics",
-        #'c_path': div_c_path,
-        #'rust_path': div_rust_path,
-        #'div_start_line': div_start_line,
         'mix_io_dir' : mix_io_dir,
         'meta_dir': meta_dir,
         'dep_json_path': dep_json_path,
         'exp_data': exp_data,
         'repair_count': repair_count,
         'run_test_path' : run_test_path,
-        #'c_flow_path' : c_flow_path,
-        #'rust_flow_path' : rust_flow_path,
-        #'rust_log_path' : rust_log_path,
         'c_io_dir' : c_io_dir,
         'rust_io_dir' : rust_io_dir,
-        #'golden_flow_path' : golden_flow_path,
         'run_all_path' : run_all_path,
-        #'o_run_path' : o_run_path,
         'rust_build_path' : rust_build_path,
-        #'called_data' : called_data
     }
 
     interface = SemConfig(
-        #rust_path=rust_path,
         mix_io_dir=mix_io_dir,
         c_io_dir=c_io_dir,
         rust_io_dir=rust_io_dir,
@@ -4560,8 +4241,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         raw_dir=raw_dir,
         select=False,
         flow_on=flow_on,
-        #test_type=test_type,
-        #llm_choice=llm_choice,
         llm_interface=llm_interface,
         target=target,
         target_dir=target_dir,
@@ -4571,20 +4250,18 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         time_path=time_path,
         work_dir=work_dir,
         token_path=token_path,
-        original_target_dir=None, #original_dir,
+        original_target_dir=None,
         meta_dir=meta_dir,
         dep_json_path=dep_json_path,
         exp_data=exp_data,
         repair_count=repair_count,
         execute_path=execute_path,
-        #cmd_list=cmd_list,
         test_path=None,
         file_path=None,
         test_id=None,
         function_name=None,
         main_flag=None,
         explore_time=explore_time,
-        #cmd_exe=cmd_exe,
         notes=notes,
         progress_queue=progress_queue,
         log_dir=log_dir,
@@ -4595,7 +4272,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
     print(f"run_path is {run_path}")
 
     given_test_number = get_given_num(c_io_dir)
-    print(given_test_number)
+    # print(given_test_number)
 
     # Run first
     error = None
@@ -5178,7 +4855,7 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
 
         if mode == 'modify_data':
             print(f"In mode: {mode}")
-            reflect_line_modification(sum_modified_list, raw_dir, database_dir) # execute_error =  #sum_modified_list.extend(added_list) #if MOD_LINE:
+            reflect_line_modification(sum_modified_list, raw_dir, database_dir)
             sum_modified_list = []
                 
 
@@ -5226,7 +4903,6 @@ def initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path):
     data["prompt_id"] = str(0).zfill(4)
     write_json(logging_path, data)
     
-    #delete_directory("golden")
     delete_directory(f"{mix_io_dir}/flows")
     delete_directory(f"{mix_io_dir}/analysis")
 
@@ -5250,7 +4926,6 @@ def get_report():
         print(f"{rust_path}: {iteration_dict[rust_path]}")
     
     end_time = time.time()
-    #exec_time = 9257.932838916779
     exec_time = end_time - start_time
     print(f"Execution Time: {exec_time} seconds")
 
@@ -5277,12 +4952,31 @@ def set_s_repair_dir(compile_dir, target, work_dir):
     return work_dir
 
 
+def to_previous(p, user_id):
+    # "database_0000" -> "previous_database_0000"
+    parts = list(p.parts)
+    try:
+        idx = parts.index(f"database_{user_id}")
+    except ValueError:
+        print(f"Error: 'database_{user_id}' not found in path: {p}")
+        sys.exit(1)
+    parts[idx] = f"previous_database_{user_id}"
+    return Path(*parts)
 
-def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude_api_key, azure_endpoint):
+
+def allrust_semantics_main(config):
 
     ################################
     #### Configuraion
     ################################
+
+    process_type = config["process_type"]
+    user_id = config["user_id"]
+    compile_dir = config["compile_dir"]
+    llm_choice = config["llm_choice"]
+    claude_api_key = config["claude_api_key"]
+    azure_endpoint = config["azure_endpoint"]
+
 
     occupy_path = None
     given_time = 60
@@ -5320,8 +5014,7 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
     archive_dir, 
 
     macro_finder, 
-    database_dir, 
-    #lib_path, 
+    database_dir,  
 
     dep_json_path, 
     list_path, 
@@ -5447,9 +5140,14 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
                         llm_interface, progress_queue, max_iterations, True
                         )  
 
+        # Delete previous_workspace_s_repair_0000
+        if os.path.exists(f"previous_workspace_s_repair_0000/{target}"):
+            delete_directory(f"previous_workspace_s_repair_0000/{target}")
+
+        copy_directory(work_dir, f"previous_workspace_s_repair_0000/{target}")
+
         if FFI_STRATEGY == "minimize":
             target_path = f"{target_dir}/actual_targets.txt"
-            print(target_path)
 
             # Produce the final standalone binary
             produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
@@ -5472,8 +5170,54 @@ def allrust_semantics_main(process_type, user_id, compie_dir, llm_choice, claude
         if os.path.exists(token_path):
             cost = calc_claude_cost_from_file(token_path)
             print(f"Total cost: ${cost['total_cost_usd']:.2f}")
-        print("\n\n++++++++++++++= End of s_repair process ++++++++++++++=\n")
 
+        print("\n\n++++++++++++++= End of s_repair process ++++++++++++++=\n")
+    
+
+    elif process_type == "stash":  
+
+        metadata_dir = config["meta_dir"]
+        div_metadata_dir = config["div_meta_dir"]
+        block_output_path = config["block_path"]
+
+        metadata_path = Path(metadata_dir)
+        div_metadata_path = Path(div_metadata_dir)
+        block_output_file = Path(block_output_path)
+
+        # Compute previous_* destinations by inserting "previous_" before the directory name.
+        # e.g. /root/.../trans/metadata_0000/avl -> /root/.../trans/previous_metadata_0000/avl
+        previous_metadata_path = metadata_path.parent.parent / f"previous_{metadata_path.parent.name}" / metadata_path.name
+        previous_div_metadata_path = div_metadata_path.parent.parent / f"previous_{div_metadata_path.parent.name}" / div_metadata_path.name
+        # previous_block_output_file = block_output_file.parent / f"previous_{block_output_file.name}"
+        previous_block_output_file = to_previous(block_output_file, user_id)
+
+        # Validate that the sources exist before touching anything.
+        for src in [metadata_path, div_metadata_path, block_output_file]:
+            if not src.exists():
+                print(f"Error: source does not exist: {src}")
+                sys.exit(1)
+
+        # Stash metadata directory
+        print(f"Stashing {metadata_path} -> {previous_metadata_path}")
+        if previous_metadata_path.exists():
+            shutil.rmtree(previous_metadata_path)
+        previous_metadata_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(metadata_path, previous_metadata_path)
+
+        # Stash div_metadata directory
+        print(f"Stashing {div_metadata_path} -> {previous_div_metadata_path}")
+        if previous_div_metadata_path.exists():
+            shutil.rmtree(previous_div_metadata_path)
+        previous_div_metadata_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(div_metadata_path, previous_div_metadata_path)
+
+        # Stash block_output.txt (copy, not move — keep the original safe)
+        print(f"Stashing {block_output_file} -> {previous_block_output_file}")
+        previous_block_output_file.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(block_output_file, previous_block_output_file)
+
+        print("\n\n++++++++++++++= End of stash process ++++++++++++++=\n")
+    
 
 if __name__ == "__main__":
     
@@ -5482,10 +5226,27 @@ if __name__ == "__main__":
     #####################################################################
     
     # setup
-    compile_dir = str(sys.argv[1])
-    process_type = str(sys.argv[2])
+    process_type = str(sys.argv[1])
 
+    if process_type not in ["s_repair", "stash"]:
+        raise ValueError(f"Error: invalid process_type '{process_type}'. Expected one of: s_repair, stash")
+
+    compile_dir = None
+    meta_dir = None
+    div_meta_dir = None
+    block_path = None
+    
+    if process_type == "s_repair":
+        compile_dir = str(sys.argv[2])
+    
+    elif process_type == "stash":
+        meta_dir = str(sys.argv[2])
+        div_meta_dir = str(sys.argv[3])
+        block_path = str(sys.argv[4])
+
+    rust_edition = "2024"
     user_id = "0000"
+
     config_path = f"{CONFIG_PATH}"
     config_data = read_json(config_path)
 
@@ -5495,6 +5256,20 @@ if __name__ == "__main__":
     TEST_MODE = config_data["test_mode"] 
     FFI_STRATEGY = config_data["ffi_strategy"] 
     
-    allrust_semantics_main(process_type, user_id, compile_dir, llm_choice, claude_api_key, azure_endpoint)
+
+    config = {
+        "process_type": process_type,
+        "compile_dir": compile_dir,
+        "block_path" : block_path,
+        "meta_dir": meta_dir,
+        "div_meta_dir": div_meta_dir,
+        "user_id": user_id,
+        "rust_edition" : rust_edition,
+        "llm_choice": llm_choice,
+        "claude_api_key": claude_api_key,
+        "azure_endpoint": azure_endpoint,
+    }
+
+    allrust_semantics_main(config)
 
 

@@ -205,7 +205,7 @@ The numeric suffix `_0000` is an iteration index used by the pipeline; it
 will increment automatically across runs. The examples below assume the
 first run.
 
-### Step 1: Reformat test cases
+### Step 1: Prepare the test script
 
 ```bash
 cd /root/SmartC2Rust/macro

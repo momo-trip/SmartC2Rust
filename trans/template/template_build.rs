@@ -11,8 +11,7 @@ use std::fs;
 // independent macro names in constant_macros.json. 
 //
 // Dependent constant macros (referencing other macros) are NOT handled here.
-// They are translated by the LLM as pub const bindings that preserve
-// reference relationships.
+// They are translated by the LLM.
 //
 // Flag macros are registered as cargo:rustc-cfg flags.
 // ============================================================================

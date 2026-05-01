@@ -341,61 +341,62 @@ python3 compile.py /root/SmartC2Rust/trans/c_code_0000/su-exec /root/SmartC2Rust
 cd /root/SmartC2Rust/trans
 
 # time-1.9
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_time-1.9/time-1.9 s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_time-1.9/time-1.9
 
 # avl
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_avl/avl s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_avl/avl
 
 # which-2.21
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_which-2.21/which-2.21 s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_which-2.21/which-2.21
 
 # Tinyhttpd
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_Tinyhttpd/Tinyhttpd s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_Tinyhttpd/Tinyhttpd
 
 # ht
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_ht/ht s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_ht/ht
 
 # buffer
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_buffer/buffer s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_buffer/buffer
 
 # qsort
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_qsort/qsort s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_qsort/qsort
 
 # rgba
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_rgba/rgba s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_rgba/rgba
 
 # bst
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_bst/bst s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_bst/bst
 
 # zopfli
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_zopfli/zopfli s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_zopfli/zopfli
 
 # FastestWebsiteEver
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_FastestWebsiteEver/FastestWebsiteEver s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_FastestWebsiteEver/FastestWebsiteEver
 
 # mark-sweep
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_mark-sweep/mark-sweep s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_mark-sweep/mark-sweep
 
 # sds
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_sds/sds s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_sds/sds
 
 # yank
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_yank/yank s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_yank/yank
 
 # tiny-AES-c
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_tiny-AES-c/tiny-AES-c s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_tiny-AES-c/tiny-AES-c
 
 # SipHash
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_SipHash/SipHash s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_SipHash/SipHash
 
 # c4
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_c4/c4 s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_c4/c4
 
 # urlparser
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_urlparser/urlparser s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_urlparser/urlparser
 
 # mcrcon
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_mcrcon/mcrcon s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_mcrcon/mcrcon
 
 # su-exec
-python3 semantics.py /root/SmartC2Rust/trans/workspace_0000_su-exec/su-exec s_repair
+python3 semantics.py s_repair /root/SmartC2Rust/trans/workspace_0000_su-exec/su-exec
+
