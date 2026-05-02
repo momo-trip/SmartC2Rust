@@ -157,6 +157,7 @@ from c_parser_api import (
     get_headers,
     get_build_path,
     parse_trace,
+    find_binaries,
 )
 
 from rust_parser_api import (
@@ -4089,7 +4090,7 @@ def get_fail_flow(work_dir, test_number):
 
     base_name = f"flow_results/test{test_number}_trace.log"
 
-    rust_log_path, rust_log_dir = find_rust_log_path(work_dir, base_name) #f"{MACRO_HOME}/trans_re_0000/bst/flow_results/test1_trace.log"
+    rust_log_path, rust_log_dir = find_rust_log_path(work_dir, base_name)
     if rust_log_path is None:
         return None
 
@@ -4953,7 +4954,7 @@ def set_s_repair_dir(compile_dir, target, work_dir):
 
 
 def to_previous(p, user_id):
-    # "database_0000" -> "previous_database_0000"
+    # "database_{user_id}" -> "previous_database_{user_id}"
     parts = list(p.parts)
     try:
         idx = parts.index(f"database_{user_id}")
@@ -5140,11 +5141,11 @@ def allrust_semantics_main(config):
                         llm_interface, progress_queue, max_iterations, True
                         )  
 
-        # Delete previous_workspace_s_repair_0000
-        if os.path.exists(f"previous_workspace_s_repair_0000/{target}"):
-            delete_directory(f"previous_workspace_s_repair_0000/{target}")
+        # Delete previous_workspace_s_repair_{user_id}
+        if os.path.exists(f"previous_workspace_s_repair_{user_id}/{target}"):
+            delete_directory(f"previous_workspace_s_repair_{user_id}/{target}")
 
-        copy_directory(work_dir, f"previous_workspace_s_repair_0000/{target}")
+        copy_directory(work_dir, f"previous_workspace_s_repair_{user_id}/{target}")
 
         if FFI_STRATEGY == "minimize":
             target_path = f"{target_dir}/actual_targets.txt"
@@ -5185,7 +5186,7 @@ def allrust_semantics_main(config):
         block_output_file = Path(block_output_path)
 
         # Compute previous_* destinations by inserting "previous_" before the directory name.
-        # e.g. /root/.../trans/metadata_0000/avl -> /root/.../trans/previous_metadata_0000/avl
+        # e.g. /root/.../trans/metadata_{user_id}/avl -> /root/.../trans/previous_metadata_{user_id}/avl
         previous_metadata_path = metadata_path.parent.parent / f"previous_{metadata_path.parent.name}" / metadata_path.name
         previous_div_metadata_path = div_metadata_path.parent.parent / f"previous_{div_metadata_path.parent.name}" / div_metadata_path.name
         # previous_block_output_file = block_output_file.parent / f"previous_{block_output_file.name}"

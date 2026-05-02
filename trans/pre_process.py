@@ -98,12 +98,9 @@ from utils_api import (
 
 from c_parser_api import (
     analyze_dependencies,
-    #analyze_function,
     analyze_call_relationship,
     p_f,
-    #parse_files_c,
     get_files_list,
-    #analyze_macros_llm,
     detect_include_guards,
     delete_guards,
     delete_macro_defs,
@@ -116,7 +113,6 @@ from c_parser_api import (
     detect_independent_macros,
     find_headers,
     get_build_path,
-    #detect_cfg,
     get_compile_json,
     #insert_expanded_code,
     is_system_file,
@@ -127,7 +123,6 @@ from c_parser_api import (
 from llm_api import (
     LLMInterface,
     init_prompt_count, 
-    #set_exp_data,
     occupy_llm,
     configure_llm,
     shutdown_llm,
@@ -141,14 +136,11 @@ MACRO_HOME = "/root/SmartC2Rust/macro"
 TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
 
-
 DEBUG_LLM = False
-IF_MODIFY_FILE = False # Handling of if_condition # Disable this at the initial stage, as the design is not yet finalized
 
 REPAIR_MAX = 500
 guided_line = 20 #10
 
-removed_statement = '/* momotaro removed */'
 
 class Item(BaseModel):
     category: str
@@ -158,10 +150,6 @@ class Item(BaseModel):
     block_type: str
     c_flow: Dict[str, Any]
 
-
-##############################################
-##### Translation helper functions
-##############################################
 
 def get_exp_path(file_path, average, exp_dir, target):
     file_path = file_path.replace('.', '_')
@@ -191,11 +179,6 @@ def set_exp_data(file_path, average, exp_dir, target, log_file_path, trial_id, m
     return exp_data
 
 
-
-##############################################
-##### common functions
-##############################################
-
 def remove_base_path(full_path, base_path):
     base_path = os.path.normpath(base_path) # Normalize the base path
     full_path = os.path.normpath(full_path) # Normalize the full path
@@ -207,7 +190,6 @@ def remove_base_path(full_path, base_path):
     else:
         return full_path
 
-# new one
 def is_commented_out(line, in_multiline_comment):
     if '/*' in line:
         in_multiline_comment = True
@@ -217,11 +199,6 @@ def is_commented_out(line, in_multiline_comment):
     if in_multiline_comment or line.strip().startswith('//'):
         return True, in_multiline_comment
     return False, in_multiline_comment
-
-
-##############################################
-##### C: parse files
-##############################################
 
 
 def dfs(file, file_dependencies, visited, current_group):
@@ -302,9 +279,8 @@ def detect_file_cycle(dep_json_path):
         dependencies[source] = dep['indirect_include']
     
     sorted_files = topological_flow_sort(dependencies)
-    #sorted_files, cycles = topological_file_sort(dependencies)
 
-    cycles = find_minimal_circular_dependencies(dep_json) #find_circular_dependencies(dependencies)
+    cycles = find_minimal_circular_dependencies(dep_json) 
     print("Circular dependencies found:")
     for cycle in cycles:
         print(" -> ".join(cycle + [cycle[0]]))
@@ -323,7 +299,6 @@ def detect_file_cycle(dep_json_path):
     copy_file("tmp_dep.json", dep_json_path)
     delete_file("tmp_dep.json")
 
-##################################################
 
 def delete_include_guards(all_macros_path, guards):
     macros = read_json(all_macros_path)
@@ -345,11 +320,6 @@ def delete_include_guards(all_macros_path, guards):
 
     write_json(all_macros_path, macros)
 
-
-
-##############################################
-##### categorize blocks
-##############################################
 
 def write_func_flag(all_macros_path):
     macro_data = read_json(all_macros_path)
@@ -426,8 +396,7 @@ def categorize_blocks(file_path, raw_dir, meta_dir, all_macros_path):
     print("------------- Generate blocks metadata -------------")
     meta_data, meta_path = obtain_metadata(file_path, meta_dir, False, None, "def")
 
-    #print(meta_path)
-    if meta_data is None: # added
+    if meta_data is None:
         return
 
     for item in meta_data:
@@ -435,9 +404,6 @@ def categorize_blocks(file_path, raw_dir, meta_dir, all_macros_path):
         item['include_guard'] = is_include_guard(item, meta_data)
 
     for item in meta_data:
-        # if item['category'] == "global_var": # This conditional branch seems incorrect
-        #    continue
-
         p_start_line = item['start_line']
         p_end_line = item['end_line']
 
@@ -650,21 +616,19 @@ def find_circular_dependencies(function_calls):
 def find_parent_def_key(cashed, meta_dir, use_item, use_file_path, use_start_line, program_files):
 
     use_parent_key = None
-    #parent_name = None
     name = None
     parent_block_start = None
 
     if use_file_path not in cashed:
         use_meta_data, use_meta_path = obtain_metadata(use_file_path, meta_dir, False, None, "def")
-        #use_meta_data, use_meta_path = obtain_metadata(use_file_path, meta_dir, False, None, "def")
         cashed[use_file_path] = use_meta_data
+
     else:
         use_meta_path = obtain_metadata(use_file_path, meta_dir, False, True, "def")
         use_meta_data = cashed[use_file_path]
     
     found = False
     for key, item in use_meta_data.items():
-        #print(item)
         ## This should actually be checked: why are some becoming undefined? Probably an issue with the parser.
         if 'file_path' in item: # This must be checked first, otherwise some definitions become undefined. Why???
             def_file_path = item['file_path'] # In the case of IFDEF/IF directive.
@@ -709,12 +673,74 @@ def find_parent_def_key(cashed, meta_dir, use_item, use_file_path, use_start_lin
     return cashed, use_parent_key, name, parent_block_start
 
 
-#def build_c_graph(meta_dir, target_dir, is_program_path, block_path):
-def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_program_path, block_path):
+def load_target_keys(target_path, sorted_functions, meta_dir, target_dir):
+    """
+    Load target keys from target_path.
+
+    Each line is expected to be a key of the form
+    "name:file_path:start_line:end_line".
+    Empty lines and lines starting with '#' are ignored.
+
+    Keys that do not appear in `sorted_functions` are reported and dropped.
+    Raises ValueError if no valid target keys remain.
+    """
+    sorted_set = set(sorted_functions)
+
+    target_keys = set()
+    with open(target_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+
+            name, rel_path, start_line, end_line = line.rsplit(":", 3)
+            abs_path = f"{os.path.abspath(target_dir)}/{rel_path}"
+            # meta_data, meta_path = obtain_metadata(file_path, meta_dir, False, None, "def")
+            key_name = f"{name}:{abs_path}:{start_line}:{end_line}"
+            target_keys.add(key_name)
+    
+    # print(target_keys)
+    # print(sorted_set)
+
+    missing = target_keys - sorted_set
+    if missing:
+        print(f"[warn] target keys not found in sorted_functions: {missing}")
+        target_keys -= missing
+
+    if not target_keys:
+        raise ValueError(f"No valid target keys found in {target_path}")
+    return target_keys
+
+
+def restrict_to_reachable(sorted_functions, target_keys, dependencies):
+    """
+    Filter `sorted_functions` to keep only nodes reachable from
+    `target_keys` by following the 'uses' direction (callee side).
+
+    The original topological order in `sorted_functions` is preserved.
+    """
+    reachable = set()
+    stack = list(target_keys)
+    while stack:
+        node = stack.pop()
+        if node in reachable:
+            continue
+        reachable.add(node)
+        for nxt in dependencies.get(node, []):
+            if nxt not in reachable:
+                stack.append(nxt)
+
+    kept = [fun for fun in sorted_functions if fun in reachable]
+    excluded = [fun for fun in sorted_functions if fun not in reachable]
+
+    return kept, excluded
+
+
+
+def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_program_path, block_path, target_path):
 
     cashed = {}
     div_cashed = {}
-    #order = set(read_json(is_program_path))
     program_files = set(read_json(is_program_path))
 
     dependencies = defaultdict(list)
@@ -727,32 +753,19 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
         
         # Handle the case where meta_data is in dictionary format
         # Sort by start_line (convert dictionary values to a list and sort)
-        #if isinstance(meta_data, dict):
-        #sorted_items = sorted(meta_data.items(), key=lambda x: x[1]['start_line'])
         sorted_items = sorted(
             meta_data.items(),
             key=lambda item: item[1]['block_start']
         )
-        """
-        else:
-            # Backward compatibility for the old format (list)
-            #sorted_items = [(None, item) for item in sorted(meta_data, key=lambda x: x['start_line'])]
-            sorted_items = [(None, item) for item in sorted(meta_data, key=lambda x: x['block_start'])]
-        """
-
         # Build dependencies
         for key, item in sorted_items:
+
             # Skip declarations only (no implementation body)
             if item.get('kind', '').endswith('_decl'):
                 continue
                 
-            """
-            if item['category'] != sort_type: 
-            #if item['block_type'] != sort_type: #"function":
-                continue
-            """
             if 'type' in item:
-                if item['type'] in ["IFDEF", "IFNDEF", "IF", "ELIF"]: # IF
+                if item['type'] in ["IFDEF", "IFNDEF", "IF", "ELIF"]:
                     name = item['type']
                 elif 'name' in item:
                     name = item['name']
@@ -761,7 +774,7 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
             else:
                 name = item["name"]
 
-            def_file_path = file_path #item["file_path"]  # Use the current file_path if file_path is not present
+            def_file_path = file_path  # Use the current file_path if file_path is not present
             #start_line = item["start_line"]
             #end_line = item["end_line"]
             start_line = item["block_start"]
@@ -812,15 +825,15 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
                 """
 
                 cashed, use_parent_key, parent_name, parent_block_start = find_parent_def_key(cashed, meta_dir, use_item, use_file_path, use_start_line, program_files)
-                uses_list.append(use_parent_key)  #uses_list.append(use_key)
+                uses_list.append(use_parent_key)
 
             if key_name not in dependencies:
                 dependencies[key_name] = []
 
-            dependencies[key_name] = uses_list #.append(use_key)
-
+            dependencies[key_name] = uses_list
+    
     # Call topological_flow_sort()
-    #print(dependencies)
+    # print(dependencies)
     write_json(f"{database_dir}/flow.json", dependencies)
     sorted_functions = topological_flow_sort(dependencies)
 
@@ -829,8 +842,17 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
     for cycle in cycles:
         print(" -> ".join(cycle + [cycle[0]]))
 
+    # ===== added =====
+    target_keys = load_target_keys(target_path, sorted_functions, meta_dir, target_dir)
+    sorted_functions, excluded = restrict_to_reachable(sorted_functions, target_keys, dependencies)
+    # ===== ended =====
+
     with open(f'{block_path}', 'w') as f:
         for fun in sorted_functions:
+            f.write(f"{fun}\n")
+
+    with open(f'{database_dir}/block_excluded.txt', 'w') as f:
+        for fun in excluded:
             f.write(f"{fun}\n")
 
     if len(sorted_functions) == 0:
@@ -1503,20 +1525,19 @@ def generate_build_setup(taken_macros_path, independent_const_build_path, flag_b
     print(flag_build_path)
 
 
-def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, target_dir, meta_dir, div_meta_dir, database_dir, dep_json_path, # raw_dir,  
-                        all_directive_path, taken_directive_path, c_run_path, cfg_path, independent_path, flag_path, is_program_path,  # , all_macro_path, compile_log_path
+def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, target_dir, meta_dir, div_meta_dir, database_dir, dep_json_path,
+                        all_directive_path, taken_directive_path, c_run_path, cfg_path, independent_path, flag_path, is_program_path,
                         all_macros_path, taken_macros_path, guards_path, list_path, block_path, target_path, macro_finder,
                         guarded_macros_path, const_path, build_path, given_compile_dir, given_compile_json_path,
-                        independent_const_build_path, flag_build_path, global_path): #, llm_on): # c_output_dir, #  updated_json_path,
+                        independent_const_build_path, flag_build_path, global_path):
     
-    # This is duplicated here, so I think it can be removed eventually
-    # taken_directive_path = f"{database_dir}/all_directive_def.json"
+
     unordered_taken_directive_path = f"{database_dir}/unordered_taken_directive.json"
 
     parse_all("all", macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
                     taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, is_program_path, 
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path,
-                    given_compile_dir, given_compile_json_path, global_path) # , cfg_path
+                    given_compile_dir, given_compile_json_path, global_path)
  
     """
     build_path = get_build_path(target_dir)
@@ -1528,10 +1549,10 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     compile_dir, compile_json_path = get_compile_json(target_dir)
     """
 
-    ################################################
+    #---------------------------------------------
     # Newly insert locations to be partially expanded
-    #changed = insert_expanded_code(target_dir, meta_dir, database_dir)
 
+    # changed = insert_expanded_code(target_dir, meta_dir, database_dir)
     changed = False
     if changed is True:
         # 4th round: parsing
@@ -1552,18 +1573,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path) # , cfg_path
     """
 
-    ################################################
-    """
-    #analyze_dependencies(target_dir, dep_json_path, c_run_path, compile_log_path, build_dir, database_dir) # , list_path, omitted_files) # f"{raw_dir}/{target}"
-    find_headers(target_dir, database_dir, dep_json_path, compile_dir, compile_json_path, None)
-    """
-
-    # obtain the parse data  # c_create_defdata()
-    # get_list_path(dep_json_path, target_dir, list_path)
-    #parse_files_c(meta_dir, raw_dir, target, database_dir, dep_json_path, True, False, c_run_path, all_macros_path, list_path) # flag_file, 
-    
-    # detect_independent_macros(unique_macros, independent_path) # I put this inside generate_macro_data, though
-
+    #---------------------------------------------
     """
     # Write out the cfg-related items here (macros used for conditional compilation) <- remove include guards
     detect_cfg(unordered_taken_directive_path, guards_path, cfg_path)  #detect_cfg(all_directive_path, guards_path, cfg_path)
@@ -1598,10 +1608,9 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     delete_global_defs(target_dir, meta_dir, is_program_path)
     """
 
-    #################
+    #---------------------------------------------
     # Replace the conversion numbers whose boundaries have been determined
-    #order = get_files_list(list_path)
-    define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_program_path, block_path) #order)  # raw_dir,  #change_block_order(raw_dir, meta_dir)
+    define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_program_path, block_path, target_path)
 
     remove_duplicated_block(meta_dir, div_meta_dir, database_dir, block_path)
 
@@ -1612,23 +1621,15 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     generate_build_setup(taken_macros_path, independent_const_build_path, flag_build_path)
 
     # Find the location of the target function
-    out_taget_path = get_target_location(target_dir, target_path) # , marker
+    out_taget_path = get_target_location(target_dir, target_path)
 
-    print(f"\n+++++++ End of parse_files_c() +++++++\n")
-
-
-    """
-    # Detect sys macros
-    #detect_sys_macros(macro_metadata, sys_macros_path)
-    """
+    print(f"\n+++++++ End of pre_processing +++++++\n")
 
 
-def get_setting_data(data, target_dir):  # , target # translation_dir, 
-    # dst_dir = f"{translation_dir}/{target}"
-    # print(dst_dir)
-    # config_path = f"{dst_dir}/setting.json"
 
-    created_paths = [] #data['created_paths']  # This is dangerous, so
+def get_setting_data(data, target_dir):
+
+    created_paths = []
     if data is None:
         data = {}
 
@@ -1641,13 +1642,6 @@ def get_setting_data(data, target_dir):  # , target # translation_dir,
     print(f"build_path: {build_path}")
     print(f"run_test_path: {run_test_path}")
     print(f"run_all_path: {run_all_path}")
-
-    # filetered_created_paths = []
-    # print(f"file_paths in created_paths")
-    # for file_path in created_paths:
-    #     file_path = f"{target_dir}/{file_path}"
-    #     filetered_created_paths.append(file_path)
-    #     print(f"{file_path}")
 
     filetered_target_funcs = []
     print(f"file_paths in target_funcs")
@@ -1662,8 +1656,7 @@ def get_setting_data(data, target_dir):  # , target # translation_dir,
     run_test_path = f"{target_dir}/{run_test_path}"
     run_all_path = f"{target_dir}/{run_all_path}"
 
-    #write_json(config_path, data)
-    return build_path, run_test_path, run_all_path, filetered_target_funcs # filetered_created_paths,  # , run_all_path #created_paths
+    return build_path, run_test_path, run_all_path, filetered_target_funcs
 
 
 
@@ -1696,8 +1689,7 @@ def remove_created_c_paths(list_path, created_paths):
 
 
 # Not need in case we use as a CLI tool
-def handle_paths(all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, dep_json_path, compile_json_path): # , cfg_path
-    #guards_path = "database_0000/mini/guards.json"
+def handle_paths(all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, dep_json_path, compile_json_path):
 
     paths = [all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, dep_json_path, compile_json_path]
     paths = [f"{MACRO_HOME}/{item}".replace("trans", "macro") for item in paths]
@@ -1706,15 +1698,13 @@ def handle_paths(all_macros_path, taken_macros_path, all_directive_path, taken_d
     return all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, dep_json_path, compile_json_path
 
 
-def initialize(target_dir, meta_dir, database_dir, dep_json_path): #, flag_json_path, macro_list_path, all_macros_path, initial_macro_path, all_macro_path):
+def initialize(target_dir, meta_dir, database_dir, dep_json_path):
 
     # initialize directories and files
     #delete_directory(raw_dir)
     delete_directory(target_dir)
     delete_directory(meta_dir)
     #delete_directory(root_dir)
-
-    #delete_directory("preprocessed_output")
 
     #delete_file(macro_list_path)
     #delete_file(all_macros_path)
@@ -1800,13 +1790,9 @@ def allrust_preprocess_main(config):
     claude_api_key = config["claude_api_key"]
     azure_endpoint = config["azure_endpoint"]
 
-
-    #llm_on = get_llm_flag(llm_on)
     claude_model = get_claude_model(llm_choice)
 
     occupy_path = None
-    #config_path = f"{MACRO_HOME}/config.json"
-    #config_data = read_json(config_path)
 
     analyzer_path = f"{C_PARSER_HOME}/c_analyzer/analyzer"  # or absolute path
     macro_analyzer_path = f"{MACRO_HOME}/macro_analyzer/build/macro_analyzer"
@@ -1818,8 +1804,6 @@ def allrust_preprocess_main(config):
         original_dir=original_dir,
         process_type=process_type,
         work_dir=None,
-        #target="mini",
-        #def_json_path=def_json_path,
     )
 
     (target,
@@ -1828,7 +1812,7 @@ def allrust_preprocess_main(config):
     rust_lib_h_path,
     run_test_path,
     run_all_path,
-    raw_dir, #
+    raw_dir,
     target_dir, 
     work_dir, 
     c_code_dir,
@@ -1846,7 +1830,6 @@ def allrust_preprocess_main(config):
 
     macro_finder, 
     database_dir, 
-    #lib_path, 
 
     dep_json_path, 
     list_path, 
@@ -1882,7 +1865,6 @@ def allrust_preprocess_main(config):
     map_path, 
     call_path, 
     persistent_dir, 
-    #build_rs_path, 
 
     chat_dir,
     history_path,
@@ -1905,21 +1887,15 @@ def allrust_preprocess_main(config):
         start_time = time.time()
 
         # initialize
-        initialize(target_dir, meta_dir, database_dir, dep_json_path) #, flag_json_path, macro_list_path, all_macros_path, initial_macro_path, all_macro_path)
+        initialize(target_dir, meta_dir, database_dir, dep_json_path) 
 
         # copy the target directory
         print(f"original_dir: {original_dir}") 
         copy_directory(original_dir, raw_dir)
         grant_permissions(target_dir) 
 
-        # print(run_test_path)
-        # print(run_all_path)
-        # print(build_path)
-
-        # I don't think it's needed in the real environment; only for testing
+        # Only for testing
         compile_json_path = get_compile_json(target_dir)
-        # all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, v_dep_json_path, compile_json_path = handle_paths(all_macros_path, taken_macros_path, all_directive_path, taken_directive_path, guards_path, independent_path, is_program_path, None, compile_json_path) # , cfg_path
-        #
         print(original_dir)
         # print(os.path.abspath(target_dir))
 
@@ -1929,18 +1905,16 @@ def allrust_preprocess_main(config):
         clone_directory(given_meta_dir, meta_dir)
         clone_directory(given_div_meta_dir, div_meta_dir)
 
-        denormalize_translation_metadata(meta_dir, os.path.abspath(target_dir), False) #os.path.abspath(target_dir))
-        denormalize_translation_metadata(div_meta_dir, os.path.abspath(target_dir), False) #, os.path.abspath(target_dir))
+        denormalize_translation_metadata(meta_dir, os.path.abspath(target_dir), False)
+        denormalize_translation_metadata(div_meta_dir, os.path.abspath(target_dir), False)
 
         given_compile_json_path = setup_compile_json(given_compile_dir, f"{MACRO_HOME}", f"{TRANS_HOME}")
 
-        #denormalize_dep_data(dep_json_path, f"{TRANS_HOME}", os.path.abspath(f"{TRANS_HOME}")) #, os.path.abspath(target_dir))
+        #denormalize_dep_data(dep_json_path, f"{TRANS_HOME}", os.path.abspath(f"{TRANS_HOME}"))
         
         denormalize_metafiles(meta_dir, raw_dir, all_macros_path, taken_macros_path, guards_path)
         #denormalize_block_path(is_program_path, f"{MACRO_HOME}", f"{TRANS_HOME}")
 
-        # print(target_dir)
-        # print(c_code_dir)
         if os.path.exists(f"{c_code_dir}/{target}"):
             delete_directory(f"{c_code_dir}/{target}") # Initialize
         copy_directory(target_dir, c_code_dir)
@@ -1949,12 +1923,12 @@ def allrust_preprocess_main(config):
         #*******       Pre-processing      
         #******************************************************************
         
-        # start preprocessing # c_run_path = 'raw/which-2.21/build.sh'  # flag_json_path, list_path, picked_path, namespace_path, c_lib_path, c_build_path, c_cargo_path, 
-        pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, target_dir, meta_dir, div_meta_dir, database_dir, dep_json_path,  # raw_dir, 
-                        all_directive_path, taken_directive_path, run_test_path, cfg_path, independent_path, flag_path, is_program_path, # all_macro_path, compile_log_path, 
+        # start preprocessing 
+        pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, target_dir, meta_dir, div_meta_dir, database_dir, dep_json_path,
+                        all_directive_path, taken_directive_path, run_test_path, cfg_path, independent_path, flag_path, is_program_path,
                         all_macros_path, taken_macros_path, guards_path, list_path, block_path, target_path, macro_finder,
                         guarded_macros_path, const_path, build_path, given_compile_dir, given_compile_json_path,
-                        independent_const_build_path, flag_build_path, global_path) #, llm_on) # created_paths,   # c_output_dir,  # updated_json_path
+                        independent_const_build_path, flag_build_path, global_path)
 
         
         #******************************************************************
@@ -1965,7 +1939,7 @@ def allrust_preprocess_main(config):
         normalize_translation_metadata(meta_dir, f"{TRANS_HOME}/trans_c_0000")
         normalize_translation_metadata(div_meta_dir, f"{TRANS_HOME}/trans_c_0000")
 
-        # Should I revert the metafiles as well? (Although I don't think it's necessary in the actual API)
+        # It's unnecessary in the actual API
         normalize_metafiles(meta_dir, raw_dir, all_macros_path, taken_macros_path, guards_path)        
 
         #　normalize_dep_data(dep_json_path, raw_dir)
@@ -1984,8 +1958,13 @@ def allrust_preprocess_main(config):
         print(f"block_path: {block_path}")
         print(f"************ pre-process finished ************")
         
+        if "benchmark" in target_path:
+            save_dir = "benchmark"
+        else:
+            save_dir = "program"
+
         print(f"\nNext action:")
-        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} /root/SmartC2Rust/benchmark/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
+        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} /root/SmartC2Rust/{save_dir}/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
 
 
     if process_type == "merge":
@@ -1994,8 +1973,13 @@ def allrust_preprocess_main(config):
         old_div_meta_dir = config["old_div_meta_dir"]
         merge_different_meta_dir(old_meta_dir, meta_dir, old_div_meta_dir, div_meta_dir)
 
+        if "benchmark" in target_path:
+            save_dir = "benchmark"
+        else:
+            save_dir = "program"
+
         print(f"\nNext action:")
-        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} /root/SmartC2Rust/benchmark/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
+        print(f"\npython3 compile.py {TRANS_HOME}/{c_code_dir}/{target} {TRANS_HOME}/{target_dir} /root/SmartC2Rust/{save_dir}/{target}/targets_actual.txt trans {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {block_path} off")
         
 
 
@@ -2019,8 +2003,6 @@ if __name__ == "__main__":
         old_meta_dir = str(sys.argv[7])
         old_div_meta_dir = str(sys.argv[8])
 
-    # llm_on = str(sys.argv[3]) # process_type = "meta"
-    # target = str(sys.argv[1])
 
     user_id = "0000"
     llm_choice = None
@@ -2041,5 +2023,5 @@ if __name__ == "__main__":
         "claude_api_key": claude_api_key,
         "azure_endpoint": azure_endpoint,
     }
-    allrust_preprocess_main(config) #process_type, user_id, original_dir, target_path, llm_choice, claude_api_key, azure_endpoint)
+    allrust_preprocess_main(config)
         

@@ -77,51 +77,56 @@ cp -r  /root/SmartC2Rust/trans/div_metadata_0000/{program} \
        /root/SmartC2Rust/trans/previous_div_metadata_0000/{program}
 
 mv  /root/SmartC2Rust/trans/database_0000/{program}/block_output.txt \
-       /root/SmartC2Rust/trans/database_0000/{program}/previous_block_output.txt
+       /root/SmartC2Rust/trans/previous_database_0000/{program}/block_output.txt
 ```
+
 
 
 ### Step 2: Reconfigure for the next run
 
-Before re-running, to switch configuration, change build flags / features in your test
-  script or source preparation (e.g., `c_build.sh`, `Makefile`).
+Before re-running, switch the configuration by changing the build flags or features in the source preparation step (e.g., `c_build.sh`, `Makefile`).
 
 
-### Step 3: Generate golden reference
+### Step 3: Prepare a new test script
+
+Update the test script (`run_test.sh`) to match the new configuration.
+
+
+### Step 4: Generate golden reference
 
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
 ```
 
-### Step 4: Apply macro pre-processing
+### Step 5: Apply macro pre-processing
 
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off /root/SmartC2Rust/macro/trans_re_0000/{program}/run_test.sh /root/SmartC2Rust/benchmark/{program}/targets.txt
 ```
 
-### Step 5: Generate metadata
+### Step 6: Generate metadata
 ```bash
 cd /root/SmartC2Rust/trans
 python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root/SmartC2Rust/benchmark/{program}/targets.txt /root/SmartC2Rust/macro/metadata_0000/{program} /root/SmartC2Rust/macro/div_metadata_0000/{program} /root/SmartC2Rust/macro/trans_c_0000/{program}
 ```
 
 
-### Step 6: Subsequent runs (resume `on`)
+### Step 7: Subsequent runs (resume `on`)
 
 Then re-run with the resume flag set to `on`:
 
 ```bash
 cd /root/SmartC2Rust/trans
-python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt on /root/SmartC2Rust/trans/database_0000/{program}/previous_block_output.txt /root/SmartC2Rust/trans/previous_metadata_0000/{program} /root/SmartC2Rust/trans/previous_div_metadata_0000/{program} /root/SmartC2Rust/trans/previous_workspace_s_repair_0000/{program}/workspace_s_repair_0000_{program}
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt on /root/SmartC2Rust/trans/previous_database_0000/{program}/block_output.txt /root/SmartC2Rust/trans/previous_metadata_0000/{program} /root/SmartC2Rust/trans/previous_div_metadata_0000/{program} /root/SmartC2Rust/trans/previous_workspace_s_repair_0000/{program}/workspace_s_repair_0000_{program}
 ```
 
 **Input:**
 
 When `<resume_flag>` is `on`, the following four additional arguments are required, in order, after the resume flag:
 
-- `<previous_block_output>`: Block output file from the previous run (e.g., `trans/database_0000/avl/previous_block_output.txt`)
+- `<previous_block_output>`: Block output file from the previous run (e.g., `trans/previous_database_0000/avl/block_output.txt`)
 - `<previous_metadata_dir>`: Stashed enriched metadata from the previous run (e.g., `trans/previous_metadata_0000/avl`)
 - `<previous_div_metadata_dir>`: Stashed block-level metadata from the previous run (e.g., `trans/previous_div_metadata_0000/avl`)
 - `<previous_workspace_s_repair_dir>`: Semantics-repair workspace from the previous run, used to carry over already-translated Rust code (e.g., `trans/previous_workspace_s_repair_0000/avl/workspace_s_repair_0000_avl`)
@@ -129,6 +134,27 @@ When `<resume_flag>` is `on`, the following four additional arguments are requir
 
 
 ## Scenario B: Widening target functions
+
+### Choosing the order: leaf-first
+
+One strategy worth considering is to add functions to `targets.txt` from
+the **leaves** of the call graph toward the root.
+
+```
+       main
+        / \
+       A   B          <-- last
+      / \   \
+     C   D   E        <-- next
+    / \
+   F   G              <-- first (leaves)
+```
+
+The intuition is that leaf-first keeps every FFI shim one-way. The new Rust function is called *into* from C, with `extern "C"` and `#[repr(C)]` arguments. Shims get deleted as their C callers are translated later.
+
+This hasn't been empirically validated, and other orderings may work better depending on the codebase.
+
+
 
 ### Step 0: Initial run (resume `off`)
 
@@ -166,7 +192,7 @@ cp -r  /root/SmartC2Rust/trans/div_metadata_0000/{program} \
        /root/SmartC2Rust/trans/previous_div_metadata_0000/{program}
 
 mv  /root/SmartC2Rust/trans/database_0000/{program}/block_output.txt \
-       /root/SmartC2Rust/trans/database_0000/{program}/previous_block_output.txt
+       /root/SmartC2Rust/trans/previous_database_0000/{program}/block_output.txt
 ```
 
 
@@ -175,31 +201,36 @@ mv  /root/SmartC2Rust/trans/database_0000/{program}/block_output.txt \
 Before re-running, to widen the subset, edit `targets.txt` to add more entry points.
 
 
-### Step 3: Generate golden reference
+### Step 3: Prepare a new test script
+
+Update the test script (`run_test.sh`) to match the new configuration.
+
+
+### Step 4: Generate golden reference
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} golden
 ```
 
 
-### Step 4: Apply macro pre-processing
+### Step 5: Apply macro pre-processing
 
 ```bash
 cd /root/SmartC2Rust/macro
 python3 pre_process.py /root/SmartC2Rust/macro/trans_re_0000/{program} macro off /root/SmartC2Rust/macro/trans_re_0000/{program}/run_test.sh /root/SmartC2Rust/benchmark/{program}/targets.txt
 ```
 
-### Step 5: Generate metadata
+### Step 6: Generate metadata
 ```bash
 cd /root/SmartC2Rust/trans
 python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root/SmartC2Rust/benchmark/{program}/targets.txt /root/SmartC2Rust/macro/metadata_0000/{program} /root/SmartC2Rust/macro/div_metadata_0000/{program} /root/SmartC2Rust/macro/trans_c_0000/{program}
 ```
 
-### Step 6: Subsequent runs (resume `on`)
+### Step 7: Subsequent runs (resume `on`)
 
 Then re-run with the resume flag set to `on`:
 
 ```bash
 cd /root/SmartC2Rust/trans
-python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt on /root/SmartC2Rust/trans/database_0000/{program}/previous_block_output.txt /root/SmartC2Rust/trans/previous_metadata_0000/{program} /root/SmartC2Rust/trans/previous_div_metadata_0000/{program} /root/SmartC2Rust/previous_workspace_s_repair_0000/{program}
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt on /root/SmartC2Rust/trans/previous_database_0000/{program}/block_output.txt /root/SmartC2Rust/trans/previous_metadata_0000/{program} /root/SmartC2Rust/trans/previous_div_metadata_0000/{program} /root/SmartC2Rust/previous_workspace_s_repair_0000/{program}
 ```

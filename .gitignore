@@ -14,6 +14,9 @@ chats*/
 look_modifs*/
 test_out/
 c_code*/
+program/sample
+program/commands.txt
+trans/previous_*/
 *output*/
 tmp*.json
 **/.cargo/registry/

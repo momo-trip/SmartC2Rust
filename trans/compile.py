@@ -140,6 +140,7 @@ from c_parser_api import (
     get_compile_json,
     clone_compile_json,
     is_system_file,
+    find_binaries,
 )
 
 from rust_parser_api import (
@@ -540,7 +541,7 @@ def get_target_function(one_unit, target_path):
 # For C, request actions with respect to definition locations that are expected to be determined later.
 # Note that c_path is used not as the actual file itself, but as something for retrieving meta_dir, so there is a potential intuitive mismatch in the fact that div_c_path does not need to physically exist.
 def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_path, 
-                       original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target):  # , macro_path, all_macro_path# , build_list_path
+                       original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target, user_id):  # , macro_path, all_macro_path# , build_list_path
 
     added_prompt = []
     cashed = {}
@@ -602,7 +603,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
                                             div_meta_dir, original_dir, build_path, conv_type, 
                                             i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, 
                                             g_at_least_found, global_vars, t_at_least_found, targets, seen, target,
-                                            g_used, f_used, i_used)
+                                            g_used, f_used, i_used, user_id)
         
         # prompt = dependencies["prompt"]
         cashed = dependencies["cashed"]
@@ -825,6 +826,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
     target_dir = interface.target_dir
     is_program_path = interface.is_program_path
     target = interface.target
+    user_id = interface.user_id
 
     # set the initial prompt
     prompt = []    
@@ -883,7 +885,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
     target_function = get_target_function(one_unit, target_path)
 
     prompt, sole_prompt = get_context_prompt('divided_type', prompt, one_unit, dep_json_path, is_program_path, 
-                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target) #  macro_path, all_macro_path  # , build_list_path
+                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target, user_id)
     add_prompt.extend(sole_prompt)
 
     if len(target_function) != 0:
@@ -898,7 +900,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
         for func in target_function:
             prompt.extend([f"    - {func}"])
 
-    functions = parse_function_info(target_path, work_dir)
+    functions = parse_function_info(target_path, work_dir, user_id)
     prompt.extend(["\n## FFI boundary functions:"])
     for func in functions:
         prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})")
@@ -1402,6 +1404,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     target_dir = interface.target_dir
     is_program_path = interface.is_program_path
     target = interface.target
+    user_id = interface.user_id
 
     # set the initial prompt
     prompt = []    
@@ -1459,7 +1462,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     target_function = get_target_function(one_unit, target_path)
 
     prompt, sole_prompt = get_context_prompt('divided_type', prompt, one_unit, dep_json_path, is_program_path, 
-                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target) #  macro_path, all_macro_path  # , build_list_path
+                                              original_dir, meta_dir, div_meta_dir, rust_output_dir, build_path, target, user_id)
     add_prompt.extend(sole_prompt)
 
     if len(target_function) != 0:
@@ -1476,7 +1479,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         for func in target_function:
             prompt.extend([f"    - {func}"])
 
-    functions = parse_function_info(target_path, work_dir)
+    functions = parse_function_info(target_path, work_dir, user_id)
     prompt.extend(["\n## FFI boundary functions:"])
     for func in functions:
         prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
@@ -3135,7 +3138,7 @@ def repair_execute(repair_target, interface):
     editied_files = []
     judge_count = 0
 
-    functions = parse_function_info(target_path, work_dir)
+    functions = parse_function_info(target_path, work_dir, user_id)
 
     while (1):
         if repair_count == REPAIR_MAX:
@@ -4110,7 +4113,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                          div_meta_dir, original_dir, build_path, conv_type, 
                          i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, 
                          g_at_least_found, global_vars, t_at_least_found, targets, seen, target,
-                         g_used, f_used, i_used):
+                         g_used, f_used, i_used, user_id):
     
     prompt = []
     repair_prompt = []
@@ -4132,7 +4135,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
         #### Uses
         ###############################
 
-        # if meta_data is None: # Better to double-check this # This case exists: File not found: div_metadata_0000/pp-patterns//usr/include/x86_64-linux-gnu/bits/types/struct_FILE_h.json
+        # if meta_data is None: # Better to double-check this # This case exists: File not found: div_metadata_{user_id}/pp-patterns//usr/include/x86_64-linux-gnu/bits/types/struct_FILE_h.json
         #     return prompt, cashed, i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, g_at_least_found, global_vars  # , repair_prompt
         # element_item = meta_data[key_name] #function_name = element_item['name']
         """
@@ -4152,7 +4155,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
             for use_item in uses_list:
                 use_file_path = use_item['file_path']
 
-                c_use_file_path = use_file_path.replace("trans_c_0000", f"workspace_0000_{target}")
+                c_use_file_path = use_file_path.replace(f"trans_c_{user_id}", f"workspace_{user_id}_{target}")
                 if is_system_file(c_use_file_path, program_files):
                     continue
                 # if original_dir not in use_file_path: # Not filtered out in the uses section # Needs checking
@@ -4171,7 +4174,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                 else:
                     use_meta_data = cashed[use_meta_path]
                 
-                # if meta_data is None: # Better to double-check this # This case exists: File not found: div_metadata_0000/pp-patterns//usr/include/x86_64-linux-gnu/bits/types/struct_FILE_h.json
+                # if meta_data is None: # Better to double-check this # This case exists: File not found: div_metadata_{user_id}/pp-patterns//usr/include/x86_64-linux-gnu/bits/types/struct_FILE_h.json
                 #     continue
 
                 ##### rust code (originated in Rust)
@@ -4497,6 +4500,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
             max_iterations=max_iterations,
             is_program_path=is_program_path,
             target=target,
+            user_id=user_id,
         )
 
         if FFI_STRATEGY == "preserve":
@@ -4563,6 +4567,7 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
         max_iterations=max_iterations,
         target_path=target_path,
         target=target,
+        user_id=user_id,
     )
 
     modified_c_keys = set()
@@ -5506,7 +5511,7 @@ def get_c_order(block_group_path):
 
 
 
-def parse_function_info(target_path, target_dir):
+def parse_function_info(target_path, target_dir, user_id):
     """
     Parse function information from a text file and return as JSON
     
@@ -5530,7 +5535,7 @@ def parse_function_info(target_path, target_dir):
         parts = entry.split(':')
         
         file_path = f"{parts[1]}"
-        file_path = file_path.replace(f"{TRANS_HOME}/trans_c_0000/", "")
+        file_path = file_path.replace(f"{TRANS_HOME}/trans_c_{user_id}/", "")
         file_path = f"{target_dir}/{file_path}"
 
         if len(parts) >= 3: #4:
@@ -5586,11 +5591,11 @@ link_template = f"""# In "modify_data" mode
 }}
 """
 
-def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir, 
+def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir, user_id, 
                           lib_path, rust_lib_h_path, rust_output_dir, raw_dir, target_dir, target_path, llm_interface, rust_edition):
     
     
-    functions = parse_function_info(target_path, work_dir)
+    functions = parse_function_info(target_path, work_dir, user_id)
 
     prompt = [
         f"The following directory ({work_dir}) is created for calling Rust functions from a C program.",
@@ -5815,10 +5820,10 @@ pub extern "C" fn rust_main_wrapper_<identifer>(
 ```"""
 
 # When translating the C main function, obtain command-line arguments using std::env::args() in Rust instead of receiving argc/argv from C.
-def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir,
+def generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir, user_id,
                           lib_path, rust_lib_h_path, rust_output_dir, raw_dir, target_dir, target_path, llm_interface, rust_edition):
     
-    functions = parse_function_info(target_path, work_dir)
+    functions = parse_function_info(target_path, work_dir, user_id)
 
     prompt = [
         f"The following directory ({work_dir}) is created for calling Rust functions from a C program.",
@@ -6085,7 +6090,7 @@ def update_blocklist(rust_lib_h_path, build_rs_path):
 
         
 
-def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_program_path):
+def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_program_path, user_id):
 
     global_vars = read_json(global_path)
 
@@ -6101,9 +6106,9 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
         start_line = item['definition']['start_line']
         start_column = item['definition']['start_column']
 
-        file_path = f"{TRANS_HOME}/trans_c_0000/{file_path}"
+        file_path = f"{TRANS_HOME}/trans_c_{user_id}/{file_path}"
 
-        c_file_path = file_path.replace("trans_c_0000", f"workspace_0000_{target}")
+        c_file_path = file_path.replace(f"trans_c_{user_id}", f"workspace_{user_id}_{target}")
         if is_system_file(c_file_path, program_files):
             continue
         
@@ -6150,7 +6155,7 @@ def update_global_metadata(target, div_meta_dir, database_dir, global_path, is_p
 
 
 
-def update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_path, independent_const_build_path, flag_build_path, is_program_path):
+def update_build_rs_metadata(target, user_id, div_meta_dir, database_dir, taken_macros_path, independent_const_build_path, flag_build_path, is_program_path):
 
     taken_macros = read_json(taken_macros_path)
     ind_const_macros = read_json(independent_const_build_path)
@@ -6175,9 +6180,9 @@ def update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_pa
         start_line = macro['definition']['start_line']
         start_column = macro['definition']['start_column']
 
-        file_path = f"{TRANS_HOME}/trans_c_0000/{file_path}"
+        file_path = f"{TRANS_HOME}/trans_c_{user_id}/{file_path}"
 
-        c_file_path = file_path.replace("trans_c_0000", f"workspace_0000_{target}")
+        c_file_path = file_path.replace(f"trans_c_{user_id}", f"workspace_{user_id}_{target}")
         if is_system_file(c_file_path, program_files):
             continue
         
@@ -6603,7 +6608,7 @@ def insert_is_target(target_dir, marker, meta_dir, div_meta_dir):
 def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
                         chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir,
                         average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition,
-                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,
+                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target, user_id,
                         time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                         rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
                         is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
@@ -6630,7 +6635,7 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
                       independent_const_build_path, flag_build_path, clang_args_json_path) # copy_file(build_template_path, build_rs_path)  #
 
     # update metadata for build.rs
-    update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_path, independent_const_build_path, flag_build_path, is_program_path)
+    update_build_rs_metadata(target, user_id, div_meta_dir, database_dir, taken_macros_path, independent_const_build_path, flag_build_path, is_program_path)
 
     # turn off warnings
     # turn_off_warning(build_rs_path)
@@ -6642,7 +6647,7 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
     generate_run_all_path(run_all_path, run_all_template_path, target)
 
     # insert Rust library link code
-    generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir, 
+    generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir, user_id, 
                           lib_path, rust_lib_h_path, rust_output_dir, raw_dir, target_dir, target_path, llm_interface, rust_edition)
 
     # update blocklist
@@ -6652,7 +6657,7 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
     # insert global variables 
     generate_global_code(global_path, lib_path)
 
-    update_global_metadata(target, div_meta_dir, database_dir, global_path, is_program_path)
+    update_global_metadata(target, div_meta_dir, database_dir, global_path, is_program_path, user_id)
     """
     rust_path = lib_path
     
@@ -6726,7 +6731,7 @@ def setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_d
 def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
                         chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir,
                         average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition,
-                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,
+                        run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target, user_id,
                         time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                         rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
                         is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
@@ -6753,7 +6758,7 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
                       independent_const_build_path, flag_build_path, clang_args_json_path)
 
     # update metadata for build.rs
-    update_build_rs_metadata(target, div_meta_dir, database_dir, taken_macros_path, independent_const_build_path, flag_build_path, is_program_path)
+    update_build_rs_metadata(target, user_id, div_meta_dir, database_dir, taken_macros_path, independent_const_build_path, flag_build_path, is_program_path)
 
     # turn off warnings
     # turn_off_warning(build_rs_path)
@@ -6765,7 +6770,7 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
     generate_run_all_path(run_all_path, run_all_template_path, target)
 
     # insert Rust library link code
-    generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir, 
+    generate_link_harness_minimize(work_dir, build_path, rust_build_path, run_test_path, run_all_path, database_dir, user_id, 
                           lib_path, rust_lib_h_path, rust_output_dir, raw_dir, target_dir, target_path, llm_interface, rust_edition)
 
     # update blocklist
@@ -6831,6 +6836,7 @@ def setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, d
         log_dir=log_dir,
         max_iterations=max_iterations,
         target=target,
+        user_id=user_id,
     )
 
     modified_c_keys = repair_execute('compile', interface)
@@ -7040,6 +7046,11 @@ def replace_target_dir(previous_target_dir, work_dir):
     
     print(f"\nReplaced {target_path} with contents of {previous_path}")
 
+    binaries = find_binaries(work_dir)
+    for binary in binaries:
+        #print(binary)
+        delete_file(binary)
+
 
 def allrust_compile_main(config): 
 
@@ -7231,7 +7242,7 @@ def allrust_compile_main(config):
 
             #denormalize_block_path(block_path, original_dir, os.path.abspath(target_dir)) #denormalize_block_group_path(block_group_path, original_dir, os.path.abspath(target_dir))
 
-            clone_compile_json(os.path.abspath(original_dir), f"{TRANS_HOME}/trans_c_0000", f"{TRANS_HOME}/workspace_0000_{target}")
+            clone_compile_json(os.path.abspath(original_dir), f"{TRANS_HOME}/trans_c_{user_id}", f"{TRANS_HOME}/workspace_{user_id}_{target}")
 
             """
             error_output, std_output = run_script_wo_log(build_path, 10000, True, None, "build")
@@ -7245,7 +7256,7 @@ def allrust_compile_main(config):
             """
 
             #generate_is_program(target_dir, dep_json_path, is_program_path)
-            denormalize_block_path(is_program_path, f"{TRANS_HOME}/trans_c_0000/{target}", os.path.abspath(target_dir))
+            denormalize_block_path(is_program_path, f"{TRANS_HOME}/trans_c_{user_id}/{target}", os.path.abspath(target_dir))
         
         else:
             # merge_previous_metadata(previous_meta_dir, meta_dir)
@@ -7267,7 +7278,7 @@ def allrust_compile_main(config):
                 build_rs_path, lib_path, toml_path = setup_build(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
                             chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, # , root_dir
                             average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition, # build_list_path, 
-                            run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
+                            run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target, user_id,  # , conds_status_path  # , c_lib_path
                             time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                             rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
                             is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
@@ -7277,7 +7288,7 @@ def allrust_compile_main(config):
                 build_rs_path, lib_path, toml_path = setup_build_minimize(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir, 
                             chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, # , root_dir
                             average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition, # build_list_path, 
-                            run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
+                            run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target, user_id, # , conds_status_path  # , c_lib_path
                             time_path, map_path, block_path, block_group_path, progress_queue, max_iterations, llm_interface,
                             rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
                             is_program_path, resume, previous_block_path, marker, trial_id, taken_macros_path,
@@ -7289,11 +7300,11 @@ def allrust_compile_main(config):
             
             replace_target_dir(previous_target_dir, work_dir)
 
-            copy_file(f"/root/SmartC2Rust/trans/trans_c_0000/{target}/run_test.sh", target_dir)
-            copy_file(f"/root/SmartC2Rust/trans/trans_c_0000/{target}/c_build.sh", target_dir)
+            copy_file(f"/root/SmartC2Rust/trans/trans_c_{user_id}/{target}/run_test.sh", target_dir)
+            copy_file(f"/root/SmartC2Rust/trans/trans_c_{user_id}/{target}/c_build.sh", target_dir)
 
             generate_run_all_path(run_all_path, run_all_template_path, target)
-    
+
             build_rs_path, lib_path, toml_path = get_existing_lib_paths(work_dir, rust_output_dir)
 
 
@@ -7318,7 +7329,7 @@ def allrust_compile_main(config):
         print(f"\n\n++++++++++++++= End of translation ({target}) ++++++++++++++=")
 
         print(f"\nNext action:")
-        print(f"\npython3 semantics.py s_repair {TRANS_HOME}/{target_dir}")
+        print(f"\npython3 semantics.py s_repair {TRANS_HOME}/{target_dir}\n")
 
 
 

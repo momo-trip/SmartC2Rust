@@ -1168,6 +1168,8 @@ def macro_main(config):
     
         print(f"\nNext action->")
         print(f"python3 pre_process.py {MACRO_HOME}/trans_re_0000/{target} macro off {MACRO_HOME}/trans_re_0000/{target}/run_test.sh /root/SmartC2Rust/benchmark/{target}/targets.txt\n") # {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
+        print(f"Or->")
+        print(f"python3 pre_process.py {MACRO_HOME}/trans_re_0000/{target} macro off {MACRO_HOME}/trans_re_0000/{target}/run_test.sh /root/SmartC2Rust/program/{target}/targets.txt\n") # {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
 
     elif process_type == "macro":
 
@@ -1323,13 +1325,11 @@ if __name__ == "__main__":
         llm_on = str(sys.argv[3]) # process_type = "meta"
         given_test_path = str(sys.argv[4])
         target_path = str(sys.argv[5])
-        #target_path = f"{MACRO_HOME}/benchmark/mini2/targets.txt" # Should change here
-    
+
     user_id = "0000"
 
     config_path = f"{CONFIG_PATH}"  # This is being affected
     config_data = read_json(config_path)
-    #target_path = f"{MACRO_HOME}/benchmark/{target}/targets_actual.txt" # Should change this
     llm_choice = config_data["llm_choice"]
     claude_api_key = config_data["claude_api_key"]
     azure_endpoint = config_data["azure_endpoint"] 
