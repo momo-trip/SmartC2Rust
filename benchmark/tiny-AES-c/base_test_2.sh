@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 
 # Directories for test results
 ACTUAL_DIR="actual"
-EXPECTED_DIR="expected"
+EXPECTED_DIR="expected_2"
 RESULTS_DIR="results"
 
 # Create directories if they don't exist

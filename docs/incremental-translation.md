@@ -1,7 +1,7 @@
 # Incremental translation
 
 Real C codebases are large. Translating everything at once rarely works:
-the build breaks, errors pile up, and you can't tell which problems are
+the build breaks, errors pile up, and it is not possible to tell which problems are
 worth fixing. Instead, start from a small subset that translates
 cleanly, then widen the scope step by step.
 
@@ -16,7 +16,7 @@ cleanly, then widen the scope step by step.
 ---
 
 
-## The mental model
+## Overview
 
 At any point during the migration, the project looks like this:
 
@@ -91,11 +91,24 @@ Before re-running, switch the configuration by changing the build flags or featu
 
 Update the test script (`run_test.sh`) to match the new configuration.
 
-**Note:** Only `c_build.sh` and `run_test.sh` are updated
-automatically in the workspace　(`workspace_s_repair_0000_{program}`). Any other files required by the new
-test configuration — for example, test input data, expected-output
+**Note:** Only `c_build.sh` and `run_test.sh` are updated automatically in
+the workspace (`workspace_s_repair_0000_{program}`). Any other files required
+by the new test configuration — for example, test input data, expected-output
 fixtures, auxiliary shell scripts, or config files referenced by
-`run_test.sh` — must be copied into the workspace manually.
+`run_test.sh` — are not propagated automatically.
+
+The naive workaround is to copy these files into the workspace manually
+every time the configuration changes, but this is error-prone and has to be
+repeated on each switch.
+
+A better approach is to eliminate the need for copying altogether: prepare
+all per-configuration state up front, and make `run_test.sh` configurable.
+
+For example, keep input fixtures, expected outputs, and auxiliary scripts
+for every configuration inside the workspace from the start, and have
+`run_test.sh` dispatch to the right set based on the active configuration.
+Once this is in place, switching configurations only requires editing
+`c_build.sh` and `run_test.sh` — no manual file copying is needed.
 
 
 ### Step 4: Generate golden reference
@@ -158,7 +171,7 @@ the **leaves** of the call graph toward the root.
 
 The intuition is that leaf-first keeps every FFI shim one-way. The new Rust function is called *into* from C, with `extern "C"` and `#[repr(C)]` arguments. Shims get deleted as their C callers are translated later.
 
-This hasn't been empirically validated, and other orderings may work better depending on the codebase.
+Note that this hasn't been empirically validated, and other orderings may work better depending on the codebase.
 
 
 
@@ -238,5 +251,5 @@ Then re-run with the resume flag set to `on`:
 
 ```bash
 cd /root/SmartC2Rust/trans
-python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt on /root/SmartC2Rust/trans/previous_database_0000/{program}/block_output.txt /root/SmartC2Rust/trans/previous_metadata_0000/{program} /root/SmartC2Rust/trans/previous_div_metadata_0000/{program} /root/SmartC2Rust/previous_workspace_s_repair_0000/{program}
+python3 compile.py /root/SmartC2Rust/trans/c_code_0000/{program} /root/SmartC2Rust/trans/trans_c_0000/{program} /root/SmartC2Rust/benchmark/{program}/targets_actual.txt trans /root/SmartC2Rust/trans/metadata_0000/{program} /root/SmartC2Rust/trans/div_metadata_0000/{program} database_0000/{program}/block_output.txt on /root/SmartC2Rust/trans/previous_database_0000/{program}/block_output.txt /root/SmartC2Rust/trans/previous_metadata_0000/{program} /root/SmartC2Rust/trans/previous_div_metadata_0000/{program} /root/SmartC2Rust/trans/previous_workspace_s_repair_0000/{program}
 ```

@@ -6344,6 +6344,20 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
         os.path.abspath(flag_build_path)
     )
 
+    ######################################
+    ## Adjust file paths
+    ######################################
+    content = re.sub(
+        rf'{TRANS_HOME}/workspace_\d+_[^/]+/',
+        '../',
+        content
+    )
+
+    content = re.sub(
+        rf'{TRANS_HOME}/database_(\d+)/',
+        r'../../database_\1/',
+        content
+    )
     with open(build_rs_path, 'w') as f:
         f.write(content)
 
@@ -7280,8 +7294,8 @@ def allrust_compile_main(config):
             
             replace_target_dir(previous_target_dir, work_dir)
 
-            copy_file(f"/root/SmartC2Rust/trans/trans_c_{user_id}/{target}/run_test.sh", target_dir)
-            copy_file(f"/root/SmartC2Rust/trans/trans_c_{user_id}/{target}/c_build.sh", target_dir)
+            copy_file(f"{TRANS_HOME}/trans_c_{user_id}/{target}/run_test.sh", target_dir)
+            copy_file(f"{TRANS_HOME}/trans_c_{user_id}/{target}/c_build.sh", target_dir)
 
             generate_run_all_path(run_all_path, run_all_template_path, target)
 

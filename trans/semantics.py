@@ -4959,6 +4959,20 @@ def to_previous(p, user_id):
     return Path(*parts)
 
 
+
+def adjust_file_path(target, user_id, process_type, rust_io_dir):
+    build_rs_path = rust_io_dir + '/build.rs'
+    
+    with open(build_rs_path, 'r') as f:
+        content = f.read()
+    
+    # /root/SmartC2Rust/trans/workspace_<digits>_<name> → workspace_{process_type}_{target}
+    content = content.replace(f"/root/SmartC2Rust/trans/workspace_{user_id}_{target}", f"/root/SmartC2Rust/trans/workspace_{process_type}_{user_id}_{target}")
+
+    with open(build_rs_path, 'w') as f:
+        f.write(content)
+
+
 def allrust_semantics_main(config):
 
     ################################
@@ -4971,7 +4985,6 @@ def allrust_semantics_main(config):
     llm_choice = config["llm_choice"]
     claude_api_key = config["claude_api_key"]
     azure_endpoint = config["azure_endpoint"]
-
 
     occupy_path = None
     given_time = 60
@@ -5127,6 +5140,9 @@ def allrust_semantics_main(config):
 
         # Initialize
         initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) 
+
+        # adjust file paths
+        # adjust_file_path(target, user_id, process_type, rust_io_dir)
 
         # Repair function errors
         check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 

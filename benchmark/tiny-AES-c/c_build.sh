@@ -6,4 +6,5 @@ if [ "$option" = "init" ]; then
     make clean
 fi
 
-bear -- make AES192=1
+bear -- make AES256=1
+
