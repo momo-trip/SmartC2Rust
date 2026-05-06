@@ -1,0 +1,391 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Drawing Geometric Objects (The GNU troff Manual)</title>
+
+<meta name="description" content="Drawing Geometric Objects (The GNU troff Manual)">
+<meta name="keywords" content="Drawing Geometric Objects (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Deferring-Output.html" rel="next" title="Deferring Output">
+<link href="Output-Line-Annotation.html" rel="prev" title="Output Line Annotation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Drawing-Geometric-Objects"></span><div class="header">
+<p>
+Next: <a href="Deferring-Output.html" accesskey="n" rel="next">Deferring Output</a>, Previous: <a href="Output-Line-Annotation.html" accesskey="p" rel="prev">Output Line Annotation</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Drawing-Requests"></span><span id="Drawing-Geometric-Objects-1"></span><h3 class="section">5.27 Drawing Geometric Objects</h3>
+<span id="index-drawing-requests"></span>
+<span id="index-requests-for-drawing"></span>
+
+<p>A few of the formatter&rsquo;s escape sequences draw lines and other geometric
+objects.  Combined with each other and with page motion commands
+(see <a href="Page-Motions.html">Page Motions</a>), a wide variety of figures is possible.
+For complex drawings,
+these operations can be cumbersome:
+the preprocessors
+<code>pic</code>
+or
+<code>grn</code>
+are typically used instead.
+</p>
+<p>The <code>\l</code> and <code>\L</code> escape sequences draw horizontal and
+vertical sequences of glyphs, respectively.  Even the simplest of output
+devices supports them.  They require an argument specifying the length
+of the rule (line) to be drawn, optionally followed by a single ordinary
+or special character with which to draw the rule if the default is not
+desired.
+<span id="index-dummy-character-_0028_005c_0026_0029_002c-effect-on-_005cl-escape-sequence"></span>
+<span id="index-character_002c-dummy-_0028_005c_0026_0029_002c-effect-on-_005cl-escape-sequence"></span>
+If the character is valid in a numerical expression, put <code>\&amp;</code> after
+<var>l</var> to disambiguate the input.
+</p>
+<dl>
+<dt id="index-_005cl_0027l_0027">Escape&nbsp;sequence: <strong><tt>\l<code>'</code></tt><span class="roman"><i>l</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cl"></span>
+</dd><dt id="index-_005cl_0027lc_0027">Escape&nbsp;sequence: <strong><tt>\l<code>'</code></tt><span class="roman"><i>lc</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-drawing-horizontal-lines-_0028_005cl_0029"></span>
+<span id="index-horizontal-line_002c-drawing-_0028_005cl_0029"></span>
+<span id="index-line_002c-horizontal_002c-drawing-_0028_005cl_0029"></span>
+<span id="index-baseline-rule-special-character_0028_005c_005bru_005d_0029"></span>
+<p>Draw a horizontal line of length <var>l</var> from the drawing position.
+Rightward motion is positive.  Afterward, the drawing position is at the
+right end of the line.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.  The
+default glyph is the baseline rule special character, <code>\[ru]</code>.
+</p>
+<div class="example">
+<pre class="example">\l'4i\&amp;-'
+    &rArr; ----------------------------------------
+</pre></div>
+
+<p>Let us see how to draw a box around a word using a macro.
+</p>
+<div class="example">
+<pre class="example">.de textbox
+\[br]\\$*\[br]\l'|0\[rn]'\l'|0\[ul]'
+..
+</pre></div>
+
+<p>The foregoing outputs a box rule (a vertical line), the text
+argument(s), and another box rule.  We employ the boundary-relative
+measurement operator &lsquo;<samp>|</samp>&rsquo;.  Finally, the line-drawing escape
+sequences draw a radical extender (a form of overline) and an underline
+from the drawing position to the position corresponding to beginning of
+the <em>input</em> line.  The formatter leaves the drawing position at the
+right-hand box rule even though the line lengths are negative, as noted
+above.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cL_0027l_0027">Escape&nbsp;sequence: <strong><tt>\L<code>'</code></tt><span class="roman"><i>l</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cL"></span>
+</dd><dt id="index-_005cL_0027lc_0027">Escape&nbsp;sequence: <strong><tt>\L<code>'</code></tt><span class="roman"><i>lc</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-drawing-vertical-lines-_0028_005cL_0029"></span>
+<span id="index-vertical-line-drawing-_0028_005cL_0029"></span>
+<span id="index-line_002c-vertical_002c-drawing-_0028_005cL_0029"></span>
+<span id="index-box-rule-special-character-_0028_005c_005bbr_005d_0029"></span>
+<p>Draw a vertical line of length <var>l</var> from the drawing position.
+Downward motion is positive.  The default scaling unit is &lsquo;<samp>v</samp>&rsquo;.  The
+default glyph is the box rule, <code>\[br]</code>.  As with vertical motion
+escape sequences, text processing continues where the line ends.
+</p>
+<div class="example">
+<pre class="example">$ nroff &lt;&lt;EOF
+This is a \L'3v'test.
+EOF
+    &rArr; This is a
+    &rArr;           |
+    &rArr;           |
+    &rArr;           |test.
+</pre></div>
+
+<p>When writing text, the drawing position is at the text baseline; recall
+<a href="Page-Geometry.html">Page Geometry</a>.
+</p></dd></dl>
+
+<p>The <code>\D</code> escape sequence provides <em>drawing commands</em> that
+direct the output device to render geometrical objects rather than
+glyphs.  Specific devices may support only a subset, or may feature
+additional ones; consult the man page for the output driver in use.
+Terminals in particular implement almost none.  See <a href="Graphics-Commands.html">Graphics Commands</a>.
+</p>
+<p>Rendering starts at the drawing position; when finished, the drawing
+position is left at the rightmost point of the object, even for closed
+figures, except where noted.  GNU <code>troff</code> draws stroked (outlined)
+objects with the stroke color, and shades filled ones with the fill
+color.  See <a href="Colors.html">Colors</a>.  Coordinates <var>h</var> and <var>v</var> are horizontal
+and vertical motions relative to the drawing position or previous point
+in the command.  The default scaling unit for horizontal measurements
+(and diameters of circles) is &lsquo;<samp>m</samp>&rsquo;; for vertical ones, &lsquo;<samp>v</samp>&rsquo;.
+</p>
+<p>Circles, ellipses, and polygons can be drawn filled or stroked.  These
+are independent properties; if you want a filled, stroked figure, you
+must draw the same figure twice using each drawing command.  A filled
+figure is always smaller than an outlined one because the former is
+drawn only within its defined area, whereas strokes have a line
+thickness (set with &lsquo;<samp>\D't'</samp>&rsquo;).
+</p>
+<div class="example">
+<pre class="example">\h'1i'\v'1i'\
+\# increase line thickness
+\Z'\D't 5p''\
+\# draw stroked (unfilled) polygon
+\Z'\D'p 3 3 -6 0''\
+\# draw filled (solid) polygon
+\Z'\D'P 3 3 -6 0''
+</pre></div>
+
+<dl>
+<dt id="index-_005cD_0027command-argument-_2026_0027">Escape&nbsp;sequence: <strong><tt>\D<code>'</code></tt><span class="roman"><i>command argument &hellip;</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cD"></span>
+<p>Drawing command escape sequence parameters begin with an ordinary
+character, <var>command</var>, selecting the type of object to be drawn,
+followed by <var>argument</var>s whose meaning is determined by
+<var>command</var>.
+</p>
+<dl compact="compact">
+<dt><code>\D'~ <var>h1</var> <var>v1</var> &hellip; <var>hn</var> <var>vn</var>'</code></dt>
+<dd><span id="index-drawing-a-spline-_0028_005cD_0027_007e-_2026_0027_0029"></span>
+<span id="index-spline_002c-drawing-_0028_005cD_0027_007e-_2026_0027_0029"></span>
+<p>Draw a B-spline to each point in sequence, leaving the drawing position
+at (<var>hn</var>, <var>vn</var>).
+</p>
+</dd>
+<dt><code>\D'a <var>hc</var> <var>vc</var> <var>h</var> <var>v</var>'</code></dt>
+<dd><span id="index-arc_002c-drawing-_0028_005cD_0027a-_2026_0027_0029"></span>
+<span id="index-drawing-an-arc-_0028_005cD_0027a-_2026_0027_0029"></span>
+<p>Draw a circular arc centered at (<var>hc</var>, <var>vc</var>) counterclockwise
+from the drawing position to a point (<var>h</var>, <var>v</var>) relative to the
+center.  <a id="DOCF161" href="groff.html_fot.html#FOOT161"><sup>161</sup></a>
+</p>
+</dd>
+<dt><code>\D'c <var>d</var>'</code></dt>
+<dd><span id="index-circle_002c-stroked_002c-drawing-_0028_005cD_0027c-_2026_0027_0029"></span>
+<span id="index-drawing-a-stroked-circle-_0028_005cD_0027c-_2026_0027_0029"></span>
+<span id="index-stroked-circle_002c-drawing-_0028_005cD_0027c-_2026_0027_0029"></span>
+<span id="index-circle_002c-outlined_002c-drawing-_0028_005cD_0027c-_2026_0027_0029"></span>
+<span id="index-drawing-an-outlined-circle-_0028_005cD_0027c-_2026_0027_0029"></span>
+<span id="index-outlined-circle_002c-drawing-_0028_005cD_0027c-_2026_0027_0029"></span>
+<p>Draw a circle of diameter <var>d</var> with its leftmost point at the drawing
+position.
+</p>
+</dd>
+<dt><code>\D'C <var>d</var>'</code></dt>
+<dd><span id="index-circle_002c-filled_002c-drawing-_0028_005cD_0027C-_2026_0027_0029"></span>
+<span id="index-drawing-a-filled-circle-_0028_005cD_0027C-_2026_0027_0029"></span>
+<span id="index-filled-circle_002c-drawing-_0028_005cD_0027C-_2026_0027_0029"></span>
+<span id="index-circle_002c-solid_002c-drawing-_0028_005cD_0027C-_2026_0027_0029"></span>
+<span id="index-drawing-a-solid-circle-_0028_005cD_0027C-_2026_0027_0029"></span>
+<span id="index-solid-circle_002c-drawing-_0028_005cD_0027C-_2026_0027_0029"></span>
+<p>As &lsquo;<samp>\D'C <span class="roman">&hellip;</span>'</samp>&rsquo;, but the circle is filled.
+</p>
+</dd>
+<dt><code>\D'e <var>h</var> <var>v</var>'</code></dt>
+<dd><span id="index-ellipse_002c-stroked_002c-drawing-_0028_005cD_0027e-_2026_0027_0029"></span>
+<span id="index-drawing-a-stroked-ellipse-_0028_005cD_0027e-_2026_0027_0029"></span>
+<span id="index-stroked-ellipse_002c-drawing-_0028_005cD_0027e-_2026_0027_0029"></span>
+<span id="index-ellipse_002c-outlined_002c-drawing-_0028_005cD_0027e-_2026_0027_0029"></span>
+<span id="index-drawing-an-outlined-ellipse-_0028_005cD_0027e-_2026_0027_0029"></span>
+<span id="index-outlined-ellipse_002c-drawing-_0028_005cD_0027e-_2026_0027_0029"></span>
+<p>Draw an ellipse of width <var>h</var> and height <var>v</var> with its leftmost
+point at the drawing position.
+</p>
+</dd>
+<dt><code>\D'E <var>x</var> <var>y</var>'</code></dt>
+<dd><span id="index-ellipse_002c-filled_002c-drawing-_0028_005cD_0027E-_2026_0027_0029"></span>
+<span id="index-drawing-a-filled-ellipse-_0028_005cD_0027E-_2026_0027_0029"></span>
+<span id="index-filled-ellipse_002c-drawing-_0028_005cD_0027E-_2026_0027_0029"></span>
+<span id="index-ellipse_002c-solid_002c-drawing-_0028_005cD_0027E-_2026_0027_0029"></span>
+<span id="index-drawing-a-solid-ellipse-_0028_005cD_0027E-_2026_0027_0029"></span>
+<span id="index-solid-ellipse_002c-drawing-_0028_005cD_0027E-_2026_0027_0029"></span>
+<p>As &lsquo;<samp>\D'e <span class="roman">&hellip;</span>'</samp>&rsquo;, but the ellipse is filled.
+</p>
+</dd>
+<dt><code>\D'l <var>dx</var> <var>dy</var>'</code></dt>
+<dd><span id="index-line_002c-drawing-_0028_005cD_0027l-_2026_0027_0029"></span>
+<span id="index-drawing-a-line-_0028_005cD_0027l-_2026_0027_0029"></span>
+<p>Draw line from the drawing position to (<var>h</var>, <var>v</var>).
+</p>
+<p>The following is a macro for drawing a box around a text argument; for
+simplicity, the box margin is a fixed at 0.2m.
+</p>
+<div class="example">
+<pre class="example">.de TEXTBOX
+.  nr @wd \w'\\$1'
+\h'.2m'\
+\h'-.2m'\v'(.2m - \\n[rsb]u)'\
+\D'l 0 -(\\n[rst]u - \\n[rsb]u + .4m)'\
+\D'l (\\n[@wd]u + .4m) 0'\
+\D'l 0 (\\n[rst]u - \\n[rsb]u + .4m)'\
+\D'l -(\\n[@wd]u + .4m) 0'\
+\h'.2m'\v'-(.2m - \\n[rsb]u)'\
+\\$1\
+\h'.2m'
+..
+</pre></div>
+
+<p>The argument is measured with the <code>\w</code> escape sequence.  Its width
+is stored in register <code>@wd</code>.  <code>\w</code> also sets the registers
+<code>rst</code> and <code>rsb</code>; these contain its maximum vertical extents of
+the argument.  Then, four lines are drawn to form a box, offset by the
+box margin.
+</p>
+</dd>
+<dt><code>\D'p <var>h1</var> <var>v1</var> &hellip; <var>hn</var> <var>vn</var>'</code></dt>
+<dd><span id="index-polygon_002c-stroked_002c-drawing-_0028_005cD_0027p-_2026_0027_0029"></span>
+<span id="index-drawing-a-stroked-polygon-_0028_005cD_0027p-_2026_0027_0029"></span>
+<span id="index-stroked-polygon_002c-drawing-_0028_005cD_0027p-_2026_0027_0029"></span>
+<span id="index-polygon_002c-outlined_002c-drawing-_0028_005cD_0027p-_2026_0027_0029"></span>
+<span id="index-drawing-an-outlined-polygon-_0028_005cD_0027p-_2026_0027_0029"></span>
+<span id="index-outlined-polygon_002c-drawing-_0028_005cD_0027p-_2026_0027_0029"></span>
+<p>Draw polygon with vertices at the drawing position
+and each point in sequence.
+GNU
+<code>troff</code> closes the polygon by drawing a line from
+(<var>hn</var>, <var>vn</var>)
+back to the initial drawing position.
+Afterward,
+the drawing position is left at
+(<var>hn</var>, <var>vn</var>).
+</p>
+</dd>
+<dt><code>\D'P <var>dx1</var> <var>dy1</var> <var>dx2</var> <var>dy2</var> &hellip;'</code></dt>
+<dd><span id="index-polygon_002c-filled_002c-drawing-_0028_005cD_0027P-_2026_0027_0029"></span>
+<span id="index-drawing-a-filled-polygon-_0028_005cD_0027P-_2026_0027_0029"></span>
+<span id="index-filled-polygon_002c-drawing-_0028_005cD_0027P-_2026_0027_0029"></span>
+<span id="index-polygon_002c-solid_002c-drawing-_0028_005cD_0027P-_2026_0027_0029"></span>
+<span id="index-drawing-a-solid-polygon-_0028_005cD_0027P-_2026_0027_0029"></span>
+<span id="index-solid-polygon_002c-drawing-_0028_005cD_0027P-_2026_0027_0029"></span>
+<p>As &lsquo;<samp>\D'P <span class="roman">&hellip;</span>'</samp>&rsquo;, but the polygon is filled.  <code>groff</code>
+does not specify how the output device must fill concave or
+self-intersecting polygons.
+</p>
+<p>The following macro is like the &lsquo;<samp>\D'l'</samp>&rsquo; example, but shades the
+box.  We draw the box before writing the text because colors in GNU
+<code>troff</code> have no transparency; in the opposite order, the filled
+polygon would occlude the text.
+</p>
+<div class="example">
+<pre class="example">.de TEXTBOX
+.  nr @wd \w'\\$1'
+\h'.2m'\
+\h'-.2m'\v'(.2m - \\n[rsb]u)'\
+\M[lightcyan]\
+\D'P 0 -(\\n[rst]u - \\n[rsb]u + .4m) \
+     (\\n[@wd]u + .4m) 0 \
+     0 (\\n[rst]u - \\n[rsb]u + .4m) \
+     -(\\n[@wd]u + .4m) 0'\
+\h'.2m'\v'-(.2m - \\n[rsb]u)'\
+\M[]\
+\\$1\
+\h'.2m'
+..
+</pre></div>
+
+</dd>
+<dt><code>\D't <var>n</var>'</code></dt>
+<dd><span id="index-line-thickness-_0028_005cD_0027t-_2026_0027_0029"></span>
+<span id="index-thickness-of-lines-_0028_005cD_0027t-_2026_0027_0029"></span>
+<p>Set the stroke thickness of geometric objects to <var>n</var> basic units.  A
+zero <var>n</var> selects the minimum supported thickness.  A negative
+<var>n</var> selects a thickness proportional to the type size; this is the
+default.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>In a hazy penumbra between text rendering and drawing commands we locate
+the bracket-building escape sequence, <code>\b</code>.  It can assemble
+glyphs that appear large by vertically stacking ordinary ones.
+</p>
+<dl>
+<dt id="index-_005cb_0027contents_0027">Escape&nbsp;sequence: <strong><tt>\b<code>'</code></tt><span class="roman"><i>contents</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cb"></span>
+<span id="index-pile_002c-glyph-_0028_005cb_0029"></span>
+<span id="index-glyph-pile-_0028_005cb_0029"></span>
+<span id="index-stacking-glyphs-_0028_005cb_0029"></span>
+<p>Pile and center a sequence of glyphs vertically on the output line.
+<em>Piling</em> stacks glyphs corresponding to each character in
+<var>contents</var>, read from left to right, and placed from top to bottom.
+GNU <code>troff</code> separates the glyphs vertically by 1m, and the
+pile itself is centered 0.5m above the text baseline.  The
+horizontal drawing position is then advanced by the width of the widest
+glyph in the pile.
+</p>
+<span id="index-_005cb_002c-limitations-of"></span>
+<span id="index-limitations-of-_005cb-escape-sequence"></span>
+<p>This rather inflexible positioning algorithm doesn&rsquo;t work with the
+<code>dvi</code> output device since its bracket pieces vary in height.
+Instead,
+use the
+<code>eqn</code>
+preprocessor.
+</p>
+<p><a href="Manipulating-Spacing.html">Manipulating Spacing</a> describes how to adjust the vertical spacing
+of the output line with the <code>\x</code> escape sequence.
+</p>
+<p>The application of <code>\b</code> that lends its name is construction of
+brackets, braces, and parentheses when typesetting mathematics.  We
+might construct a large opening (left) brace as follows.
+</p>
+<div class="example">
+<pre class="example">\b'\[lt]\[bv]\[lk]\[bv]\[lb]'
+</pre></div>
+
+<p>See <cite>groff_char<span class="roman">(7)</span></cite> for a list of special character
+identifiers.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Deferring-Output.html" accesskey="n" rel="next">Deferring Output</a>, Previous: <a href="Output-Line-Annotation.html" accesskey="p" rel="prev">Output Line Annotation</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

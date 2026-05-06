@@ -1,0 +1,28 @@
+.\" Define support macros for GNU pic(1) where a full-service macro
+.\" package does not do so, or a full-service macro package is not used.
+.\" See pic(1) and groff_tmac(5).
+.
+.de PS
+.br
+.sp .3v
+.ne 0\\$1+1v+\n(.Vu
+.in \\n(.lu-\\n(.iu-0\\$2/2u>?0
+.HTML-IMAGE
+..
+.de PF
+.in
+.HTML-IMAGE-END
+..
+.de PE
+.PF
+.sp .3v+.5m
+..
+.de PY
+.PF
+..
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" fill-column: 72
+.\" End:
+.\" vim: set filetype=nroff textwidth=72:

@@ -1,0 +1,71 @@
+# This is a test file that tests the
+# rendering of various Unicode characters.
+# It also tests some of the features of
+# the Pango/Cairo-based rem2pdf program.
+
+SET $Sunday "እሁድ"
+SET $Monday "一"
+SET $Tuesday "mardi"
+SET $Wednesday "水曜日"
+SET $Thursday "четвер"
+SET $Friday "piątek"
+SET $Saturday "יום שבת"
+
+SET $January "January"
+SET $February "février"
+SET $March "März"
+SET $April "אַפּרִיל"
+SET $May "ግንቦት"
+SET $June "Чэрвень"
+SET $July "تموز"
+SET $August "Наймдугаар сар"
+SET $September "Вересень"
+SET $October "październik"
+SET $November "נאוועמבער"
+SET $December "दिसंबर"
+
+REM 1 MSG Përkujtues
+REM 2 SPECIAL SHADE 192 192 255
+REM 2 MSG تذكير
+REM 3 MSG 提醒提醒提醒提醒提醒提醒提醒提醒
+REM 4 MSG રીમાઇન્ડર
+REM 5 MSG Emlékeztető
+REM 6 MSG Áminning
+REM 7 SPECIAL PANGO <u>תִזכּוֹרֶת</u>
+REM 8 MSG अनुस्मारक
+REM 9 SPECIAL COLOR 0 0 192 Эскертүү
+REM 10 SPECIAL COLOR 0 192 0 Напоминание
+REM 11 SPECIAL COLOR 192 0 0 Υπενθύμιση
+REM 12 SPECIAL PANGO <b>Bold</b> <small>and</small> <i>Italic</i> <big>and</big> <span bgcolor="#C0C0C0" foreground="red"><u>underline</u></span>
+REM 12 MSG Hello
+REM 28 SPECIAL PANGO <span face="zapf chancery" size="10000">Very Fancy</span>
+
+REM 13 SPECIAL PANGO <bad>Invalid
+REM 13 MSG Hello Again
+
+REM 15 SPECIAL PANGO @1,-1 <small><small>[hebday($U)] [hebmon($U)]  Rise [sunrise($U)] Set [sunset($U)]</small></small>
+
+REM 16 MSG یادآور
+REM 17 MSG Lời nhắc nhở
+REM 18 MSG Påminnelse
+REM 19 MSG דערמאָנונג
+REM 20 MSG Hatırlatma
+REM 21 SPECIAL PANGO <big><big> Нагадування</big></big>
+REM 22 MSG შეხსენება
+REM 23 MSG เตือนความจำ
+REM 24 MSG リマインダー
+REM 25 MSG Искә төшерү
+REM 26 MSG Напомняне
+REM 27 MSG ഓർമ്മപ്പെടുത്തൽ
+REM 28 MSG リaリaaリaaリaaリaaリaaリaaリaaリaaリaaリa
+REM 1 SPECIAL SHADE 192 255 192
+REM 14 SPECIAL SHADE 255 192 192
+REM 14 SPECIAL PANGO <span face="Zapf Chancery" size="15000">This is so <span foreground="blue">fancy</span></span>
+REM [moondate(0)] SPECIAL MOON 0
+REM [moondate(1)] SPECIAL MOON 1
+REM [moondate(2)] SPECIAL MOON 2 -1 -1 [moontime(2)]
+REM [moondate(3)] SPECIAL MOON 3 -1 -1 [moontime(3)]
+
+REM Mon SPECIAL WEEK (W[weekno(today())])
+
+REM SATISFY [$Td != 15] SPECIAL PANGO @1,-1 <span size="4800"><i>Rise [sunrise($U)] Set [sunset($U)]</i></span>

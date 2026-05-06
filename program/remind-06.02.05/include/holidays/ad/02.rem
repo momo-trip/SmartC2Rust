@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision 02 in Andorra
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision 02.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/ad.rem
+
+REM Third Saturday in July ADDOMIT SCANFROM -28 MSG %"Canillo Annual Festival%" %! %b.
+REM Sunday 16 July ADDOMIT SCANFROM -28 MSG %"Canillo Annual Festival%" %! %b.
+REM Monday 17 July ADDOMIT SCANFROM -28 MSG %"Canillo Annual Festival%" %! %b.

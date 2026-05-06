@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Calling Macros (The GNU troff Manual)</title>
+
+<meta name="description" content="Calling Macros (The GNU troff Manual)">
+<meta name="keywords" content="Calling Macros (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Formatter-Instructions.html" rel="up" title="Formatter Instructions">
+<link href="Using-Escape-Sequences.html" rel="next" title="Using Escape Sequences">
+<link href="Invoking-Requests.html" rel="prev" title="Invoking Requests">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Calling-Macros"></span><div class="header">
+<p>
+Next: <a href="Using-Escape-Sequences.html" accesskey="n" rel="next">Using Escape Sequences</a>, Previous: <a href="Invoking-Requests.html" accesskey="p" rel="prev">Invoking Requests</a>, Up: <a href="Formatter-Instructions.html" accesskey="u" rel="up">Formatter Instructions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Request-and-Macro-Arguments"></span><span id="Calling-Macros-1"></span><h4 class="subsection">5.6.3 Calling Macros</h4>
+<span id="index-calling-macros"></span>
+<span id="index-macro-arguments"></span>
+<span id="index-arguments-to-macros"></span>
+
+<p>If a macro of the desired name does not exist when called,
+the formatter creates it
+and assigns it an empty definition.<a id="DOCF57" href="groff.html_fot.html#FOOT57"><sup>57</sup></a>
+Calling an undefined macro
+<em>does</em>
+end a macro definition naming it as its end macro
+(see <a href="Writing-Macros.html">Writing Macros</a>).
+</p>
+<span id="index-spaces_002c-in-a-macro-argument"></span>
+<p>To embed spaces <em>within</em> a macro argument, enclose the argument in
+neutral double quotes <code>&quot;</code>.  Horizontal motion escape sequences are
+sometimes a better choice for arguments to be formatted as text.
+</p>
+<p>Consider calls to a hypothetical section heading macro &lsquo;<samp>uh</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.uh The Mouse Problem
+.uh &quot;The Mouse Problem&quot;
+.uh The\~Mouse\~Problem
+.uh The\ Mouse\ Problem
+</pre></div>
+
+<span id="index-_005c_007e_002c-difference-from-_005cSPC"></span>
+<span id="index-_005cSPC_002c-difference-from-_005c_007e"></span>
+<p>The first line calls <code>uh</code> with three arguments: &lsquo;<samp>The</samp>&rsquo;,
+&lsquo;<samp>Mouse</samp>&rsquo;, and &lsquo;<samp>Problem</samp>&rsquo;.  The remainder call the <code>uh</code>
+macro with one argument, &lsquo;<samp>The Mouse Problem</samp>&rsquo;.  The last solution,
+using escaped spaces, can be found in documents prepared for
+<acronym>AT&amp;T</acronym> <code>troff</code>.  It can cause surprise when text is
+adjusted, because <code>\<span class="key">SPC</span></code> inserts a <em>fixed-width</em>,
+non-breaking space.  GNU <code>troff</code>&rsquo;s <code>\~</code> escape sequence
+inserts an adjustable, non-breaking space.<a id="DOCF58" href="groff.html_fot.html#FOOT58"><sup>58</sup></a>
+</p>
+<span id="index-_0022_002c-embedding-in-a-macro-argument"></span>
+<span id="index-double-quote_002c-embedding-in-a-macro-argument"></span>
+<span id="index-_005c_002c-embedding-in-a-macro-argument"></span>
+<span id="index-backslash_002c-embedding-in-a-macro-argument"></span>
+<p>The foregoing raises the question of how to embed neutral double quotes
+or backslashes in macro arguments when <em>those</em> characters are
+desired as literals.  In GNU <code>troff</code>, the special character escape
+sequence <code>\[rs]</code> produces a backslash and <code>\[dq]</code> a neutral
+double quote.
+</p>
+<p>In GNU <code>troff</code>&rsquo;s <acronym>AT&amp;T</acronym> compatibility mode, these
+characters remain available as <code>\(rs</code> and <code>\(dq</code>,
+respectively.  <acronym>AT&amp;T</acronym> <code>troff</code> did not consistently define
+these special characters,
+but its descendants can be made to support them.  See <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.
+</p>
+<p>If even that is not feasible, options remain.  To obtain a literal
+escape character in a macro argument, you can simply type it if you
+change or disable the escape character first.  See <a href="Using-Escape-Sequences.html">Using Escape Sequences</a>.  Otherwise, you must escape the escape character repeatedly
+to a context-dependent extent.  See <a href="Copy-Mode.html">Copy Mode</a>.
+</p>
+<p>For the (neutral) double quote, you have recourse to an obscure
+syntactical feature of <acronym>AT&amp;T</acronym> <code>troff</code>.  Because a double
+quote can begin a macro argument, the formatter keeps track of whether
+the current argument was started thus, and doesn&rsquo;t require a space after
+the double quote that ends it.<a id="DOCF59" href="groff.html_fot.html#FOOT59"><sup>59</sup></a>  In
+the argument list to a macro, a double quote that <em>isn&rsquo;t</em> preceded
+by a space <em>doesn&rsquo;t</em> start a macro argument.  If not preceded by a
+double quote that began an argument, this double quote becomes part of
+the argument.  Furthermore, within a quoted argument, a pair of adjacent
+double quotes becomes a literal double quote.
+</p>
+<div class="example">
+<pre class="example">.de eq
+.  tm arg1:\\$1 arg2:\\$2 arg3:\\$3
+.  tm arg4:\\$4 arg5:\\$5 arg6:\\$6
+.. \&quot; 4 backslashes on the next line
+.eq a&quot; &quot;b c&quot; &quot;de&quot;f\\\\g&quot; h&quot;&quot;i &quot;j&quot;&quot;k&quot;
+    error&rarr; arg1:a&quot; arg2:b c arg3:de
+    error&rarr; arg4:f\g&quot; arg5:h&quot;&quot;i arg6:j&quot;k
+</pre></div>
+
+<p>Apart from the complexity of the rules, this traditional solution has
+the disadvantage that double quotes don&rsquo;t survive repeated argument
+expansion in <acronym>AT&amp;T</acronym> <code>troff</code> or GNU <code>troff</code>&rsquo;s
+compatibility mode.  This can frustrate efforts to pass such arguments
+intact through multiple macro calls.
+</p>
+<div class="example">
+<pre class="example">.cp 1
+.de eq
+.  tm arg1:\\$1 arg2:\\$2 arg3:\\$3
+.  tm arg4:\\$4 arg5:\\$5 arg6:\\$6
+..
+.de xe
+.  eq \\$1 \\$2 \\$3 \\$4 \\$5 \\$6
+.. \&quot; 8 backslashes on the next line
+.xe a&quot; &quot;b c&quot; &quot;de&quot;f\\\\\\\\g&quot; h&quot;&quot;i &quot;j&quot;&quot;k&quot;
+    error&rarr; arg1:a&quot; arg2:b arg3:c
+    error&rarr; arg4:de arg5:f\g&quot; arg6:h&quot;&quot;i
+</pre></div>
+
+<span id="index-input-level"></span>
+<span id="index-level_002c-input"></span>
+<span id="index-interpolation-depth"></span>
+<span id="index-depth_002c-interpolation"></span>
+<span id="index-nesting-depth_002c-of-interpolations"></span>
+<span id="index-depth_002c-nesting_002c-of-interpolations"></span>
+<p>Outside of compatibility mode,
+GNU
+<code>troff</code> doesn&rsquo;t exhibit this problem
+because it tracks the nesting depth of interpolations.
+See <a href="Implementation-Differences.html">Implementation Differences</a>.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Using-Escape-Sequences.html" accesskey="n" rel="next">Using Escape Sequences</a>, Previous: <a href="Invoking-Requests.html" accesskey="p" rel="prev">Invoking Requests</a>, Up: <a href="Formatter-Instructions.html" accesskey="u" rel="up">Formatter Instructions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+# Copyright 2011-2025 Free Software Foundation, Inc.
+#
+# Written by Deri James <deri@chuzzlewit.myzen.co.uk>
+# Automake migration by Bertrand Garrigues
+#   <bertrand.garrigues@laposte.net>
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+devpdf_srcdir = $(top_srcdir)/font/devpdf
+devpdf_builddir = font/devpdf
+devpdffont_descriptions_from_devps = \
+  font/devpdf/S \
+  font/devpdf/ZD \
+  font/devpdf/CB \
+  font/devpdf/CBI \
+  font/devpdf/CI \
+  font/devpdf/CR \
+  font/devpdf/HB \
+  font/devpdf/HBI \
+  font/devpdf/HI \
+  font/devpdf/HR \
+  font/devpdf/TB \
+  font/devpdf/TBI \
+  font/devpdf/TI \
+  font/devpdf/TR \
+  font/devpdf/EURO
+
+if HAVE_URW_FONTS_OR_HAVE_GHOSTSCRIPT
+devpdffont_descriptions_from_devps += \
+  font/devpdf/AB \
+  font/devpdf/ABI \
+  font/devpdf/AI \
+  font/devpdf/AR \
+  font/devpdf/BMB \
+  font/devpdf/BMBI \
+  font/devpdf/BMI \
+  font/devpdf/BMR \
+  font/devpdf/HNB \
+  font/devpdf/HNBI \
+  font/devpdf/HNI \
+  font/devpdf/HNR \
+  font/devpdf/NB \
+  font/devpdf/NBI \
+  font/devpdf/NI \
+  font/devpdf/NR \
+  font/devpdf/PB \
+  font/devpdf/PBI \
+  font/devpdf/PI \
+  font/devpdf/PR \
+  font/devpdf/ZCMI
+endif
+
+if HAVE_URW_FONTS
+devpdffont_descriptions_for_urw = \
+  font/devpdf/U-S \
+  font/devpdf/U-ZD \
+  font/devpdf/U-ZCMI \
+  font/devpdf/U-AB \
+  font/devpdf/U-ABI \
+  font/devpdf/U-AI \
+  font/devpdf/U-AR \
+  font/devpdf/U-BMB \
+  font/devpdf/U-BMBI \
+  font/devpdf/U-BMI \
+  font/devpdf/U-BMR \
+  font/devpdf/U-CB \
+  font/devpdf/U-CBI \
+  font/devpdf/U-CI \
+  font/devpdf/U-CR \
+  font/devpdf/U-HB \
+  font/devpdf/U-HBI \
+  font/devpdf/U-HI \
+  font/devpdf/U-HR \
+  font/devpdf/U-HNB \
+  font/devpdf/U-HNBI \
+  font/devpdf/U-HNI \
+  font/devpdf/U-HNR \
+  font/devpdf/U-NB \
+  font/devpdf/U-NBI \
+  font/devpdf/U-NI \
+  font/devpdf/U-NR \
+  font/devpdf/U-PB \
+  font/devpdf/U-PBI \
+  font/devpdf/U-PI \
+  font/devpdf/U-PR \
+  font/devpdf/U-TB \
+  font/devpdf/U-TBI \
+  font/devpdf/U-TI \
+  font/devpdf/U-TR
+endif
+
+devpdffontdescriptions = $(devpdffont_descriptions_from_devps) \
+  $(devpdffont_descriptions_for_urw) \
+  font/devpdf/DESC \
+  font/devpdf/SS
+
+devpdffontdir = $(fontdir)/devpdf
+devpdffontdata = $(devpdffontdescriptions) \
+  font/devpdf/symbolsl.afm \
+  font/devpdf/symbolsl.pfb \
+  font/devpdf/download \
+  font/devpdf/Foundry
+devpdffont_DATA = $(devpdffontdata)
+MOSTLYCLEANFILES += $(devpdffontdata)
+
+devpdffontencdir = $(devpdffontdir)/enc
+devpdffontencdata = \
+  font/devpdf/enc/text.enc
+devpdffontenc_DATA = $(devpdffontencdata)
+MOSTLYCLEANFILES += $(devpdffontencdata)
+
+devpdffontmapdir = $(devpdffontdir)/map
+devpdffontmapdata = \
+  font/devpdf/map/dingbats.map \
+  font/devpdf/map/symbol.map \
+  font/devpdf/map/text.map
+devpdffontmap_DATA = $(devpdffontmapdata)
+MOSTLYCLEANFILES += $(devpdffontmapdata)
+
+EXTRA_DIST += \
+  font/devpdf/DESC.in \
+  font/devpdf/SS.in \
+  font/devpdf/symbolsl.afm.in \
+  font/devpdf/symbolsl.pfb.in \
+  font/devpdf/Foundry.in \
+  font/devpdf/download.in \
+  font/devpdf/generate/symbolsl.sfd \
+  font/devpdf/util/BuildFoundries.pl
+
+$(devpdffont_descriptions_from_devps):
+	$(AM_V_at)$(MKDIR_P) $(top_builddir)/font/devpdf
+	$(AM_V_at)for f in $@; do \
+	  cp -fp $(top_srcdir)/font/devps/`basename $$f` \
+	    $(top_builddir)/font/devpdf; \
+	done
+
+$(devpdffontencdata):
+	$(AM_V_at)$(MKDIR_P) $(top_builddir)/font/devpdf/enc
+	$(AM_V_at)cp -fp $(top_srcdir)/font/devps/`basename $@` \
+	  $(top_builddir)/font/devpdf/enc
+
+# The following 2 rules are lame hacks to get around the fact that, but
+# for the rename, we'd have no work to do if the source tree is the
+# build tree, but we have to copy each file if the build tree differs.
+#
+# XXX: Maybe a Make or Automake guru can advise how to improve this.
+
+font/devpdf/SS: $(devpdf_srcdir)/SS.in
+	$(AM_V_GEN)cp -fp $(devpdf_srcdir)/SS.in $@
+
+$(devpdf_builddir)/symbolsl.afm: \
+  $(devpdf_srcdir)/symbolsl.afm.in
+	$(AM_V_GEN)cp -fp $(devpdf_srcdir)/symbolsl.afm.in $@
+
+$(devpdf_builddir)/symbolsl.pfb: \
+  $(devpdf_srcdir)/symbolsl.pfb.in
+	$(AM_V_GEN)cp -fp $(devpdf_srcdir)/symbolsl.pfb.in $@
+
+$(devpdffontmapdata):
+	$(AM_V_at)$(MKDIR_P) $(top_builddir)/font/devpdf/map
+	$(AM_V_at)cp -fp \
+	  $(top_srcdir)/font/devps/generate/`basename $@` \
+	  $(top_builddir)/font/devpdf/map
+
+MOSTLYCLEANFILES += font/devpdf/util/BuildFoundries
+font/devpdf/util/BuildFoundries: \
+  $(devpdf_srcdir)/util/BuildFoundries.pl $(SH_DEPS_SED_SCRIPT) afmtodit
+	$(AM_V_GEN)$(MKDIR_P) $(top_builddir)/font/devpdf/util \
+	&& if test -n "$(PERL)"; then \
+	     sed -f $(SH_DEPS_SED_SCRIPT) \
+	         -e "s|/usr/bin/perl|$(PERL)|" \
+	         -e "s|[@]GHOSTSCRIPT[@]|$(GHOSTSCRIPT)|" \
+	         -e "s|[@]PATH_SEPARATOR[@]|$(PATH_SEPARATOR)|" \
+	         -e "s|[@]urwfontsupport[@]|$(urwfontsupport)|" \
+	         -e "s|[@]VERSION[@]|$(VERSION)|" \
+	         -e "s|[@]GROFF_FONT_DIR[@]|$(fontdir)|" \
+	         $(devpdf_srcdir)/util/BuildFoundries.pl \
+	         >$(top_builddir)/font/devpdf/util/BuildFoundries; \
+	   else \
+	     sed -f $(SH_DEPS_SED_SCRIPT) \
+	         -e "s|[@]VERSION[@]|$(VERSION)|" \
+	         -e "s|[@]GROFF_FONT_DIR[@]|$(fontdir)|" \
+	         $(devpdf_srcdir)/util/BuildFoundries.pl \
+	         >$(top_builddir)/font/devpdf/util/BuildFoundries; \
+	   fi \
+	&& chmod +x $(top_builddir)/font/devpdf/util/BuildFoundries
+
+MOSTLYCLEANFILES += font/devpdf/DESC
+font/devpdf/DESC: $(devpdf_srcdir)/DESC.in
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& cat $(devpdf_srcdir)/DESC.in >$@.tmp \
+	&& echo "papersize $(PAGE)" >>$@.tmp
+	$(AM_V_at)mv $@.tmp $@
+
+font/devpdf/Foundry: $(devpdf_srcdir)/Foundry.in
+	$(AM_V_at)$(MKDIR_P) $(top_builddir)/font/devpdf/
+if HAVE_URW_FONTS
+	$(AM_V_GEN)sed "s|[@]urwfontsdir[@]|$(urwfontsdir)|" \
+	  $(devpdf_srcdir)/Foundry.in >$@
+else
+	$(AM_V_GEN)sed "/BEGIN URW/,/END URW/d" \
+	  $(devpdf_srcdir)/Foundry.in >$@
+endif
+
+if HAVE_URW_FONTS
+# This is kind of a cheat, but works because BuildFoundries produces so
+# many artifacts.
+$(devpdffont_descriptions_for_urw): font/devpdf/download
+
+buildfoundries_extra_arg=--dirURW=$(urwfontsdir)
+else
+buildfoundries_extra_arg=
+endif
+
+font/devpdf/download: $(devpdffontencdata) $(devpdffontmapdata) \
+  $(devpdffont_descriptions_from_devps) \
+  font/devpdf/DESC font/devpdf/Foundry font/devpdf/util/BuildFoundries
+	$(AM_V_GEN)$(MKDIR_P) $(top_builddir)/font/devpdf \
+	&& PATH="$(abs_top_builddir)$(GROFF_PATH_SEPARATOR)$(abs_top_builddir)/build-aux$(GROFF_PATH_SEPARATOR)$(PATH)" \
+	$(abs_top_builddir)/font/devpdf/util/BuildFoundries \
+	  $(buildfoundries_extra_arg) \
+	  --download $(abs_top_srcdir)/font/devpdf/download.in \
+	  $(abs_top_builddir)/font/devpdf \
+	  '$(abs_top_srcdir)/font/devpdf:$(abs_top_builddir)/font/devpdf' \
+	  >>$@.tmp \
+	&& mv $@.tmp $@
+
+# PDFs to be produced by troff should depend on this stamp file to
+# ensure that gropdf's supporting files are available.
+MOSTLYCLEANFILES += font/devpdf/stamp
+font/devpdf/stamp: $(devpdffontdata)
+	$(AM_V_at)>$@
+
+font_devpdf_default_test=\
+  $(devpdf_srcdir)/tests/check-default-foundry.sh.in
+font_devpdf_urw_test=$(devpdf_srcdir)/tests/check-urw-foundry.sh.in
+
+font/devpdf/tests/check-default-foundry.sh: $(font_devpdf_default_test)
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& sed -e "s|[@]GHOSTSCRIPT[@]|$(GHOSTSCRIPT)|g" \
+	  $(font_devpdf_default_test) > $@ \
+	&& chmod +x $@
+
+font/devpdf/tests/check-urw-foundry.sh: $(font_devpdf_urw_test)
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& sed -e "s|[@]urwfontsdir[@]|$(urwfontsdir)|g" \
+	  $(font_devpdf_urw_test) > $@ \
+	&& chmod +x $@
+
+font_devpdf_TESTS = \
+  font/devpdf/tests/check-default-foundry.sh \
+  font/devpdf/tests/check-urw-foundry.sh
+
+TESTS += $(font_devpdf_TESTS)
+MOSTLYCLEANFILES += $(font_devpdf_TESTS)
+EXTRA_DIST += $(font_devpdf_default_test) $(font_devpdf_urw_test)
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

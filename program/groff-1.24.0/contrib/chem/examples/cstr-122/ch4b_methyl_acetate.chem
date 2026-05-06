@@ -1,0 +1,24 @@
+ch4b_methyl_acetate.chem:
+.br
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+CH3      # the 3 is automatically turned into a subscript
+bond     # the implicit direction is right
+         # implicit connection is to right side of CH3
+C
+double bond 30     # by default, from the substituent C
+O
+bond 120 from C    # must be "from C"; otherwise would leave from O
+O
+bond right
+CH3
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>DESC File Format (The GNU troff Manual)</title>
+
+<meta name="description" content="DESC File Format (The GNU troff Manual)">
+<meta name="keywords" content="DESC File Format (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Device-and-Font-Description-Files.html" rel="up" title="Device and Font Description Files">
+<link href="Font-Description-File-Format.html" rel="next" title="Font Description File Format">
+<link href="Device-and-Font-Description-Files.html" rel="prev" title="Device and Font Description Files">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="DESC-File-Format"></span><div class="header">
+<p>
+Next: <a href="Font-Description-File-Format.html" accesskey="n" rel="next">Font Description File Format</a>, Up: <a href="Device-and-Font-Description-Files.html" accesskey="u" rel="up">Device and Font Description Files</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="DESC-File-Format-1"></span><h4 class="subsection">6.1.1 <samp>DESC</samp> File Format</h4>
+<span id="index-DESC-file-format"></span>
+<span id="index-font-description-file-format"></span>
+<span id="index-format-of-font-description-file"></span>
+
+<p>The <samp>DESC</samp> file contains a series of directives; each begins a
+line.  Their order is not important, with two exceptions: (1) the
+<code>res</code> directive must precede any <code>papersize</code> directive; and
+(2) the <code>charset</code> directive must come last (if at all).  If a
+directive name is repeated, later entries in the file override previous
+ones (except that the paper dimensions are computed based on the
+<code>res</code> directive last seen when <code>papersize</code> is encountered).
+Spaces and/or tabs separate words and are ignored at line boundaries.
+<span id="index-comments-in-device-description-files"></span>
+<span id="index-device-description-files_002c-comments"></span>
+<span id="index-_0023"></span>
+Comments start with the &lsquo;<samp>#</samp>&rsquo; character and extend to the end of a
+line.  Empty lines are ignored.
+</p>
+<dl compact="compact">
+<dt><code>family <var>fam</var></code></dt>
+<dd><span id="index-family-1"></span>
+<p>The default font family is <var>fam</var>.
+</p>
+</dd>
+<dt><code>fonts <var>n</var> <var>F1</var> <span class="roman">&hellip;</span> <var>Fn</var></code></dt>
+<dd><span id="index-fonts-2"></span>
+<p>Fonts <var>F1</var>, &hellip;, <var>Fn</var> are mounted at font positions
+<var>m</var>+1, &hellip;, <var>m</var>+<var>n</var> where <var>m</var> is the number of
+<code>styles</code> (see below).  This directive may extend over more than one
+line.  A font name of&nbsp;<code>0</code> causes no font to be mounted at the
+corresponding position.
+</p>
+</dd>
+<dt><code>hor <var>n</var></code></dt>
+<dd><span id="index-hor"></span>
+<span id="index-horizontal-motion-quantum"></span>
+<span id="index-motion-quantum_002c-horizontal"></span>
+<span id="index-quantum_002c-horizontal-motion"></span>
+<span id="index-horizontal-resolution"></span>
+<span id="index-resolution_002c-horizontal"></span>
+<p>The horizontal motion quantum is <var>n</var>&nbsp;basic
+units.
+Horizontal measurements round to multiples of&nbsp;<var>n</var>.
+</p>
+</dd>
+<dt><code>image_generator <var>program</var></code></dt>
+<dd><span id="index-image_005fgenerator"></span>
+<span id="index-PostScript_002c-PNG-image-generation"></span>
+<span id="index-PNG-image-generation-from-PostScript"></span>
+<p>Use <var>program</var> to generate PNG images from PostScript input.  Under
+GNU/Linux, this is usually <code>gs</code>, but under other systems (notably
+Cygwin) it might be set to another name.  The <code>grohtml</code> driver uses
+this directive.
+</p>
+</dd>
+<dt><code>paperlength <var>n</var></code></dt>
+<dd><span id="index-paperlength"></span>
+<p>The vertical dimension of the output medium is <var>n</var>&nbsp;basic units
+(deprecated: use <code>papersize</code> instead).
+</p>
+</dd>
+<dt><code>papersize <var>format-or-dimension-pair-or-file-name</var> <span class="roman">&hellip;</span></code></dt>
+<dd><span id="index-papersize"></span>
+<p>The dimensions of the output medium are as according to the
+argument, which is either a standard paper format, a pair of dimensions,
+or the name of a plain text file containing either of the foregoing.
+</p>
+<p>Recognized paper formats are the ISO and DIN formats
+<code>A0</code>&ndash;<code>A7</code>, <code>B0</code>&ndash;<code>B7</code>, <code>C0</code>&ndash;<code>C7</code>,
+<code>D0</code>&ndash;<code>D7</code>; the U.S. paper types <code>letter</code>,
+<code>legal</code>, <code>tabloid</code>, <code>ledger</code>, <code>statement</code>, and
+<code>executive</code>; and the envelope formats <code>com10</code>, <code>monarch</code>,
+and <code>DL</code>.  Matching is performed without regard for lettercase.
+</p>
+<p>Alternatively, the argument can be a custom paper format in the format
+<code><var>length</var>,<var>width</var></code> (with no spaces before or after the
+comma).  Both <var>length</var> and <var>width</var> must have a unit appended;
+valid units are &lsquo;<samp>i</samp>&rsquo; for inches, &lsquo;<samp>c</samp>&rsquo; for centimeters, &lsquo;<samp>p</samp>&rsquo;
+for points, and &lsquo;<samp>P</samp>&rsquo; for picas.  Example: &lsquo;<samp>12c,235p</samp>&rsquo;.  An
+argument that starts with a digit is always treated as a custom paper
+format.
+</p>
+<p>Finally, the argument can be a file name (e.g., <samp>/etc/papersize</samp>);
+if the file can be opened, the first line is read and a match attempted
+against each of the other forms.  No comment syntax is supported.
+</p>
+<p>More than one argument can be specified;
+each is scanned in turn and the first valid paper specification used.
+</p>
+</dd>
+<dt><code>paperwidth <var>n</var></code></dt>
+<dd><span id="index-paperwidth"></span>
+<p>The horizontal dimension of the output medium is <var>n</var>&nbsp;basic
+units (deprecated: use <code>papersize</code> instead).
+</p>
+</dd>
+<dt><code>pass_filenames</code></dt>
+<dd><span id="index-pass_005ffilenames"></span>
+<p>Direct GNU <code>troff</code> to emit the name of the source file being
+processed.  This is achieved with the intermediate output command
+&lsquo;<samp>x F</samp>&rsquo;, which <code>grohtml</code> interprets.
+</p>
+</dd>
+<dt><code>postpro <var>program</var></code></dt>
+<dd><span id="index-postpro"></span>
+<p>Use <var>program</var> as the postprocessor.
+</p>
+</dd>
+<dt><code>prepro <var>program</var></code></dt>
+<dd><span id="index-prepro"></span>
+<p>Use <var>program</var> as a preprocessor.  The <code>html</code> and <code>xhtml</code>
+output devices use this directive.
+</p>
+</dd>
+<dt><code>print <var>program</var></code></dt>
+<dd><span id="index-print"></span>
+<p>Use <var>program</var> as a spooler program for printing.  If omitted, the
+<samp>-l</samp> and <samp>-L</samp> options of <code>groff</code> are ignored.
+</p>
+</dd>
+<dt><code>res <var>n</var></code></dt>
+<dd><span id="index-res"></span>
+<span id="index-device-resolution-1"></span>
+<span id="index-resolution_002c-device-1"></span>
+<p>The device resolution is <var>n</var>&nbsp;basic units per inch.
+</p>
+</dd>
+<dt><code>sizes <var>s1</var> <span class="roman">&hellip;</span> <var>sn</var> 0</code></dt>
+<dd><span id="index-sizes"></span>
+<p>The device has fonts at <var>s1</var>, &hellip;, <var>sn</var> scaled points (see
+below).  The list of sizes must be terminated by&nbsp;<code>0</code>.  Each
+<var>si</var> can also be a range of sizes <var>m</var>&ndash;<var>n</var>.  The list can
+extend over more than one line.
+</p>
+</dd>
+<dt><code>sizescale <var>n</var></code></dt>
+<dd><span id="index-sizescale"></span>
+<p>A typographical point is subdivided into <var>n</var>&nbsp;scaled points.
+The default is&nbsp;<code>1</code>.  See <a href="Using-Fractional-Type-Sizes.html">Using Fractional Type Sizes</a>.
+</p>
+</dd>
+<dt><code>styles <var>S1</var> <span class="roman">&hellip;</span> <var>Sm</var></code></dt>
+<dd><span id="index-styles-2"></span>
+<p>The first&nbsp;<var>m</var> mounting positions are associated with styles
+<var>S1</var>, &hellip;, <var>Sm</var>.
+</p>
+</dd>
+<dt><code>tcommand</code></dt>
+<dd><span id="index-tcommand"></span>
+<p>The postprocessor can handle the &lsquo;<samp>t</samp>&rsquo; and &lsquo;<samp>u</samp>&rsquo; intermediate
+output commands.
+</p>
+</dd>
+<dt><code>unicode</code></dt>
+<dd><span id="index-unicode"></span>
+<p>The output device supports the complete Unicode repertoire.  This
+directive is useful only for devices that produce character entities
+instead of glyphs.
+</p>
+<p>If <code>unicode</code> is present, no <code>charset</code> section is required in
+the font description files since the Unicode handling built into
+<code>groff</code> is used.  However, if there are entries in a font
+description file&rsquo;s <code>charset</code> section, they either override the
+default mappings for those particular characters or add new mappings
+(normally for composite characters).
+</p>
+<p>The <code>utf8</code>, <code>html</code>, and <code>xhtml</code> output devices use this
+directive.
+</p>
+</dd>
+<dt><code>unitwidth <var>n</var></code></dt>
+<dd><span id="index-unitwidth"></span>
+<p>Arbitary basis with respect to which font metrics are proportionally
+scaled when rendering glyphs at a type size of one point.
+</p>
+</dd>
+<dt><code>unscaled_charwidths</code></dt>
+<dd><span id="index-unscaled_005fcharwidths"></span>
+<p>Make the font handling module always return unscaled character widths.
+The <code>grohtml</code> driver uses this directive.
+</p>
+</dd>
+<dt><code>use_charnames_in_special</code></dt>
+<dd><span id="index-use_005fcharnames_005fin_005fspecial"></span>
+<p>GNU <code>troff</code> should encode special characters in arguments to device
+extension commands; see <a href="Postprocessor-Access.html">Postprocessor Access</a>.  The <code>grohtml</code>
+driver uses this directive.
+</p>
+</dd>
+<dt><code>vert <var>n</var></code></dt>
+<dd><span id="index-vert"></span>
+<span id="index-vertical-motion-quantum"></span>
+<span id="index-motion-quantum_002c-vertical"></span>
+<span id="index-quantum_002c-vertical-motion"></span>
+<span id="index-vertical-resolution"></span>
+<span id="index-resolution_002c-vertical"></span>
+<p>The vertical motion quantum is <var>n</var>&nbsp;basic
+units.
+Vertical measurements round to multiples of&nbsp;<var>n</var>.
+</p>
+</dd>
+<dt><code>charset</code></dt>
+<dd><span id="index-charset"></span>
+<p>This line and everything following it in the file are ignored.  It is
+recognized for compatibility with other <code>troff</code> implementations.
+In GNU <code>troff</code>, character set repertoire is described on a
+per-font basis.
+</p></dd>
+</dl>
+
+<span id="index-spare1"></span>
+<span id="index-spare2"></span>
+<span id="index-biggestfont"></span>
+<p>GNU <code>troff</code> recognizes but ignores the directives <code>spare1</code>,
+<code>spare2</code>, and <code>biggestfont</code>.
+</p>
+<p>The <code>res</code>, <code>unitwidth</code>, <code>fonts</code>, and <code>sizes</code> lines
+are mandatory.  Directives not listed above are ignored by GNU
+<code>troff</code> but may be used by postprocessors to obtain further
+information about the device.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Font-Description-File-Format.html" accesskey="n" rel="next">Font Description File Format</a>, Up: <a href="Device-and-Font-Description-Files.html" accesskey="u" rel="up">Device and Font Description Files</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

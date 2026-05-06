@@ -1,0 +1,14 @@
+#!/bin/sh
+# Sunset shell script
+#
+# This file is part of REMIND.
+# Copyright (C) 1992-2026 by Dianne Skoll
+# SPDX-License-Identifier: GPL-2.0-only
+
+echo Content-type: text/html
+echo
+echo "<HTML>"
+$REMIND -arqh $DIR/sunset.rem
+echo "</HTML>"
+
+exit 0

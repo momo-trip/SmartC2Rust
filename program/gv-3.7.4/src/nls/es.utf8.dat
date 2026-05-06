@@ -1,0 +1,175 @@
+!
+!           ** Copyright (C) 2011 César Gil **
+!
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 3 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, go to <http://www.gnu.org/licenses/>
+! or write to the
+! Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+!
+
+GV*copyright.Label:			Copyright
+GV*miscmenuLabel.label:			Entradas de menú variadas
+GV*optionsgv.Label:			Opciones de gv ...
+GV*mark.Label:				Marcar
+GV*dismiss.Label:			Descartar
+GV*x11devLabel.label:	Device
+GV*scratchDirLabel.label:		Directorio de inicio
+GV*quitstyle.always.Label:		Siempre
+GV*misc.label:				Varios
+GV*miscMenu.stop.label:			Parar intérprete
+GV*strings.stillInProgress:		Todavía en curso:
+GV*miscMenu.save_all.label:		Guardar todo
+GV*center.Label:			Centrar
+GV*saveDirLabel.label:			Guardar directorio
+GV*printMarkedPages.Label:		Imprimir páginas marcadas ...
+GV*update.Label:			Actualizar
+GV*optionsgs.Label:			Opciones de Ghostscript ...
+GV*infoPopup.title:			Mensajes de Ghostscript
+GV*safeDir.label:	SafeDir
+GV*dirsLabel.label:			Directorios de selección de archivos
+GV*presentation.Label:			Modo de presentación
+GV*scanLabel.label:	Buscar en el PDF
+GV*optiongvPopup*magLabel.label:	Escala
+GV*button2.label:			Abrir archivo
+GV*saveAllPages.Label:			Guardar documento ...
+GV*optionsetupPopup.title:		Opciones de configuración
+GV*optiongvPopup*respectDSC.label:	Respetar DSC
+GV*miscMenu.save_marked.label:		Guardar marcadas
+GV*strings.putTexCommand:		Insertar comando de TeX en la posición actual
+GV*strings.execOfFailed:		Ejecución de %s falló
+GV*scrolling.label:			Desplazamiento inverso
+GV*optiongvPopup*forientLabel.label:	Orientación alternativa
+GV*pageButton*unmark.Label:		Desmarcar todas
+GV*button1.label:			Cancelar
+GV*quitstyle.whenprocessing.Label:	Mientras procesa
+GV*filters.label:			Filtros:
+GV*confirmLabel.label:			Confirme finalizar
+GV*title.filename.Label:		Nombre de archivo
+GV*automatic.Label:			Automático
+GV*unmark.Label:			Desmarcar
+GV*printMarked.label:			Imprimir marcadas
+GV*optiongvPopup*orientLabel.label:	\     Orientación    \ 
+GV*optiongvPopup*fmediaLabel.label:	Tamaño de papel alternativo
+GV*confirmPopup*done.label:		Finalizar
+GV*optiongvPopup*autoResize.label:	Tamaño variable
+GV*defaults.label:	Predeterminados del sistema
+GV*uncompressLabel.label:		Descomprimir
+GV*reopen.Label:			Recargar
+GV*miscMenu.unmark.label:		Desmarcar todo
+GV*safer.label:		Safer
+GV*saveMarked.label:			Guardar marcadas
+GV*title.notitle.Label:			Sin título
+GV*dsc.Label:				Respetar la estructura del documento
+GV*optiongvPopup*swapLandscape.label:	Cambiar apaisado
+GV*pixmap.Label:			Backing Pixmap
+GV*miscMenu.update.label:		Actualizar archivo
+GV*strings.passwordPrompt:		Contraseña:
+GV*miscMenu.print_marked.label:		Imprimir marcadas
+GV*strings.openFile:			Abrir archivo
+GV*scalesLabel.label:			Escalas
+GV*savepos.Label:			Guardar posición
+GV*pageButton.Label:			Página
+GV*x11alphadevLabel.label:	Dispositivo de suavizado
+GV*saveAll.label:			Guardar todo
+GV*open.Label:				Abrir ...
+GV*miscMenu.toggle_current.label:	Marcar actual
+GV*fileButton.Label:			Archivo
+GV*miscMenu.toggle_odd.label:		Marcar impares
+GV*miscMenu.toggle_even.label:		Marcar pares
+GV*printCommandLabel.label:		Print Command
+GV*antialias.Label:			Suavizado de bordes
+GV*updateFile.label:			Actualizar archivo
+GV*optiongsPopup.title:			Opciones de Ghostscript
+GV*quiet.label:		Discreto
+GV*confirmPopup.title:			Confirmar
+GV*mediasLabel.label:			Tamaño del medio
+GV*optionfsPopup.title:			Opciones de selección de archivos
+GV*show.Label:				Refrescar imagen
+GV*optiongvPopup*mediaLabel.label:	\ Tamaño del papel \ 
+GV*convLabel.label:	Convert PDF
+GV*zoomPopup.title:			Zoom
+GV*optiongvPopup.title:			Opciones de gv
+GV*stateButton.Label:			Estado
+GV*strings.passwordRequired:		Se requiere contraseña
+GV*confirmPrint.label:			Confirme imprimir
+GV*pageButton*current.Label:		Marcar página actual
+GV*optionssetup.Label:			Opciones de configuración ...
+GV*ascaleLabel.Label:			Escala arbitraria
+GV*next.Label:				Siguiente
+GV*filterLabel.label:			Filtro por defecto
+GV*seascape.Label:			Apaisado antihorario
+GV*cancel.Label:			Cancelar
+GV*watch.Label:				Ver archivo
+GV*titleLabel.Label:			Mostrar título
+GV*filtersLabel.label:			Filtros de selección de archivos
+GV*checkFile.label:			Comprobar archivo
+GV*processButton.Label:			\ procesando
+GV*toggleOdd.label:
+GV*strings.saveMarkedPages:		Guardar páginas marcadas
+GV*optiongvPopup*scalesLabel.label:	\   Escala  \ 
+GV*toggleCurrent.label:
+GV*stop.Label:				Parar intérprete
+GV*dialogPopup*cancel.label:		Cancelar
+GV*fileSelPopup.title:			Abrir archivo
+GV*eyeGuide.label:			Scrolling Eye Guide
+GV*upsidedown.Label:			Invertido
+GV*pageButton*even.Label:		Marcar páginas pares
+GV*quit.Label:				Finalizar
+GV*magmenuLabel.label:			Mag Menu Entries
+GV*gs.errors.none.Label:		Ninguno
+GV*nextPage.Label:			>>
+GV*eof.Label:				Ignorar comentarios de fin de fichero
+GV*rescan.label:			Volver a buscar en directorio
+GV*miscMenu.print_all.label:		Imprimir todo
+GV*strings.copyrightTranslation:	César Gil <bluemoon.cgp@gmail.com>
+GV*landscape.Label:			Apaisado
+GV*printAllPages.Label:			Imprimir documento ...
+GV*gsLabel.label:	Interpreter
+GV*optiongvPopup*antialias.label:	Suavizado de bordes
+GV*strings.texCommand:			Comando de TeX
+GV*printAll.label:			Imprimir todo
+GV*argumentsLabel.label:	Argumentos
+GV*toggleEven.label:
+GV*infoVerboseLabel.Label:			info Popup
+GV*gs.errors.all.Label:			Todo
+GV*scaleBaseLabel.label:		Base de la escala
+GV*screenSizeLabel.label:		Tamaño de pantalla (mm)
+GV*dialogPopup.title:			Diálogo
+GV*unmarkAll.label:
+GV*strings.saveCurrentPage:		Guardar página actual
+GV*strings.quitConfirm:			¿Realmente quiere finalizar?
+GV*autoCenter.label:			Centrado automático
+GV*redisplay.label:			Recargar
+GV*size.Label:				Redimensionado variable
+GV*prevPage.Label:			<<
+GV*prev.Label:				Anterior
+GV*title.documenttitle.Label:		Título del documento
+GV*confirmPopup*cancel.label:		Cancelar
+GV*openFile.label:			Abrir
+GV*saveMarkedPages.Label:		Guardar páginas marcadas ...
+GV*strings.saveDocument:		Guardar documento
+GV*pageButton*odd.Label:		Marcar páginas impares
+GV*save.label:				Guardar
+GV*notePopup.title:			Mensaje
+GV*optionsfs.Label:			Opciones de selección de archivos ...
+GV*swap.Label:				Cambiar apaisado
+GV*portrait.Label:			Vertical
+GV*optiongvPopup*eof.label:		Ignorar fin de fichero
+GV*strings.saveAsPDF:			Guardar como PDF
+GV*gs.errors.errors.Label:		Errores
+GV*quitstyle.never.Label:		Nunca
+GV*apply.label:				Aplicar
+GV*watchFile.Label:			Ver archivo
+GV*miscMenu.redisplay.label:		Recargar
+GV*dirs.label:				Directories
+GV*notePopup*done.label:		¡Hecho!

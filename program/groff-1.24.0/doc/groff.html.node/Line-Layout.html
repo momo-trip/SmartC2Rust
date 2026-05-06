@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Line Layout (The GNU troff Manual)</title>
+
+<meta name="description" content="Line Layout (The GNU troff Manual)">
+<meta name="keywords" content="Line Layout (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Line-Continuation.html" rel="next" title="Line Continuation">
+<link href="troff-and-nroff-Modes.html" rel="prev" title="troff and nroff Modes">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Line-Layout"></span><div class="header">
+<p>
+Next: <a href="Line-Continuation.html" accesskey="n" rel="next">Line Continuation</a>, Previous: <a href="troff-and-nroff-Modes.html" accesskey="p" rel="prev"><code>troff</code> and <code>nroff</code> Modes</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Line-Layout-1"></span><h3 class="section">5.15 Line Layout</h3>
+<span id="index-line-layout"></span>
+<span id="index-layout_002c-line"></span>
+
+<span id="index-dimensions_002c-line"></span>
+<span id="index-line-dimensions"></span>
+<p>The following drawing shows the dimensions that GNU <code>troff</code> uses
+to arrange a line of output on the page.  Each dimension is labeled with
+the name of the request that configures it.
+</p>
+<div class="example">
+<pre class="example">     --&gt;| in |&lt;--
+        |&lt;-----------ll------------&gt;|
+   +----+----+----------------------+----+
+   |    :    :                      :    |
+   +----+----+----------------------+----+
+--&gt;| po |&lt;--
+   |&lt;--------paper width----------------&gt;|
+</pre></div>
+
+<p>The dimensions are defined as follows.
+</p>
+<table>
+<tr><td width="5%"><code>po</code>
+<span id="index-page-offset-_0028po_0029"></span>
+<span id="index-offset_002c-page-_0028po_0029"></span></td><td width="95%">The <em>page offset</em> is the leftmost position of running text.</td></tr>
+<tr><td width="5%"><code>in</code>
+<span id="index-indentation-_0028in_0029"></span>
+<span id="index-line-indentation-_0028in_0029"></span></td><td width="95%"><em>Indentation</em> is the distance from the page offset at which text is
+set.</td></tr>
+<tr><td width="5%"><code>ll</code>
+<span id="index-line-length-_0028ll_0029"></span>
+<span id="index-length-of-line-_0028ll_0029"></span></td><td width="95%"><em>Line length</em> is the maximum extent of unindented running text.</td></tr>
+</table>
+
+<span id="index-left-margin-_0028po_0029"></span>
+<span id="index-margin_002c-left-_0028po_0029"></span>
+<span id="index-margin_002c-right"></span>
+<span id="index-right-margin"></span>
+<p>The page offset can be thought of as the &ldquo;left margin&rdquo;.  The right
+margin is not explicitly configured; the combination of page offset and
+line length provides the information necessary to derive it.
+</p>
+<div class="example">
+<pre class="example">.ll 3i
+This is text without indentation.
+The line length has been set to 3\~inches.
+.in +.5i
+.ll -.5i
+Now the left and right margins are both increased.
+.in
+.ll
+Calling .in and .ll without parameters restores
+the previous values.
+</pre></div>
+
+<div class="example">
+<pre class="example">    &rArr; This  is text without indenta-
+    &rArr; tion.   The  line  length  has
+    &rArr; been set to 3 inches.
+    &rArr;      Now   the  left  and
+    &rArr;      right  margins   are
+    &rArr;      both increased.
+    &rArr; Calling  .in  and  .ll without
+    &rArr; parameters restores the previ-
+    &rArr; ous values.
+</pre></div>
+
+<p>Requests exist to place line numbers and margin characters beyond the
+page margins; <a href="Miscellaneous.html">Miscellaneous</a>.
+</p>
+<dl>
+<dt id="index-_002epo">Request: <strong><tt>.po</tt></strong> <em>[<span class="roman"><i>offset</i></span>]</em></dt>
+<dd><span id="index-po"></span>
+</dd><dt id="index-_002epo-1">Request: <strong><tt>.po</tt></strong> <em><tt>+</tt><span class="roman"><i>offset</i></span></em></dt>
+<dt id="index-_002epo-2">Request: <strong><tt>.po</tt></strong> <em><tt>-</tt><span class="roman"><i>offset</i></span></em></dt>
+<dt id="index-_005cn_005b_002eo_005d">Register: <strong><tt>\n[.o]</tt></strong></dt>
+<dd><span id="index-_002eo"></span>
+<span id="index-tty_002etmac-1"></span>
+<p>Set page offset to <var>offset</var>; if <var>offset</var> is signed, adjust the
+page offset by its value.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.
+The default offset is 1i on typesetters and zero on terminals.
+</p>
+<p>If <var>offset</var> is omitted, the page offset is reset to that before the
+previous invocation of <code>po</code>.
+</p>
+<p>The page offset can be found in the read-only register &lsquo;<samp>.o</samp>&rsquo;.
+<span id="index-CSTR-_002354-errata-2"></span>
+<span id="index-CSTR-_002354-erratum_002c-po-request"></span>
+This request is incorrectly documented in the <acronym>AT&amp;T</acronym>
+<code>troff</code> manual as using a default scaling unit of &lsquo;<samp>v</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.po 3i
+\n[.o]
+    &rArr; 720
+.po -1i
+\n[.o]
+    &rArr; 480
+.po
+\n[.o]
+    &rArr; 720
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002ein">Request: <strong><tt>.in</tt></strong> <em>[<span class="roman"><i>indent</i></span>]</em></dt>
+<dd><span id="index-in"></span>
+</dd><dt id="index-_002ein-1">Request: <strong><tt>.in</tt></strong> <em><tt>+</tt><span class="roman"><i>indent</i></span></em></dt>
+<dt id="index-_002ein-2">Request: <strong><tt>.in</tt></strong> <em><tt>-</tt><span class="roman"><i>indent</i></span></em></dt>
+<dt id="index-_005cn_005b_002ei_005d">Register: <strong><tt>\n[.i]</tt></strong></dt>
+<dd><span id="index-_002ei"></span>
+<p>Set indentation to <var>indent</var>; if <var>indent</var> is signed, adjust the
+indentation by its value.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.
+Initially, there is no indentation.  This request causes a break.
+</p>
+<p>If <var>indent</var> is omitted, the indentation is reset to that before the
+previous invocation of <code>in</code>, and zero if there is none.  If
+<var>indent</var> is negative, GNU <code>troff</code> emits a warning in
+category &lsquo;<samp>range</samp>&rsquo; and sets the indentation to zero; a temporary
+indentation (see below) is reset to zero as well.
+</p>
+<p>The formatter delays the effect of
+<code>in</code>
+until it has emitted any partially collected line.
+In other words,
+<code>in</code>
+does not change a pending output line&rsquo;s indentation.
+</p>
+<p>The read-only register
+&lsquo;<samp>.i</samp>&rsquo;
+interpolates the indentation amount,
+ignoring temporary indentation
+(see below).
+The indentation amount is associated with the environment
+(see <a href="Environments.html">Environments</a>).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eti">Request: <strong><tt>.ti</tt></strong> <em>offset</em></dt>
+<dd><span id="index-ti"></span>
+</dd><dt id="index-_002eti-1">Request: <strong><tt>.ti</tt></strong> <em><tt>+</tt><span class="roman"><i>offset</i></span></em></dt>
+<dt id="index-_002eti-2">Request: <strong><tt>.ti</tt></strong> <em><tt>-</tt><span class="roman"><i>offset</i></span></em></dt>
+<dt id="index-_005cn_005b_002ein_005d">Register: <strong><tt>\n[.in]</tt></strong></dt>
+<dd><span id="index-_002ein-3"></span>
+<p>Temporarily indent the next output line by <var>offset</var>; if <var>offset</var>
+is signed, adjust the temporary indentation relative to the value set by
+the <code>in</code> request.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.  This
+request causes a break.
+</p>
+<p>Omitting <var>offset</var> causes a warning in category &lsquo;<samp>missing</samp>&rsquo;.
+</p>
+<p>The effect of <code>ti</code> is delayed until a partially collected line (if
+it exists) is output.  In other words, it does not change a pending
+output line&rsquo;s indentation.
+</p>
+<p>The read-only register <code>.in</code> reports the indentation that applies
+to the pending output line.  The temporary indentation is associated
+with the environment (see <a href="Environments.html">Environments</a>).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ell">Request: <strong><tt>.ll</tt></strong> <em>[<span class="roman"><i>length</i></span>]</em></dt>
+<dd><span id="index-ll"></span>
+</dd><dt id="index-_002ell-1">Request: <strong><tt>.ll</tt></strong> <em><tt>+</tt><span class="roman"><i>length</i></span></em></dt>
+<dt id="index-_002ell-2">Request: <strong><tt>.ll</tt></strong> <em><tt>-</tt><span class="roman"><i>length</i></span></em></dt>
+<dt id="index-_005cn_005b_002el_005d">Register: <strong><tt>\n[.l]</tt></strong></dt>
+<dd><span id="index-_002el"></span>
+</dd><dt id="index-_005cn_005b_002ell_005d">Register: <strong><tt>\n[.ll]</tt></strong></dt>
+<dd><span id="index-_002ell-3"></span>
+<p>Change (increase or decrease) the line length per the numeric expression
+<var>length</var>.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.  If not otherwise
+configured (see see <a href="Paper-Format.html">Paper Format</a>), the default line length is
+6.5i.  If <var>length</var> is invalid, GNU <code>troff</code> emits a
+warning in category &lsquo;<samp>number</samp>&rsquo; and ignores the request.  If
+<var>length</var> is nonpositive, GNU <code>troff</code> emits a warning in
+category &lsquo;<samp>range</samp>&rsquo; and sets the line length to the device&rsquo;s
+horizontal motion quantum; recall <a href="Motion-Quanta.html">Motion Quanta</a>.  The line length
+is associated with the environment (see <a href="Environments.html">Environments</a>).  If
+<var>length</var> is omitted, GNU <code>troff</code> restores the environment&rsquo;s
+previous line length.
+</p>
+<p>The effect of <code>ll</code> is delayed until a partially collected line (if
+it exists) is output.  In other words, it does not change a pending
+output line&rsquo;s length.
+</p>
+<span id="index-line-length-register-_0028_002el_0029"></span>
+<p>The line length as set by <code>ll</code> can be found in the
+read-only register &lsquo;<samp>.l</samp>&rsquo;.  The read-only register <code>.ll</code> is the
+line length that applies to the pending output line.
+</p>
+<p>Similarly to <code>.i</code> and <code>.in</code>, the difference between <code>.l</code>
+and <code>.ll</code> is that the latter takes into account whether a partially
+collected line still uses the previous length.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Line-Continuation.html" accesskey="n" rel="next">Line Continuation</a>, Previous: <a href="troff-and-nroff-Modes.html" accesskey="p" rel="prev"><code>troff</code> and <code>nroff</code> Modes</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

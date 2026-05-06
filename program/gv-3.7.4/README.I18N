@@ -1,0 +1,64 @@
+GV I18N Fontset Patch
+			Keio University in Japan
+			1998 Yasuyuki Furukawa <yasu@on.cs.keio.ac.jp>
+
+This patch make gv to support UTF8.
+
+Note that Xaw3d version 1.5E or 1.6.1 or newer is required for UTF8-Support.
+
+Note that UTF8-Mode is currently turned off by default. 
+To enable it, you have two possibilities:
+
+1. include the resource
+
+      GV*international:		True
+      
+   e. g. in ~/.gv
+
+2. The configure parameter --enable-international will turn on 
+   international by default.
+
+   
+      
+
+NEED:
+	Xaw3d 1.4, 1.5 and 1.6.0 and 1.6.1 has a fatal bug in MultiSrc.c line 735-740.
+	This GV's patch need Xaw3d library patched follow:
+
+*** xc/lib/Xaw3d/MultiSrc.c	Fri May 15 04:03:23 1998
+--- xc-fix/lib/Xaw3d/MultiSrc.c	Fri Dec 18 09:59:52 1998
+@@ -736,6 +736,7 @@
+   
+   if ( string_set || (old_src->multi_src.type != src->multi_src.type) ) {
+     RemoveOldStringOrFile(old_src, string_set);
++    src->multi_src.allocated_string = old_src->multi_src.allocated_string;
+     file = InitStringOrFile(src, string_set);
+ 
+     /* Load pieces does this logic for us, but it shouldn't.  Its messy.*/
+
+
+
+Another bug in Xaw3d will segfault in closing the application. The following
+patch will fix it:
+
+--- XawIm.c
++++ XawIm.c
+@@ -331,12 +331,12 @@ static void DestroyAllIM( ve )
+     /*
+      * Close Input Method
+      */
+-    CloseIM(ve);
+     if (!XFindContext(XDisplayOfIM(ve->im.xim), (Window)ve->im.xim, errContext,
+ 		      (XPointer*)&contextErrData)) {
+ 	if (contextErrData) XtFree((char *)contextErrData);
+     }
+     XDeleteContext(XDisplayOfIM(ve->im.xim), (Window)ve->im.xim, errContext);
++    CloseIM(ve);
+     ve->im.xim = NULL;
+ 
+     /*
+
+A collection of Xaw3D 1.5E and 1.6.x bug fixing patches can be found on
+git://gitorious.org/xaw3d/xaw3d.git.
+For Xaw3d 1.5E take the master branch, for libXaw3d 1.6.x take the
+"v1.6-branch", "v1.6.1-branch" and so on.

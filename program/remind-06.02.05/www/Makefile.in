@@ -1,0 +1,91 @@
+# Makefile.in for installing WWW server calendar scripts
+# This file is part of REMIND.
+# Copyright (C) 1992-2026 by Dianne Skoll
+
+# The complete path to where the scripts actually live, as seen by
+# the UNIX operating system.
+SCRIPTDIR = /usr/lib/cgi-bin
+
+# Where the scripts live as seen by the web browser.
+CGIDIR = /cgi-bin
+
+# The complete path to the directory containing the HTML file "calendar.html".
+#  This is a sample file containing links to all the scripts.  This path
+# should be the path as seen by the UNIX operating system
+HTMLDIR = /var/www/html/remind
+
+# Where you stick images and CSS files, as seen by UNIX
+IMAGEDIR = /var/www/html/remind/resources
+
+# Where images and CSS files are, as seen by web browsers
+IMAGEBASE = /remind/resources
+
+# Set by configure - don't touch.
+srcdir=@srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+mandir=@mandir@
+bindir=@bindir@
+datadir=@datadir@
+datarootdir=@datarootdir@
+
+# Where do Remind and Rem2PS executables live?
+REMIND = $(bindir)/remind
+REM2PS = $(bindir)/rem2ps
+REM2PDF = $(bindir)/rem2pdf
+REM2HTML = $(bindir)/rem2html
+# If your Web server requires CGI programs to have a .cgi suffix, use
+# the next line.  Otherwise, comment it out
+CGISUFFIX=.cgi
+
+# Don't change stuff below here.
+# --------------------------------------------------------------------
+
+# Construct a rotten mean nasty sed script to do the dirty work
+SEDSCRIPT = -e 's@%CGIDIR%@$(CGIDIR)@g' \
+	    -e 's@%SCRIPTDIR%@$(SCRIPTDIR)@g' \
+	    -e 's@%REMIND%@$(REMIND)@g' \
+	    -e 's@%IMAGEBASE%@$(IMAGEBASE)@g' \
+	    -e 's@%REM2PS%@$(REM2PS)@g' \
+	    -e 's@%REM2PDF%@$(REM2PDF)@g' \
+	    -e 's@%REM2HTML%@$(REM2HTML)@g' \
+	    -e 's@cal_dispatch@cal_dispatch$(CGISUFFIX)@g' \
+
+all:
+	@echo "Edit the Makefile; then type 'make install' to install"
+	@echo "the www server scripts."
+
+# OK, it's abominable.  But it works...
+install:
+	-mkdir -p $(DESTDIR)$(SCRIPTDIR)
+	-mkdir -p $(DESTDIR)$(HTMLDIR)
+	cp calps calpdf hebps hebpdf hebhtml moon sunrise sunset $(DESTDIR)$(SCRIPTDIR)
+	sed $(SEDSCRIPT) < hebdate > $(DESTDIR)$(SCRIPTDIR)/hebdate
+	sed $(SEDSCRIPT) < cal_dispatch-DIST  > $(DESTDIR)$(SCRIPTDIR)/cal_dispatch$(CGISUFFIX)
+	sed $(SEDSCRIPT)  < hebdate.rem-DIST   > $(DESTDIR)$(SCRIPTDIR)/hebdate.rem
+	sed $(SEDSCRIPT)  < moon.rem-DIST      > $(DESTDIR)$(SCRIPTDIR)/moon.rem
+	sed $(SEDSCRIPT)  < sunrise.rem-DIST   > $(DESTDIR)$(SCRIPTDIR)/sunrise.rem
+	sed $(SEDSCRIPT)  < sunset.rem-DIST    > $(DESTDIR)$(SCRIPTDIR)/sunset.rem
+	cp blank.rem $(DESTDIR)$(SCRIPTDIR)/blank.rem
+	sed $(SEDSCRIPT)  < calendar.html-DIST > $(DESTDIR)$(HTMLDIR)/calendar.html
+	sed $(SEDSCRIPT)  < hebhtml  > $(DESTDIR)$(SCRIPTDIR)/hebhtml
+	chmod 644 $(DESTDIR)$(SCRIPTDIR)/sunrise.rem
+	chmod 644 $(DESTDIR)$(SCRIPTDIR)/moon.rem
+	chmod 644 $(DESTDIR)$(SCRIPTDIR)/hebdate.rem
+	chmod 644 $(DESTDIR)$(SCRIPTDIR)/sunset.rem
+	chmod 644 $(DESTDIR)$(SCRIPTDIR)/blank.rem
+	chmod 644 $(DESTDIR)$(HTMLDIR)/calendar.html
+	chmod 755 $(DESTDIR)$(SCRIPTDIR)/cal_dispatch$(CGISUFFIX)
+	chmod 755 $(DESTDIR)$(SCRIPTDIR)/calpdf $(DESTDIR)$(SCRIPTDIR)/calps $(DESTDIR)$(SCRIPTDIR)/hebdate \
+	$(DESTDIR)$(SCRIPTDIR)/hebps $(DESTDIR)$(SCRIPTDIR)/hebpdf $(DESTDIR)$(SCRIPTDIR)/moon \
+	$(DESTDIR)$(SCRIPTDIR)/sunrise $(DESTDIR)$(SCRIPTDIR)/sunset \
+	$(DESTDIR)$(SCRIPTDIR)/hebhtml \
+
+	-mkdir -p $(DESTDIR)$(IMAGEDIR)
+	cp calendar.css rem-default.css *.png $(DESTDIR)$(IMAGEDIR)
+	chmod 644 $(DESTDIR)$(IMAGEDIR)/calendar.css $(DESTDIR)$(IMAGEDIR)/rem-default.css $(DESTDIR)$(IMAGEDIR)/*.png
+
+
+
+
+

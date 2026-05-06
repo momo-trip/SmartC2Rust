@@ -1,4 +1,4 @@
-# Incremental Translation
+# Incremental translation
 
 Real C codebases are large. Translating everything at once rarely works:
 the build breaks, errors pile up, and you can't tell which problems are
@@ -9,9 +9,9 @@ cleanly, then widen the scope step by step.
 
 ## The basic loop
 
-1. Translate a subset of the codebase under one configuration (build flags, target, features).
+1. Translate a subset of the codebase under one configuration (build flags, features, target).
 2. Make sure it builds and the tests pass.
-3. Widen the subset, or switch to a different configuration. Go to 1.
+3. Switch to a different configuration or widen the subset. Go to 1.
 
 ---
 
@@ -84,12 +84,18 @@ mv  /root/SmartC2Rust/trans/database_0000/{program}/block_output.txt \
 
 ### Step 2: Reconfigure for the next run
 
-Before re-running, switch the configuration by changing the build flags or features in the source preparation step (e.g., `c_build.sh`, `Makefile`).
+Before re-running, switch the configuration by changing the build flags or features in the source script (`c_build.sh`).
 
 
 ### Step 3: Prepare a new test script
 
 Update the test script (`run_test.sh`) to match the new configuration.
+
+**Note:** Only `c_build.sh` and `run_test.sh` are updated
+automatically in the workspace　(`workspace_s_repair_0000_{program}`). Any other files required by the new
+test configuration — for example, test input data, expected-output
+fixtures, auxiliary shell scripts, or config files referenced by
+`run_test.sh` — must be copied into the workspace manually.
 
 
 ### Step 4: Generate golden reference

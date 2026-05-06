@@ -1,0 +1,186 @@
+.\" Configure groff output devices "ascii", "latin1", and "utf8".  See
+.\" grotty(1).
+.
+.do nr *groff_tty_tmac_C \n[.cp]
+.cp 0
+.
+.nroff
+.ta T 0.8i
+.
+.\" Set the page offset twice to clobber the "previous" page offset and
+.\" simulate AT&T nroff behavior.  See Savannah #67843.
+.po 0
+.po 0
+.
+.\" Traditionally, an em dash is rendered on a typewriter with two
+.\" hyphens.  On the "utf8" device, because (A) the output driver grotty
+.\" as yet has no interface to mark output glyphs as narrow or wide on
+.\" terminals supporting bi-width fonts, (B) Unicode defines "EM DASH"
+.\" (U+2014) as having "ambiguous" width, and (C) fonts for terminals
+.\" frequently fail to make dash-like characters distinguishable, render
+.\" the em dash as two copies of itself.  On a half-width character
+.\" cell grid, this largely restores the em dash's traditional
+.\" appearance as defined, where a (proportional) typeface's size is
+.\" characterized by its "em quad", or roughly the dimensions of a
+.\" capital "M".
+.ie '\?\*[.T]\?'\?utf8\?' .char \[em] \[em]\[em]
+.el                       .char \[em] --
+.
+.\" Nobody expects much, typographically, of an ASCII terminal; make
+.\" accented Latin letters degrade gracefully there.
+.\"
+.\" If these glyphs are missing on any other output device, that's a
+.\" problem we want to report to the user via diagnostics.
+.if '\?\*[.T]\?'\?ascii\?' \{\
+.  fchar \['A] \z\[aa]A
+.  fchar \['C] \z\[aa]C
+.  fchar \['E] \z\[aa]E
+.  fchar \['I] \z\[aa]I
+.  fchar \['O] \z\[aa]O
+.  fchar \['U] \z\[aa]U
+.  fchar \['Y] \z\[aa]Y
+.  fchar \['a] \z\[aa]a
+.  fchar \['c] \z\[aa]c
+.  fchar \['e] \z\[aa]e
+.  fchar \['i] \z\[aa]i
+.  fchar \['o] \z\[aa]o
+.  fchar \['u] \z\[aa]u
+.  fchar \['y] \z\[aa]y
+.
+.  fchar \[:A] \z\[ad]A
+.  fchar \[:E] \z\[ad]E
+.  fchar \[:I] \z\[ad]I
+.  fchar \[:O] \z\[ad]O
+.  fchar \[:U] \z\[ad]U
+.  fchar \[:Y] \z\[ad]Y
+.  fchar \[:a] \z\[ad]a
+.  fchar \[:e] \z\[ad]e
+.  fchar \[:i] \z\[ad]i
+.  fchar \[:o] \z\[ad]o
+.  fchar \[:u] \z\[ad]u
+.  fchar \[:y] \z\[ad]y
+.
+.  fchar \[^A] \z\[a^]A
+.  fchar \[^E] \z\[a^]E
+.  fchar \[^I] \z\[a^]I
+.  fchar \[^O] \z\[a^]O
+.  fchar \[^U] \z\[a^]U
+.  fchar \[^a] \z\[a^]a
+.  fchar \[^e] \z\[a^]e
+.  fchar \[^i] \z\[a^]i
+.  fchar \[^o] \z\[a^]o
+.  fchar \[^u] \z\[a^]u
+.
+.  fchar \[`A] \z\[ga]A
+.  fchar \[`E] \z\[ga]E
+.  fchar \[`I] \z\[ga]I
+.  fchar \[`O] \z\[ga]O
+.  fchar \[`U] \z\[ga]U
+.  fchar \[`a] \z\[ga]a
+.  fchar \[`e] \z\[ga]e
+.  fchar \[`i] \z\[ga]i
+.  fchar \[`o] \z\[ga]o
+.  fchar \[`u] \z\[ga]u
+.
+.  fchar \[~A] \z\[a~]A
+.  fchar \[~N] \z\[a~]N
+.  fchar \[~O] \z\[a~]O
+.  fchar \[~a] \z\[a~]a
+.  fchar \[~n] \z\[a~]n
+.  fchar \[~o] \z\[a~]o
+.
+.  fchar \[vS] \z\[ah]S
+.  fchar \[vs] \z\[ah]s
+.  fchar \[vZ] \z\[ah]Z
+.  fchar \[vz] \z\[ah]z
+.
+.  fchar \[,C] \z\[ac]C
+.  fchar \[,c] \z\[ac]c
+.
+.  fchar \[oA] \z\[ao]A
+.  fchar \[oa] \z\[ao]a
+.\}
+.
+.fchar \[bu] *
+.fchar \[14] 1/4
+.fchar \[12] 1/2
+.fchar \[34] 3/4
+.fchar \[18] 1/8
+.fchar \[38] 3/8
+.fchar \[58] 5/8
+.fchar \[78] 7/8
+.fchar \[ff] ff
+.fchar \[fi] fi
+.fchar \[fl] fl
+.fchar \[Fi] f\[fi]
+.fchar \[Fl] f\[fl]
+.fchar \[<-] <-
+.fchar \[->] ->
+.fchar \[<>] <->
+.fchar \[+-] +/\[-]
+.fchar \[t+-] +/\[-]
+.fchar \[-+] \[-]/+
+.fchar \[co] (C)
+.fchar \[<=] <=
+.fchar \[>=] >=
+.fchar \[<<] <<
+.fchar \[>>] >>
+.fchar \[!=] !=
+.fchar \[==] ==
+.fchar \[ne] !==
+.fchar \[~=] ~=
+.fchar \[sq] []
+.fchar \[lh] <=
+.fchar \[rh] =>
+.fchar \[OK] /
+.fchar \[lA] <=
+.fchar \[rA] =>
+.fchar \[hA] <=>
+.fchar \[la] <
+.fchar \[ra] >
+.fchar \[rg] (R)
+.fchar \[OE] OE
+.fchar \[oe] oe
+.fchar \[AE] AE
+.fchar \[ae] ae
+.fchar \[IJ] IJ
+.fchar \[ij] ij
+.fchar \[an] -
+.fchar \[eu] EUR
+.fchar \[Eu] EUR
+.fchar \[.i] i
+.fchar \[.j] j
+.fchar \[bq] ,
+.fchar \[fm] \[aq]
+.fchar \[sd] \[dq]
+.fchar \[bs] \~
+.fchar \[radicalex] \[rn]
+.fchar \[sqrtex] \[rn]
+.\" Unicode does not encode a character for a baseline rule.
+.char \[ru] _
+.
+.
+.\" color definitions
+.defcolor black rgb #000000
+.defcolor red rgb #ff0000
+.defcolor green rgb #00ff00
+.defcolor blue rgb #0000ff
+.defcolor yellow rgb #ffff00
+.defcolor magenta rgb #ff00ff
+.defcolor cyan rgb #00ffff
+.defcolor white rgb #ffffff
+.
+.if !'\*(.T'ascii' .mso latin1.tmac
+.
+.\" If you want the character definitions in tty-char.tmac to be loaded
+.\" automatically, remove the '\"' from the next line.
+.\"mso tty-char.tmac
+.
+.cp \n[*groff_tty_tmac_C]
+.do rr *groff_tty_tmac_C
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" fill-column: 72
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

@@ -1,0 +1,1817 @@
+.\" groff implementation of man(7) package
+.\"
+.\" See groff_man(7).
+.
+.\" Copyright 1989-2024 Free Software Foundation, Inc.
+.\"           2020-2025 G. Branden Robinson
+.\"
+.\" Written by James Clark (jjc@jclark.com)
+.\" Enhanced by: Werner Lemberg <wl@gnu.org>
+.\"              Larry Kollar <kollar@alltel.net>
+.\"              G. Branden Robinson <g.branden.robinson@gmail.com>
+.\"
+.\" Thanks to Deri James for illustrating PDF bookmark features.
+.\"
+.\" This file is part of groff, the GNU roff typesetting system.
+.\"
+.\" groff is free software; you can redistribute it and/or modify it
+.\" under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" groff is distributed in the hope that it will be useful, but WITHOUT
+.\" ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+.\" or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+.\" License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program.  If not, see
+.\" <http://www.gnu.org/licenses/>.
+.
+.
+.\" Put site additions in the file man.local, loaded near the end of
+.\" this file.  To add things to `TH`, use '.am1 TH'.
+.
+.if !\n(.g \
+.  ab groff man macros require groff extensions; aborting
+.
+.do if d TH .nx
+.
+.do nr *groff_an_tmac_C \n[.cp]
+.cp 0
+.
+.\" Package-internal names start with "an-" and are subject to change,
+.\" such as migration to "an*" (in progress).
+.
+.\" Define a string for use in diagnostic messages.
+.ds an an.tmac\"
+.
+.\" We use the .stringup request from groff 1.23, but nothing breaks if
+.\" it is undefined; the output is unchanged in appearance from earlier
+.\" releases.
+.if (\n[.x]\n[.y] < 118) \{\
+.  ds an-msg \*[an]: groff man macros require groff 1.18 or later,\"
+.  as an-msg " but found groff \n[.x].\n[.y]; aborting\"
+.  ab \*[an-msg]
+.\}
+.
+.\" === Define macros. ===
+.\"
+.\" Macros that are part of the external interface (TH, SH, P, etc.) or
+.\" that are called by traps of any kind must be defined with `de1`
+.\" because they might be called from a context where compatibility mode
+.\" is enabled.  For other macros, `de` suffices.
+.
+.de an-warn
+.  tm \*[an]:\\n[.F]:\\n[.c]: warning: \\$*
+..
+.
+.de an-style-warn
+.  if \\n[CHECKSTYLE] \
+.    tm \*[an]:\\n[.F]:\\n[.c]: style: \\$*
+..
+.
+.de an-deprecation-warn
+.  if (\\n[CHECKSTYLE] > 1) \
+.    an-style-warn use of deprecated macro: .\\$0
+..
+.
+.de1 an-blank-line-trap
+.  if (\\n[CHECKSTYLE] > 2) \
+.    an-style-warn blank line in input
+.  sp
+..
+.
+.de1 an-leading-space-trap
+.  if (\\n[CHECKSTYLE] > 2) \
+.    if \\n[.u] \
+.      an-style-warn \\n[lsn] leading space(s) on input line
+.  br
+.  nop \h'\\n[lss]u'\c
+..
+.
+.de1 an*bp
+.  if \\n[.br] .br
+..
+.
+.\" We need an end-of-input macro to flush any pending output line and
+.\" write the footer for the final man page rendered.  We can also be
+.\" called by andoc when switching to an mdoc(7) page, irrespective of
+.\" continuous rendering mode.
+.de1 an*end-document
+.  an*input-trap
+.  if '\\n[.z]'an*paragraph-tag' .an*TP-trap
+.  if \\n[cR] \{\
+.    sp 1v
+.    an-footer
+.    \" If we're processing multiple documents and have started a new
+.    \" one, draw a line between this footer and the next header.
+.    if !'\\n[.F]'' \{\
+.      nf
+.      ti 0
+.      nr an*rule-length (\\n[LL]u - 1n)
+.      nop \D'l \\n[an*rule-length]u 0'
+.      rr an*rule-length
+.      fi
+.    \}
+.    \" suppress empty lines after the footer
+.    pl \n[nl]u
+.  \}
+.  ds an*previous-page-ref-string \" empty
+.  ch an-header
+.  \" At the end of the last document, the file name becomes empty;
+.  \" force the page length to match the vertical drawing position in
+.  \" continuous rendering mode.
+.  ie \\n[cR] .if '\\n[.F]'' .pl \\n[nl]u
+.  el         .an*break-page-with-new-number
+..
+.
+.de an*reset-text-parameters
+.  nr PS    10z \" default type size
+.  nr VS    12p \" default vertical spacing
+.
+.  nr PS-SS 10z
+.  nr PS-SH 10.95z
+.
+.  \" Use sizes similar to LaTeX.
+.  if t \{\
+.    ie (\\n[S] = 11) \{\
+.      nr PS    10.95z
+.      nr PS-SS 10.95z
+.      nr PS-SH 12z
+.      nr VS    13.6p
+.    \}
+.    el \{\
+.      if (\\n[S] = 12) \{\
+.        nr PS    12z
+.        nr PS-SS 12z
+.        nr PS-SH 14.4z
+.        nr VS    14.5p
+.      \}
+.    \}
+.  \}
+.
+.  ft R
+.  ps \\n[PS]u
+.  vs \\n[VS]u
+..
+.
+.\" Resetting the adjustment mode is a complicated dance.
+.\"   1.  Man pages sometimes disable adjustment--when they do, they
+.\"       often forget to put it back the way it was.
+.\"   2.  When they do remember to put it back, they often fail to do
+.\"       so correctly because of the `ad` request's quirky semantics
+.\"       starting from Seventh Edition Unix troff/nroff.  Briefly, the
+.\"       `ad` request without arguments turns adjustment back on after
+.\"       an `na` even if the previous adjustment mode was `l` (align to
+.\"       the left with NO adjustment).
+.\"   3.  The default adjustment mode historically has not been
+.\"       predictable; it can depend on nroff vs. troff mode and on the
+.\"       vendor of the *roff system in use.
+.\"   4.  It's possible (and portable) to obtain the previous adjustment
+.\"       mode via the `.j` register so that it can be saved prior to
+.\"       meddling and restored later, but in practice man page authors
+.\"       neglect to do so.
+.\"   5.  groff man(7)'s `AD` string isn't supported everywhere.
+.\"   6.  We want user preferences, if expressed, to override the page
+.\"       author's.
+.\"   7.  Even if we didn't want (6), one page author's can override
+.\"       another's when formatting multiple man(7) documents in
+.\"       sequence--we thus keep track of the initial adjustment mode.
+.\"
+.\" So we recover the "page's" preferred adjustment mode, if expressed
+.\" via `AD`, at every paragraph (and (sub)sectioning) macro call; and
+.\" recover the user's preferred adjustment mode at each new document by
+.\" accepting it as an argument (see the `TH` macro definition).  Also
+.\" see the initialization logic below.
+.\"
+.\" This macro is at pains to distinguish alignment from adjustment.
+.de an*reset-adjustment-mode
+.  if \\n[.$] .ds AD \\$1\"
+.  nr an*want-adjustment 1
+.  if d AD .if '\?\\*[AD]\?'\?l\?' .nr an*want-adjustment 0
+.  if d AD .if '\?\\*[AD]\?'\?c\?' .nr an*want-adjustment 0
+.  if d AD .if '\?\\*[AD]\?'\?r\?' .nr an*want-adjustment 0
+.  ie \\n[an*want-adjustment] .ds an*adjustment-mode b
+.  el                         .ds an*adjustment-mode \\*[AD]
+.  ad \\*[an*adjustment-mode]
+.  rm an*adjustment-mode
+.  rr an*want-adjustment
+..
+.
+.\" Resetting the hyphenation mode is a complicated dance.
+.\"   1.  Man pages sometimes disable automatic hyphenation--when they
+.\"       do, they nearly always forget to put it back the way it was.
+.\"   2.  In AT&T troff there was no register exposing the hyphenation
+.\"       mode (nor the enablement status of automatic hyphenation), so
+.\"       no idioms for performing such restoration have arisen.
+.\"   3.  groff man(7)'s `HY` register isn't supported everywhere.
+.\"   4.  We want user preferences, if expressed, to override the page
+.\"       author's.
+.\"   5.  Even if we didn't want (4), one page author's can override
+.\"       another's when formatting multiple man(7) documents in
+.\"       sequence--we thus keep track of the initial hyphenation mode.
+.\"
+.\" So we recover the "page's" preferred hyphenation mode, if expressed
+.\" via `HY`, at every paragraph (and (sub)sectioning) macro call; and
+.\" recover the user's preferred hyphenation mode at each new document
+.\" by accepting it as an argument (see the `TH` macro definition).
+.\" Also see the initialization logic below.
+.de an*reset-hyphenation-mode
+.  if \\n[.$] .if \B'\\$1' .nr HY \\$1
+.  nr an*want-hyphenation 1
+.  if r HY .if !\\n[HY] .nr an*want-hyphenation 0
+.  ie \\n[an*want-hyphenation] \
+.    nr an*hyphenation-mode \\n[\\*[locale]*hyphenation-mode-trap]
+.  el .nr an*hyphenation-mode 0
+.  hy \\n[an*hyphenation-mode]
+.  rr an*want-hyphenation
+..
+.
+.de an*reset-tab-stops
+.  ta T .5i
+..
+.
+.de an*reset-section-parameters
+.  fam \\*[an*body-family]
+.  nr an-inset-level 1
+.  nr an-margin \\n[BP]
+.  nr an-saved-margin!1 \\n[BP]
+.  nr an-prevailing-indent \\n[IN]
+.  nr an-saved-prevailing-indent!1 \\n[IN]
+..
+.
+.\" We don't handle the line length here because its handling differs
+.\" between (P, LP, PP, HP) and (IP, TP) paragraphs.
+.de an*reset-paragraph-parameters
+.  an*reset-text-parameters
+.  an*reset-adjustment-mode
+.  an*reset-hyphenation-mode
+..
+.
+.\" This logic would be part of `an*reset-paragraph-parameters`, but
+.\" unfortunately we have to support the legacy `PD` macro, which
+.\" permits unseemly fiddling at arbitrary places in the text.  (99
+.\" times out of 100, all people want is a "compact list" macro.)
+.de an*reset-paragraph-spacing
+.  ie \\n[.$] .nr PD (v;\\$1)
+.  el         .nr PD (.4v >? \n[.V])
+.  \" Restore spacing to handle a "belated" `PD` call immediately after
+.  \" a paragraphing macro (`P`, `HP`, or `IP` with no marker argument),
+.  \" maintaining compatibility with Unix Version 7 man and descendants.
+.  \" See Savannah #64267.
+.  rs
+..
+.
+.\" Break the page and update its number depending on the C (consecutive
+.\" numbering) register.
+.\"
+.\" Corner case: if formatting multiple documents and P (starting page
+.\" number) is defined but C is not set, start numbering each document
+.\" at \n[P].  Not strictly necessary if not switching macro packages.
+.de an*break-page-with-new-number
+.  ie \\n[C] .bp (\\n[%] + 1) \" argument NOT redundant before page 1
+.  el \{\
+.    ie r P .bp \\n[P]
+.    el     .bp 1
+.  \}
+..
+.
+.\" Localize manual section titles for English.
+.de an*localize-strings
+.  ds an*section1 General Commands Manual\"
+.  ds an*section2 System Calls Manual\"
+.  ds an*section3 Library Functions Manual\"
+.  ds an*section4 Kernel Interfaces Manual\"
+.  ds an*section5 File Formats Manual\"
+.  ds an*section6 Games Manual\"
+.  ds an*section7 Miscellaneous Information Manual\"
+.  ds an*section8 System Manager's Manual\"
+.  ds an*section9 Kernel Developer's Manual\"
+..
+.
+.\" Customize this at the command line to, for example, group multiple
+.\" man pages within a collection or containing document.
+.nr an*bookmark-base-level +0
+.
+.\" Write a bookmark/anchor/link target $2 at hierarchical depth $1.
+.de an*bookmark
+.  an*bookmark*\*[.T] \\$@
+..
+.
+.ds an*bookmark*ascii \" empty
+.ds an*bookmark*dvi \" empty
+.ds an*bookmark*html \" empty
+.ds an*bookmark*latin1 \" empty
+.ds an*bookmark*lbp \" empty
+.ds an*bookmark*lj4 \" empty
+.ds an*bookmark*ps \" empty
+.ds an*bookmark*utf8 \" empty
+.
+.\" TODO: Construct a hierarchical tag name for (sub)section headings
+.\" based on the page identifier (and for subsections, the parent
+.\" section).
+.de an*bookmark*pdf
+.  ie ((\\$1 - \\n[an*bookmark-base-level]) = 1) \
+.    pdfbookmark -T "\\$2" \\$1 \\$2
+.  el \
+.    pdfbookmark \\$1 \\$2
+..
+.
+.
+.\" Begin man page.
+.\" .TH identifier section[ extra1[ extra2[ extra3]]]
+.de1 TH
+.  if ((\\n[.$] < 2) : (\\n[.$] > 5)) \
+.    an-style-warn .\\$0 expects 2 to 5 arguments, got \\n[.$]
+.
+.  blm an-blank-line-trap
+.  lsm an-leading-space-trap
+.
+.  \" If batch processing (rendering multiple) man page documents, we
+.  \" must handle the end of a previous document.
+.  if \\n[an*need-titles-reset] \{\
+.    if \\n[cR] .an*end-document
+.
+.    \" Clear the page header trap so it is not sprung with stale
+.    \" information.
+.    ch an-header
+.    if !\\n[cR] .an*break-page-with-new-number
+.  \}
+.  if \\n[C] .rr P
+.
+.  \" The previous document rendered in a batch may have been in a
+.  \" different language.
+.  if '\\*[locale]'english' .an*localize-strings
+.
+.  \" Reset any lingering state from extensions in an-ext.tmac.
+.  nr mE 0
+.  nr mS 0
+.
+.  \" We've seen no tbl(1) tables yet in this document.
+.  rr TW
+.  nr an-was-tbl-failure-reported 0
+.
+.  \" When rendering multiple documents, we want to clear any page-local
+.  \" manipulation of hyphenation and adjustment modes from the previous
+.  \" document.
+.  rr HY
+.  rm AD
+.
+.  an*reset-hyphenation-mode \\n[andoc*HY]
+.  an*reset-adjustment-mode \\*[andoc*AD]
+.  an*reset-section-parameters
+.  an*reset-paragraph-parameters
+.  ll \\n[LL]u
+.  in 0 \" Well-formed documents call `SH` after `TH`.
+.  an*reset-tab-stops
+.  an*reset-paragraph-spacing
+.
+.  nr an-need-no-space-mode 0
+.  nr an-need-break 0
+.  nr an*have-paragraph-tag 0
+.  nr an*is-in-example 0
+.  nr an*is-in-link-text-diversion 0
+.
+.  ds an*ident "\\$1\"
+.  if \\n[CT] .stringup an*ident
+.  ds an*section "\\$2\"
+.  ie (\\n[.$] > 4) .ds an-extra3 "\\$5\"
+.  el \{\
+.    ds an-extra3 \" empty
+.    if \B'\\$2' \{\
+.      if ((\\$2 > 0) & (\\$2 < 10)) \
+.        ds an-extra3 \\*[an*section\\$2]
+.    \}
+.  \}
+.
+.  ds an-extra1 "\\$3\"
+.  ie (\\n[.$] > 3)    .ds an-extra2 "\\$4\"
+.  el                  .ds an-extra2 \" empty; but .AT/.UC can override
+.
+.  if '\\*[an-extra1]'' \{\
+.    ds an-msg .\\$0 missing third argument; consider document\"
+.    as an-msg " modification date in ISO 8601 format (YYYY-MM-DD)\"
+.    an-style-warn \\*[an-msg]
+.    rm an-msg
+.  \}
+.
+.  if '\\*[an-extra2]'' \{\
+.    ds an-msg .\\$0 missing fourth argument; consider package/project\"
+.    \" Yes, that's one double quote, then three, then two.
+.    as an-msg " name and version (e.g., """groff 1.23.0"")\"
+.    an-style-warn \\*[an-msg]
+.    rm an-msg
+.  \}
+.
+.  if '\\$5\\*[an-extra3]'' \{\
+.    ds an-msg .\\$0 missing fifth argument and second argument '\\$2'\"
+.    as an-msg " not a recognized manual section; specify its title\"
+.    an-style-warn \\*[an-msg]
+.    rm an-msg
+.  \}
+.
+.  \" Initialize environment for headers and footers.
+.  ev an*env-header-and-footer
+.  lt \\n[LT]u
+.  an*abbreviate-page-identifier
+.  \" If AT or UC is called, we will need to abbreviate again.
+.  an*abbreviate-inner-footer
+.  ev
+.
+.  \" HTML gets the topic without any abbreviation, since it's metadata.
+.  if \\n[an*is-output-html] \{\
+.    DEVTAG-TL
+.    nop \\*[an*ident]
+.    DEVTAG-EO-TL
+.  \}
+.
+.  an-header
+.
+.  if !\\n[cR] \{\
+.    wh 0 an-header
+.    ie r FT .nr an*footer-location \\n[FT]
+.    el      .nr an*footer-location (-.5i - 1v)
+.    wh \\n[an*footer-location]u an-footer
+.    wh (\\n[an*footer-location]u - .5i) an-break-body-text
+.    rr an*footer-location
+.    \}
+.  \}
+.
+.  nr an*need-titles-reset 1
+..
+.
+.\" Support legacy AT&T and BSD Unix man pages.
+.
+.\" Designate an AT&T Unix man page.
+.\" .AT [system-id[ release-id]]
+.de1 AT
+.  nop \\*[an-deprecation-warn]\\
+.  ds an-extra2 7th Edition\"
+.  if '\\$1'3' .ds an-extra2 7th Edition\"
+.  if '\\$1'4' .ds an-extra2 System III\"
+.  if '\\$1'5' \{\
+.    ie '\\$2'' .ds an-extra2 System V\"
+.    el         .ds an-extra2 System V Release \\$2\"
+.  \}
+.  ev an*env-header-and-footer
+.  an*abbreviate-inner-footer
+.  ev
+..
+.
+.\" Designate a BSD Unix man page.
+.\" .UC [system-id]
+.de1 UC
+.  nop \\*[an-deprecation-warn]\\
+.  ds an-extra2 3rd Berkeley Distribution\"
+.  if '\\$1'3' .ds an-extra2 3rd Berkeley Distribution\"
+.  if '\\$1'4' .ds an-extra2 4th Berkeley Distribution\"
+.  if '\\$1'5' .ds an-extra2 4.2 Berkeley Distribution\"
+.  if '\\$1'6' .ds an-extra2 4.3 Berkeley Distribution\"
+.  if '\\$1'7' .ds an-extra2 4.4 Berkeley Distribution\"
+.  ev an*env-header-and-footer
+.  an*abbreviate-inner-footer
+.  ev
+..
+.
+.\" Restore tab stops to defaults.
+.de1 DT
+.  nop \\*[an-deprecation-warn]\\
+.  an*reset-tab-stops
+..
+.
+.\" Restore inter-paragraph spacing to default (or set it to argument).
+.\" .PD [distance]
+.de1 PD
+.  nop \\*[an-deprecation-warn]\\
+.  nop \\*[an*reset-paragraph-spacing]\\
+..
+.
+.\" Write the page header; can be redefined by man.local.
+.if d PT .ig
+.de1 PT
+.  if !\\n[cR] .sp (.5i - .5m)
+.  \" Attach a bookmark to the page header on the first page of a new
+.  \" man(7) document; a changed identifier or section indicates this.
+.  if !'\\*[an*page-ref-string]'\\*[an*previous-page-ref-string]' \{\
+.    nr an*bookmark-level (\\n[an*bookmark-base-level] + 1)
+.    an*bookmark \\n[an*bookmark-level]  "\\*[an*page-ref-string]"
+.    ds an*previous-page-ref-string "\\*[an*page-ref-string]
+.  \}
+.  tl '\\*[an-pageref]'\\*[an-extra3]'\\*[an-pageref]'
+.  ie \\n[cR] .sp 1v
+.  el         .sp .5i
+..
+.
+.\" Write the page footer; can be redefined by man.local.
+.if d BT .ig
+.de1 BT
+.  ie \\n[D] \{\
+.    if o .tl '\\*[an*ifoot]'\\*[an-extra1]'\\*[an*ofoot]'
+.    if e .tl '\\*[an*ofoot]'\\*[an-extra1]'\\*[an*ifoot]'
+.  \}
+.  el \
+.    tl '\\*[an*ifoot]'\\*[an-extra1]'\\*[an*ofoot]'
+..
+.
+.\" Abbreviate page identifier if it's too long for the header.  Leaves
+.\" string an-pageref defined for use in .PT and .an-footer.  Also
+.\" leaves an*ident-abbv for possible use by .PT and .BT re-definers.
+.\" Call this only from within the header/footer environment.
+.de an*abbreviate-page-identifier
+.  ds an*ident-abbv \\*[an*ident]\" might not get abbreviated at all
+.  ds an*ident-string \\*[an*ident]\"
+.  ds an-ellipsis \|.\|.\|.\|\"
+.  \" an*page-ref-string is left unmodified for internal use, such as
+.  \" PDF bookmarks.
+.  ds an*page-ref-string \\*[an*ident](\\*[an*section])\"
+.  ds an-pageref \\*[an*ident-abbv](\\*[an*section])\"
+.  \" Computer width of title text, plus 2n for minimal spacing on
+.  \" either side of the center header.
+.  nr an-header-width \
+     (\\w'\\*[an-pageref]\\*[an-extra3]\\*[an-pageref]' + 2n)
+.  while (\\n[an-header-width] > \\n[.lt]) \{\
+.    \" The page topic is too long; trim some bits out of the middle.
+.    length an*ident-length \\*[an*ident-string]
+.    \" roff uses truncating division.  Remove an additional character
+.    \" on each side of the midpoint to account for the ellipsis we add
+.    \" later.
+.    nr an-mark1 (\\n[an*ident-length] / 2 - 2)
+.    nr an-mark2 (\\n[an*ident-length] / 2 + 2)
+.    ds an-prefix \\*[an*ident-string]\"
+.    ds an-suffix \\*[an*ident-string]\"
+.    \" Use extremum operators to ensure that the first and last
+.    \" characters of the topic remain intact (in cases of pathological
+.    \" shortening).
+.    substring an-prefix 0 (\\n[an-mark1] >? 1)
+.    substring an-suffix (\\n[an-mark2] <? \\n[an*ident-length] - 1) -1
+.    ds an*ident-string \\*[an-prefix]\\*[an-suffix]\"
+.    ds an*ident-abbv \\*[an-prefix]\\*[an-ellipsis]\\*[an-suffix]\"
+.    \" Remeasure the formatted topic; give up if we made no progress.
+.    length an*ident-new-length \\*[an*ident-string]
+.    ie (\\n[an*ident-new-length] >= \\n[an*ident-length]) \
+.      break
+.    ds an-pageref \\*[an*ident-abbv](\\*[an*section])\"
+.    \" Recompute header width now that it's shorter.
+.    nr an-header-width \
+       (\\w'\\*[an-pageref]\\*[an-extra3]\\*[an-pageref]' + 2n)
+.  \}
+.  ds an-pageref \\*[an-lic]\f[\\*[MF]]\\*[an*ident-abbv]\\*[an-ic]\
+\f[R](\\*[an*section])\"
+.  rr an*ident-length-prev
+.  rr an-mark1
+.  rr an-mark2
+.  rm an-prefix
+.  rm an-suffix
+.  rm an*ident-string
+.  rr an*ident-length
+.  rr an-header-width
+.  rm an-ellipsis
+..
+.
+.\" Iterate through concatenation of arguments as a string.  If a bare
+.\" backslash is found, make `an*string-contains-backslash` true.  Our
+.\" caller should delete this register when done with it.
+.de an*scan-string-for-backslash
+.  nr an*string-contains-backslash 0
+.  nr an*index 0
+.  length an*max-index \\$*
+.  while (\\n[an*index] < \\n[an*max-index]) \{\
+.    ds an*char \\$*
+.    substring an*char \\n[an*index] \\n[an*index]
+.    \" Note: Nasty hack alert!  DEL is a useful escape character for
+.    \" this string-iterating application because it is vanishingly
+.    \" unlikely to appear in man(7) document text--see Savannah #65469.
+.    ec 
+.    \" Use a weird delimiter to reduce lexical colorizer confusion.
+.    if _*[an*char]_\\_ .nr an*string-contains-backslash 1
+.    ec
+.    if \\n[an*string-contains-backslash] .break
+.    nr an*index +1
+.  \}
+.  rm an*char
+.  rr an*max-index
+.  rr an*index
+..
+.
+.\" Abbreviate the `an-extra2` string (set by .TH) if it's too long for
+.\" the footer.  The formatted width of the inner footer plus half that
+.\" of the center footer must be less than half the title width or we
+.\" must abbreviate.  By default, `an-extra2` is placed as the inner
+.\" footer.  We call its (potential) abbreviation `an*ifoot` here and
+.\" leave it defined for .BT use.  (`an*ofoot` is not treated the same
+.\" way.  `an-footer` regenerates it on every page because the page
+.\" number changes if present.)  Shorten the inner footer if necessary
+.\" by trimming characters off the end, replacing them with an ellipsis.
+.de an*abbreviate-inner-footer
+.  ds an*ifoot \\*[an-extra2]\"
+.  nr an*half-title-width (\\n[.lt] / 2u)
+.  nr an*half-cfoot-width (\w'\\*[an-extra1]' / 2u)
+.  nr an*half-footer-width \
+     (\w'\\*[an*ifoot]' + \\n[an*half-cfoot-width])
+.  if (\\n[an*half-footer-width] < \\n[an*half-title-width]) \{\
+.    rr an*half-footer-width
+.    rr an*half-cfoot-width
+.    rr an*half-title-width
+.    return
+.  \}
+.  an*scan-string-for-backslash \\*[an*ifoot]
+.  if \\n[an*string-contains-backslash] \{\
+.    an-warn not abbreviating fourth argument to 'TH' '\\*[an*ifoot]': \
+contains unsupported escape sequence
+.    rr an*string-contains-backslash
+.    rr an*half-footer-width
+.    rr an*half-cfoot-width
+.    rr an*half-title-width
+.    return
+.  \}
+.  ds an*saved-ifoot \\*[an*ifoot]
+.  ds an*ellipsis \|.\|.\|.\|\"
+.  \" Remeasure with ellipsis added to inner footer so that henceforth,
+.  \" the measured width strictly decreases.
+.  nr an*half-footer-width \
+     (\w'\\*[an*ifoot]\\*[an*ellipsis]' + \\n[an*half-cfoot-width])
+.  nr an*end-index (-2)
+.  while (\\n[an*half-footer-width] >= \\n[an*half-title-width]) \{\
+.    ds an*ifoot \\*[an*saved-ifoot]
+.    substring an*ifoot 0 \\n[an*end-index]
+.    \" Measure the string again and give up if we made no progress.
+.    nr an*new-half-footer-width \
+       (\w'\\*[an*ifoot]\\*[an*ellipsis]' + \\n[an*half-cfoot-width])
+.    ie (\\n[an*new-half-footer-width] >= \\n[an*half-footer-width]) \
+.      break
+.    nr an*half-footer-width \\n[an*new-half-footer-width]
+.    nr an*end-index -1
+.  \}
+.  ds an*ifoot \\*[an*ifoot]\\*[an*ellipsis]\"
+.  rr an*end-index
+.  rr an*new-half-footer-width
+.  rm an*ellipsis
+.  rm an*saved-ifoot
+.  rr an*string-contains-backslash
+.  rr an*half-footer-width
+.  rr an*half-cfoot-width
+.  rr an*half-title-width
+..
+.
+.\" Prepare the header for a page of the document.
+.de1 an-header
+.  if \\n[an-suppress-header-and-footer] .return
+.  ev an*env-header-and-footer
+.  PT
+.  ev
+.  ns
+.  if '\*[.T]'pdf' .pdfmarkrestart
+..
+.
+.\" Schedule a page break when the next output line is written (not
+.\" called if continuously rendering).
+.de1 an-break-body-text
+'  bp
+..
+.
+.\" Prepare the footer for a page of the document.
+.de1 an-footer
+.  if \\n[an-suppress-header-and-footer] .return
+.  if '\*[.T]'pdf' .pdfmarksuspend
+.  ev an*env-header-and-footer
+.  ie \\n[cR] \
+.    ds an*ofoot "\\*[an-pageref]\"
+.  el \{\
+.    ds an*ofoot \\n[%]\"
+.    if r X \{\
+.      if (\\n[%] > \\n[X]) \{\
+.        nr an-page-letter (\\n[%] - \\n[X])
+.        ds an*ofoot \\n[X]\\n[an-page-letter]\"
+.      \}
+.    \}
+.  \}
+.  BT
+.  rm an*ofoot
+.  ev
+..
+.
+.\" Output the tag of a tagged paragraph, or of an indented paragraph
+.\" (IP) that has a tag.  Whether we break depends on the tag width.
+.de an-write-paragraph-tag
+.  \" We must emit the diversion in a separate environment to ensure
+.  \" that a possible margin character is printed correctly.
+.  ev an*temporary-env
+.  evc 0
+.  mc
+.  nf
+.  in \\n[an-margin]u
+.  \" Prevent page break between the tag and the rest of the paragraph.
+.  ne (2v + 1u)
+.  \" Does the tag fit within the paragraph indentation?
+.  nr an-tag-fits \
+     (\\n[dl] + (\\n[TS]*\\n[an*enforce-tag-separation]) \
+        <= \\n[an-prevailing-indent])
+.  if \\n[an-tag-fits] .DEVTAG-COL 1
+.  an*paragraph-tag
+.  rm an*paragraph-tag
+.  nr an*have-paragraph-tag 0
+.  if \\n[an-tag-fits] .sp -1v
+.  ev
+.  in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
+.  if \\n[an-tag-fits] .DEVTAG-COL 2
+.  rr an-tag-fits
+..
+.
+.\" Handle macros that may take an "argument" on the next input line
+.\" producing written or drawn output: .SH, .SS, .B, .I, .SM, .SB.
+.\" For .TP, see below.
+.de1 an*input-trap
+.  if \\n[an-devtag-needs-end-of-heading] .DEVTAG-EO-H
+.  nr an-devtag-needs-end-of-heading 0
+.  if \\n[an-devtag-needs-second-column] .DEVTAG-COL 2
+.  nr an-devtag-needs-second-column 0
+.  an*reset-text-parameters
+.  if \\n[an-need-break] \{\
+.    br
+.    nr an-need-break 0
+.  \}
+.  if \\n[an-need-no-space-mode] \{\
+.    ns
+.    nr an-need-no-space-mode 0
+.  \}
+.  \" Handle nested traps, as with
+.  \"   .TP
+.  \"   .B foo
+.  \" for instance.
+.  if '\\n[.z]'an*paragraph-tag' \{\
+.    an*TP-trap
+.    gcolor \m[default]
+.  \}
+..
+.
+.\" The TP macro _requires_ a one-line input trap.
+.de1 an*TP-trap
+.  br
+.  di
+.  ad \\n[an*saved-adjustment-mode]
+.  rr an*saved-adjustment-mode
+.  ll
+.  if \\n[an*have-paragraph-tag] .an-write-paragraph-tag
+..
+.
+.\" Break a paragraph.  Restore defaults, except for indentation.
+.de an*break-paragraph
+.  an*reset-paragraph-parameters
+.  sp \\n[PD]u
+.  ns
+..
+.
+.\" Set arguments (or next input line producing written or drawn output
+.\" if none) as a section heading.
+.de1 SH
+.  an*reset-section-parameters
+.  an*break-paragraph
+.  fi
+.  in \\n[BP]u
+.  ti 0
+.  nr an-devtag-needs-end-of-heading 1
+.  DEVTAG-SH 1
+.  it 1 an*input-trap
+.  nr an-need-no-space-mode 1
+.  nr an-need-break 1
+.  ps \\n[PS-SH]u
+.  ne (2v + 1u)
+.  ft \\*[HF]
+.  if \\n[an-remap-I-style-in-headings] .ftr I \\*[an-heading-family]BI
+.  if \\n[.$] \{\
+.    ds an-section-heading \\$*\"
+.    if \\n[CS] \
+.      stringup an-section-heading
+.    nr an*bookmark-level (\\n[an*bookmark-base-level] + 2)
+.    an*bookmark \\n[an*bookmark-level] "\\*[an-section-heading]"
+.    nop \&\\*[an-section-heading]
+.  \}
+.  if \\n[an-remap-I-style-in-headings] .ftr I I
+..
+.
+.\" Set arguments (or next input line producing written or drawn output
+.\" if none) as a subsection heading.
+.de1 SS
+.  an*reset-section-parameters
+.  an*break-paragraph
+.  fi
+.  in \\n[BP]u
+.  ti \\n[SN]u
+.  nr an-devtag-needs-end-of-heading 1
+.  DEVTAG-SH 2
+.  it 1 an*input-trap
+.  nr an-need-no-space-mode 1
+.  nr an-need-break 1
+.  ps \\n[PS-SS]u
+.  ne (2v + 1u)
+.  ft \\*[HF]
+.  if \\n[an-remap-I-style-in-headings] .ftr I \\*[an-heading-family]BI
+.  if \\n[.$] \{\
+.    ds an*subsection-heading \\$*\"
+.    nr an*bookmark-level (\\n[an*bookmark-base-level] + 3)
+.    an*bookmark \\n[an*bookmark-level] "\\*[an*subsection-heading]"
+.    nop \&\\$*
+.  \}
+.  if \\n[an-remap-I-style-in-headings] .ftr I I
+..
+.
+.\" Set arguments (or next input line producing written or drawn output
+.\" if none) in bold style.
+.de1 B
+.  it 1 an*input-trap
+.  ft B
+.  if \\n[.$] \&\\$*
+..
+.
+.\" Set arguments (or next input line producing written or drawn output
+.\" if none) in italic style.
+.de1 I
+.  it 1 an*input-trap
+.  ft I
+.  if \\n[.$] \,\\$*\/
+..
+.
+.\" Set arguments (or next input line producing written or drawn output
+.\" if none) at smaller type size.
+.de1 SM
+.  it 1 an*input-trap
+.  ps -1
+.  if \\n[.$] \&\\$*
+..
+.
+.\" Deprecated: Set arguments (or next input line producing written or
+.\" drawn output if none) in bold style at smaller type size.
+.\"
+.\" This is a SunOS 4.0 extension.
+.\"
+.\" Instead of
+.\"   .SB whatever
+.\" say
+.\"   .SM
+.\"   .B whatever
+.\" or
+.\"   .B
+.\"   .SM whatever
+.\" to portably get an identical effect.
+.\"
+.\" .SB [text]
+.de1 SB
+.  nop \\*[an-deprecation-warn]\\
+.  it 1 an*input-trap
+.  ps -1
+.  ft B
+.  if \\n[.$] \&\\$*
+..
+.
+.\" Set an ordinary paragraph.
+.de1 P
+.  an*break-paragraph
+.  ll \\n[LL]u
+.  in \\n[an-margin]u
+.  nr an-prevailing-indent \\n[IN]
+..
+.
+.\" Accommodate ms(7) paragraphing refugees.
+.als LP P
+.als PP P
+.
+.\" Set a tagged paragraph.  The tag must be on the next input line
+.\" producing written or drawn output.
+.\" .TP [indent]
+.de1 TP
+.  an*break-paragraph
+.  if \\n[.$] .nr an-prevailing-indent (n;\\$1)
+.  if '\\n[.z]'an*paragraph-tag' \{\
+.    an-warn cannot nest .\\$0 or .TQ inside .\\$0; supply a tag
+.    return
+.  \}
+.  nr an*have-paragraph-tag 1
+.  itc 1 an*input-trap
+.  in 0
+.  ll -\\n[an-margin]u
+.  nr an*saved-adjustment-mode \\n[.j]
+.  di an*paragraph-tag
+.  na
+..
+.
+.\" Set an indented paragraph.
+.\" .IP [marker[ indentation-amount]]
+.de1 IP
+.  nr an*enforce-tag-separation 0
+.  an*break-paragraph
+.  ie !\\n[.$] \{\
+.    ne (1v + 1u)
+.    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
+.  \}
+.  el \{\
+.    ie (\\n[.$] > 1) .TP "\\$2"
+.    el               .TP
+.    nop \&\\$1
+.  \}
+.  nr an*enforce-tag-separation 1
+..
+.
+.\" Set a paragraph with a hanging indentation.
+.\" .HP [indent]
+.de1 HP
+.  an*break-paragraph
+.  ll \\n[LL]u
+.  ne (1v + 1u)
+.  if \\n[.$] .nr an-prevailing-indent (n;\\$1)
+.  in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
+.  ti \\n[an-margin]u
+.  DEVTAG-COL 1
+.  nr an-devtag-needs-second-column 1
+..
+.
+.\" === Define alternating font macros. ===
+.\"
+.\" Implementation notes:
+.\"
+.\" We always emit a dummy character \& before the first argument.  This
+.\" is necessary only when the calling man page is in compatibility
+.\" mode; it works around the surprising AT&T semantics of \f escapes at
+.\" the beginning of an input line.  See "Implementation differences" in
+.\" groff_diff(7) or the groff Texinfo manual.
+.\"
+.\" The italic correction escapes can be visually confusing.  We apply
+.\" the following rules, always on the same input line.
+.\"   (1) Before any italic argument, emit a left italic correction \,
+.\"       before switching to the italic style.
+.\"   (2) After any italic argument, emit an italic correction \/
+.\"       before switching to another style.
+.\" It is true that these macros cannot know what style is used in the
+.\" input stream before or after they are called.  We can make
+.\" assumptions based on pragmatics.  In most cases, the caller will not
+.\" precede a call to one of these macros with \c, or add it to the
+.\" final argument given to one of these calls; when \c is absent, what
+.\" is adjacent must be a word space or output line boundary, so italic
+.\" corrections don't matter.  If \c _is_ used by the caller, we can
+.\" assume that the adjacent glyphs before an IB or IR call, or the
+.\" following ones after a BI or RI call, will not be italic (and thus
+.\" will benefit from the italic correction we provide); otherwise the
+.\" caller would simply have added the relevant characters to the
+.\" arguments of the macro call.
+.\"
+.
+.\" Set each argument in bold and italics, alternately.
+.de1 BI
+.  if (\\n[.$] < 2) \
+.    an-style-warn .\\$0 expects at least 2 arguments, got \\n[.$]
+.  if \\n[.$] \{\
+.    ds an-result \&\"
+.    while (\\n[.$] >= 2) \{\
+.      as an-result \f[B]\\$1\,\f[I]\\$2\/\"
+.      shift 2
+.    \}
+.    if \\n[.$] .as an-result \f[B]\\$1\"
+.    nop \\*[an-result]
+.    rm an-result
+.    ft R
+.  \}
+..
+.
+.\" Set each argument in bold and roman, alternately.
+.de1 BR
+.  if (\\n[.$] < 2) \
+.    an-style-warn .\\$0 expects at least 2 arguments, got \\n[.$]
+.  if \\n[.$] \{\
+.    ds an-result \&\"
+.    while (\\n[.$] >= 2) \{\
+.      as an-result \f[B]\\$1\f[R]\\$2\"
+.      shift 2
+.    \}
+.    if \\n[.$] .as an-result \f[B]\\$1\"
+.    nop \\*[an-result]
+.    rm an-result
+.    ft R
+.  \}
+..
+.
+.\" Set each argument in italics and bold, alternately.
+.de1 IB
+.  if (\\n[.$] < 2) \
+.    an-style-warn .\\$0 expects at least 2 arguments, got \\n[.$]
+.  if \\n[.$] \{\
+.    ds an-result \&\"
+.    while (\\n[.$] >= 2) \{\
+.      as an-result \,\f[I]\\$1\/\f[B]\\$2\"
+.      shift 2
+.    \}
+.    if \\n[.$] .as an-result \,\f[I]\\$1\/\"
+.    nop \\*[an-result]
+.    rm an-result
+.    ft R
+.  \}
+..
+.
+.\" Set each argument in italics and roman, alternately.
+.de1 IR
+.  if (\\n[.$] < 2) \
+.    an-style-warn .\\$0 expects at least 2 arguments, got \\n[.$]
+.  if \\n[.$] \{\
+.    ds an-result \&\"
+.    while (\\n[.$] >= 2) \{\
+.      as an-result \,\f[I]\\$1\/\f[R]\\$2\"
+.      shift 2
+.    \}
+.    if \\n[.$] .as an-result \,\f[I]\\$1\/\"
+.    nop \\*[an-result]
+.    rm an-result
+.    ft R
+.  \}
+..
+.
+.\" Set each argument in roman and bold, alternately.
+.de1 RB
+.  if (\\n[.$] < 2) \
+.    an-style-warn .\\$0 expects at least 2 arguments, got \\n[.$]
+.  if \\n[.$] \{\
+.    ds an-result \&\"
+.    while (\\n[.$] >= 2) \{\
+.      as an-result \f[R]\\$1\f[B]\\$2\"
+.      shift 2
+.    \}
+.    if \\n[.$] .as an-result \f[R]\\$1\"
+.    nop \\*[an-result]
+.    rm an-result
+.    ft R
+.  \}
+..
+.
+.\" Set each argument in roman and italics, alternately.
+.de1 RI
+.  if (\\n[.$] < 2) \
+.    an-style-warn .\\$0 expects at least 2 arguments, got \\n[.$]
+.  if \\n[.$] \{\
+.    ds an-result \&\"
+.    while (\\n[.$] >= 2) \{\
+.      as an-result \f[R]\\$1\,\f[I]\\$2\/\"
+.      shift 2
+.    \}
+.    if \\n[.$] .as an-result \f[R]\\$1\"
+.    nop \\*[an-result]
+.    rm an-result
+.    ft R
+.  \}
+..
+.
+.\" Start a relative inset level (by the amount given in the argument).
+.\" .RS [inset-amount]
+.de1 RS
+.  nr an-saved-margin!\\n[an-inset-level] \\n[an-margin]
+.  nr an-saved-prevailing-indent!\\n[an-inset-level] \
+     \\n[an-prevailing-indent]
+.  ie \\n[.$] .nr an-margin +(n;\\$1)
+.  el         .nr an-margin +\\n[an-prevailing-indent]
+.  in \\n[an-margin]u
+.  nr an-prevailing-indent \\n[IN]
+.  nr an-inset-level +1
+..
+.
+.\" End relative inset level, backing up by one level (or to the level
+.\" given by the argument).
+.\" .RE [inset-level]
+.de1 RE
+.  ie \\n[.$] .nr an-RE-requested-level \\$1
+.  el         .nr an-RE-requested-level (\\n[an-inset-level] - 1)
+.  ie \\n[.$] \{\
+.    if (\\n[an-RE-requested-level] = \\n[an-inset-level]) \
+.      ds an-RE-problem already at level \\n[an-inset-level]\"
+.    if (\\n[an-RE-requested-level] > \\n[an-inset-level]) \
+.      ds an-RE-problem too large\"
+.    if (\\n[an-RE-requested-level] < 1) \
+.      ds an-RE-problem too small\"
+.    if d an-RE-problem \
+.      an-style-warn argument """\\$1""" to .\\$0 \\*[an-RE-problem]
+.    rm an-RE-problem
+.  \}
+.  el .if !(\\n[an-RE-requested-level]) .an-style-warn unbalanced .\\$0
+.  rr an-RE-requested-level
+.  ie \\n[.$] .nr an-inset-level ((;\\$1) <? \\n[an-inset-level])
+.  el         .nr an-inset-level -1
+.  nr an-inset-level (1 >? \\n[an-inset-level])
+.  nr an-margin \\n[an-saved-margin!\\n[an-inset-level]]
+.  nr an-prevailing-indent \
+     \\n[an-saved-prevailing-indent!\\n[an-inset-level]]
+.  in \\n[an-margin]u
+..
+.
+.\" Deprecated: Style an option with an argument (mandatory if
+.\" specified) for a command synopsis.
+.\"
+.\" This macro's name is a Documenter's Workbench troff extension, but
+.\" the implementation has different syntax and semantics.  Neither is
+.\" flexible enough to handle GNU-style options like
+.\" `--input=file-name`.  Use font alternation macros instead.
+.\"
+.\" .OP flag [option-parameter]
+.de1 OP
+.  nop \\*[an-deprecation-warn]\\
+.  if ((\\n[.$] < 1) : (\\n[.$] > 2)) \
+.    an-style-warn .\\$0 expects 1 or 2 arguments, got \\n[.$]
+.  ie (\\n[.$] > 1) \
+.    RI [\\f[B]\\$1\f[] \~\\$2 ]
+.  el \
+.    RB [ \\$1 ]
+..
+.
+.\" Begin an example (typically of source code or shell input).
+.de1 EX
+.  br
+.  if \\n[an*is-in-example] \{\
+.    an-style-warn ignoring .\\$0 while already in example
+.    return
+.  \}
+.  ds an*saved-family \\n[.fam]
+.  nr an*saved-font \\n[.f]
+.  nr an*saved-paragraph-distance \\n[PD]
+.  nr PD 1v
+.  nf
+.  nr an*unmap-fonts 0
+.  \" If using the DVI output device, we have no constant-width fonts of
+.  \" bold weight and, relatedly, no constant-width family (because that
+.  \" requires all four styles).  Remap the bold styles to normal ones.
+.  \"
+.  \" Use the "switch/case" style of nested `ie`/`el` requests.
+.        ie '\*[.T]'dvi' \{\
+.    ftr R CW
+.    ftr B CW
+.    ftr I CWI
+.    ftr BI CWI
+.    nr an*unmap-fonts 1
+.  \}
+.  \" The LBP output device lacks a Courier bold-italic face.
+.  el \{.ie '\*[.T]'lbp' \{\
+.    ftr R CR
+.    ftr B CB
+.    ftr I CI
+.    ftr BI CI
+.    nr an*unmap-fonts 1
+.  \}
+.  el                    .fam \\*[an*example-family]
+.  \}
+.  ft R
+.  nr an*is-in-example 1
+..
+.
+.\" End example.
+.de1 EE
+.  br
+.  if !\\n[an*is-in-example] \{\
+.    an-style-warn ignoring .\\$0 while not in example
+.    return
+.  \}
+.  \" Undo the remappings from `EX`.
+.  if \\n[an*unmap-fonts] \{\
+.    ftr R
+.    ftr B
+.    ftr I
+.    ftr BI
+.    rr an*unmap-fonts
+.  \}
+.  fam \\*[an*saved-family]
+.  ft \\n[an*saved-font]
+.  nr PD \\n[an*saved-paragraph-distance]
+.  fi
+.  rr an*saved-paragraph-distance
+.  rr an*saved-font
+.  rm an*saved-family
+.  nr an*is-in-example 0
+..
+.
+.\" Store the argument and begin a diversion for link text.
+.de an*begin-hyperlink
+.  ds an*hyperlink \\*[an*prefix]\\$1\"
+.  ds an*visible-hyperlink \\$1\" in case there is no link text
+.  \" We want the diversion to format as if it has an indentation of
+.  \" zero (that comes for free when we switch environments), and we
+.  \" want the line length reduced by the amount of indentation in
+.  \" effect at the start of the link text.
+.  nr an*saved-line-length \\n[.l]
+.  nr an*saved-indentation \\n[.i]
+.  if \\n[an*do-hyperlink] \{\
+.    \" Start diversion in a new environment.
+.    nr an*is-in-link-text-diversion 1
+.    ev an*link-text-env
+.    if '\*[.T]'pdf' \&\m[\\*[PDFHREF.TEXT.COLOUR]]\c
+.    di an*link-text
+.    ll (\\n[an*saved-line-length]u - \\n[an*saved-indentation]u)
+.  \}
+.  rr an*saved-indentation
+.  rr an*saved-line-length
+..
+.
+.\" Emit hyperlinked text with optional trailing text.
+.\"
+.\" The caller should set the `an*prefix` string if the hyperlink should
+.\" be prefixed with a scheme; for example, email addresses get
+.\" "mailto:", but this need not be visible when rendering an email
+.\" address on a device incapable of hyperlinking.
+.de an*end-hyperlink
+.  ds an*trailing-text \\$1\"
+.  ie (\\n[an*is-in-link-text-diversion] & \\n[an*do-hyperlink]) \{\
+.    br
+.    di
+.    ev
+.    nr an*is-in-link-text-diversion 0
+.    \" If the diversion width is nonzero, assume there was link text.
+.    ie \\n[dl] \{\
+.      if '\*[.T]'html' \
+.        nop \X'html:<a href="\\*[an*hyperlink]">'\c
+.      if '\*[.T]'pdf' \
+.        pdfhref W -S -D \\*[an*hyperlink]
+.      if \\n[an*is-output-terminal] \
+.        nop \X'tty: link \\*[an*hyperlink]'\c
+.      unformat an*link-text \" ...so it adjusts in its new context.
+.      \" Replace the final newline of the diversion.
+.      chop an*link-text
+.      as an*link-text \&\c
+.      an*link-text
+\" This is deliberately a blank line with a comment.
+.\" XXX: We would use the `nop` request here to put a break on the
+.\" output (with nice indentation to boot), but interpolating a chopped
+.\" diversion, even with a string appendment, manipulates the input
+.\" parser a little too powerfully, and the formatter thinks ".nop"
+.\" appears on the input line literally after the `\c` at the end of
+.\" `an*link-text`.  (We need that `\c`, else multiple tests fail.)
+.\" String/macro/diversion manipulation needs closer attention in the
+.\" formatter.
+.      if '\*[.T]'html' \
+.        nop \X'html:</a>'\c
+.      if \\n[an*is-output-terminal] \
+.        nop \X'tty: link'\c
+.      if '\*[.T]'pdf' \X'pdf: markend'\m[default]\c
+.      nop \&\\*[an*trailing-text]\"
+.    \}
+.    \" If there was no link text, format URI as its own link text.  We
+.    \" don't add angle brackets here; we assume that the application
+.    \" uses some means of indicating the hyperlinked text.
+.    el \{\
+.      if '\*[.T]'html' \
+.        nop \%\X'html:<a href="\\*[an*hyperlink]">\
+\\*[an*visible-hyperlink]</a>'\c
+.      if '\*[.T]'pdf' \
+.        pdfhref W -D \\*[an*hyperlink] -A "\\*[an*trailing-text]" \
+-- \\*[an*visible-hyperlink]\c
+.      if \\n[an*is-output-terminal] \
+.        nop \%\X'tty: link \\*[an*hyperlink]'\
+\\*[an*visible-hyperlink]\X'tty: link'\c
+.      if !'\*[.T]'pdf' \
+.        nop \&\\*[an*trailing-text]\"
+.    \}
+.  \}
+.  \" If not hyperlinking, format URI in angle brackets.  There was no
+.  \" diversion, so the link text has already been formatted normally.
+.  el \{\
+.    nh
+.    nop \\[la]\\*[an*visible-hyperlink]\\[ra]\\*[an*trailing-text]
+.    hy \\n[an*hyphenation-mode]
+.  \}
+.  rm an*link-text
+.  rm an*hyperlink
+.  rm an*visible-hyperlink
+.  rm an*trailing-text
+..
+.
+.\" Begin email hyperlink.  Input until the next `ME` call is stored in
+.\" a diversion; it becomes the link text for the hyperlinked address.
+.\" .MT nobody@example.com
+.de1 MT
+.  if d an*prefix \{\
+.    an-warn cannot nest .\\$0 inside .MT or .UR
+.    return
+.  \}
+.  if !(\\n[.$] = 1) \
+.    an-warn .\\$0 expects 1 argument, got \\n[.$]
+.  ds an*prefix mailto:
+.  an*begin-hyperlink \\$1
+..
+.
+.\" End email hyperlink.  The optional argument supplies trailing
+.\" punctuation (or, rarely, other text) after link text.
+.\" .ME [trailing-text]
+.de1 ME
+.  if !d an*prefix \{\
+.    an-warn .\\$0 requires a preceding .MT
+.    return
+.  \}
+.  an*end-hyperlink \\$1
+.  rm an*prefix
+..
+.
+.\" Begin web hyperlink.  Input until the next `UE` call is stored in
+.\" a diversion; it becomes the link text for the hyperlinked address.
+.\" .UR http://example.com/
+.de1 UR
+.  if d an*prefix \{\
+.    an-warn cannot nest .\\$0 inside .MT or .UR
+.    return
+.  \}
+.  if !(\\n[.$] = 1) \
+.    an-warn .\\$0 expects 1 argument, got \\n[.$]
+.  ds an*prefix \" empty
+.  an*begin-hyperlink \\$1
+..
+.
+.\" End web hyperlink.  The optional argument supplies trailing
+.\" punctuation (or, rarely, other text) after link text.
+.\" .UE [trailing-text]
+.de1 UE
+.  if !d an*prefix \{\
+.    an-warn .\\$0 requires a preceding .UR
+.    return
+.  \}
+.  an*end-hyperlink \\$1
+.  rm an*prefix
+..
+.
+.\" There is no standardized format for man page URLs, but the default
+.\" is expected to work (or be harmlessly ignored) everywhere except
+.\" macOS.  Override in man.local if desired.
+.\"
+.\" Given a man page reference id(section) (like ls(1)), we have these.
+.\"
+.\" man:id(section)                  - GNOME, KDE   (Linux)
+.\" x-man-page://section/id          - Terminal.app (macOS 10.3+)
+.\" man:id.section                   - Bwana        (macOS)
+.\" x-man-doc://section/id(section)  - ManOpen      (macOS)
+.\"
+.\" A configurable prefix/schema string is inadequate because the
+.\" arrangement of the rest of the URL is variable.  Further, the schema
+.\" doesn't unambiguously indicate the remainder of the URL format.
+.nr an*MR-URL-format 1
+.
+.\" Set a man page cross reference.
+.\" .MR page-topic page-section [trailing-text]
+.de1 MR
+.  if ((\\n[.$] < 1) : (\\n[.$] > 3)) \
+.    an-style-warn .\\$0 expects 1 to 3 arguments, got \\n[.$]
+.  ds an*url man:\\$1(\\$2)\"
+.  if (\\n[an*MR-URL-format] = 2) \
+.    ds an*url x-man-page://\\$2/\\$1\"
+.  if (\\n[an*MR-URL-format] = 3) \
+.    ds an*url man:\\$1.\\$2\"
+.  if (\\n[an*MR-URL-format] = 4) \
+.    ds an*url x-man-doc://\\$2/\\$1(\\$2)\"
+.  nh
+.  ie (\\n[.$] = 1) \
+.    nop \&\\*[an-lic]\f[\\*[MF]]\\$1\\*[an-ic]\f[]\c
+.  el \{\
+.    if \\n[an*do-hyperlink] \{\
+.      if '\*[.T]'html' \
+.        nop \X'html:<a href="\\*[an*url]">'\c
+.      if '\*[.T]'pdf' \{\
+.        ds an*destination-bookmark-tag \\$1(\\$2)\"
+.        pdf:lookup \\*[an*destination-bookmark-tag]
+.        ie !'\\*[pdf:lookup-result]'' \
+.          pdfhref L -S -D \\*[an*destination-bookmark-tag]
+.        el \{\
+.          nop \&\m[\\*[PDFHREF.TEXT.COLOUR]]\c
+.          pdfhref W -S -D \\*[an*url]
+.        \}
+.      \}
+.      if \\n[an*is-output-terminal] \
+.        nop \X'tty: link \\*[an*url]'\c
+.    \}
+.    nop \&\\*[an-lic]\f[\\*[MF]]\\$1\\*[an-ic]\f[R](\\$2)\c
+.    if \\n[an*do-hyperlink] \{\
+.      if '\*[.T]'html' \
+.        nop \X'html:</a>'\c
+.      if '\*[.T]'pdf' \{\
+.        nop \X'pdf: markend'\m[default]\c
+.      \}
+.      if \\n[an*is-output-terminal] \
+.        nop \X'tty: link'\c
+.    \}
+.  \}
+.  nop \&\\$3
+.  hy \\n[an*hyphenation-mode]
+..
+.
+.\" tbl(1) table support
+.
+.\" Start table.
+.de1 TS
+.  \" If continuous rendering, tell tbl not to use keeps.
+.  ie \\n[cR] .nr 3usekeeps 0
+.  el         .nr 3usekeeps 1
+.  if \\n[an*is-output-html] \{\
+.    nr an-TS-ll \\n[.l]
+.    ll 1000n
+.  \}
+.  HTML-IMAGE
+..
+.
+.\" Start another table in the same region (ignored).
+.de1 T&
+..
+.
+.\" End table.
+.de1 TE
+.  HTML-IMAGE-END
+.  if \\n[an*is-output-html] .ll \\n[an-TS-ll]u
+.  if !r TW .if !\\n[an-was-tbl-failure-reported] \{\
+.    ds an-msg tbl preprocessor failed, or it or soelim was not run;\"
+.    as an-msg " table(s) likely not rendered\"
+.    as an-msg " (TE macro called with TW register undefined)\"
+.    an-warn \\*[an-msg]
+.    rm an-msg
+.    nr an-was-tbl-failure-reported 1
+.  \}
+..
+.
+.\" eqn(1) equation support
+.
+.\" Start equation.
+.de1 EQ
+.  if \\n[an*is-output-html] \{\
+.    nr an-EQ-ll \\n[.l]
+.    ll 1000n
+.  \}
+.  HTML-IMAGE
+..
+.
+.\" End equation.
+.de1 EN
+.  HTML-IMAGE-END
+.  if \\n[an*is-output-html] .ll \\n[an-EQ-ll]u
+..
+.
+.
+.\" === Define strings. ===
+.\"
+.\" These strings must work in compatibility mode also.
+.
+.ds S \s'\\n(PSu'\"
+.ie c\[rg] .ds R \(rg\"
+.el        .ds R (Reg.)\"
+.ie c\[tm] .ds Tm \(tm\"
+.el        .ds Tm (TM)\"
+.ie c\[lq] .ds lq \(lq\"
+.el        .ds lq ""\"
+.ie c\[rq] .ds rq \(rq\"
+.el        .ds rq ""\"
+.
+.\" === Define/remap characters. ===
+.
+.\" On output devices that typically have separate hyphen and minus sign
+.\" glyphs _and_ a glyph for ASCII/ISO Latin's hybrid "hyphen-minus",
+.\" remap the (text) minus sign to the hyphen-minus to facilitate copy
+.\" and paste of code examples, file names, and URLs embedding it.  We
+.\" do this for man pages but not for general typesetting.  See
+.\" groff_char(7) for further background.
+.\"
+.\" PDF's "CMap" feature solves this problem so we don't have to.
+.if '\*[.T]'utf8' \
+.  char \- \N'45'
+.if '\*[.T]'html' \
+.  char \- \N'45'
+.
+.\" Man pages more often use the neutral double quote `"` as a "code
+.\" literal" than as a quotation character.  Give it the same (empty)
+.\" set of character flags as its special character equivalent, \[dq].
+.cflags 0 "
+.
+.\" === Initialize. ===
+.
+.mso devtag.tmac
+.nr an-devtag-needs-end-of-heading 0
+.nr an-devtag-needs-second-column 0
+.
+.ds an*previous-page-ref-string \" empty
+.
+.nr an*enforce-tag-separation 1
+.
+.\" Track whether the strings that set header and footer text need to be
+.\" reconfigured.  This happens when batch-rendering and starting a new
+.\" page.
+.nr an*need-titles-reset 0
+.
+.\" Initialize registers and strings that trap-called macros access, to
+.\" avoid warnings when formatting degenerate man(7) documents.
+.an*reset-paragraph-spacing
+.nr an-margin 0
+.nr an-need-no-space-mode 0
+.nr an-need-break 0
+.ds an-pageref \" empty
+.ds an*ifoot \" empty
+.ds an-extra1 \" empty
+.
+.\" We don't have to worry about "xhtml" (it's mapped to "html"), but we
+.\" do need to account for pre-grohtml(1)'s use of "groff -Tps".
+.nr an*is-output-html 0
+.if '\*[.T]'html' .nr an*is-output-html 1
+.if r ps4html     .nr an*is-output-html 1
+.
+.\" For most purposes, we treat the nroff devices equivalently.
+.nr an*is-output-terminal 0
+.if '\*(.T'ascii'  .nr an*is-output-terminal 1
+.if '\*(.T'latin1' .nr an*is-output-terminal 1
+.if '\*(.T'utf8'   .nr an*is-output-terminal 1
+.
+.nr an*can-hyperlink 0
+.if (  \n[an*is-output-html] \
+     : \n[an*is-output-terminal]) \
+.  nr an*can-hyperlink 1
+.
+.if '\*[.T]'pdf' \
+.  nr an*can-hyperlink 1
+.
+.ds an*body-family \n[.fam]
+.ds an*example-family C \" Courier
+.
+.\" Map monospaced fonts to standard styles for groff's nroff devices.
+.if n \{\
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.  ftr CBI BI
+.\}
+.
+.\" undocumented register; unset it to test an-ext.tmac extension macros
+.if !r mG \
+.  nr mG 1
+.
+.\" Load man macro extensions.
+.mso an-ext.tmac
+.
+.\" Load site-local configuration.
+.ie d msoquiet .msoquiet man.local
+.el            .mso      man.local
+.
+.\" Save `HY` value and `AD` contents configured by {man,mdoc}.local or
+.\" command line.
+.if !r andoc*is-initialized \{\
+.  ie r HY .nr andoc*HY \n[HY]
+.  el      .nr andoc*HY 1
+.  ie d AD .ds andoc*AD \*[AD]\"
+.  el      .ds andoc*AD b\"
+.  nr andoc*is-initialized 1
+.\}
+.
+.\" Set each rendering parameter only if its -[dr] option or man.local
+.\" did not.
+.
+.if '\*[.T]'pdf' \{\
+.  \" FIXME: The following registers are documented only in pdf.tmac.
+.  if !r PDFOUTLINE.FOLDLEVEL .nr PDFOUTLINE.FOLDLEVEL 1
+.  if !r PDFHREF.VIEW.LEADING .nr PDFHREF.VIEW.LEADING 10p
+.\}
+.
+.\" base paragraph indentation
+.if !r BP \
+.  nr BP 5n
+.
+.\" continuous rendering (one long page)
+.if !r cR \{\
+.  ie n .nr cR 1
+.  el   .nr cR 0
+.\}
+.
+.\" consecutive page numbering across multiple documents
+.\"
+.\" We must use consecutive page numbers when using PostScript to
+.\" generate HTML images; we must not reset the page number at the
+.\" beginning of each document.
+.ie !r C \
+.  nr C 0
+.el \
+.  if !\n[C] \
+.    if \n[an*is-output-html] \{\
+.       tm \*[an]: consecutive page numbering required for HTML output
+.       nr C 1
+.    \}
+.if \n[an*is-output-html] \
+.  nr C 1
+.
+.\" diagnostics desired for man page style problems
+.if !r CHECKSTYLE \
+.  nr CHECKSTYLE 0
+.
+.\" full capitalization of section headings
+.if !r CS \
+.  nr CS 0
+.
+.\" full capitalization of page identifier
+.if !r CT \
+.  nr CT 0
+.
+.\" double-sided layout
+.ie !r D \
+.  nr D 0
+.el \
+.  if \n[D] \
+.    if \n[an*is-output-html] \{\
+.       tm \*[an]: ignoring double-sided layout in HTML output
+.       nr D 0
+.    \}
+.
+.\" footer distance
+.\"
+.\" Unlike most of these parameters, we do not set a default for FT; the
+.\" TH macro places page location traps only if not continuously
+.\" rendering.
+.if r FT \{\
+.  \" Validate it.  Continuous rendering ignores FT.  Measuring a footer
+.  \" distance from the page top isn't done.  A footer distance of over
+.  \" half the page length is unlikely.  A footer distance of less than
+.  \" one line height is too.
+.  ie \n[cR] \
+.    ds an-msg footer distance when continuously rendering\"
+.  el \{\
+.    nr an*tmp 1v
+.    ds an*help " (1v=\n[an*tmp]u)\"
+.    ie (\n[FT] : (\n[FT] = 0)) \
+.      ds an-msg non-negative footer distance: \n[FT]u\*[an*help]\"
+.    el \{\
+.      ie (-(\n[FT]) > (\n[.p] / 2)) \{\
+.        ds an-msg implausibly large footer distance:\"
+.        as an-msg " \n[FT]u\*[an*help]\"
+.      \}
+.      el \
+.        if (-(\n[FT]) < 1v) \{\
+.          ds an-msg implausibly small footer distance:\"
+.          as an-msg " \n[FT]u\*[an*help]\"
+.        \}
+.    rm an*help
+.    rr an*tmp
+.    \}
+.  \}
+.  if d an-msg \{\
+.    tm \*[an]: ignoring \*[an-msg]
+.    rr FT
+.    rm an-msg
+.  \}
+.\}
+.
+.\" standard indentation
+.if !r IN \{\
+.  \" We select an integer indentation value in nroff mode because this
+.  \" value is used additively for multiple purposes; rounding of
+.  \" accumulating fractions would produce inconsistent results.
+.  ie t .nr IN 7.2n
+.  el   .nr IN 7n
+.\}
+.
+.\" line length
+.if !r LL \{\
+.  \" If in troff mode, respect device default.
+.  ie t .nr LL \n[.l]
+.  \" Otherwise, override nroff mode default of 65n.
+.  el   .nr LL 80n
+.\}
+.
+.\" title (header, footer) length
+.if !r LT \
+.  nr LT \n[LL]u
+.
+.\" starting page number
+.\"
+.\" Unlike most of these parameters, we do not set a default for P;
+.\" troff supplies a default starting page number (1).  When rendering
+.\" for the HTML output device, page numbers are concealed and used for
+.\" internal purposes like image embedding.  Page numbers are not
+.\" rendered at all in continuous rendering mode.
+.if r P \{\
+.  if \n[an*is-output-html] \
+.    if !(\n[P] = 1) \
+.      ds an-msg in HTML output\"
+.  if \n[cR] \
+.    ds an-msg when continuously rendering
+.\}
+.if d an-msg \{\
+.  tm \*[an]: ignoring starting page number \*[an-msg]
+.  rr P
+.  rm an-msg
+.\}
+.
+.\" Setting the page number turns out to be tricky when batch rendering
+.\" and switching macro packages.  We must use different techniques
+.\" depending on whether the transition to the first output page has
+.\" happened yet.  If it has not, `nl` will be `-1` and we use `pn`.  If
+.\" it has, we set `%`.  Technically this is fragile since in theory a
+.\" page could assign a negative value to `nl`.  We might then be
+.\" justified in saying they've broken the macro package and they get to
+.\" keep both pieces.  But if not, consider using a nonce register,
+.\" initially set but then permanently cleared adjacent to this logic,
+.\" and whose state is shared with mdoc (and andoc.tmac, if necessary).
+.\"
+.\" Also, we can't use the `P` register with grohtml at all.
+.ie \n[an*is-output-html] \{\
+.  if r P \{\
+.     tm \*[an]: ignoring starting page number in HTML output
+.     rr P
+.  \}
+.\}
+.el \{\
+.  if r P \{\
+.    ie (\n[nl] = -1) .pn 0\n[P]
+.    el               .nr % 0\n[P]
+.  \}
+.\}
+.
+.\" page offset
+.if r PO \
+.  po \n[PO]u
+.
+.\" type size
+.if !r S \{\
+.  nr S 10
+.  if '\*[.T]'X75-12' \
+.    nr S 12
+.  if '\*[.T]'X100-12' \
+.    nr S 12
+.\}
+.
+.\" required paragraph tag separation
+.if !r TS \
+.  nr TS 2n
+.
+.\" subsection heading indentation
+.if !r SN \
+.  nr SN 3n
+.
+.\" hyperlinked text desired
+.if !r U \
+.  nr U 1
+.
+.nr an*do-hyperlink 0
+.if (\n[U] & \n[an*can-hyperlink]) .nr an*do-hyperlink 1
+.
+.\" page number after which to apply letter suffixes
+.\"
+.\" Unlike most of these parameters, we do not set a default for X; only
+.\" the macro an-footer uses it.  Page numbers are not rendered at all
+.\" in continuous rendering mode.
+.if r X \{\
+.  af an-page-letter a
+.  if \n[an*is-output-html] \
+.    ds an-msg in HTML output\"
+.  if \n[cR] \
+.    ds an-msg when continuously rendering
+.\}
+.if d an-msg \{\
+.  tm \*[an]: ignoring page number suffix \*[an-msg]
+.  rr X
+.  rm an-msg
+.\}
+.
+.\" (sub)section heading font
+.if !d HF \
+.  ds HF B\"
+.
+.\" If HF is a bold style, use bold italics for italics in headings.
+.ds an-heading-style \*[HF]\"
+.substring an-heading-style -1 -1
+.ds an-heading-family \" empty
+.length an-HF-length \*[HF]
+.if (\n[an-HF-length] > 1) \{\
+.  as an-heading-family \*[HF]\"
+.  substring an-heading-family 0 -2
+.\}
+.if '\*[an-heading-style]'B' \
+.  if F \*[an-heading-family]BI \
+.    nr an-remap-I-style-in-headings 1
+.rr an-HF-length
+.rm an-heading-style
+.
+.\" man page topic font
+.if !d MF \
+.  ds MF I\"
+.
+.\" Define italic correction strings.  Initially, they are empty.  If MF
+.\" is an oblique style, append the corrections.
+.ds an-lic \" left italic correction
+.ds an-ic \" italic correction
+.ds an*ident-style \*[MF]\"
+.substring an*ident-style -1 -1
+.if '\*[an*ident-style]'I' \{\
+.  as an-lic \,\"
+.  as an-ic \/\"
+.\}
+.rm an*ident-style
+.
+.\" In continuous rendering mode, make page breaks less potent and the
+.\" page length "infinite".
+.if \n[cR] \{\
+.  rn bp an*real-bp
+.  rn an*bp bp
+.  pl \n[.R]u/1v
+.\}
+.
+.\" If rendering HTML, suppress headers and footers.
+.nr an-suppress-header-and-footer 0
+.if \n[an*is-output-html] .nr an-suppress-header-and-footer 1
+.
+.em an*end-document
+.
+.cp \n[*groff_an_tmac_C]
+.do rr *groff_an_tmac_C
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" fill-column: 72
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

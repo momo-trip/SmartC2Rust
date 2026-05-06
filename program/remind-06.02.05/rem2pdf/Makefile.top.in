@@ -1,0 +1,50 @@
+# Set by configure - don't touch.
+srcdir=@srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+mandir=@mandir@
+bindir=@bindir@
+datadir=@datadir@
+datarootdir=@datarootdir@
+PERL=@PERL@
+PERLMODS_NEEDED=Cairo Encode ExtUtils::MakeMaker Getopt::Long JSON::MaybeXS Pango
+
+all: Makefile
+	@if test "$(PERL)" = "" ; then \
+	    echo "Not building rem2pdf; Perl is required"; exit 0; fi; \
+         OK=1; \
+	 for m in $(PERLMODS_NEEDED) ; \
+	do \
+	    $(PERL) -M$$m -e 1 ; \
+	    if test $$? != 0 ; then echo "Missing Perl module: $$m"; OK=0; fi; \
+	done; \
+        if test "$$OK" != "1" ; then echo "Not building rem2pdf because of missing perl module(s)"; exit 0; fi; \
+	$(MAKE) all && exit 0; \
+	exit 1;
+
+install:
+	@if test "$(PERL)" = "" ; then \
+	    echo "Not installing rem2pdf; Perl is required"; exit 0; fi; \
+	 for m in $(PERLMODS_NEEDED) ; \
+         do \
+	    $(PERL) -M$$m -e 1 ; \
+	    if test $$? != 0 ; then echo "Not installing rem2pdf; missing $$m"; exit 0; fi; \
+	done; \
+	echo "Installing rem2pdf"; \
+        if test "$(INSTALL_BASE)" != "" ; then \
+                $(MAKE) install DESTDIR=$(DESTDIR) "INSTALL_BASE=$(INSTALL_BASE)" && exit 0; \
+        elif test "$(prefix)" = "/usr" ; then \
+		$(MAKE) install DESTDIR=$(DESTDIR) INSTALLDIRS=vendor && exit 0; \
+        elif test "$(prefix)" = "/usr/local" ; then \
+		$(MAKE) install DESTDIR=$(DESTDIR) && exit 0; \
+        else \
+		$(MAKE) install DESTDIR=$(DESTDIR) "INSTALL_BASE=$(prefix)" && exit 0; \
+        fi; \
+	exit 1;
+
+Makefile: Makefile.PL
+	if test "$(prefix)" != "/usr" -a "$(prefix)" != "/usr/local" -a "$(INSTALL_BASE)" = "" ; then \
+		$(PERL) Makefile.PL @PERLARTIFACTS@ INSTALL_BASE=$(prefix) || true;\
+	else \
+		$(PERL) Makefile.PL @PERLARTIFACTS@ INSTALL_BASE=$(INSTALL_BASE) || true;\
+	fi

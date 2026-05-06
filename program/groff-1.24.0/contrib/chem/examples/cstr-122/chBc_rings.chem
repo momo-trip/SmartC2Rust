@@ -1,0 +1,20 @@
+chBc_rings.chem:
+.br
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+R1: benzene
+    bond -120 from R1.V5 ; CH3O
+R2: ring4 pointing 45 with .V4 at R1.V2
+R3: aromatic ring6 put N at 4 put S at 2 at R2 + (.75,0)
+R4: ring5 pointing left at R3 + (.75,0)
+    label R4
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

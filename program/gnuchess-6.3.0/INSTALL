@@ -1,0 +1,88 @@
+INSTALL of GNU Chess
+
+  Copyright (C) 2001-2025 Free Software Foundation, Inc.
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+The usual procedure should apply. After you have unpacked
+the sources, type (in the sources top-level directory)
+
+	./configure
+	make
+
+You may also pass several other options such as compiler options
+to configure, just type ./configure --help for advice. In particular,
+you may experiment with compiler optimization flags, which are added
+easily as (assuming you have a bourne-type shell)
+
+CXXFLAGS="-O3 -ffast-math" ./configure
+
+The build should work with g++. It should also work with other
+compilers.
+
+Test gnuchess by typing
+
+	cd src
+	./gnuchess on GNU/Linux / Unix / Mac OS X
+	easy
+	new
+	post
+	depth 8
+	go
+	quit
+
+You should see an 8-ply search. Most machines these
+days should finish it within a few seconds. If not,
+Control-C out, and do 
+
+	depth 6
+	go
+	quit
+
+instead.
+
+If you got this far, congratulations.
+
+If you want to install the software in some global directory,
+by default /usr/local, become root and type
+
+	make install
+
+If you want to install the sources in some other directory
+than /usr/local, replace the first line by
+
+	./configure --prefix=/my/favourite/dir 
+
+You can build an opening book which may enhance the value
+of gnuchess quite a lot. In order to do so, get the file
+book_1.02.pgn (https://ftp.gnu.org/gnu/chess/book_1.02.pgn.gz)
+and type the following.
+
+	./gnuchess
+	book add book_1.02.pgn
+	quit
+
+This may take some minutes, depending on the speed of your
+machines. The book is quite large (180,000 master games).
+If you want a smaller book or you do not want to wait, do the
+following instead:
+
+	head -30000 book_1.02.pgn > smallbook.pgn
+	./gnuchess
+	book add smallbook.pgn
+	quit
+
+This will make a much smaller book.
+
+In order to use the book, edit the configuration file 'gnuchess.ini' and
+set the value of 'Book' or 'OwnBook' to true. The program will look for
+this file in $XDG_CONFIG_HOME/gnuchess/ and $HOME/.config/gnuchess/.
+
+You can run the program in UCI mode, which makes it externally behave as
+a UCI engine. This is not intended for interactive usage, but as a
+backend engine of a UCI-enabled chess graphical interface. Type the
+following:
+
+	./gnuchess -u

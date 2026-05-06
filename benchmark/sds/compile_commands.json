@@ -94,11 +94,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/sds-eea38b.o",
+      "/tmp/sds-8c5338.o",
       "sds.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/sds",
     "file": "/root/SmartC2Rust/benchmark/sds/sds.c",
-    "output": "/tmp/sds-eea38b.o"
+    "output": "/tmp/sds-8c5338.o"
   }
 ]

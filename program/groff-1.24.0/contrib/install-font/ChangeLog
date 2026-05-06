@@ -1,0 +1,44 @@
+2026-01-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* install-font.am: Drop unused macros `installfont_srcdir` and
+	`installfont_builddir`.  Automake itself doesn't require them,
+	and we never interpolate them.
+
+2025-11-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* install-font.bash: Import Peter Schaffter's "install-font.sh"
+	script from his website.  Rename as shown; its "shebang" line
+	declares it a Bash script (albeit one that operates in Bash's
+	POSIX mode).  Cosmetic changes to Peter's version comprise
+	removal of trailing whitespace, a replacement of the GPL license
+	notice with model language from the current version of the GPL,
+	and addition of a Vim modeline reflecting the code style in
+	evidence.  I also recoded the file to plain ASCII (Unicode Basic
+	Latin), the only consequence of which was dropping of the U+00A9
+	copyright sign.
+	* COPYRIGHT: Add file promised by groff's "LICENSES" file.
+	* install-font.am: Automake script, when driven by a groff
+	build, installs "install-font.bash" to the target's "examples"
+	directory.
+
+	Fixes <https://savannah.gnu.org/bugs/?60930>.
+
+
+________________________________________________________________________
+
+##### License
+
+Copyright 2025 G. Branden Robinson
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+
+##### Editor settings
+Local Variables:
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

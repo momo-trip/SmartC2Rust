@@ -26,8 +26,7 @@ log_test_start() {
     local test_name=$2
     
     echo -e "\nTest #${current_test}: Running ${test_name}"
-    echo "Test Case #$current_test: Started" >> /root/SmartC2Rust/benchmark/urlparser/out_flow_c.log
-    echo "Test Case #$current_test: Started" >> /root/SmartC2Rust/benchmark/urlparser/out_flow_rust.log
+    echo "Test Case #$current_test: Started"
 }
 
 # Function to write log

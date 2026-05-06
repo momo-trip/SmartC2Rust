@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Environment (The GNU troff Manual)</title>
+
+<meta name="description" content="Environment (The GNU troff Manual)">
+<meta name="keywords" content="Environment (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Invoking-groff.html" rel="up" title="Invoking groff">
+<link href="Macro-Directories.html" rel="next" title="Macro Directories">
+<link href="Groff-Options.html" rel="prev" title="Groff Options">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Environment"></span><div class="header">
+<p>
+Next: <a href="Macro-Directories.html" accesskey="n" rel="next">Macro Directories</a>, Previous: <a href="Groff-Options.html" accesskey="p" rel="prev">Groff Options</a>, Up: <a href="Invoking-groff.html" accesskey="u" rel="up">Invoking groff</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Environment-1"></span><h3 class="section">2.2 Environment</h3>
+<span id="index-environment-variables"></span>
+<span id="index-variables-in-environment"></span>
+
+<p>Environment variables in the host system affect the behavior of programs
+supplied by <code>groff</code> as follows.  Normally, the path separator in
+environment variables ending with &lsquo;<samp>PATH</samp>&rsquo; is the colon; this may
+vary depending on the operating system.  For example, Windows uses a
+semicolon instead.
+</p>
+<dl compact="compact">
+<dt><code>GROFF_BIN_PATH</code></dt>
+<dd><span id="index-GROFF_005fBIN_005fPATH_002c-environment-variable"></span>
+<p>Locate <code>groff</code> commands in these directories, followed by those in
+<code>PATH</code>.  If not set, the installation directory of GNU <code>roff</code>
+executables, documented in <cite>groff<span class="roman">(1)</span></cite>, is searched before
+<code>PATH</code>.
+</p>
+</dd>
+<dt><code>GROFF_COMMAND_PREFIX</code></dt>
+<dd><span id="index-GROFF_005fCOMMAND_005fPREFIX_002c-environment-variable"></span>
+<span id="index-command-prefix"></span>
+<span id="index-prefix_002c-for-commands"></span>
+<p>Apply a prefix to certain GNU <code>roff</code> commands.
+<code>groff</code> can be configured at compile time to apply a prefix to
+the names of programs it provides that had counterparts in
+<acronym>AT&amp;T</acronym> <code>troff</code>, so that name collisions are avoided at run
+time.  The default prefix is empty.
+</p>
+<p>When used,
+this prefix is conventionally the letter &lsquo;<samp>g</samp>&rsquo;.
+For example,
+GNU
+<code>troff</code> would be installed as
+<code>troff</code>.
+Besides
+<code>troff</code>, the prefix applies to the formatter wrapper
+<code>nroff</code>; the preprocessors
+<code>eqn</code>, <code>grn</code>, <code>pic</code>, <code>refer</code>, <code>tbl</code>, and
+<code>soelim</code>; and the utilities
+<code>indxbib</code> and
+<code>lookbib</code>. </p>
+</dd>
+<dt><code>GROFF_ENCODING</code></dt>
+<dd><span id="index-GROFF_005fENCODING_002c-environment-variable"></span>
+<p>Specify the assumed character encoding of the input.  <code>groff</code>
+passes its value as an argument to the <code>preconv</code> preprocessor&rsquo;s
+<samp>-e</samp> option.  This variable&rsquo;s existence implies the
+<code>groff</code> option <samp>-k</samp>.  If set but empty, <code>groff</code>
+runs <code>preconv</code> without an <samp>-e</samp> option.  <code>groff</code>&rsquo;s
+<samp>-K</samp> option overrides <code>GROFF_ENCODING</code>.  See
+<cite>preconv<span class="roman">(7)</span></cite>.
+</p>
+</dd>
+<dt><code>GROFF_FONT_PATH</code></dt>
+<dd><span id="index-GROFF_005fFONT_005fPATH_002c-environment-variable"></span>
+<p>Seek the selected output device&rsquo;s directory of device and font
+description files in this list of directories.
+See <a href="Font-Directories.html">Font Directories</a>,
+<cite>troff<span class="roman">(1)</span></cite>,
+and
+<cite>groff_font<span class="roman">(5)</span></cite>.
+</p>
+</dd>
+<dt><code>GROFF_TMAC_PATH</code></dt>
+<dd><span id="index-GROFF_005fTMAC_005fPATH_002c-environment-variable"></span>
+<p>Seek macro packages in this list of directories.
+See <a href="Macro-Directories.html">Macro Directories</a>,
+<cite>troff<span class="roman">(1)</span></cite>,
+and
+<cite>groff_tmac<span class="roman">(5)</span></cite>.
+</p>
+</dd>
+<dt><code>GROFF_TMPDIR</code></dt>
+<dd><span id="index-GROFF_005fTMPDIR_002c-environment-variable"></span>
+<span id="index-TMPDIR_002c-environment-variable"></span>
+<p>Create temporary files in this directory.  If not set, but <code>TMPDIR</code>
+is, the latter is used instead.  On Windows systems, if neither of the
+foregoing are set, the environment variables <code>TMP</code> and <code>TEMP</code>
+(in that order) are checked also.  Otherwise, temporary files are
+created in a system-dependent default directory (on Unix and GNU/Linux
+systems, usually <samp>/tmp</samp>).
+The
+<code>refer</code>,
+<code>grohtml</code>,
+and
+<code>grops</code>
+commands use temporary files.
+</p>
+</dd>
+<dt><code>GROFF_TYPESETTER</code></dt>
+<dd><span id="index-GROFF_005fTYPESETTER_002c-environment-variable"></span>
+<p>Set the default output device.  The <samp>-T <var>dev</var></samp> option
+overrides it.  If empty or unset, a default configured at build time,
+and documented in <cite>groff<span class="roman">(1)</span></cite>, is used.
+</p>
+</dd>
+<dt><code>SOURCE_DATE_EPOCH</code></dt>
+<dd><span id="index-SOURCE_005fDATE_005fEPOCH_002c-environment-variable"></span>
+<p>Declare a time stamp (expressed as seconds since the Unix epoch) to use
+as the output creation time stamp in place of the current time.  The
+time is converted to human-readable form using <cite>gmtime<span class="roman">(3)</span></cite> and
+<cite>asctime<span class="roman">(3)</span></cite> when the formatter starts up and stored in
+registers usable by documents and macro packages (see <a href="Built_002din-Registers.html">Built-in Registers</a>).
+</p>
+</dd>
+<dt><code>TZ</code></dt>
+<dd><span id="index-TZ_002c-environment-variable"></span>
+<p>Declare the time zone to use when converting the current time to
+human-readable form; see <cite>tzset<span class="roman">(3)</span></cite>.  If
+<code>SOURCE_DATE_EPOCH</code> is used, it is always converted to
+human-readable form using UTC.
+</p></dd>
+</dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Macro-Directories.html" accesskey="n" rel="next">Macro Directories</a>, Previous: <a href="Groff-Options.html" accesskey="p" rel="prev">Groff Options</a>, Up: <a href="Invoking-groff.html" accesskey="u" rel="up">Invoking groff</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

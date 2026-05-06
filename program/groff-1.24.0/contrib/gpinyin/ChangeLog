@@ -1,0 +1,208 @@
+2025-12-31  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.am (EXTRA_DIST): Ship "COPYRIGHT" and "GPLv2" files in
+	distribution archive.
+
+2025-07-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.1.man: Stop assuming `AD` string is defined in some
+	hairy bits of typesetting.
+
+2023-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.pl: Stop endorsing shebang line space myth.  See
+	<https://savannah.gnu.org/bugs/?64058>.
+
+2022-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.pl: Report groff version number along with this
+	program's own when not run from source tree.  Drop dead code.
+	Bump micro version number to reflect recent restructuring.
+
+2022-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Make gpinyin script stand alone.
+
+	* subs.pl: Delete, moving its content into...
+	* gpinyin.pl: ...here.
+	(vowel_t): Use explicit list with `my`.
+	(vowel_n, vowel_t): Declare local scalar `$vowel_with_tone`
+	using `my`.
+	* gpinyin.am (dist_gpinyin_DATA): Delete.
+
+2022-05-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.am (gpinyin): Fix missing dependency on
+	`$(SH_DEPS_SED_SCRIPT)`.
+
+2021-05-11  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.1.man: Render the tone mark table only if the output
+	device might be capable.
+
+	Fixes <https://savannah.gnu.org/bugs/?55215>.
+
+2021-05-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.1.man: Work around inability of grops and gropdf to
+	construct some Unicode composite characters.  Use groff
+	composite special characters for "a" with acute and grave
+	accents, and define strings for "a" with macron (overline) and
+	with háček/caron accents.  Use different string definitions for
+	nroff and troff modes so we don't regress UTF-8 terminal output.
+
+2021-05-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* subs.pl (vowel_t): Fix incorrect rendering of base glyph 'U',
+	which was being forced to lowercase when a dieresis and tone
+	mark were both being applied.  This caused the tone mark to
+	overlap the dieresis, so decrease the font size of the base
+	glyph even more to compensate.  The result is ugly but
+	comprehensible.
+
+	See <https://savannah.gnu.org/bugs/?57524>, partially mitigated
+	but not completely resolved.
+
+2021-05-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* subs.pl (%tones1_Unicode): Fix copy and paste error.  Emit
+	U+01D5 (Latin capital letter u with dieresis and macron) for Ü
+	with tone 1, instead of U+016A (Latin capital letter u with
+	macron).
+
+	Fixes <https://savannah.gnu.org/bugs/?60562>.
+
+2021-05-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* subs.pl (handle_word): Emit \[cq] instead of \[aq] when
+	interpolating an apostrophe before a vowel.
+
+	Fixes <https://savannah.gnu.org/bugs/?60561>.
+
+2021-05-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* subs.pl (%tones_glyphs, %tones4_glyphs): Fix hash keys to use
+	the groff dotless i special character into which a lowercase "i"
+	has already been transformed instead of 'i' itself.
+	(vowel_n, vowel_t): Rename variable so that tone-transformed
+	vowel is stored separately.  Add "or warn" to test the result
+	and cheaply assert that we got a string back from our hash
+	lookup on the vowel.
+
+	Fixes <https://savannah.gnu.org/bugs/?60560>.
+
+2021-01-06  Colin Watson <cjwatson@debian.org>
+
+	* gpinyin.pl: Avoid Perl's unsafe "<>" operator.
+
+	The "<>" operator is implemented using the two-argument form of
+	"open", which interprets magic such as pipe characters, allowing
+	execution of arbitrary commands which is unlikely to be
+	expected.  Perl >= 5.22 has a "<<>>" operator which avoids this,
+	but also forbids the use of "-" to mean the standard input,
+	which is a facility that the affected groff programs document.
+
+	ARGV::readonly would probably also fix this, but I fundamentally
+	dislike the approach of escaping data in preparation for a
+	language facility to unescape it, especially when the required
+	escaping is as non-obvious as it is here.  (For the same reason,
+	I prefer to use subprocess invocation facilities that allow
+	passing the argument list as a list rather than as a string to
+	be interpreted by the shell.)  So I've abandoned this dubious
+	convenience and changed the affected programs to iterate over
+	command-line arguments manually using the three-argument form of
+	open.
+
+	Fixes <https://savannah.gnu.org/bugs/?55557>.
+
+2020-04-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gpinyin.1.man: Delete references to groffer.
+
+2018-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	* gpinyin.am (gpinyin): Use $(AM_V_GEN) to silence file generation.
+
+2015-08-22  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.1.man: Rename `gpinyin.man'.
+
+	* gpinyin.am: include renaming.
+
+2015-08-05  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.am: Add `Last update'.  Setup Emacs mode.
+
+2015-04-03  Werner LEMBERG  <wl@gnu.org>
+
+	* gpinyin.man: Make it work in compatibility mode.
+	(EL): Fix typo.
+
+2014-10-11  Werner LEMBERG  <wl@gnu.org>
+
+	* Makefile.sub (gpinyin): Handle `gpinyin_dir'.
+
+2014-10-11  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.pl: Version 1.0.4
+	Remove `use IPC::System::Simple'.
+
+2014-10-10  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.pl: Version 1.0.3
+	Remove beginning empty line for `pinyin' parts.
+
+2014-09-25  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.pl: Version 1.0.2
+
+	* Makefile.sub: Add .PHONY.  Restructure install and uninstall.
+
+2014-09-03  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	Version 1.0.1
+
+	* all `gpinyin' files: Copying and Emacs settings.
+
+2014-08-27  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	Version 1.0.0
+
+	* gpinyin.pl, subs.pl, gpinyin.man: Make `gpinyin' runnable.
+
+2014-08-08  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.pl: Version 0.9.2
+
+	* subs.pl: Rename `sub.pl'.
+
+	* Makefile.sub: Change `sub.pl' to `subs.pl'.
+
+2014-08-08  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.pl: Version 0.9.1
+
+	* sub.pl: New file for storing subs later on.
+
+	* Makefile.sub: Add new gpinyin path for sub.pl.
+
+2014-08-01  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gpinyin.pl, gpinyin.man, ChangeLog, Makefile.sub:
+	First version 0.9.0 of gpinyin
+
+________________________________________________________________________
+
+Copyright 2014-2021 Free Software Foundation, Inc.
+Copyright 2021-2022 G. Branden Robinson
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

@@ -1,0 +1,4 @@
+Makefile
+check.log
+check.plog
+fix-msvc-mak

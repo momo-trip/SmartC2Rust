@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Top (The GNU troff Manual)</title>
+
+<meta name="description" content="Top (The GNU troff Manual)">
+<meta name="keywords" content="Top (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="#Top" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Introduction.html" rel="next" title="Introduction">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<h1 class="settitle" align="center">The GNU troff Manual</h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span id="SEC_Contents"></span>
+<h2 class="contents-heading">Table of Contents</h2>
+
+<div class="contents">
+
+<ul class="no-bullet">
+  <li><a id="toc-Introduction-1" href="Introduction.html#Introduction">1 Introduction</a>
+  <ul class="no-bullet">
+    <li><a id="toc-Background-1" href="Background.html#Background">1.1 Background</a></li>
+    <li><a id="toc-What-Is-groff_003f-1" href="What-Is-groff_003f.html#What-Is-groff_003f">1.2 What Is <code>groff</code>?</a></li>
+    <li><a id="toc-GNU-troff-Capabilities-1" href="GNU-troff-Capabilities.html#GNU-troff-Capabilities">1.3 GNU <code>troff</code> Capabilities</a></li>
+    <li><a id="toc-Macro-Packages-1" href="Macro-Package-Intro.html#Macro-Package-Intro">1.4 Macro Packages</a></li>
+    <li><a id="toc-Preprocessors" href="Preprocessor-Intro.html#Preprocessor-Intro">1.5 Preprocessors</a></li>
+    <li><a id="toc-Output-Devices-1" href="Output-Device-Intro.html#Output-Device-Intro">1.6 Output Devices</a></li>
+    <li><a id="toc-Installation-1" href="Installation.html#Installation">1.7 Installation</a></li>
+    <li><a id="toc-Conventions-Used-in-This-Manual-1" href="Conventions-Used-in-This-Manual.html#Conventions-Used-in-This-Manual">1.8 Conventions Used in This Manual</a></li>
+    <li><a id="toc-Credits-1" href="Credits.html#Credits">1.9 Credits</a></li>
+  </ul></li>
+  <li><a id="toc-Invoking-groff-1" href="Invoking-groff.html#Invoking-groff">2 Invoking <code>groff</code></a>
+  <ul class="no-bullet">
+    <li><a id="toc-Options" href="Groff-Options.html#Groff-Options">2.1 Options</a></li>
+    <li><a id="toc-Environment-1" href="Environment.html#Environment">2.2 Environment</a></li>
+    <li><a id="toc-Macro-Directories-1" href="Macro-Directories.html#Macro-Directories">2.3 Macro Directories</a></li>
+    <li><a id="toc-Font-Directories-1" href="Font-Directories.html#Font-Directories">2.4 Font Directories</a></li>
+    <li><a id="toc-Paper-Format-1" href="Paper-Format.html#Paper-Format">2.5 Paper Format</a></li>
+    <li><a id="toc-Invocation-Examples-1" href="Invocation-Examples.html#Invocation-Examples">2.6 Invocation Examples</a></li>
+  </ul></li>
+  <li><a id="toc-Tutorial-for-Macro-Package-Users-1" href="Tutorial-for-Macro-Package-Users.html#Tutorial-for-Macro-Package-Users">3 Tutorial for Macro Package Users</a>
+  <ul class="no-bullet">
+    <li><a id="toc-Basics-1" href="Basics.html#Basics">3.1 Basics</a></li>
+    <li><a id="toc-Common-Features-1" href="Common-Features.html#Common-Features">3.2 Common Features</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Paragraphs-1" href="Paragraphs.html#Paragraphs">3.2.1 Paragraphs</a></li>
+      <li><a id="toc-Sections-and-Chapters-1" href="Sections-and-Chapters.html#Sections-and-Chapters">3.2.2 Sections and Chapters</a></li>
+      <li><a id="toc-Headers-and-Footers-1" href="Headers-and-Footers.html#Headers-and-Footers">3.2.3 Headers and Footers</a></li>
+      <li><a id="toc-Page-Layout-1" href="Page-Layout-Adjustment.html#Page-Layout-Adjustment">3.2.4 Page Layout</a></li>
+      <li><a id="toc-Displays-and-Keeps-1" href="Displays-and-Keeps.html#Displays-and-Keeps">3.2.5 Displays and Keeps</a></li>
+      <li><a id="toc-Footnotes-and-Endnotes-1" href="Footnotes-and-Endnotes.html#Footnotes-and-Endnotes">3.2.6 Footnotes and Endnotes</a></li>
+      <li><a id="toc-Table-of-Contents-1" href="Table-of-Contents.html#Table-of-Contents">3.2.7 Table of Contents</a></li>
+      <li><a id="toc-Indexing-1" href="Indexing.html#Indexing">3.2.8 Indexing</a></li>
+      <li><a id="toc-Document-Formats-1" href="Document-Formats.html#Document-Formats">3.2.9 Document Formats</a></li>
+      <li><a id="toc-Columnation-1" href="Columnation.html#Columnation">3.2.10 Columnation</a></li>
+      <li><a id="toc-Font-and-Size-Changes-1" href="Font-and-Size-Changes.html#Font-and-Size-Changes">3.2.11 Font and Size Changes</a></li>
+      <li><a id="toc-Predefined-Text-1" href="Predefined-Text.html#Predefined-Text">3.2.12 Predefined Text</a></li>
+      <li><a id="toc-Preprocessor-Support-1" href="Preprocessor-Support.html#Preprocessor-Support">3.2.13 Preprocessor Support</a></li>
+      <li><a id="toc-Configuration-and-Customization-1" href="Configuration-and-Customization.html#Configuration-and-Customization">3.2.14 Configuration and Customization</a></li>
+    </ul></li>
+  </ul></li>
+  <li><a id="toc-Macro-Packages-2" href="Major-Macro-Packages.html#Major-Macro-Packages">4 Macro Packages</a>
+  <ul class="no-bullet">
+    <li><a id="toc-man-1" href="man.html#man">4.1 <samp>man</samp></a>
+    <ul class="no-bullet">
+      <li><a id="toc-Optional-man-extensions-1" href="Optional-man-extensions.html#Optional-man-extensions">4.1.1 Optional <samp>man</samp> extensions</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Custom-headers-and-footers" href="Optional-man-extensions.html#Custom-headers-and-footers">Custom headers and footers</a></li>
+        <li><a id="toc-Ultrix_002dspecific-man-macros" href="Optional-man-extensions.html#Ultrix_002dspecific-man-macros">Ultrix-specific man macros</a></li>
+        <li><a id="toc-Simple-example" href="Optional-man-extensions.html#Simple-example">Simple example</a></li>
+      </ul></li>
+    </ul></li>
+    <li><a id="toc-mdoc-1" href="mdoc.html#mdoc">4.2 <samp>mdoc</samp></a></li>
+    <li><a id="toc-me-1" href="me.html#me">4.3 <samp>me</samp></a></li>
+    <li><a id="toc-mm-1" href="mm.html#mm">4.4 <samp>mm</samp></a></li>
+    <li><a id="toc-mom-1" href="mom.html#mom">4.5 <samp>mom</samp></a></li>
+    <li><a id="toc-ms-1" href="ms.html#ms">4.6 <samp>ms</samp></a>
+    <ul class="no-bullet">
+      <li><a id="toc-Introduction-2" href="ms-Introduction.html#ms-Introduction">4.6.1 Introduction</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Basic-information" href="ms-basic-information.html#ms-basic-information">4.6.1.1 Basic information</a></li>
+      </ul></li>
+      <li><a id="toc-Document-Structure" href="ms-Document-Structure.html#ms-Document-Structure">4.6.2 Document Structure</a></li>
+      <li><a id="toc-Document-Control-Settings" href="ms-Document-Control-Settings.html#ms-Document-Control-Settings">4.6.3 Document Control Settings</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Margin-settings" href="ms-Document-Control-Settings.html#Margin-settings">Margin settings</a></li>
+        <li><a id="toc-Titles-_0028headers_002c-footers_0029" href="ms-Document-Control-Settings.html#Titles-_0028headers_002c-footers_0029">Titles (headers, footers)</a></li>
+        <li><a id="toc-Text-settings" href="ms-Document-Control-Settings.html#Text-settings">Text settings</a></li>
+        <li><a id="toc-Paragraph-settings" href="ms-Document-Control-Settings.html#Paragraph-settings">Paragraph settings</a></li>
+        <li><a id="toc-Heading-settings" href="ms-Document-Control-Settings.html#Heading-settings">Heading settings</a></li>
+        <li><a id="toc-Footnote-settings" href="ms-Document-Control-Settings.html#Footnote-settings">Footnote settings</a></li>
+        <li><a id="toc-Display-settings" href="ms-Document-Control-Settings.html#Display-settings">Display settings</a></li>
+        <li><a id="toc-Other-settings" href="ms-Document-Control-Settings.html#Other-settings">Other settings</a></li>
+      </ul></li>
+      <li><a id="toc-Document-Description-Macros" href="ms-Document-Description-Macros.html#ms-Document-Description-Macros">4.6.4 Document Description Macros</a></li>
+      <li><a id="toc-Body-Text" href="ms-Body-Text.html#ms-Body-Text">4.6.5 Body Text</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Text-settings-1" href="Text-settings-in-ms.html#Text-settings-in-ms">4.6.5.1 Text settings</a></li>
+        <li><a id="toc-Typographical-symbols" href="Typographical-symbols-in-ms.html#Typographical-symbols-in-ms">4.6.5.2 Typographical symbols</a></li>
+        <li><a id="toc-Paragraphs-2" href="Paragraphs-in-ms.html#Paragraphs-in-ms">4.6.5.3 Paragraphs</a></li>
+        <li><a id="toc-Headings" href="Headings-in-ms.html#Headings-in-ms">4.6.5.4 Headings</a></li>
+        <li><a id="toc-Typeface-and-decoration-1" href="Typeface-and-decoration.html#Typeface-and-decoration">4.6.5.5 Typeface and decoration</a></li>
+        <li><a id="toc-Lists" href="Lists-in-ms.html#Lists-in-ms">4.6.5.6 Lists</a></li>
+        <li><a id="toc-Indented-regions" href="Indented-regions-in-ms.html#Indented-regions-in-ms">4.6.5.7 Indented regions</a></li>
+        <li><a id="toc-Keeps_002c-boxed-keeps_002c-and-displays" href="ms-keeps-and-displays.html#ms-keeps-and-displays">4.6.5.8 Keeps, boxed keeps, and displays</a></li>
+        <li><a id="toc-Tables_002c-figures_002c-equations_002c-and-references" href="ms-Insertions.html#ms-Insertions">4.6.5.9 Tables, figures, equations, and references</a></li>
+        <li><a id="toc-Footnotes" href="ms-Footnotes.html#ms-Footnotes">4.6.5.10 Footnotes</a></li>
+        <li><a id="toc-Language-and-localization" href="ms-language-and-localization.html#ms-language-and-localization">4.6.5.11 Language and localization</a></li>
+      </ul></li>
+      <li><a id="toc-Page-layout" href="ms-Page-Layout.html#ms-Page-Layout">4.6.6 Page layout</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Headers-and-footers" href="ms-Headers-and-Footers.html#ms-Headers-and-Footers">4.6.6.1 Headers and footers</a></li>
+        <li><a id="toc-Tab-stops" href="Tab-Stops-in-ms.html#Tab-Stops-in-ms">4.6.6.2 Tab stops</a></li>
+        <li><a id="toc-Margins" href="ms-Margins.html#ms-Margins">4.6.6.3 Margins</a></li>
+        <li><a id="toc-Multiple-columns" href="ms-Multiple-Columns.html#ms-Multiple-Columns">4.6.6.4 Multiple columns</a></li>
+        <li><a id="toc-Creating-a-table-of-contents" href="ms-TOC.html#ms-TOC">4.6.6.5 Creating a table of contents</a></li>
+      </ul></li>
+      <li><a id="toc-Differences-from-AT_0026T-ms-1" href="Differences-from-AT_0026T-ms.html#Differences-from-AT_0026T-ms">4.6.7 Differences from <acronym>AT&amp;T</acronym> <samp>ms</samp></a>
+      <ul class="no-bullet">
+        <li><a id="toc-Unix-Version-7-ms-macros-unimplemented-by-groff-ms" href="Missing-Unix-Version-7-ms-Macros.html#Missing-Unix-Version-7-ms-Macros">4.6.7.1 Unix Version 7 <samp>ms</samp> macros unimplemented by <code>groff</code> <samp>ms</samp></a></li>
+      </ul></li>
+      <li><a id="toc-Legacy-Features" href="ms-Legacy-Features.html#ms-Legacy-Features">4.6.8 Legacy Features</a>
+      <ul class="no-bullet">
+        <li><a id="toc-AT_0026T-accent-mark-strings" href="ms-Legacy-Features.html#AT_0026T-accent-mark-strings">AT&amp;T accent mark strings</a></li>
+        <li><a id="toc-Berkeley-accent-mark-and-glyph-strings" href="ms-Legacy-Features.html#Berkeley-accent-mark-and-glyph-strings">Berkeley accent mark and glyph strings</a></li>
+      </ul></li>
+      <li><a id="toc-Naming-Conventions-1" href="ms-Naming-Conventions.html#ms-Naming-Conventions">4.6.9 Naming Conventions</a></li>
+    </ul></li>
+  </ul></li>
+  <li><a id="toc-GNU-troff-Reference-1" href="GNU-troff-Reference.html#GNU-troff-Reference">5 GNU <code>troff</code> Reference</a>
+  <ul class="no-bullet">
+    <li><a id="toc-Text-1" href="Text.html#Text">5.1 Text</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Filling-1" href="Filling.html#Filling">5.1.1 Filling</a></li>
+      <li><a id="toc-Sentences-1" href="Sentences.html#Sentences">5.1.2 Sentences</a></li>
+      <li><a id="toc-Hyphenation-1" href="Hyphenation.html#Hyphenation">5.1.3 Hyphenation</a></li>
+      <li><a id="toc-Breaking-1" href="Breaking.html#Breaking">5.1.4 Breaking</a></li>
+      <li><a id="toc-Adjustment-1" href="Adjustment.html#Adjustment">5.1.5 Adjustment</a></li>
+      <li><a id="toc-Tabs-and-Leaders-1" href="Tabs-and-Leaders.html#Tabs-and-Leaders">5.1.6 Tabs and Leaders</a></li>
+      <li><a id="toc-Requests-and-Macros-1" href="Requests-and-Macros.html#Requests-and-Macros">5.1.7 Requests and Macros</a></li>
+      <li><a id="toc-Macro-Packages-3" href="Macro-Packages.html#Macro-Packages">5.1.8 Macro Packages</a></li>
+      <li><a id="toc-Input-Format-1" href="Input-Format.html#Input-Format">5.1.9 Input Format</a></li>
+      <li><a id="toc-Input-Encodings-1" href="Input-Encodings.html#Input-Encodings">5.1.10 Input Encodings</a></li>
+      <li><a id="toc-Input-Conventions-1" href="Input-Conventions.html#Input-Conventions">5.1.11 Input Conventions</a></li>
+    </ul></li>
+    <li><a id="toc-Page-Geometry-1" href="Page-Geometry.html#Page-Geometry">5.2 Page Geometry</a></li>
+    <li><a id="toc-Measurements-1" href="Measurements.html#Measurements">5.3 Measurements</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Motion-Quanta-1" href="Motion-Quanta.html#Motion-Quanta">5.3.1 Motion Quanta</a></li>
+      <li><a id="toc-Default-Units-1" href="Default-Units.html#Default-Units">5.3.2 Default Units</a></li>
+    </ul></li>
+    <li><a id="toc-Numeric-Expressions-1" href="Numeric-Expressions.html#Numeric-Expressions">5.4 Numeric Expressions</a></li>
+    <li><a id="toc-Identifiers-1" href="Identifiers.html#Identifiers">5.5 Identifiers</a></li>
+    <li><a id="toc-Formatter-Instructions-1" href="Formatter-Instructions.html#Formatter-Instructions">5.6 Formatter Instructions</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Control-Characters-1" href="Control-Characters.html#Control-Characters">5.6.1 Control Characters</a></li>
+      <li><a id="toc-Invoking-Requests-1" href="Invoking-Requests.html#Invoking-Requests">5.6.2 Invoking Requests</a></li>
+      <li><a id="toc-Calling-Macros-1" href="Calling-Macros.html#Calling-Macros">5.6.3 Calling Macros</a></li>
+      <li><a id="toc-Using-Escape-Sequences-1" href="Using-Escape-Sequences.html#Using-Escape-Sequences">5.6.4 Using Escape Sequences</a></li>
+      <li><a id="toc-Delimiters-1" href="Delimiters.html#Delimiters">5.6.5 Delimiters</a></li>
+    </ul></li>
+    <li><a id="toc-Comments-1" href="Comments.html#Comments">5.7 Comments</a></li>
+    <li><a id="toc-Registers-1" href="Registers.html#Registers">5.8 Registers</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Setting-Registers-1" href="Setting-Registers.html#Setting-Registers">5.8.1 Setting Registers</a></li>
+      <li><a id="toc-Interpolating-Registers-1" href="Interpolating-Registers.html#Interpolating-Registers">5.8.2 Interpolating Registers</a></li>
+      <li><a id="toc-Auto_002dincrement-1" href="Auto_002dincrement.html#Auto_002dincrement">5.8.3 Auto-increment</a></li>
+      <li><a id="toc-Assigning-Register-Formats-1" href="Assigning-Register-Formats.html#Assigning-Register-Formats">5.8.4 Assigning Register Formats</a></li>
+      <li><a id="toc-Built_002din-Registers-1" href="Built_002din-Registers.html#Built_002din-Registers">5.8.5 Built-in Registers</a></li>
+    </ul></li>
+    <li><a id="toc-Manipulating-Filling-and-Adjustment-1" href="Manipulating-Filling-and-Adjustment.html#Manipulating-Filling-and-Adjustment">5.9 Manipulating Filling and Adjustment</a></li>
+    <li><a id="toc-Manipulating-Hyphenation-1" href="Manipulating-Hyphenation.html#Manipulating-Hyphenation">5.10 Manipulating Hyphenation</a></li>
+    <li><a id="toc-Manipulating-Spacing-1" href="Manipulating-Spacing.html#Manipulating-Spacing">5.11 Manipulating Spacing</a></li>
+    <li><a id="toc-Tabs-and-Fields-1" href="Tabs-and-Fields.html#Tabs-and-Fields">5.12 Tabs and Fields</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Leaders-1" href="Leaders.html#Leaders">5.12.1 Leaders</a></li>
+      <li><a id="toc-Fields-1" href="Fields.html#Fields">5.12.2 Fields</a></li>
+    </ul></li>
+    <li><a id="toc-Character-Translations-1" href="Character-Translations.html#Character-Translations">5.13 Character Translations</a></li>
+    <li><a id="toc-troff-and-nroff-Modes-1" href="troff-and-nroff-Modes.html#troff-and-nroff-Modes">5.14 <code>troff</code> and <code>nroff</code> Modes</a></li>
+    <li><a id="toc-Line-Layout-1" href="Line-Layout.html#Line-Layout">5.15 Line Layout</a></li>
+    <li><a id="toc-Line-Continuation-1" href="Line-Continuation.html#Line-Continuation">5.16 Line Continuation</a></li>
+    <li><a id="toc-Page-Layout-2" href="Page-Layout.html#Page-Layout">5.17 Page Layout</a></li>
+    <li><a id="toc-Page-Control-1" href="Page-Control.html#Page-Control">5.18 Page Control</a></li>
+    <li><a id="toc-Using-Fonts-1" href="Using-Fonts.html#Using-Fonts">5.19 Using Fonts</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Selecting-Fonts-1" href="Selecting-Fonts.html#Selecting-Fonts">5.19.1 Selecting Fonts</a></li>
+      <li><a id="toc-Font-Families-1" href="Font-Families.html#Font-Families">5.19.2 Font Families</a></li>
+      <li><a id="toc-Font-Positions-1" href="Font-Positions.html#Font-Positions">5.19.3 Font Positions</a></li>
+      <li><a id="toc-Characters-and-Glyphs-1" href="Characters-and-Glyphs.html#Characters-and-Glyphs">5.19.4 Characters and Glyphs</a></li>
+      <li><a id="toc-Character-Classes-1" href="Character-Classes.html#Character-Classes">5.19.5 Character Classes</a></li>
+      <li><a id="toc-Special-Fonts-1" href="Special-Fonts.html#Special-Fonts">5.19.6 Special Fonts</a></li>
+      <li><a id="toc-Artificial-Fonts-1" href="Artificial-Fonts.html#Artificial-Fonts">5.19.7 Artificial Fonts</a></li>
+      <li><a id="toc-Ligatures-and-Kerning-1" href="Ligatures-and-Kerning.html#Ligatures-and-Kerning">5.19.8 Ligatures and Kerning</a></li>
+      <li><a id="toc-Italic-Corrections-1" href="Italic-Corrections.html#Italic-Corrections">5.19.9 Italic Corrections</a></li>
+      <li><a id="toc-Dummy-Characters-1" href="Dummy-Characters.html#Dummy-Characters">5.19.10 Dummy Characters</a></li>
+    </ul></li>
+    <li><a id="toc-Manipulating-Type-Size-and-Vertical-Spacing-1" href="Manipulating-Type-Size-and-Vertical-Spacing.html#Manipulating-Type-Size-and-Vertical-Spacing">5.20 Manipulating Type Size and Vertical Spacing</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Changing-the-Type-Size-1" href="Changing-the-Type-Size.html#Changing-the-Type-Size">5.20.1 Changing the Type Size</a></li>
+      <li><a id="toc-Changing-the-Vertical-Spacing-1" href="Changing-the-Vertical-Spacing.html#Changing-the-Vertical-Spacing">5.20.2 Changing the Vertical Spacing</a></li>
+      <li><a id="toc-Using-Fractional-Type-Sizes-1" href="Using-Fractional-Type-Sizes.html#Using-Fractional-Type-Sizes">5.20.3 Using Fractional Type Sizes</a></li>
+    </ul></li>
+    <li><a id="toc-Colors-1" href="Colors.html#Colors">5.21 Colors</a></li>
+    <li><a id="toc-Strings-1" href="Strings.html#Strings">5.22 Strings</a></li>
+    <li><a id="toc-Conditionals-and-Loops-1" href="Conditionals-and-Loops.html#Conditionals-and-Loops">5.23 Conditionals and Loops</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Operators-in-Conditionals-1" href="Operators-in-Conditionals.html#Operators-in-Conditionals">5.23.1 Operators in Conditionals</a></li>
+      <li><a id="toc-if_002dthen-1" href="if_002dthen.html#if_002dthen">5.23.2 if-then</a></li>
+      <li><a id="toc-if_002delse-1" href="if_002delse.html#if_002delse">5.23.3 if-else</a></li>
+      <li><a id="toc-Conditional-Blocks-1" href="Conditional-Blocks.html#Conditional-Blocks">5.23.4 Conditional Blocks</a></li>
+      <li><a id="toc-while-1" href="while.html#while">5.23.5 while</a></li>
+    </ul></li>
+    <li><a id="toc-Writing-Macros-1" href="Writing-Macros.html#Writing-Macros">5.24 Writing Macros</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Parameters-1" href="Parameters.html#Parameters">5.24.1 Parameters</a></li>
+      <li><a id="toc-Copy-Mode-1" href="Copy-Mode.html#Copy-Mode">5.24.2 Copy Mode</a></li>
+    </ul></li>
+    <li><a id="toc-Page-Motions-1" href="Page-Motions.html#Page-Motions">5.25 Page Motions</a></li>
+    <li><a id="toc-Output-Line-Annotation-1" href="Output-Line-Annotation.html#Output-Line-Annotation">5.26 Output Line Annotation</a></li>
+    <li><a id="toc-Drawing-Geometric-Objects-1" href="Drawing-Geometric-Objects.html#Drawing-Geometric-Objects">5.27 Drawing Geometric Objects</a></li>
+    <li><a id="toc-Deferring-Output-1" href="Deferring-Output.html#Deferring-Output">5.28 Deferring Output</a></li>
+    <li><a id="toc-Traps-1" href="Traps.html#Traps">5.29 Traps</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Vertical-Position-Traps-1" href="Vertical-Position-Traps.html#Vertical-Position-Traps">5.29.1 Vertical Position Traps</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Page-Location-Traps-1" href="Page-Location-Traps.html#Page-Location-Traps">5.29.1.1 Page Location Traps</a></li>
+        <li><a id="toc-The-Implicit-Page-Trap-1" href="The-Implicit-Page-Trap.html#The-Implicit-Page-Trap">5.29.1.2 The Implicit Page Trap</a></li>
+        <li><a id="toc-Diversion-Traps-1" href="Diversion-Traps.html#Diversion-Traps">5.29.1.3 Diversion Traps</a></li>
+      </ul></li>
+      <li><a id="toc-Input-Line-Traps-1" href="Input-Line-Traps.html#Input-Line-Traps">5.29.2 Input Line Traps</a></li>
+      <li><a id="toc-Blank-Line-Traps-1" href="Blank-Line-Traps.html#Blank-Line-Traps">5.29.3 Blank Line Traps</a></li>
+      <li><a id="toc-Leading-Space-Traps-1" href="Leading-Space-Traps.html#Leading-Space-Traps">5.29.4 Leading Space Traps</a></li>
+      <li><a id="toc-End_002dof_002dinput-Traps-1" href="End_002dof_002dinput-Traps.html#End_002dof_002dinput-Traps">5.29.5 End-of-input Traps</a></li>
+    </ul></li>
+    <li><a id="toc-Diversions-1" href="Diversions.html#Diversions">5.30 Diversions</a></li>
+    <li><a id="toc-Punning-Names-1" href="Punning-Names.html#Punning-Names">5.31 Punning Names</a></li>
+    <li><a id="toc-Environments-1" href="Environments.html#Environments">5.32 Environments</a></li>
+    <li><a id="toc-Suppressing-Output-1" href="Suppressing-Output.html#Suppressing-Output">5.33 Suppressing Output</a></li>
+    <li><a id="toc-Host-System-Service-Access-1" href="Host-System-Service-Access.html#Host-System-Service-Access">5.34 Host System Service Access</a></li>
+    <li><a id="toc-Postprocessor-Access-1" href="Postprocessor-Access.html#Postprocessor-Access">5.35 Postprocessor Access</a></li>
+    <li><a id="toc-Miscellaneous-1" href="Miscellaneous.html#Miscellaneous">5.36 Miscellaneous</a></li>
+    <li><a id="toc-GNU-troff-Internals-1" href="GNU-troff-Internals.html#GNU-troff-Internals">5.37 GNU <code>troff</code> Internals</a></li>
+    <li><a id="toc-Debugging-1" href="Debugging.html#Debugging">5.38 Debugging</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Warnings-1" href="Warnings.html#Warnings">5.38.1 Warnings</a></li>
+    </ul></li>
+    <li><a id="toc-Implementation-Differences-1" href="Implementation-Differences.html#Implementation-Differences">5.39 Implementation Differences</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Safer-Mode-1" href="Safer-Mode.html#Safer-Mode">5.39.1 Safer Mode</a></li>
+      <li><a id="toc-Compatibility-Mode-1" href="Compatibility-Mode.html#Compatibility-Mode">5.39.2 Compatibility Mode</a></li>
+      <li><a id="toc-Other-Differences-1" href="Other-Differences.html#Other-Differences">5.39.3 Other Differences</a></li>
+    </ul></li>
+  </ul></li>
+  <li><a id="toc-File-Formats-1" href="File-Formats.html#File-Formats">6 File Formats</a>
+  <ul class="no-bullet">
+    <li><a id="toc-Device-and-Font-Description-Files-1" href="Device-and-Font-Description-Files.html#Device-and-Font-Description-Files">6.1 Device and Font Description Files</a>
+    <ul class="no-bullet">
+      <li><a id="toc-DESC-File-Format-1" href="DESC-File-Format.html#DESC-File-Format">6.1.1 <samp>DESC</samp> File Format</a></li>
+      <li><a id="toc-Font-Description-File-Format-1" href="Font-Description-File-Format.html#Font-Description-File-Format">6.1.2 Font Description File Format</a></li>
+    </ul></li>
+    <li><a id="toc-GNU-troff-Output-1" href="GNU-troff-Output.html#GNU-troff-Output">6.2 GNU <code>troff</code> Output</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Language-Concepts-1" href="Language-Concepts.html#Language-Concepts">6.2.1 Language Concepts</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Syntax-1" href="Syntax.html#Syntax">6.2.1.1 Syntax</a></li>
+        <li><a id="toc-Argument-Units-1" href="Argument-Units.html#Argument-Units">6.2.1.2 Argument Units</a></li>
+        <li><a id="toc-Output-Structure-1" href="Output-Structure.html#Output-Structure">6.2.1.3 Output Structure</a></li>
+      </ul></li>
+      <li><a id="toc-Command-Reference-1" href="Command-Reference.html#Command-Reference">6.2.2 Command Reference</a>
+      <ul class="no-bullet">
+        <li><a id="toc-Comment-Command-1" href="Comment-Command.html#Comment-Command">6.2.2.1 Comment Command</a></li>
+        <li><a id="toc-Simple-Commands-1" href="Simple-Commands.html#Simple-Commands">6.2.2.2 Simple Commands</a></li>
+        <li><a id="toc-Graphics-Commands-1" href="Graphics-Commands.html#Graphics-Commands">6.2.2.3 Graphics Commands</a></li>
+        <li><a id="toc-Device-Control-Commands-1" href="Device-Control-Commands.html#Device-Control-Commands">6.2.2.4 Device Control Commands</a></li>
+        <li><a id="toc-Legacy-Compressed-Encoding-1" href="Legacy-Compressed-Encoding.html#Legacy-Compressed-Encoding">6.2.2.5 Legacy Compressed Encoding</a></li>
+      </ul></li>
+      <li><a id="toc-GNU-troff-Output-Examples-1" href="GNU-troff-Output-Examples.html#GNU-troff-Output-Examples">6.2.3 GNU <code>troff</code> Output Examples</a></li>
+      <li><a id="toc-Output-Language-Compatibility-1" href="Output-Language-Compatibility.html#Output-Language-Compatibility">6.2.4 Output Language Compatibility</a></li>
+    </ul></li>
+  </ul></li>
+  <li><a id="toc-Copying-This-Manual-1" href="Copying-This-Manual.html#Copying-This-Manual">Appendix A Copying This Manual</a></li>
+  <li><a id="toc-Request-Index-1" href="Request-Index.html#Request-Index" rel="index">Appendix B Request Index</a></li>
+  <li><a id="toc-Escape-Sequence-Index-1" href="Escape-Sequence-Index.html#Escape-Sequence-Index" rel="index">Appendix C Escape Sequence Index</a></li>
+  <li><a id="toc-Operator-Index-1" href="Operator-Index.html#Operator-Index" rel="index">Appendix D Operator Index</a></li>
+  <li><a id="toc-Register-Index-1" href="Register-Index.html#Register-Index" rel="index">Appendix E Register Index</a></li>
+  <li><a id="toc-Macro-Index-1" href="Macro-Index.html#Macro-Index" rel="index">Appendix F Macro Index</a></li>
+  <li><a id="toc-String-Index-1" href="String-Index.html#String-Index" rel="index">Appendix G String Index</a></li>
+  <li><a id="toc-File-Keyword-Index-1" href="File-Keyword-Index.html#File-Keyword-Index" rel="index">Appendix H File Keyword Index</a></li>
+  <li><a id="toc-Program-and-File-Index-1" href="Program-and-File-Index.html#Program-and-File-Index" rel="index">Appendix I Program and File Index</a></li>
+  <li><a id="toc-Concept-Index-1" href="Concept-Index.html#Concept-Index" rel="index">Appendix J Concept Index</a></li>
+</ul>
+</div>
+
+
+<span id="Top"></span><div class="header">
+<p>
+Next: <a href="Introduction.html" accesskey="n" rel="next">Introduction</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="GNU-troff"></span><h1 class="top">GNU <code>troff</code></h1>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Introduction.html" accesskey="1">Introduction</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Invoking-groff.html" accesskey="2">Invoking groff</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Tutorial-for-Macro-Package-Users.html" accesskey="3">Tutorial for Macro Package Users</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Major-Macro-Packages.html" accesskey="4">Major Macro Packages</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="GNU-troff-Reference.html" accesskey="5">GNU <code>troff</code> Reference</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="File-Formats.html" accesskey="6">File Formats</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Copying-This-Manual.html" accesskey="7">Copying This Manual</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Request-Index.html" rel="index" accesskey="8">Request Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Escape-Sequence-Index.html" rel="index" accesskey="9">Escape Sequence Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Operator-Index.html" rel="index">Operator Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Register-Index.html" rel="index">Register Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Macro-Index.html" rel="index">Macro Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Index.html" rel="index">String Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="File-Keyword-Index.html" rel="index">File Keyword Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Program-and-File-Index.html" rel="index">Program and File Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Concept-Index.html" rel="index">Concept Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<p>This manual documents GNU <code>troff</code> version 1.24.0.
+</p>
+<div class="display">
+<pre class="display">Copyright &copy; 1994&ndash;2018 Free Software Foundation, Inc.
+Copyright &copy; 2018&ndash;2026 G. Branden Robinson
+</pre></div>
+
+<blockquote>
+<p>Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled &ldquo;GNU Free
+Documentation License&rdquo;.
+</p></blockquote>
+
+
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Introduction.html" accesskey="n" rel="next">Introduction</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

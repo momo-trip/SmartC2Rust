@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Optional man extensions (The GNU troff Manual)</title>
+
+<meta name="description" content="Optional man extensions (The GNU troff Manual)">
+<meta name="keywords" content="Optional man extensions (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="man.html" rel="up" title="man">
+<link href="mdoc.html" rel="next" title="mdoc">
+<link href="man.html" rel="prev" title="man">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Optional-man-extensions"></span><div class="header">
+<p>
+Up: <a href="man.html" accesskey="u" rel="up">man</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="index-customizing-man-package"></span>
+<span id="Optional-man-extensions-1"></span><h4 class="subsection">4.1.1 Optional <samp>man</samp> extensions</h4>
+
+<span id="index-man_002elocal"></span>
+<p>Use the file <samp>man.local</samp> to configure its rendering parameters on a
+persistent basis.  With care, its macros can be redefined there (except
+for <code>TH</code>, to which one should, at most, append with the <code>am</code>
+family of requests).
+</p>
+<span id="Custom-headers-and-footers"></span><h4 class="unnumberedsubsubsec">Custom headers and footers</h4>
+<span id="index-man-macros_002c-customizing-headers-and-footers-of"></span>
+
+<p>In <code>groff</code> versions 1.18.2 and later, you can specify custom
+headers and footers by redefining the following macros in
+<samp>man.local</samp>.
+</p>
+<dl>
+<dt id="index-_002ePT">Macro: <strong><tt>.PT</tt></strong></dt>
+<dd><span id="index-PT-_005bman_005d"></span>
+<p>Control the content of the headers.  Normally, the header prints the
+command name and section number on either side, and the optional fifth
+argument to <code>TH</code> in the center.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eBT">Macro: <strong><tt>.BT</tt></strong></dt>
+<dd><span id="index-BT-_005bman_005d"></span>
+<p>Control the content of the footers.  Normally, the footer prints the
+page number and the third and fourth arguments to <code>TH</code>.
+</p>
+<p>Use the <code>FT</code> register to specify the footer position.  The default
+is -0.5i.
+</p></dd></dl>
+
+<span id="Ultrix_002dspecific-man-macros"></span><h4 class="unnumberedsubsubsec">Ultrix-specific man macros</h4>
+<span id="index-Ultrix_002dspecific-man-macros"></span>
+<span id="index-man-macros_002c-Ultrix_002dspecific"></span>
+
+<span id="index-man_002eultrix"></span>
+<p>The <code>groff</code> source distribution includes a file named
+<samp>man.ultrix</samp>, containing macros compatible with the Ultrix variant
+of <code>man</code>.  Copy this file into <samp>man.local</samp> (or use the
+<code>mso</code> request to load it) to enable the following macros.
+</p>
+<dl>
+<dt id="index-_002eCT">Macro: <strong><tt>.CT</tt></strong> <em><span class="roman"><i>key</i></span></em></dt>
+<dd><span id="index-CT-_005bman_005d"></span>
+<p>Print &lsquo;<samp>&lt;CTRL/<var>key</var>&gt;</samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eCW">Macro: <strong><tt>.CW</tt></strong></dt>
+<dd><span id="index-CW-_005bman_005d"></span>
+<p>Print subsequent text using a &ldquo;constant-width&rdquo; (monospaced) typeface
+(Courier roman).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eDs">Macro: <strong><tt>.Ds</tt></strong></dt>
+<dd><span id="index-Ds-_005bman_005d"></span>
+<p>Begin a non-filled display.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eDe">Macro: <strong><tt>.De</tt></strong></dt>
+<dd><span id="index-De-_005bman_005d"></span>
+<p>End a non-filled display started with <code>Ds</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eEX">Macro: <strong><tt>.EX</tt></strong> <em>[<span class="roman"><i>indent</i></span>]</em></dt>
+<dd><span id="index-EX-_005bman_005d"></span>
+<p>Begin a non-filled display using a monospaced typeface (Courier roman).
+Use the optional <var>indent</var> argument to indent the display.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eEE">Macro: <strong><tt>.EE</tt></strong></dt>
+<dd><span id="index-EE-_005bman_005d"></span>
+<p>End a non-filled display started with <code>EX</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eG">Macro: <strong><tt>.G</tt></strong> <em>[<span class="roman"><i>text</i></span>]</em></dt>
+<dd><span id="index-G-_005bman_005d"></span>
+<p>Set <var>text</var> in Helvetica.  If no text is present on the line where
+the macro is called, then the text of the next line appears in
+Helvetica.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eGL">Macro: <strong><tt>.GL</tt></strong> <em>[<span class="roman"><i>text</i></span>]</em></dt>
+<dd><span id="index-GL-_005bman_005d"></span>
+<p>Set <var>text</var> in Helvetica oblique.  If no text is present on the line
+where the macro is called, then the text of the next line appears in
+Helvetica Oblique.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eHB">Macro: <strong><tt>.HB</tt></strong> <em>[<span class="roman"><i>text</i></span>]</em></dt>
+<dd><span id="index-HB-_005bman_005d"></span>
+<p>Set <var>text</var> in Helvetica bold.  If no text is present on the line
+where the macro is called, then all text up to the next <code>HB</code>
+appears in Helvetica bold.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eTB">Macro: <strong><tt>.TB</tt></strong> <em>[<span class="roman"><i>text</i></span>]</em></dt>
+<dd><span id="index-TB-_005bman_005d"></span>
+<p>Identical to <code>HB</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eMS">Macro: <strong><tt>.MS</tt></strong> <em><span class="roman"><i>title</i></span> <span class="roman"><i>sect</i></span> [<span class="roman"><i>punct</i></span>]</em></dt>
+<dd><span id="index-MS-_005bman_005d"></span>
+<p>Set a man page reference in Ultrix format.  The <var>title</var> is in
+Courier instead of italic.  Optional punctuation follows the section
+number without an intervening space.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eNT">Macro: <strong><tt>.NT</tt></strong> <em>[<code>C</code>] [<span class="roman"><i>title</i></span>]</em></dt>
+<dd><span id="index-NT-_005bman_005d"></span>
+<p>Begin a note.  Print the optional <span class="roman"><i>title</i></span>, or the word &ldquo;Note&rdquo;,
+centered on the page.  Text following the macro makes up the body of the
+note, and is indented on both sides.  If the first argument is <code>C</code>,
+the body of the note is printed centered (the second argument replaces
+the word &ldquo;Note&rdquo; if specified).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eNE">Macro: <strong><tt>.NE</tt></strong></dt>
+<dd><span id="index-NE-_005bman_005d"></span>
+<p>End a note begun with <code>NT</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ePN">Macro: <strong><tt>.PN</tt></strong> <em><span class="roman"><i>path</i></span> [<span class="roman"><i>punct</i></span>]</em></dt>
+<dd><span id="index-PN-_005bman_005d"></span>
+<p>Set the path name in a monospaced typeface (Courier roman), followed by
+optional punctuation.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ePn">Macro: <strong><tt>.Pn</tt></strong> <em>[<span class="roman"><i>punct</i></span>] <span class="roman"><i>path</i></span> [<span class="roman"><i>punct</i></span>]</em></dt>
+<dd><span id="index-Pn-_005bman_005d"></span>
+<p>If called with two arguments, identical to <code>PN</code>.  If called with
+three arguments, set the second argument in a monospaced typeface
+(Courier roman), bracketed by the first and third arguments in the
+current font.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eR">Macro: <strong><tt>.R</tt></strong></dt>
+<dd><span id="index-R-_005bman_005d"></span>
+<p>Switch to roman font and turn off any underlining in effect.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eRN">Macro: <strong><tt>.RN</tt></strong></dt>
+<dd><span id="index-RN-_005bman_005d"></span>
+<p>Print the string &lsquo;<samp>&lt;RETURN&gt;</samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eVS">Macro: <strong><tt>.VS</tt></strong> <em>[<code>4</code>]</em></dt>
+<dd><span id="index-VS-_005bman_005d"></span>
+<p>Start printing a change bar in the margin if the number&nbsp;<code>4</code> is
+specified.  Otherwise, this macro does nothing.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eVE">Macro: <strong><tt>.VE</tt></strong></dt>
+<dd><span id="index-VE-_005bman_005d"></span>
+<p>End printing the change bar begun by <code>VS</code>.
+</p></dd></dl>
+
+<span id="Simple-example"></span><h4 class="unnumberedsubsubsec">Simple example</h4>
+
+<p>The following example <samp>man.local</samp> file alters the behavior of the
+<code>SH</code> macro.
+</p>
+<div class="example">
+<pre class="example">.\&quot; Make the heading font Helvetica bold.
+.ds HF HB
+.
+.\&quot; Add vertical space prior to headings on typesetters.
+.rn SH SH-orig
+.de SH
+.  if t .sp (u;\\n[PD]*2)
+.  SH-orig \\$*
+..
+</pre></div>
+
+
+
+<hr>
+<div class="header">
+<p>
+Up: <a href="man.html" accesskey="u" rel="up">man</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

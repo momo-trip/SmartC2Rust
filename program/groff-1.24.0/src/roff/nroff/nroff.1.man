@@ -1,0 +1,378 @@
+.TH @g@nroff @MAN1EXT@ "@MDATE@" "groff @VERSION@"
+.SH Name
+@g@nroff \- format documents with
+.I groff
+for terminal (\[lq]TTY\[rq]) devices
+.
+.
+.\" ====================================================================
+.\" Legal Terms
+.\" ====================================================================
+.\"
+.\" Copyright 1989-2023 Free Software Foundation, Inc.
+.\"           2018-2024 G. Branden Robinson
+.\"
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of
+.\" this manual under the conditions for verbatim copying, provided that
+.\" the entire resulting derived work is distributed under the terms of
+.\" a permission notice identical to this one.
+.\"
+.\" Permission is granted to copy and distribute translations of this
+.\" manual into another language, under the above conditions for
+.\" modified versions, except that this permission notice may be
+.\" included in translations approved by the Free Software Foundation
+.\" instead of in the original English.
+.
+.
+.\" Save and disable compatibility mode (for, e.g., Solaris 10/11).
+.do nr *groff_nroff_1_man_C \n[.cp]
+.cp 0
+.
+.\" Define fallback for groff 1.23's MR macro if the system lacks it.
+.nr do-fallback 0
+.if !\n(.f           .nr do-fallback 1 \" mandoc
+.if  \n(.g .if !d MR .nr do-fallback 1 \" older groff
+.if !\n(.g           .nr do-fallback 1 \" non-groff *roff
+.if \n[do-fallback]  \{\
+.  de MR
+.    ie \\n(.$=1 \
+.      I \%\\$1
+.    el \
+.      IR \%\\$1 (\\$2)\\$3
+.  .
+.\}
+.rr do-fallback
+.
+.
+.\" ====================================================================
+.SH Synopsis
+.\" ====================================================================
+.
+.SY @g@nroff
+.RB [ \-abcCEhikpRStUVzZ ]
+.RB [ \-d\~\c
+.IR ctext ]
+.RB [ \-d\~\c
+.IB string =\c
+.IR text ]
+.RB [ \-D\~\c
+.IR fallback-input-encoding ]
+.RB [ \-I\~\c
+.IR inclusion-directory ]
+.RB [ \-K\~\c
+.IR input-encoding ]
+.RB [ \-m\~\c
+.IR macro-package ]
+.RB [ \-M\~\c
+.IR macro-directory ]
+.RB [ \-n\~\c
+.IR page-number ]
+.RB [ \-o\~\c
+.IR page-list ]
+.RB [ \-P\~\c
+.IR postprocessor-argument ]
+.RB [ \-r\~\c
+.IR cnumeric-expression ]
+.RB [ \-r\~\c
+.IB register =\c
+.IR numeric-expression ]
+.RB [ \-T\~\c
+.IR output-device ]
+.RB [ \-w\~\c
+.IR warning-category ]
+.RB [ \-W\~\c
+.IR warning-category ]
+.RI [ file\~ .\|.\|.]
+.YS
+.
+.
+.P
+.SY @g@nroff
+.B \-\-help
+.YS
+.
+.
+.P
+.SY @g@nroff
+.B \-v
+.RI [ other-nroff-option \~.\|.\|.]
+.YS
+.
+.SY @g@nroff
+.B \%\-\-version
+.RI [ other-nroff-option \~.\|.\|.]
+.YS
+.
+.
+.\" ====================================================================
+.SH Description
+.\" ====================================================================
+.
+.I @g@nroff
+formats documents written in the
+.MR groff @MAN7EXT@
+language for typewriter-like devices such as terminal emulators.
+.
+GNU
+.I nroff \" GNU
+emulates the AT&T
+.I nroff \" AT&T
+command using
+.MR groff @MAN1EXT@ .
+.
+.I @g@nroff
+generates output via
+.MR grotty @MAN1EXT@ ,
+.IR groff 's
+terminal output driver,
+which needs to know the character encoding scheme used by the device.
+.
+Consequently,
+acceptable arguments to the
+.B \-T
+option are
+.BR ascii ,
+.BR latin1 ,
+and
+.BR utf8 ;
+any others are ignored.
+.
+If neither the
+.I \%GROFF_TYPESETTER
+environment variable nor the
+.B \-T
+command-line option
+(which overrides the environment variable)
+specifies a (valid) device,
+.I @g@nroff
+consults the locale to select an appropriate output device.
+.
+It first tries the
+.MR locale 1
+program,
+then checks several locale-related environment variables;
+see section \[lq]Environment\[rq] below.
+.
+If all of the foregoing fail,
+.I @g@nroff
+assumes
+.RB \[lq] "\-T ascii" \[rq].
+.
+.
+.P
+The
+.BR \-a ,
+.BR \-b ,
+.BR \-c ,
+.BR \-C ,
+.BR \-d ,
+.BR \-E ,
+.BR \-i ,
+.BR \-I ,
+.BR \-m ,
+.BR \-M ,
+.BR \-n ,
+.BR \-o ,
+.BR \-r ,
+.BR \-U ,
+.BR \-w ,
+.BR \-W ,
+and
+.B \-z
+options have the effects described in
+.MR @g@troff @MAN1EXT@ .
+.
+.B \-c
+and
+.B \-h
+imply
+.RB \[lq] "\-P \-c" \[rq]
+and
+.RB \[lq] "\-P \-h" \[rq],
+respectively;
+.B \-c
+is also meaningful to
+.I @g@troff
+itself.
+.
+Further,
+GNU
+.I nroff \" GNU
+ignores the AT&T
+.I nroff \" AT&T
+options
+.BR \-e ,
+.BR \-q ,
+and
+.BR \-s .
+.
+.MR groff @MAN1EXT@
+documents options
+.BR \-D ,
+.BR \-k ,
+.BR \-K ,
+.BR \-p ,
+.BR \-P ,
+.BR \-R ,
+.BR \-t ,
+.BR \-S ,
+and
+.BR \-Z .
+.
+.B \-V
+causes
+.I @g@nroff
+to display the constructed
+.I groff
+command on the standard output stream,
+but does not execute it.
+.
+.B \-v
+and
+.B \%\-\-version
+show version information about
+.I @g@nroff
+and the programs it runs,
+while
+.B \-\-help
+displays a usage message;
+all exit afterward.
+.
+.
+.\" ====================================================================
+.SH "Exit status"
+.\" ====================================================================
+.
+.I @g@nroff
+exits with
+.RB status\~ 2
+if there was a problem parsing its arguments,
+with
+.RB status\~ 0
+if any of the options
+.BR \-V ,
+.BR \-v ,
+.BR \%\-\-version ,
+or
+.B \-\-help
+were specified,
+and with the status of
+.I groff
+otherwise.
+.
+.
+.\" ====================================================================
+.SH Environment
+.\" ====================================================================
+.
+Normally,
+the path separator in environment variables ending with
+.I PATH
+is the colon;
+this may vary depending on the operating system.
+.
+For example,
+Windows uses a semicolon instead.
+.
+.
+.TP
+.I GROFF_BIN_PATH
+Locate
+.I groff \" system
+commands
+in these directories,
+followed by those in
+.IR PATH .
+.
+If not set,
+the installation directory of GNU
+.I roff
+executables,
+.IR @BINDIR@ ,
+is searched before
+.IR PATH .
+.
+.
+.TP
+.I GROFF_TYPESETTER
+specifies the default output device for
+.IR groff .
+.
+.
+.TP
+.I LC_ALL
+.TQ
+.I LC_CTYPE
+.TQ
+.I LANG
+.TQ
+.I LESSCHARSET
+are pattern-matched in this order for contents matching standard
+character encodings supported by
+.I groff
+in the event no
+.B \-T
+option is given and
+.I \%GROFF_TYPESETTER
+is unset,
+or the values specified are invalid.
+.
+.
+.\" ====================================================================
+.SH Files
+.\" ====================================================================
+.
+.TP
+.I @MACRODIR@/\:\%tty\-char\:.tmac
+defines fallback definitions of
+.I roff
+special characters.
+.
+These definitions more poorly optically approximate typeset output
+than those of
+.I tty.tmac
+in favor of communicating semantic information.
+.
+.I nroff
+loads it automatically.
+.
+.
+.\" ====================================================================
+.SH Notes
+.\" ====================================================================
+.
+Pager programs like
+.MR more 1
+and
+.MR less 1
+may require command-line options to correctly handle some output
+sequences;
+see
+.MR grotty @MAN1EXT@ .
+.
+.
+.\" ====================================================================
+.SH "See also"
+.\" ====================================================================
+.
+.MR groff @MAN1EXT@ ,
+.MR @g@troff @MAN1EXT@ ,
+.MR grotty @MAN1EXT@ ,
+.MR locale 1 ,
+.MR roff @MAN7EXT@
+.
+.
+.\" Restore compatibility mode (for, e.g., Solaris 10/11).
+.cp \n[*groff_nroff_1_man_C]
+.do rr *groff_nroff_1_man_C
+.
+.
+.\" Local Variables:
+.\" fill-column: 72
+.\" mode: nroff
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

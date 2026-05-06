@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision RI in Spain
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision RI.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/es.rem
+
+OMIT [easterdate($Uy)-3] MSG %"Jueves Santo%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Lunes de Pascua%" %! %b.
+REM 9 June ADDOMIT SCANFROM -28 SATISFY [$Tw != 0] MSG %"Lunes siguiente a Día de La Rioja%" %! %b.
+REM 10 June ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Lunes siguiente a Día de La Rioja%" %! %b.

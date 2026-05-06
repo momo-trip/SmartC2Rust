@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Postprocessor Access (The GNU troff Manual)</title>
+
+<meta name="description" content="Postprocessor Access (The GNU troff Manual)">
+<meta name="keywords" content="Postprocessor Access (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Miscellaneous.html" rel="next" title="Miscellaneous">
+<link href="Host-System-Service-Access.html" rel="prev" title="Host System Service Access">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Postprocessor-Access"></span><div class="header">
+<p>
+Next: <a href="Miscellaneous.html" accesskey="n" rel="next">Miscellaneous</a>, Previous: <a href="Host-System-Service-Access.html" accesskey="p" rel="prev">Host System Service Access</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Postprocessor-Access-1"></span><h3 class="section">5.35 Postprocessor Access</h3>
+<span id="index-postprocessor-access"></span>
+<span id="index-access-to-postprocessor"></span>
+
+<p>Beyond the
+<code>cf</code>
+and
+<code>trf</code>
+requests
+(recall
+<a href="Host-System-Service-Access.html">Host System Service Access</a>),
+two escape sequences and two requests enable documents
+to pass information directly to a postprocessor.
+These are useful for exercising device-specific capabilities that the
+<code>groff</code>
+language does not abstract or generalize;
+examples include the embedding of hyperlinks and image files.
+Device-specific functions are documented
+in each output driver&rsquo;s man page,
+such as
+<cite>gropdf<span class="roman">(1)</span></cite>,
+<cite>grops<span class="roman">(1)</span></cite>,
+or
+<cite>grotty<span class="roman">(1)</span></cite>.
+</p>
+<dl>
+<dt id="index-_002edevice">Request: <strong><tt>.device</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>character-sequence</i></span></em></dt>
+<dd><span id="index-device"></span>
+</dd><dt id="index-_005cX_0027contents-_2026_0027">Escape&nbsp;sequence: <strong><tt>\X<code>'</code></tt><span class="roman"><i>contents <span class="roman">&hellip;</span></i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cX"></span>
+<p>Embed
+<var>character-sequence</var>
+into
+GNU
+<code>troff</code>
+output as parameters to an
+&lsquo;<samp>x&nbsp;X</samp>&rsquo;<!-- /@w -->
+device extension command.<a id="DOCF179" href="groff.html_fot.html#FOOT179"><sup>179</sup></a>
+The output driver or other postprocessor interprets
+<var>character-sequence</var>
+as it sees fit.
+</p>
+<span id="index-device-request_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-device-request"></span>
+<span id="index-mode_002c-copy_002c-and-device-request"></span>
+<span id="index-device-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<p>GNU
+<code>troff</code> removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from
+<var>contents</var>,
+permitting initial embedded spaces in it,
+and reads it to the end of the input line in copy mode.
+Recall <a href="Copy-Mode.html">Copy Mode</a>.
+</p>
+<span id="index-nodes_002c-in-device-extension-commands"></span>
+<span id="index-special-characters_002c-in-device-extension-commands"></span>
+<span id="index-_005c_0026_002c-in-device-extension-commands"></span>
+<span id="index-_005c_0029_002c-in-device-extension-commands"></span>
+<span id="index-_005c_0025_002c-in-device-extension-commands"></span>
+<span id="index-_005c_003a_002c-in-device-extension-commands"></span>
+<p>The
+<code>groff</code>
+special character repertoire is unknown to output drivers
+outside of glyphs named in a device&rsquo;s fonts,
+and even then they may not possess complete coverage
+of the names documented in the
+<cite>groff_char<span class="roman">(7)</span></cite> man page.
+Further,
+escape sequences that produce horizontal or vertical motions,
+hyphenation breaks,
+or that are dummy characters
+may appear in strings or be converted to nodes,
+particularly in diversions.<a id="DOCF180" href="groff.html_fot.html#FOOT180"><sup>180</sup></a>
+These are not representable
+when interpolated directly into device-independent output,
+as might be done when writing out tag names for PDF bookmarks,
+which can appear in a viewer&rsquo;s navigation pane.
+</p>
+<p>So that documents or macro packages do not have to laboriously
+&ldquo;sanitize&rdquo; strings destined for interpolation in device extension
+commands,
+the
+<code>\X</code>
+escape sequence
+performs certain transformations on its argument.
+For these transformations,
+character translations and definitions are ignored.
+</p>
+<p>GNU
+<code>troff</code> converts several ordinary characters that typeset as
+non-basic Latin code points to code points outside that range so that
+they are used consistently whether they are formatted as glyphs or used
+in a device extension command argument.  These ordinary characters are
+&lsquo;<samp>'</samp>&rsquo;, &lsquo;<samp>-</samp>&rsquo;, &lsquo;<samp>^</samp>&rsquo;, &lsquo;<samp>`</samp>&rsquo;, and &lsquo;<samp>~</samp>&rsquo;; others are written
+as-is.
+</p>
+<p>Special characters that typeset as Unicode basic Latin characters
+are translated to basic Latin characters accordingly.
+So that any Unicode code point can be represented
+in device extension commands,
+for example in an author&rsquo;s name in document metadata
+or as a usefully named bookmark or hyperlink anchor,
+GNU
+<code>troff</code> maps other special characters to Unicode special character notation.
+Recall <a href="Characters-and-Glyphs.html">Characters and Glyphs</a>.
+</p>
+<p>GNU
+<code>troff</code> does not write special characters
+without a Unicode representation
+and escape sequences that do not interpolate
+a sequence of ordinary and/or special characters
+as arguments to device extension commands.<a id="DOCF181" href="groff.html_fot.html#FOOT181"><sup>181</sup></a>
+</p></dd></dl>
+
+<p>GNU
+<code>troff</code> also permits the interpolation of macro or string contents
+as a device extension command.
+</p>
+<dl>
+<dt id="index-_002edevicem">Request: <strong><tt>.devicem</tt></strong> <em>name</em></dt>
+<dd><span id="index-devicem"></span>
+</dd><dt id="index-_005cYn">Escape&nbsp;sequence: <strong><tt>\Y</tt><span class="roman"><i>n</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cY"></span>
+</dd><dt id="index-_005cY_0028nm">Escape&nbsp;sequence: <strong><tt>\Y(</tt><span class="roman"><i>nm</i></span><tt></tt></strong></dt>
+<dt id="index-_005cY_005bname_005d">Escape&nbsp;sequence: <strong><tt>\Y[</tt><span class="roman"><i>name</i></span><tt>]</tt></strong></dt>
+<dd><p>The
+<code>devicem</code>
+request and
+<code>\Y</code>
+escape sequence correspond to
+&lsquo;<samp>.device \*[<var>name</var>]</samp>&rsquo;
+and
+&lsquo;<samp>\X'\*[<var>name</var>]'</samp>&rsquo;
+(one-character
+name&nbsp;<var>n</var>,
+two-character name
+<var>nm</var>),
+respectively.
+They differ from their counterparts
+in that GNU
+<code>troff</code> does not interpret the contents of the string or macro
+<var>name</var>;
+further,
+<var>name</var>
+may be a macro and thus contain newlines.
+(There is no way to embed a newline in the arguments to
+<code>device</code>
+or
+<code>\X</code>.)
+The inclusion of newlines requires an extension to the <acronym>AT&amp;T</acronym>
+<code>troff</code> device-independent page description language,
+and their presence confuses drivers
+that do not know about it.<a id="DOCF182" href="groff.html_fot.html#FOOT182"><sup>182</sup></a>
+</p></dd></dl>
+
+<p>Use of device extension commands early in a document
+(before the first text is formatted)
+can interfere with processing of page location traps.
+If you experience problems when placing them early,
+precede the first with a dummy character escape sequence
+&lsquo;<samp>\&amp;</samp>&rsquo;;
+recall <a href="Dummy-Characters.html">Dummy Characters</a>.
+</p>
+<dl>
+<dt id="index-_002etag">Request: <strong><tt>.tag</tt></strong> <em>name</em></dt>
+<dd><span id="index-tag"></span>
+</dd><dt id="index-_002etaga">Request: <strong><tt>.taga</tt></strong> <em>name</em></dt>
+<dd><span id="index-taga"></span>
+<p>Reserved for internal use.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Miscellaneous.html" accesskey="n" rel="next">Miscellaneous</a>, Previous: <a href="Host-System-Service-Access.html" accesskey="p" rel="prev">Host System Service Access</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

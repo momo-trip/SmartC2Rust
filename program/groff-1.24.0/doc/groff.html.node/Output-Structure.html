@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Output Structure (The GNU troff Manual)</title>
+
+<meta name="description" content="Output Structure (The GNU troff Manual)">
+<meta name="keywords" content="Output Structure (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Language-Concepts.html" rel="up" title="Language Concepts">
+<link href="Command-Reference.html" rel="next" title="Command Reference">
+<link href="Argument-Units.html" rel="prev" title="Argument Units">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Output-Structure"></span><div class="header">
+<p>
+Previous: <a href="Argument-Units.html" accesskey="p" rel="prev">Argument Units</a>, Up: <a href="Language-Concepts.html" accesskey="u" rel="up">Language Concepts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Output-Structure-1"></span><h4 class="subsubsection">6.2.1.3 Output Structure</h4>
+
+<p>Device-independent
+<code>troff</code> output is organized into three parts:
+a header,
+a body,
+and a trailer.
+</p>
+<p>The task of the header is to set general device parameters.
+GNU
+<code>troff</code> guarantees that its
+header consists of the following three lines:
+</p>
+<div class="example">
+<pre class="example">x T <var>device</var>
+x res <var>n</var> <var>h</var> <var>v</var>
+x init
+</pre></div>
+
+<p>with the parameters
+<var>n</var>,
+<var>h</var>,
+and
+<var>v</var>
+set as outlined in <a href="Device-Control-Commands.html">Device Control Commands</a>.
+The parser for the device-independent page description language format
+is able to interpret additional whitespace and comments as well even in
+the header.
+</p>
+<p>The body contains the document&rsquo;s visible content.
+Once an output driver interprets
+&lsquo;<samp>x&nbsp;init</samp>&rsquo;<!-- /@w -->,
+it prepares to handle commands in general.
+Processing terminates when a
+&lsquo;<samp>x&nbsp;stop</samp>&rsquo;<!-- /@w -->
+command is encountered;
+the last line of any
+GNU
+<code>troff</code> page description output always contains such a command.
+</p>
+<p>Semantically,
+the body is page-oriented.
+The <code>p</code>
+command starts a new page.
+Positioning,
+writing,
+and drawing commands are performed within a page,
+so they cannot occur before the first
+<code>p</code>
+command.
+The output driver reckons absolute positioning
+(by the
+<code>H</code>
+and
+<code>V</code>
+commands)
+with respect to the current page&rsquo;s origin
+at the top left corner,
+and all other positioning relative to the drawing position on the page.
+</p>
+<p>The trailer advances the drawing position to the bottom of the page
+and informs the device that the document
+(or &ldquo;job&rdquo;)
+has ended.
+</p>
+
+
+
+
+</body>
+</html>

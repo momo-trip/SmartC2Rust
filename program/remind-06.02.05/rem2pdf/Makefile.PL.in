@@ -1,0 +1,25 @@
+use ExtUtils::MakeMaker;
+{
+        # Override pod2man options
+        package MY;
+        sub manifypods {
+                my ($self,%attribs) = @_;
+                my $result = $self->SUPER::manifypods(%attribs);
+                $result =~ s/^(POD2MAN_EXE\s*=\s*)(.+)$/$1$2 --center 'VERSION @VERSION@' --date '@RELEASE_DATE@' --release Remind/m;
+                return $result;
+        }
+}
+
+WriteMakefile(
+	NAME               => 'Remind::PDF',
+	AUTHOR             => q{Dianne Skoll <dianne@skoll.ca>},
+	VERSION            => '@VERSION@',
+	PREREQ_PM          => {
+		'Getopt::Long' => 0,
+                'Cairo' => 0,
+                'Pango' => 0,
+                'JSON::MaybeXS' => 0,
+                'Encode' => 0,
+	},
+	EXE_FILES => [ 'bin/rem2pdf' ]
+    );

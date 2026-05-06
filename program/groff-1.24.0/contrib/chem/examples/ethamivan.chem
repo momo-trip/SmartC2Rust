@@ -1,0 +1,27 @@
+ethamivan.chem:
+.cstart
+
+# Example file for chem:
+#   Ethamivan or Analepticon or C12_H17_N_O3 or
+#   N,N-diethyl-4-hydroxy-3-methoxy-benzamide (CAS-RN: 304-84-7)
+#
+# Prepared by Bernd Warken <groff-bernd.warken-72@web.de>.
+
+R:	ring6 pointing 60 double 1,2 3,4 5,6
+	bond 60 from R.V1
+B1:	double bond up ; O
+	bond 120 from B1.start ; N
+	bond 60
+	bond 120
+	bond down from N
+	bond 120
+	bond -120 from R.V4 ; HO
+	bond -60 from R.V5 ; O
+	bond -120
+
+# Local Variables:
+# fill-column: 72
+# mode: Nroff
+# End:
+# vim: set textwidth=72:
+.cend

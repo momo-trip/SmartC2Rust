@@ -1156,7 +1156,8 @@ def macro_main(config):
     
         print("\n************ End of reformat process ************")
         print(f"\nNext action->")
-        print(f"python3 pre_process.py {MACRO_HOME}/trans_re_0000/{target} golden\n") # {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
+        print(f"python3 pre_process.py {MACRO_HOME}/trans_re_0000/{target} golden\n")
+        
         
     elif process_type == "golden":
 
@@ -1290,11 +1291,6 @@ def macro_main(config):
 
 if __name__ == "__main__": 
 
-    # python activate
-    # https://qiita.com/yokoto/items/6d9e7d0ee440b3d147ac
-    # python3 -m venv .python/venv
-    # source .python/venv/bin/activat
-
     #####################################################################
     ##### Input
     #####################################################################
@@ -1351,7 +1347,7 @@ if __name__ == "__main__":
 
     output, output_dir = macro_main(config)
     
-    if process_type == "reformat":  # print(f"Saved at {output_dir}")
+    if process_type == "reformat":
         original_run_test_path = f"{original_dir}/run_test.sh"
         copy_file(output['run_test_path'], original_dir)
         # print(f"Saved at {original_run_test_path}")

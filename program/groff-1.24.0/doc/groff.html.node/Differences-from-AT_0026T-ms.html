@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Differences from AT&amp;T ms (The GNU troff Manual)</title>
+
+<meta name="description" content="Differences from AT&amp;T ms (The GNU troff Manual)">
+<meta name="keywords" content="Differences from AT&amp;T ms (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms.html" rel="up" title="ms">
+<link href="Missing-Unix-Version-7-ms-Macros.html" rel="next" title="Missing Unix Version 7 ms Macros">
+<link href="ms-TOC.html" rel="prev" title="ms TOC">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Differences-from-AT_0026T-ms"></span><div class="header">
+<p>
+Next: <a href="ms-Legacy-Features.html" accesskey="n" rel="next">ms Legacy Features</a>, Previous: <a href="ms-Page-Layout.html" accesskey="p" rel="prev">ms Page Layout</a>, Up: <a href="ms.html" accesskey="u" rel="up">ms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Additional-ms-Macros"></span><span id="Missing-ms-Macros"></span><span id="Differences-from-AT_0026T-ms-1"></span><h4 class="subsection">4.6.7 Differences from <acronym>AT&amp;T</acronym> <samp>ms</samp></h4>
+<span id="index-ms-macros_002c-groff-differences-from-AT_0026T"></span>
+<span id="index-AT_0026T-ms_002c-macro-package-differences"></span>
+
+<p>The
+<code>groff</code>
+<samp>ms</samp>
+macros are an independent reimplementation,
+using no <acronym>AT&amp;T</acronym> code.
+Since they take advantage of the extended features of
+GNU
+<code>troff</code>, they cannot be used with <acronym>AT&amp;T</acronym>
+<code>troff</code>. <code>groff</code>
+<samp>ms</samp>
+supports features described above
+as Berkeley and Research Tenth Edition Unix extensions,
+and adds several of its own.
+</p>
+<ul>
+<li> The internals of
+<code>groff</code>
+<samp>ms</samp>
+differ from those of <acronym>AT&amp;T</acronym>
+<samp>ms</samp>.
+Documents that depend upon implementation details of <acronym>AT&amp;T</acronym>
+<samp>ms</samp>
+may not format properly with
+<code>groff</code>
+<samp>ms</samp>.
+Such details include macros whose function was not documented in the
+<acronym>AT&amp;T</acronym>
+<samp>ms</samp>
+manual.<a id="DOCF17" href="groff.html_fot.html#FOOT17"><sup>17</sup></a>
+
+</li><li> The error-handling policy of <code>groff</code> <samp>ms</samp> is to detect and
+report errors, rather than to ignore them silently.
+
+</li><li> Research Tenth Edition Unix supported <code>P1</code>/<code>P2</code> macros to bracket code
+examples; <code>groff</code> <samp>ms</samp> does not.
+
+</li><li> <code>groff</code>
+<samp>ms</samp>
+does not work in
+GNU
+<code>troff</code>&rsquo;s <acronym>AT&amp;T</acronym> compatibility mode.
+If loaded when that mode is enabled,
+it aborts processing with a diagnostic message.
+
+</li><li> Multiple line spacing is not supported.  Use a larger vertical spacing
+instead.
+
+</li><li> <code>groff</code> <samp>ms</samp> uses the same header and footer defaults in both
+<code>nroff</code> and <code>troff</code> modes as <acronym>AT&amp;T</acronym> <samp>ms</samp> does in
+<code>troff</code> mode; <acronym>AT&amp;T</acronym>&rsquo;s default in <code>nroff</code> mode is to
+put the date, in U.S. traditional format (e.g., &ldquo;January 1, 2021&rdquo;),
+in the center footer (the <code>CF</code> string).
+
+</li><li> Many <code>groff</code> <samp>ms</samp> macros, including those for paragraphs,
+headings, and displays, cause a reset of paragraph rendering parameters,
+and may change the indentation; they do so not by incrementing or
+decrementing it, but by setting it absolutely.  This can cause problems
+for documents that define additional macros of their own that manipulate
+indentation.  Use the <samp>ms</samp> <code>RS</code> and <code>RE</code> macros instead
+of the <code>in</code> request.
+
+</li><li> <span id="index-fractional-type-sizes-in-ms-macros"></span>
+<span id="index-ms-macros_002c-fractional-type-sizes-in"></span>
+<acronym>AT&amp;T</acronym> <samp>ms</samp> interpreted the values of the registers
+<code>PS</code> and <code>VS</code> in points, and did not support the use of
+scaling units with them.  <code>groff</code> <samp>ms</samp> interprets values of
+the registers <code>PS</code>, <code>VS</code>, <code>FPS</code>, and <code>FVS</code> equal to
+or larger than&nbsp;1,000 (one thousand) as decimal fractions multiplied
+by&nbsp;1,000.<a id="DOCF18" href="groff.html_fot.html#FOOT18"><sup>18</sup></a>  This threshold makes use of a
+scaling unit with these parameters practical for high-resolution
+devices while preserving backward compatibility.  It also permits
+expression of non-integral type sizes.
+For example,
+&lsquo;<samp>groff -rPS=10.5p</samp>&rsquo;
+at the shell prompt is equivalent to placing
+&lsquo;<samp>.nr PS 10.5p</samp>&rsquo;
+at the beginning of the document.
+
+</li><li> <acronym>AT&amp;T</acronym> <samp>ms</samp>&rsquo;s <code>AU</code> macro supported arguments whose
+values were used with some non-<code>RP</code> document types; that of
+<code>groff</code> <samp>ms</samp> does not.
+
+</li><li> Right-aligned displays are available.  The <acronym>AT&amp;T</acronym> <samp>ms</samp>
+manual observes that &ldquo;it is tempting to assume that &lsquo;<samp>.DS R</samp>&rsquo; will
+right adjust lines, but it doesn&rsquo;t work&rdquo;.  In <code>groff</code> <samp>ms</samp>,
+it does.
+
+</li><li> To make <code>groff</code> <samp>ms</samp> use the default page offset (which also
+specifies the left margin), the <code>PO</code> register must stay undefined
+until the first <samp>ms</samp> macro is called.
+
+<p>This implies that &lsquo;<samp>\n[PO]</samp>&rsquo; should not be used early in the
+document, unless it is changed also: accessing an undefined register
+automatically defines it.
+</p>
+</li><li> <code>groff</code> <samp>ms</samp> supports the <code>PN</code> register, but it is not
+necessary; you can access the page number via the usual <code>%</code>
+register and invoke the <code>af</code> request to assign a different format
+to it if desired.<a id="DOCF19" href="groff.html_fot.html#FOOT19"><sup>19</sup></a>
+
+</li><li> The <acronym>AT&amp;T</acronym> <samp>ms</samp> manual documents registers <code>CW</code> and
+<code>GW</code> as setting the default column width and &ldquo;intercolumn gap&rdquo;,
+respectively, and which applied when <code>MC</code> was called with fewer
+than two arguments.  <code>groff</code> <samp>ms</samp> instead treats <code>MC</code>
+without arguments as synonymous with <code>2C</code>; there is thus no
+occasion for a default column width register.  Further, the <code>MINGW</code>
+register and the second argument to <code>MC</code> specify a <em>minimum</em>
+space between columns, not the fixed gutter width of <acronym>AT&amp;T</acronym>
+<samp>ms</samp>.
+
+</li><li> The <acronym>AT&amp;T</acronym> <samp>ms</samp> manual did not document the <code>QI</code>
+register; Berkeley and <code>groff</code> <samp>ms</samp> do.
+</li></ul>
+
+<dl>
+<dt id="index-_005cn_005bGS_005d">Register: <strong><tt>\n[GS]</tt></strong></dt>
+<dd><span id="index-GS-_005bms_005d"></span>
+<p><code>groff</code> <samp>ms</samp> sets the register <code>GS</code> to&nbsp;1;
+<acronym>AT&amp;T</acronym> <samp>ms</samp> does not use it.  A document can test its value
+to determine whether it is being formatted with <code>groff</code> <samp>ms</samp>
+or another implementation.
+</p></dd></dl>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Missing-Unix-Version-7-ms-Macros.html" accesskey="1">Missing Unix Version 7 ms Macros</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="ms-Legacy-Features.html" accesskey="n" rel="next">ms Legacy Features</a>, Previous: <a href="ms-Page-Layout.html" accesskey="p" rel="prev">ms Page Layout</a>, Up: <a href="ms.html" accesskey="u" rel="up">ms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

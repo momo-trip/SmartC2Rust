@@ -1,0 +1,176 @@
+# Support for the (Brazilian) Portuguese language.
+# This file is part of REMIND.
+# REMIND is Copyright (C) 1992-2026 by Dianne Skoll
+# This file is derived from a translation by Marco Paganini
+
+TRANSLATE "LANGID" "pt"
+
+SET $Sunday "domingo"
+SET $Monday "segunda"
+SET $Tuesday "terça"
+SET $Wednesday "quarta"
+SET $Thursday "quinta"
+SET $Friday "sexta"
+SET $Saturday "sábado"
+
+SET $January "janeiro"
+SET $February "fevereiro"
+SET $March "março"
+SET $April "abril"
+SET $May "maio"
+SET $June "junho"
+SET $July "julho"
+SET $August "agosto"
+SET $September "setembro"
+SET $October "outubro"
+SET $November "novembro"
+SET $December "dezembro"
+
+SET $Today "hoje"
+SET $Tomorrow "amanhã"
+
+TRANSLATE "yesterday" "ontem"
+TRANSLATE "are" "são"
+TRANSLATE "were" "eram"
+TRANSLATE "done" "concluída"
+
+BANNER Avisos para %w, %d de %m de %y%o:
+
+SET $Am "am"
+SET $Pm "pm"
+
+SET $Ago "atrás"
+SET $Fromnow "adiante"
+
+SET $On "em"
+SET $Now "agora"
+SET $At "as"
+SET $Minute "minuto"
+SET $Hour "hora"
+SET $Is "é"
+SET $Was "foi"
+SET $And "e"
+
+SET $Hplu "s"
+SET $Mplu "s"
+
+FSET - subst_ordinal(d) ""
+FSET - subst_on_wd(d) iif(wkdaynum(d) == 1 || wkdaynum(d) == 2, "no", "na")
+
+FSET - subst_a_alt(d) wkday(d) + ", " + day(d) + " de " + mon(d) + " de " + year(d)
+FSET - subst_bx(a, d, t) iif(d >= today(), "em " + (d-today()) + " dias", "há " + (today()-d) + " dias")
+FSET - subst_c_alt(d) wkday(d)
+FSET - subst_g_alt(d) wkday(d) + ", " + day(d) + " " + mon(d)
+FSET - subst_ax(a, d, t) iif(a, subst_a_alt(d), subst_on_wd(d) + " " + subst_a_alt(d))
+FSET - subst_cx(a, d, t) iif(a, subst_c_alt(d), subst_on_wd(d) + " " + subst_c_alt(d))
+FSET - subst_gx(a, d, t) iif(a, subst_g_alt(d), subst_on_wd(d) + " " + subst_g_alt(d))
+FSET - subst_jx(a, d, t) subst_ax(a, d, t)
+FSET - subst_k_alt(d) wkday(d) + ", " + day(d) + " de " + mon(d)
+FSET - subst_kx(a, d, t) iif(a, subst_k_alt(d), subst_on_wd(d) + " " + subst_k_alt(d))
+FSET - subst_ux(a, d, t) subst_ax(a, d, t)
+FSET - subst_vx(a, d, t) subst_kx(a, d, t)
+
+FSET - subst_1(a, d, t) iif(t==now(), $Now, t>now(), "em " + subst_1help(t-now()), subst_1help(now()-t) + " " + $Ago)
+FSET - subst_1help(diff) iif(diff/60==0, subst_mplu(diff%60), diff%60==0, subst_hplu(diff/60), subst_hplu(diff/60) + " " + $And + " " + subst_mplu(diff%60))
+FSET - subst_mplu(m) iif(m==1, "1 " + $Minute, m + " " + $Minute + $Mplu)
+FSET - subst_hplu(h) iif(h==1, "1 " + $Hour, h + " " + $Hour + $Hplu)
+
+TRANSLATE "Missing ']'" "Falta um ']'"
+TRANSLATE "Missing quote" "Falta uma aspa"
+TRANSLATE "Expression too complex" "Expressao muito complexa"
+TRANSLATE "Missing ')'" "Falta um ')'"
+TRANSLATE "Undefined function" "Funcao nao definida"
+TRANSLATE "Illegal character" "Caracter ilegal"
+TRANSLATE "Expecting binary operator" "Esperando operador binario"
+TRANSLATE "Out of memory" "Sem memoria"
+TRANSLATE "Ill-formed number" "Numero mal-formado"
+TRANSLATE "Can't coerce" "Nao consigo fazer 'coerce'"
+TRANSLATE "Type mismatch" "Type mismatch"
+TRANSLATE "Date overflow" "Overflow na data"
+TRANSLATE "Division by zero" "Divisao por zero"
+TRANSLATE "Undefined variable" "Variavel nao definida"
+TRANSLATE "Unexpected end of line" "Fim da linha nao esperado"
+TRANSLATE "Unexpected end of file" "Fim de arquivo nao esperado"
+TRANSLATE "I/O error" "Erro de I/O"
+TRANSLATE "Internal error" "Erro interno"
+TRANSLATE "Bad date specification" "Especificacao de data invalida"
+TRANSLATE "Not enough arguments" "Argumentos insuficientes"
+TRANSLATE "Too many arguments" "Argumentos em excesso"
+TRANSLATE "Ill-formed time" "Hora mal-formada"
+TRANSLATE "Number too high" "Numero muito grande"
+TRANSLATE "Number too low" "Numero muito pequeno"
+TRANSLATE "Can't open file" "Nao consigo abrir o arquivo"
+TRANSLATE "INCLUDE nested too deeply (max. 9)" "Ninho de INCLUDEs muito profundo"
+TRANSLATE "Parse error" "Erro de parsing"
+TRANSLATE "Can't compute trigger" "Nao consigo computar o 'trigger'"
+TRANSLATE "Too many nested IFs" "Muitos IFs aninhados"
+TRANSLATE "ELSE with no matching IF" "ELSE sem o IF correspondente"
+TRANSLATE "ENDIF with no matching IF" "ENDIF sem o IF correspondente"
+TRANSLATE "Can't OMIT every weekday" "Nao se pode usar OMIT para todos os dias da semana"
+TRANSLATE "Extraneous token(s) on line" "Token nao reconhecido na linha"
+TRANSLATE "POP-OMIT-CONTEXT without matching PUSH-OMIT-CONTEXT" "POP-OMIT-CONTEXT sem PUSH-OMIT-CONTEXT correspondente"
+TRANSLATE "RUN disabled" "RUN desabilitado"
+TRANSLATE "Domain error" "Erro de dominio"
+TRANSLATE "Invalid identifier" "Identificados invalido"
+TRANSLATE "Too many recursive function calls" "Muitas chamadas de função recursiva"
+TRANSLATE "Cannot modify system variable" "Nao posso modificar variavel de sistema"
+TRANSLATE "C library function can't represent date/time" "Funcao da biblioteca C nao pode representar data/hora"
+TRANSLATE "Attempt to redefine built-in function" "Tentativa de redefinir funcao interna"
+TRANSLATE "Can't nest function definition in expression" "Nao e' possivel aninhar definicao de funcao em expressao"
+TRANSLATE "Must fully specify date to use repeat factor" "Data deve ser completamente especificada para usar o fator de REPEAT"
+TRANSLATE "Year specified twice" "Ano especificado duas vezes"
+TRANSLATE "Month specified twice" "Mes especificado duas vezes"
+TRANSLATE "Day specified twice" "Dia especificado duas vezes"
+TRANSLATE "Unknown token" "Token desconhecido"
+TRANSLATE "Must specify month in OMIT command" "O mes deve ser especificados no comando OMIT"
+TRANSLATE "Too many full OMITs (max. 1000)" "Muitos OMITs full"
+TRANSLATE "Warning: PUSH-OMIT-CONTEXT without matching POP-OMIT-CONTEXT" "Aviso: PUSH-OMIT-CONTEXT sem POP-OMIT-CONTEXT correspondente"
+TRANSLATE "Error reading" "Erro na leitura do arquivo"
+TRANSLATE "Expecting end-of-line" "Aguardando fim do arquivo"
+TRANSLATE "Invalid Hebrew date" "Data hebraica invalida"
+TRANSLATE "iif(): odd number of arguments required" "IIF necessita de numero impar de argumentos"
+TRANSLATE "Warning: Missing ENDIF" "Warning: ENDIF faltando"
+TRANSLATE "Expecting comma" "Esperando virgula"
+TRANSLATE "Weekday specified twice" "Dia da semana especificado duas vezes"
+TRANSLATE "Only use one of BEFORE, AFTER or SKIP" "Use apenas um de BEFORE, AFTER ou SKIP"
+TRANSLATE "Can't nest MSG, MSF, RUN, etc. in expression" "Nao e possivel aninhar MSG, MSF, RUN, etc. em expressoes"
+TRANSLATE "Repeat value specified twice" "Valor de Repeat especificado duas vezes"
+TRANSLATE "Delta value specified twice" "Valor de Delta especificado duas vezes"
+TRANSLATE "Back value specified twice" "Valor de Back especificado duas vezes"
+TRANSLATE "ONCE keyword used twice. (Hah.)" "ONCE usado duas vezes (Eheheh)"
+TRANSLATE "Expecting time after AT" "Esperando hora apos AT"
+TRANSLATE "THROUGH/UNTIL keyword used twice" "Keyword THROUGH/UNTIL usada duas vezes"
+TRANSLATE "Incomplete date specification" "Especificacao de data incompleta"
+TRANSLATE "FROM/SCANFROM keyword used twice" "Keyword FROM/SCANFROM usada duas vezes"
+TRANSLATE "Variable" "Variavel"
+TRANSLATE "Value" "Valor"
+TRANSLATE "*UNDEFINED*" "*INDEFINIDO*"
+TRANSLATE "Entering UserFN" "Entrando UserFN"
+TRANSLATE "Leaving UserFN" "Saindo UserFN"
+TRANSLATE "Expired" "Expirou"
+TRANSLATE "fork() failed - can't do queued reminders" "fork() falhou - Nao posso processar compromissos na fila"
+TRANSLATE "Can't access file" "Nao consigo acessar o arquivo"
+TRANSLATE "Illegal system date: Year is less than %d" "Data do sistema ilegal: Ano e menor que %d"
+TRANSLATE "Unknown debug flag '%c'" "Flag de debug desconhecido '%c'"
+TRANSLATE "Unknown option '%c'" "Opcao desconhecida '%c'"
+TRANSLATE "Unknown user '%s'" "Usuario desconhecido '%s'"
+TRANSLATE "Could not change gid to %d" "Nao consigo mudar gid para %d"
+TRANSLATE "Could not change uid to %d" "Nao consigo mudar uid para %d"
+TRANSLATE "Out of memory for environment" "Sem memoria para o environment"
+TRANSLATE "Missing '=' sign" "Falta o sinal de '='"
+TRANSLATE "Missing variable name" "Falta o nome da variavel"
+TRANSLATE "Missing expression" "Falta a expressao"
+TRANSLATE "Remind: '-i' option: %s" "Remind: '-i' opcao: %s"
+TRANSLATE "No reminders." "Sem compromissos."
+TRANSLATE "%d reminder(s) queued for later today." "%d compromisso(s) colocados na fila para mais tarde."
+TRANSLATE "Expecting number" "Esperando numero"
+TRANSLATE "Undefined WARN function" "Funcao ilegal na clausula WARN"
+TRANSLATE "Can't convert between time zones" "Não consigo converter entre fusos horários"
+TRANSLATE "No files matching *.rem" "Nenhum arquivo correspondente *.rem"
+TRANSLATE "String too long" "String muito longa"
+TRANSLATE "Time specified twice" "Tempo especificado duas vezes"
+TRANSLATE "Cannot specify DURATION without specifying AT" "Não é possível especificar DURATION sem especificar AT"
+TRANSLATE "Expecting weekday name" "Esperando nome do dia da semana"
+TRANSLATE "Duplicate argument name" "Nome de argumento duplicado"
+TRANSLATE "Expression evaluation is disabled" "A avaliação da expressão está desabilitada"
+TRANSLATE "Time limit for expression evaluation exceeded" "Limite de tempo para avaliação de expressão excedido"

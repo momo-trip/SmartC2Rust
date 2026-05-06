@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Output Line Annotation (The GNU troff Manual)</title>
+
+<meta name="description" content="Output Line Annotation (The GNU troff Manual)">
+<meta name="keywords" content="Output Line Annotation (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Drawing-Geometric-Objects.html" rel="next" title="Drawing Geometric Objects">
+<link href="Page-Motions.html" rel="prev" title="Page Motions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Output-Line-Annotation"></span><div class="header">
+<p>
+Next: <a href="Drawing-Geometric-Objects.html" accesskey="n" rel="next">Drawing Geometric Objects</a>, Previous: <a href="Page-Motions.html" accesskey="p" rel="prev">Page Motions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Output-Line-Annotation-1"></span><h3 class="section">5.26 Output Line Annotation</h3>
+<span id="index-output-line-annotation"></span>
+<span id="index-line-annotation_002c-output"></span>
+<span id="index-annotation_002c-output-line"></span>
+
+<p>After an output line is broken
+(and adjusted,
+if applicable),
+it can be annotated in the margins.
+You can indicate line numbers on the left,
+and apply a margin character on the right.
+</p>
+<dl>
+<dt id="index-_002enm">Request: <strong><tt>.nm</tt></strong> <em>[<span class="roman"><i>start</i></span> [<span class="roman"><i>increment</i></span> [<span class="roman"><i>space</i></span> [<span class="roman"><i>indentation</i></span>]]]]</em></dt>
+<dd><span id="index-nm"></span>
+</dd><dt id="index-_005cn_005bln_005d">Register: <strong><tt>\n[ln]</tt></strong></dt>
+<dd><span id="index-ln"></span>
+</dd><dt id="index-_005cn_005b_002enm_005d">Register: <strong><tt>\n[.nm]</tt></strong></dt>
+<dd><span id="index-_002enm-1"></span>
+<span id="index-printing-line-numbers-_0028nm_0029"></span>
+<span id="index-line-numbers_002c-printing-_0028nm_0029"></span>
+<span id="index-numbers_002c-line_002c-printing-_0028nm_0029"></span>
+<p>Begin
+(or,
+with no arguments,
+cease)
+numbering output lines.
+<var>start</var>
+assigns the number of the
+<em>next</em>
+output line.
+Only line numbers divisible by
+<var>increment</var>
+(default:
+&lsquo;<samp>1</samp>&rsquo;)
+bear marks.
+The formatter reckons the third and fourth arguments in numeral widths
+(<code>\0</code>):
+<var>space</var>
+configures the horizontal spacing between the number and the text
+(default:
+&lsquo;<samp>1</samp>&rsquo;).
+Any given
+<var>indentation</var>
+applies to the numbers
+(default: &lsquo;<samp>0</samp>&rsquo;).
+<var>start</var>
+must be non-negative and
+<var>increment</var>
+positive.
+</p>
+<p>The formatter aligns the number to the right
+in a space of three numeral widths plus
+<var>indentation</var>,
+then catenates
+<var>space</var>
+and the output line.
+The line length is
+<em>not</em>
+reduced.
+Depending on the value of the page offset
+(recall <a href="Line-Layout.html">Line Layout</a>)
+numbers wider than the allocated space protrude into the left margin,
+or shift the output line to the right.
+</p>
+<p>Line numbering parameters corresponding to missing arguments are not
+altered.
+After numbering is disabled,
+&lsquo;<samp>.nm +0</samp>&rsquo;
+resumes it using the previously active parameters.
+</p>
+<p>The parameters of <code>nm</code> are associated with the environment
+(see <a href="Environments.html">Environments</a>).
+</p>
+<span id="index-output-line-number-register-_0028ln_0029"></span>
+<span id="index-line-number_002c-output_002c-register-_0028ln_0029"></span>
+<p>While numbering is enabled, the output line number register <code>ln</code> is
+updated as each line is output, even if no line number is formatted with
+it because it is being skipped (it is not a multiple of <var>increment</var>)
+or because numbering is suppressed (see the <code>nn</code> request below).
+</p>
+<p>The <code>.nm</code> register tracks the enablement status of numbering.
+Temporary suspension of numbering with the <code>nn</code> request does
+<em>not</em> alter its value.
+</p>
+<div class="example">
+<pre class="example">.po 5n
+.ll 44n
+Programming,
+when stripped of all its circumstantial irrelevancies,
+.nm 999 1 1 -4
+boils down to no more and no less than
+.nm +0 3
+very effective thinking so as to avoid unmastered
+.nn 2
+complexity,
+to very vigorous separation of your many
+different concerns.
+.br
+\(em Edsger Dijkstra
+.sp
+.nm 1 1 1
+This guy's arrogance takes your breath away.
+.br
+\(em John Backus
+    &rArr;      Programming,  when  stripped of all its cir-
+    &rArr;  999 cumstantial irrelevancies, boils down to  no
+    &rArr;      more  and no less than very effective think-
+    &rArr;      ing so as to avoid unmastered complexity, to
+    &rArr;      very vigorous separation of your  many  dif-
+    &rArr;      ferent concerns.
+    &rArr; 1002 -- Edsger Dijkstra
+    &rArr;
+    &rArr;    1 This guy&rsquo;s arrogance takes your breath away.
+    &rArr;    2 -- John Backus
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002enn">Request: <strong><tt>.nn</tt></strong> <em>[<span class="roman"><i>skip</i></span>]</em></dt>
+<dd><span id="index-nn"></span>
+</dd><dt id="index-_005cn_005b_002enn_005d">Register: <strong><tt>\n[.nn]</tt></strong></dt>
+<dd><span id="index-_002enn-1"></span>
+<p>Suppress numbering of the next
+<var>skip</var>
+output lines counted by the
+<code>nm</code>
+request.
+If
+<var>skip</var> is&nbsp;&lsquo;<samp>0</samp>&rsquo;,
+cancel suppression.
+The default is&nbsp;1.
+<code>nn</code>
+can be invoked when line numbering is not active;
+suppression of numbering takes effect for
+<var>skip</var>
+lines once
+<code>nm</code>
+enables it.
+</p>
+<p>The <code>.nn</code> register stores the
+count of lines remaining in the environment
+for which numbering is suppressed
+while output line numbering is enabled.
+</p>
+<p>This count is associated with the environment (see <a href="Environments.html">Environments</a>).
+</p></dd></dl>
+
+<p>To test whether the current output line will be numbered, you must check
+both the <code>.nm</code> and <code>.nn</code> registers.
+</p>
+<div class="example">
+<pre class="example">  .de is-numbered
+  .  nop This line
+  .  ie (\\n[.nm] &amp; (1-\\n[.nn])) IS
+  .  el                           ISN'T
+  .  nop numbered.
+  .  br
+  ..
+  Test line numbering.
+  .is-numbered
+  .nm 1
+  .nn 1
+  .is-numbered
+  .is-numbered
+  .nm
+  .is-numbered
+    &rArr; Test line numbering.  This line ISN&rsquo;T numbered.
+    &rArr; This line ISN&rsquo;T numbered.
+    &rArr;   1 This line IS numbered.
+    &rArr; This line ISN&rsquo;T numbered.
+</pre></div>
+
+<dl>
+<dt id="index-_002emc">Request: <strong><tt>.mc</tt></strong> <em>[<span class="roman"><i>margin-character</i></span> [<span class="roman"><i>distance</i></span>]]</em></dt>
+<dd><span id="index-mc"></span>
+<span id="index-margin-character-_0028mc_0029"></span>
+<span id="index-character_002c-margins-_0028mc_0029"></span>
+<p>Begin (or, with no arguments, cease) writing a <em>margin-character</em> to
+the right of each output line.  The <var>distance</var> argument separates
+<var>margin-character</var> from the right margin.  If absent, the most
+recent value is used; the default is 10&nbsp;points.  If an output line
+exceeds the line length, the margin character is appended to it.
+<span id="index-tl-request_002c-and-mc"></span>
+No margin character is written on lines produced by the <code>tl</code>
+request.
+</p>
+<p>The margin character is a property of the output line.  Only one margin
+character is in effect at one time; the most recent <code>mc</code> call
+determines its value.  If the margin character is disabled before an
+output line breaks, none is output (but see below).
+</p>
+<p>The margin character is associated with the environment
+(see <a href="Environments.html">Environments</a>).
+</p>
+<div class="example">
+<pre class="example">.ll 5i
+.nf
+.mc \[br]
+This paragraph is marked with a margin character.
+.sp
+As seen above, vertical space isn't thus marked.
+\&amp;
+An output line that is present, but empty, is.
+    &rArr; This paragraph is marked with a margin character.  |
+    &rArr;
+    &rArr; As seen above, vertical space isn&rsquo;t thus marked.   |
+    &rArr;                                                    |
+    &rArr; An output line that is present, but empty, is.     |
+</pre></div>
+</dd></dl>
+
+<p>For compatibility with <acronym>AT&amp;T</acronym> <code>troff</code>, a call to <code>mc</code>
+to set the margin character can&rsquo;t be undone immediately; at least one
+line gets a margin character.
+</p>
+<div class="example">
+<pre class="example">.ll 10n
+.nf
+.mc |
+.mc *
+.mc
+foo
+bar
+    &rArr; foo        *
+    &rArr; bar
+</pre></div>
+
+<span id="index-gdiffmk"></span>
+<span id="index-nrchbar"></span>
+<span id="index-changebar"></span>
+<span id="index-diffmk"></span>
+<p>The margin character mechanism
+is commonly used to annotate changes in documents.
+The
+<code>groff</code>
+distribution ships a program,
+<code>gdiffmk</code>,
+to assist with this task.<a id="DOCF160" href="groff.html_fot.html#FOOT160"><sup>160</sup></a>
+</p>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Drawing-Geometric-Objects.html" accesskey="n" rel="next">Drawing Geometric Objects</a>, Previous: <a href="Page-Motions.html" accesskey="p" rel="prev">Page Motions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

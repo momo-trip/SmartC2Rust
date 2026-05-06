@@ -1,0 +1,275 @@
+/* Copyright (C) 1989-2025 Free Software Foundation, Inc.
+   Written by James Clark (jjc@jclark.com)
+
+   This file is part of groff, the GNU roff typesetting system.
+
+   groff is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   groff is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <assert.h>
+#include <errno.h> // EINVAL, errno
+#include <stdio.h> // clearerr(), ferror(), fflush(), stdout
+#include <string.h> // strcmp()
+
+#include "driver.h"
+
+/* If we are sending output to an onscreen pager (as is the normal case
+   when reading man pages), then we may get an error state on the output
+   stream, if the user does not read all the way to the end.
+
+   We normally expect to catch this, and clean up the error context,
+   when the pager exits, because we should get, and handle, a SIGPIPE.
+
+   However ...
+*/
+
+#if (defined(_MSC_VER) || defined(_WIN32)) \
+    && !defined(__CYGWIN__) && !defined(_UWIN)
+
+  /* Native MS-Windows doesn't know about SIGPIPE, so we cannot detect
+     the early exit from the pager, and therefore, cannot clean up the
+     error context; thus we use the following static function to
+     identify this particular error context, and so suppress unwanted
+     diagnostics.
+  */
+
+  static int
+  check_for_output_error (FILE* stream)
+  {
+    /* First, clean up any prior error context on the output stream */
+    if (ferror (stream))
+      clearerr (stream);
+    /* Clear errno, in case clearerr() and fflush() don't */
+    errno = 0;
+    /* Flush the output stream, so we can capture any error context,
+       other than the specific case we wish to suppress.
+
+       Microsoft doesn't document it, but the error code for the
+       specific context we are trying to suppress seems to be EINVAL --
+       a strange choice, since it is not normally associated with
+       fflush(); of course, it *should* be EPIPE, but this *definitely*
+       is not used, and *is* so documented.
+    */
+    return ((fflush(stream) < 0) && (errno != EINVAL));
+  }
+
+#else
+
+  /* For other systems, we simply assume that *any* output error context
+     is to be reported.
+  */
+# define check_for_output_error(stream) ferror(stream) || fflush(stream) < 0
+
+#endif
+
+
+font_pointer_list::font_pointer_list(font *f, font_pointer_list *fp)
+: p(f), next(fp)
+{
+}
+
+printer::printer()
+: font_list(0 /* nullptr */), font_table(0 /* nullptr */), nfonts(0)
+{
+}
+
+printer::~printer()
+{
+  delete[] font_table;
+  while (font_list) {
+    font_pointer_list *tem = font_list;
+    font_list = font_list->next;
+    delete tem->p;
+    delete tem;
+  }
+  if (check_for_output_error(stdout))
+    fatal("output error");
+}
+
+void printer::load_font(int n, const char *nm)
+{
+  assert(n >= 0);
+  if (n >= nfonts) {
+    if (0 == nfonts) {
+      nfonts = 10;
+      if (nfonts <= n)
+	nfonts = n + 1;
+      font_table = new font *[nfonts];
+      for (int i = 0; i < nfonts; i++)
+	font_table[i] = 0 /* nullptr */;
+    }
+    else {
+      font **old_font_table = font_table;
+      int old_nfonts = nfonts;
+      nfonts *= 2;
+      if (n >= nfonts)
+	nfonts = n + 1;
+      font_table = new font *[nfonts];
+      int i;
+      for (i = 0; i < old_nfonts; i++)
+	font_table[i] = old_font_table[i];
+      for (i = old_nfonts; i < nfonts; i++)
+	font_table[i] = 0 /* nullptr */;
+      delete[] old_font_table;
+    }
+  }
+  font *f = find_font(nm);
+  font_table[n] = f;
+}
+
+font *printer::find_font(const char *nm)
+{
+  for (font_pointer_list *p = font_list; p; p = p->next)
+    if (strcmp(p->p->get_filename(), nm) == 0)
+      return p->p;
+  font *f = make_font(nm);
+  if (0 /* nullptr */ == f)
+    fatal("cannot find font '%1'", nm);
+  font_list = new font_pointer_list(f, font_list);
+  return f;
+}
+
+font *printer::make_font(const char *nm)
+{
+  return font::load_font(nm);
+}
+
+void printer::end_of_line()
+{
+}
+
+void printer::special(char *, const environment *, char)
+{
+}
+
+void printer::devtag(char *, const environment *, char)
+{
+}
+
+// TODO: 1st and 3rd args should be `const`.
+void printer::draw(int, int *, int, const environment *)
+{
+}
+
+void printer::change_color(const environment * const)
+{
+}
+
+void printer::change_fill_color(const environment * const)
+{
+}
+
+void printer::set_ascii_char(unsigned char c, const environment *env,
+			     int *widthp)
+{
+  char  buf[2];
+  int   w;
+  font *f;
+
+  buf[0] = c;
+  buf[1] = '\0';
+
+  glyph *g = set_char_and_width(buf, env, &w, &f);
+
+  if (g != UNDEFINED_GLYPH) {
+    set_char(g, f, env, w, 0 /* nullptr */);
+    if (widthp != 0 /* nullptr */)
+      *widthp = w;
+  }
+}
+
+void printer::set_special_char(const char *nm, const environment *env,
+			       int *widthp)
+{
+  font *f;
+  int w;
+  glyph *g = set_char_and_width(nm, env, &w, &f);
+  if (g != UNDEFINED_GLYPH) {
+    set_char(g, f, env, w, nm);
+    if (widthp != 0 /* nullptr */)
+      *widthp = w;
+  }
+}
+
+glyph *printer::set_char_and_width(const char *nm,
+				   const environment *env, int *widthp,
+				   font **f)
+{
+  glyph *g = name_to_glyph(nm);
+  int fn = env->fontno;
+  if ((fn < 0) || (fn >= nfonts)) {
+    error("invalid font position '%1'", fn);
+    return UNDEFINED_GLYPH;
+  }
+  *f = font_table[fn];
+  if (0 /* nullptr */ == *f) {
+    error("no font mounted at position %1", fn);
+    return UNDEFINED_GLYPH;
+  }
+  if (!(*f)->contains(g)) {
+    if ((nm[0] != '\0') && ('\0' == nm[1]))
+      error("font description file '%1' lacks glyph for ordinary"
+	    " character '%2'", (*f)->get_filename(), nm[0]);
+    else
+      error("font description file '%1' lacks glyph for special"
+	    " character '%2'", (*f)->get_filename(), nm);
+    return UNDEFINED_GLYPH;
+  }
+  int w = (*f)->get_width(g, env->size);
+  if (widthp != 0 /* nullptr */)
+    *widthp = w;
+  return g;
+}
+
+void printer::set_numbered_char(int num, const environment *env, int
+				*widthp)
+{
+  glyph *g = number_to_glyph(num);
+  int fn = env->fontno;
+  if ((fn < 0) || (fn >= nfonts)) {
+    error("invalid font position '%1'", fn);
+    return;
+  }
+  font *f = font_table[fn];
+  if (0 /* nullptr */ == f) {
+    error("no font mounted at position %1", fn);
+    return;
+  }
+  if (!f->contains(g)) {
+    error("font '%1' has no glyph at index %2", f->get_filename(), num);
+    return;
+  }
+  int w = f->get_width(g, env->size);
+  if (widthp != 0 /* nullptr */)
+    *widthp = w;
+  set_char(g, f, env, w, 0 /* nullptr */);
+}
+
+font *printer::get_font_from_index(int fontno)
+{
+  if ((fontno >= 0) && (fontno < nfonts))
+    return font_table[fontno];
+  else
+    return 0 /* nullptr */;
+}
+
+// Local Variables:
+// fill-column: 72
+// mode: C++
+// End:
+// vim: set cindent noexpandtab shiftwidth=2 textwidth=72:

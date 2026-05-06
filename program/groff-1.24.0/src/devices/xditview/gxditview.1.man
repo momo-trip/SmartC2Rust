@@ -1,0 +1,849 @@
+.TH gxditview @MAN1EXT@ "@MDATE@" "groff @VERSION@"
+.SH Name
+gxditview \- display
+.I troff
+output in X11
+.
+.
+.\" ====================================================================
+.\" Legal Terms
+.\" ====================================================================
+.\"
+.\" Copyright 1991 Massachusetts Institute of Technology
+.\"
+.\" Permission to use, copy, modify, distribute, and sell this software
+.\" and its documentation for any purpose is hereby granted without fee,
+.\" provided that the above copyright notice appear in all copies and
+.\" that both that copyright notice and this permission notice appear in
+.\" supporting documentation, and that the name of M.I.T. not be used in
+.\" advertising or publicity pertaining to distribution of the software
+.\" without specific, written prior permission.  M.I.T. makes no
+.\" representations about the suitability of this software for any
+.\" purpose.  It is provided "as is" without express or implied
+.\" warranty.
+.\"
+.\" M.I.T. DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+.\" INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
+.\" NO EVENT SHALL M.I.T.  BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+.\" CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+.\" OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+.\" NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+.\" WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.
+.
+.\" Save and disable compatibility mode (for, e.g., Solaris 10/11).
+.do nr *groff_gxditview_1_man_C \n[.cp]
+.cp 0
+.
+.\" Define fallback for groff 1.23's MR macro if the system lacks it.
+.nr do-fallback 0
+.if !\n(.f           .nr do-fallback 1 \" mandoc
+.if  \n(.g .if !d MR .nr do-fallback 1 \" older groff
+.if !\n(.g           .nr do-fallback 1 \" non-groff *roff
+.if \n[do-fallback]  \{\
+.  de MR
+.    ie \\n(.$=1 \
+.      I \%\\$1
+.    el \
+.      IR \%\\$1 (\\$2)\\$3
+.  .
+.\}
+.rr do-fallback
+.
+.
+.\" ====================================================================
+.SH Synopsis
+.\" ====================================================================
+.
+.SY gxditview
+.RI [ X-toolkit-option \~.\|.\|.\&]
+.RB [ \-backingStore\~\c
+.IR backing-store-type ]
+.RB [ \-filename\~\c
+.IR file ]
+.\" While recognized, the relevant logic is "#if 0"ed out in draw.c.
+.\" .RB [ \-noPolyText ]
+.RB [ \-page\~\c
+.IR page-number ]
+.RB [ \-printCommand\~\c
+.IR command ]
+.RB [ \-resolution\~\c
+.IR resolution ]
+.I file
+.YS
+.
+.
+.P
+.SY gxditview
+.B \-help
+.YS
+.
+.SY gxditview
+.B \-\-help
+.YS
+.
+.
+.P
+.SY gxditview
+.B \-v
+.YS
+.
+.SY gxditview
+.B \-version
+.YS
+.
+.SY gxditview
+.B \-\-version
+.YS
+.
+.
+.\" ====================================================================
+.SH Description
+.\" ====================================================================
+.
+.I gxditview
+renders the output of GNU
+.I troff \" GNU
+to an X11 display.
+.
+It uses the standard X11 fonts,
+which are rendered by the X server.
+.
+.
+.P
+The output of
+.MR @g@troff @MAN1EXT@
+is in a page description language documented in
+.MR groff_out @MAN5EXT@ .
+.
+Normally,
+users do not observe this output because the
+.MR groff @MAN1EXT@
+wrapper automatically runs an output driver to interpret it;
+.IR groff 's
+.B \-Z
+option leaves it on the standard output stream instead.
+.
+It can be viewed by explicitly calling
+.RB \[lq] gxditview
+.IR file \[rq].
+.
+If the
+.I file
+operand is
+.RB \[lq] \- \[rq],
+.I gxditview
+will read the standard input stream;
+.I file
+cannot be omitted.
+.
+GNU
+.IR troff 's \" GNU
+page description language is device-independent but not device-agnostic.
+.
+.I gxditview
+can view it for all typesetter devices,
+but the quality is device-dependent.
+.
+.I gxditview
+will not display output for terminal
+.RI ( nroff )
+devices.
+.
+.
+.PP
+The best results are achieved with the
+.BR X *
+devices for
+.IR @g@troff 's
+.B \-T
+option,
+of which there are four:
+.BR \-TX75 ,
+.BR \-TX75\-12 ,
+.BR \-TX100 ,
+and
+.BR \-TX100\-12 .
+.
+They differ by the X\~resolution
+(75 or 100 dots per inch)
+and the base point size
+(10 or 12 points).
+.
+They are especially built for
+.IR gxditview .
+.
+When using one of these,
+.I @g@troff
+generates output for this device and calls
+.I gxditview
+automatically for viewing.
+.
+.
+.P
+.B \-X
+produces good results only with
+.BR \-Tps ,
+.BR \-TX75 ,
+.BR \-TX75\-12 ,
+.BR \-TX100 ,
+and
+.BR \-TX100\-12 .
+.
+The default resolution for previewing
+.B \-Tps
+output is 75\|dpi;
+this can be changed with the
+.B \-resolution
+option.
+.
+.
+.PP
+While
+.I gxditview
+is running,
+the left mouse button brings up a menu with several entries.
+.
+.
+.TP 15n \" "Previous Page" + 2n
+.B Next Page
+Display the next page.
+.
+.
+.TP
+.B Previous Page
+Display the previous page.
+.
+.
+.TP
+.B Select Page
+Collect a page number from a dialog box and render it.
+.
+.
+.TP
+.B Print
+Collect a command from a dialog box and use it to print
+.I @g@troff
+output.
+.
+The default command initially displayed is controlled by the
+.B printCommand
+application resource,
+and by the
+.B \-printCommand
+option.
+.
+.
+.TP
+.B Open
+Collect a file name from a dialog box and render it.
+.
+The named file should contain
+.I @g@troff
+output.
+.
+If the file name starts with a bar or pipe symbol,
+.RB \[lq] | \[rq]
+it will be interpreted as a command from which to read.
+.
+.
+.TP
+.B Quit
+Exit from
+.BR gxditview .
+.
+.
+.PP
+The menu entries correspond to actions with similar but not identical
+names,
+which can also be accessed with keyboard accelerators.
+.
+The
+.IR n ,
+.IR Space ,
+.IR Return ,
+and
+.I Next
+.RI ( PgDn )
+keys are bound to the
+.B NextPage
+action.
+.
+The
+.IR p ,
+.IR b ,
+.IR BackSpace ,
+.IR Delete ,
+and
+.I Prior
+.RI ( PgUp )
+keys are bound to the
+.B PreviousPage
+action.
+.
+The
+.I p
+key with any modifier
+(Shift,
+Control,
+Alt,
+or
+Meta)
+is bound to the
+.B Print
+action.
+.
+The
+.I g
+key is bound to the
+.B SelectPage
+action.
+.
+The
+.I o
+key is bound to the
+.B OpenFile
+action.
+.
+The
+.I q
+key is bound to the
+.B Quit
+action.
+.
+The
+.I r
+key is bound to a
+.B Rerasterize
+action which rereads the current file,
+and redisplays the current page;
+if the current file is a command,
+the command will be re-executed.
+.
+Vertical scrolling can be done with the
+.I k
+and
+.I j
+keys;
+horizontal scrolling is bound to the
+.I h
+and
+.I l
+keys.
+.
+The arrow keys
+.RI ( up ,
+.IR down ,
+.IR left ,
+and
+.IR right )
+are also bound to the obvious scrolling actions.
+.
+.
+.PP
+The
+.B \%paperlength
+and
+.B \%paperwidth
+commands in the
+.I DESC
+file describing a
+.I groff
+output device specify the length and width in basic units of the
+virtual page displayed by
+.IR gxditview ;
+see
+.MR groff_font @MAN5EXT@ .
+.
+.
+.\" ====================================================================
+.SS "X defaults"
+.\" ====================================================================
+.
+This program uses the
+.I Dvi
+widget from the X\~Toolkit.
+.
+It understands all of the core resource names and classes as well as:
+.
+.
+.TP
+.BR width\~ (class\~ Width )
+Specifies the width of the window.
+.
+.
+.TP
+.BR height\~ (class\~ Height )
+Specifies the height of the window.
+.
+.
+.TP
+.BR foreground\~ (class\~ Foreground )
+Specifies the default foreground color.
+.
+.
+.TP
+.BR font\~ (class\~ Font )
+Specifies the font to be used for error messages.
+.
+.
+.TP
+.BR fontMap\~ (class\~ FontMap )
+Specifies the mapping from
+.I groff
+font names to X\~font names.
+.
+This must be a string containing a sequence of lines.
+.
+Each line contains two whitespace-separated fields:
+the
+.I groff
+font name is first,
+and the XLFD
+(X Logical Font Description)
+second.
+.
+The default is shown in subsection \[lq]Default font map\[rq] below.
+.
+.
+.\" ====================================================================
+.SS "Default font map"
+.\" ====================================================================
+.
+XLFDs are long and unwieldy,
+so some lines are shown broken and indented below.
+.\" Break them after the POINT_SIZE field (in "decipoints", so "100").
+.
+.
+.PP
+.EX
+TR  \-adobe\-times\-medium\-r\-normal\-\-*\-100\
+\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+TI  \-adobe\-times\-medium\-i\-normal\-\-*\-100\
+\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+TB  \-adobe\-times\-bold\-r\-normal\-\-*\-100\
+\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+TBI \-adobe\-times\-bold\-i\-normal\
+\-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+CR  \-adobe\-courier\-medium\-r\-normal\-\-*\-100\" break
+        \-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+CI  \-adobe\-courier\-medium\-o\-normal\" break
+        \-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+CB  \-adobe\-courier\-bold\-r\-normal\
+\-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+CBI \-adobe\-courier\-bold\-o\-normal\
+\-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+HR  \-adobe\-helvetica\-medium\-r\-normal\" break
+        \-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+HI  \-adobe\-helvetica\-medium\-o\-normal\" break
+        \-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+HB  \-adobe\-helvetica\-bold\-r\-normal\" break
+        \-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+HBI \-adobe\-helvetica\-bold\-o\-normal\" break
+        \-\-*\-100\-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+NR  \-adobe\-new century schoolbook\-medium\-r\-normal\-\-*\-100\" break
+        \-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+NI  \-adobe\-new century schoolbook\-medium\-i\-normal\-\-*\-100\" break
+        \-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+NB  \-adobe\-new century schoolbook\-bold\-r\-normal\-\-*\-100\" break
+        \-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+NBI \-adobe\-new century schoolbook\-bold\-i\-normal\-\-*\-100\" break
+        \-*\-*\-*\-*\-iso8859\-1\[rs]n\[rs]
+S   \-adobe\-symbol\-medium\-r\-normal\-\-*\-100\" break
+        \-*\-*\-*\-*\-adobe\-fontspecific\[rs]n\[rs]
+SS  \-adobe\-symbol\-medium\-r\-normal\-\-*\-100\" break
+        \-*\-*\-*\-*\-adobe\-fontspecific\[rs]n\[rs]
+.EE
+.
+.
+.br
+.ne 3v
+.\" ====================================================================
+.SH Options
+.\" ====================================================================
+.
+.B \-help
+and
+.B \-\-help
+display a usage message,
+while
+.BR \-v ,
+.BR \-version ,
+and
+.B \%\-\-version
+show version information;
+all exit afterward.
+.
+.
+.P
+.I gxditview
+accepts all of the standard X\~Toolkit command-line options along with
+the additional options listed below.
+.
+.
+.TP
+.B \-page
+This option specifies the page number of the document to be displayed.
+.
+.
+.TP
+.BI \-backingStore\~ backing-store-type
+Because redisplay of the rendered
+.I @g@troff
+output can take a perceiptible amount of time,
+this option causes the server to save the window contents so that when
+it is scrolled around the viewport,
+the window is painted from contents saved in backing store.
+.
+.I backing-store-type
+can be one of
+.BR Always ,
+.B WhenMapped
+or
+.BR NotUseful .
+.
+.
+.TP
+.BI \-printCommand\~ command
+The default command displayed in the dialog box for the
+.B Print
+menu entry will be
+.IR command .
+.
+.
+.TP
+.BI \-resolution\~ res
+.I @g@troff
+output file will be displayed at a resolution of
+.I res
+dots per inch,
+unless the
+.I DESC
+file contains the
+.B X11
+directive,
+in which case the device resolution will be used.
+.
+This corresponds to the
+.I Dvi
+widget's
+.B resolution
+resource.
+.
+The default is
+.BR 75 .
+.
+.
+.TP
+.BI \-filename\~ string
+The default file name displayed in the dialog box for the
+.B Open
+menu entry will be
+.IR string .
+.
+This can be either a file name,
+or a command starting with
+.RB \[lq] | \[rq].
+.
+.
+.PP
+The following standard X\~Toolkit command-line arguments are commonly
+used with
+.IR gxditview .
+.
+.
+.TP
+.BI \-bg\~ color
+This option specifies the color to use for the background of the window.
+.
+The default is
+.RB \[lq] white \[rq].
+.
+.
+.TP
+.BI \-bd\~ color
+This option specifies the color to use for the border of the window.
+.
+The default is
+.RB \[lq] black \[rq].
+.
+.
+.TP
+.BI \-bw\~ number
+This option specifies the width in pixels of the border surrounding the
+window.
+.
+.
+.TP
+.BI \-fg\~ color
+This option specifies the color to use for displaying text.
+.
+The default is
+.RB \[lq] black \[rq].
+.
+.
+.TP
+.BI \-fn\~ font
+This option specifies the font to be used for displaying widget text.
+.
+The default is
+.RB \[lq] fixed \[rq].
+.
+.
+.TP
+.B \-rv
+This option indicates that reverse video should be simulated by swapping
+the foreground and background colors.
+.
+.
+.TP
+.BI \-geometry\~ geometry
+This option specifies the preferred size and position of the window.
+.
+.
+.TP
+.BI \-display\~ host : display
+This option specifies the X\~server to contact.
+.
+.
+.TP
+.BI \-xrm\~ resourcestring
+This option specifies a resource string to be used.
+.
+.
+.\" ====================================================================
+.SH "Exit status"
+.\" ====================================================================
+.
+.I gxditview
+exits with
+.RB status\~ 0
+on successful operation,
+and
+.RB status\~ 2
+if the program cannot interpret its command-line arguments.
+.
+.
+.\" ====================================================================
+.SH Environment
+.\" ====================================================================
+.
+.TP
+.I GROFF_FONT_PATH
+A list of directories in which to seek the selected output device's
+directory of device and font description files.
+.
+See
+.MR @g@troff @MAN1EXT@
+and
+.MR groff_font @MAN5EXT@ .
+.
+.
+.br
+.if n .ne 5v
+.if t .ne 6v
+.\" ====================================================================
+.SH Files
+.\" ====================================================================
+.
+.TP
+.I @APPDEFDIR@/\:\%GXditview
+.TQ
+.I @APPDEFDIR@/\:\%GXditview\-color
+define X application defaults for
+.IR gxditview .
+.
+Users can override these values in the
+.I .Xdefaults
+file,
+normally located in the user's home directory.
+.
+See
+.MR appres 1
+and
+.MR xrdb 1 .
+.
+.
+.TP
+.I @FONTDIR@/\:\%devX100/\:DESC
+describes the
+.B X100
+output device.
+.
+.
+.TP
+.IR @FONTDIR@/\:\%devX100/ F
+describes the font known
+.RI as\~ F
+on device
+.BR X100 .
+.
+.
+.TP
+.I @FONTDIR@/\:\%devX100\-12/\:DESC
+describes the
+.B X100\-12
+output device.
+.
+.
+.TP
+.IR @FONTDIR@/\:\%devX100\-12/ F
+describes the font known
+.RI as\~ F
+on device
+.BR X100\-12 .
+.
+.
+.TP
+.I @FONTDIR@/\:\%devX75/\:DESC
+describes the
+.B X75
+output device.
+.
+.
+.TP
+.IR @FONTDIR@/\:\%devX75/ F
+describes the font known
+.RI as\~ F
+on device
+.BR X75 .
+.
+.
+.TP
+.I @FONTDIR@/\:\%devX75\-12/\:DESC
+describes the
+.B X75\-12
+output device.
+.
+.
+.TP
+.IR @FONTDIR@/\:\%devX75\-12/ F
+describes the font known
+.RI as\~ F
+on device
+.BR X75\-12 .
+.
+.
+.TP
+.I @MACRODIR@/\:X.tmac
+defines macros for use with the
+.BR X100 ,
+.BR X100\-12 ,
+.BR X75 ,
+and
+.B X75\-12
+output devices.
+.
+It is automatically loaded by
+.I troffrc
+when any of those output devices is selected.
+.
+.
+.TP
+.I @MACRODIR@/\:Xps\:.tmac
+sets up
+.I @g@troff
+to use
+.I \%gxditview
+as a previewer for device-independent output targeting the
+.B ps
+output device.
+.
+It is automatically loaded by
+.I troffrc
+when
+.I @g@troff
+is given the options
+.B \-X
+and
+.BR \-Tps .
+.
+.
+.\" ====================================================================
+.SH Examples
+.\" ====================================================================
+.
+The following command views this man page with a base point size of 12.
+.
+.
+.RS
+.P
+.EX
+groff \-TX100\-12 \-man gxditview.1
+.EE
+.RE
+.
+.
+.P
+The quality of the result depends mainly on the chosen point size and
+display resolution;
+for rapid previewing,
+however,
+something like
+.
+.RS
+.EX
+.RI "groff \-X \-P\-resolution \-P100\~" document
+.EE
+.RE
+.
+yields acceptable results.
+.
+.
+.\" ====================================================================
+.SH Authors
+.\" ====================================================================
+.
+.I gxditview
+and its predecessor
+.I xditview
+were written by
+Keith Packard (MIT X Consortium),
+Richard L.\& Hyde (Purdue),
+David Slattengren (Berkeley),
+Malcolm Slaney (Schlumberger Palo Alto Research),
+Mark Moraes (University of Toronto),
+and
+James Clark.
+.
+.
+.PP
+This program is derived from
+.IR xditview ;
+portions of
+.I xditview
+originated in
+.IR xtroff ,
+which was derived from
+.IR \%suntroff .
+.
+.
+.\" ====================================================================
+.SH "See also"
+.\" ====================================================================
+.
+.UR https://\:www\:.x\:.org/\:releases/\:X11R7.6/\:doc/\:xorg\-docs/\
+\:specs/\:XLFD/xlfd\:.html
+\[lq]X Logical Font Description Conventions\[rq]
+.UE ,
+by Jim Flowers and Stephen Gildea.
+.
+.
+.PP
+.MR X 7 ,
+.MR xrdb 1 ,
+.MR xditview 1 ,
+.MR groff @MAN1EXT@ ,
+.MR groff_out @MAN5EXT@
+.
+.
+.\" Restore compatibility mode (for, e.g., Solaris 10/11).
+.cp \n[*groff_gxditview_1_man_C]
+.do rr *groff_gxditview_1_man_C
+.
+.
+.\" Local Variables:
+.\" fill-column: 72
+.\" mode: nroff
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

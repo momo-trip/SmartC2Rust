@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Common Features (The GNU troff Manual)</title>
+
+<meta name="description" content="Common Features (The GNU troff Manual)">
+<meta name="keywords" content="Common Features (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Tutorial-for-Macro-Package-Users.html" rel="up" title="Tutorial for Macro Package Users">
+<link href="Paragraphs.html" rel="next" title="Paragraphs">
+<link href="Basics.html" rel="prev" title="Basics">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Common-Features"></span><div class="header">
+<p>
+Previous: <a href="Basics.html" accesskey="p" rel="prev">Basics</a>, Up: <a href="Tutorial-for-Macro-Package-Users.html" accesskey="u" rel="up">Tutorial for Macro Package Users</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Common-Features-1"></span><h3 class="section">3.2 Common Features</h3>
+<span id="index-common-features"></span>
+<span id="index-features_002c-common"></span>
+
+<p>GNU <code>troff</code> provides low-level operations for formatting a
+document.  Many routine operations are undertaken in nearly all
+documents that require a series of such primitive operations to be
+performed.  These common tasks are grouped into <i>macros</i>, which
+are then collected into a <i>macro package</i>.
+</p>
+<p>Some macro packages
+(&ldquo;major&rdquo; or &ldquo;full-service&rdquo;)
+assume responsibility for page layout
+and other critical functions;
+others
+(&ldquo;supplemental&rdquo; or &ldquo;auxiliary&rdquo;)
+do not.
+</p>
+<p>We present several capabilities of full-service macro packages below.
+Each package employs its own macro names to exercise them.  For details,
+consult the package&rsquo;s man page or, for <samp>ms</samp>, see <a href="ms.html">ms</a>.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Paragraphs.html" accesskey="1">Paragraphs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Sections-and-Chapters.html" accesskey="2">Sections and Chapters</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Headers-and-Footers.html" accesskey="3">Headers and Footers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Page-Layout-Adjustment.html" accesskey="4">Page Layout Adjustment</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Displays-and-Keeps.html" accesskey="5">Displays and Keeps</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Footnotes-and-Endnotes.html" accesskey="6">Footnotes and Endnotes</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Table-of-Contents.html" accesskey="7">Table of Contents</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Indexing.html" accesskey="8">Indexing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Document-Formats.html" accesskey="9">Document Formats</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Columnation.html">Columnation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Font-and-Size-Changes.html">Font and Size Changes</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Predefined-Text.html">Predefined Text</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Preprocessor-Support.html">Preprocessor Support</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Configuration-and-Customization.html">Configuration and Customization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+/* Copyright 1989-2024 Free Software Foundation, Inc.
+     Written by James Clark (jjc@jclark.com)
+
+This file is part of groff, the GNU roff typesetting system.
+
+groff is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+groff is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include "lib.h"
+
+#include "searchpath.h"
+#include "macropath.h"
+#include "defs.h"
+
+#define MACROPATH_ENVVAR "GROFF_TMAC_PATH"
+
+search_path macro_path(MACROPATH_ENVVAR, MACROPATH, 1, 1);
+search_path safer_macro_path(MACROPATH_ENVVAR, MACROPATH, 1, 0);
+search_path config_macro_path(MACROPATH_ENVVAR, MACROPATH, 0, 0);
+
+// Local Variables:
+// fill-column: 72
+// mode: C++
+// End:
+// vim: set cindent noexpandtab shiftwidth=2 textwidth=72:

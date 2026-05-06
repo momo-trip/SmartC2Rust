@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Indented regions in ms (The GNU troff Manual)</title>
+
+<meta name="description" content="Indented regions in ms (The GNU troff Manual)">
+<meta name="keywords" content="Indented regions in ms (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms-Body-Text.html" rel="up" title="ms Body Text">
+<link href="ms-keeps-and-displays.html" rel="next" title="ms keeps and displays">
+<link href="Lists-in-ms.html" rel="prev" title="Lists in ms">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Indented-regions-in-ms"></span><div class="header">
+<p>
+Next: <a href="ms-keeps-and-displays.html" accesskey="n" rel="next">ms keeps and displays</a>, Previous: <a href="Lists-in-ms.html" accesskey="p" rel="prev">Lists in ms</a>, Up: <a href="ms-Body-Text.html" accesskey="u" rel="up">ms Body Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Indentation-values-in-ms"></span><span id="Indented-regions"></span><h4 class="subsubsection">4.6.5.7 Indented regions</h4>
+
+<p>You can indent a region of text while otherwise formatting it normally.
+Such indented regions can be nested; change <code>\n[PI]</code> before each
+call to vary the amount of inset.
+</p>
+<dl>
+<dt id="index-_002eRS">Macro: <strong><tt>.RS</tt></strong></dt>
+<dd><span id="index-RS-_005bms_005d"></span>
+<p>Begin a region where headings, paragraphs, and displays are indented
+(further) by the amount stored in the <code>PI</code> register.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eRE">Macro: <strong><tt>.RE</tt></strong></dt>
+<dd><span id="index-RE-_005bms_005d"></span>
+<p>End the (next) most recent indented region.
+</p></dd></dl>
+
+<p>This feature enables you to easily line up text under hanging and
+indented paragraphs.
+<span id="index-ms-macros_002c-nested-lists"></span>
+<span id="index-nested-lists-_005bms_005d"></span>
+For example, you may wish to structure lists hierarchically.
+</p>
+<div class="example">
+<pre class="example">.IP \[bu] 2
+Lawyers:
+.RS
+.IP \[bu]
+Dewey,
+.IP \[bu]
+Cheatham,
+and
+.IP \[bu]
+Howe.
+.RE
+.IP \[bu]
+Guns
+</pre></div>
+
+<table class="cartouche" border="1"><tr><td>
+<div class="example">
+<pre class="example">&bull; Lawyers:
+
+  &bull;  Dewey,
+
+  &bull;  Cheatham, and
+
+  &bull;  Howe.
+
+&bull; Guns
+</pre></div>
+</td></tr></table>
+
+
+
+
+
+</body>
+</html>

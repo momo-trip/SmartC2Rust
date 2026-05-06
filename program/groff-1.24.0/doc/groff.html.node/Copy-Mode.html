@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Copy Mode (The GNU troff Manual)</title>
+
+<meta name="description" content="Copy Mode (The GNU troff Manual)">
+<meta name="keywords" content="Copy Mode (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Writing-Macros.html" rel="up" title="Writing Macros">
+<link href="Page-Motions.html" rel="next" title="Page Motions">
+<link href="Parameters.html" rel="prev" title="Parameters">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Copy-Mode"></span><div class="header">
+<p>
+Previous: <a href="Parameters.html" accesskey="p" rel="prev">Parameters</a>, Up: <a href="Writing-Macros.html" accesskey="u" rel="up">Writing Macros</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Copy_002din-Mode"></span><span id="Copy-Mode-1"></span><h4 class="subsection">5.24.2 Copy Mode</h4>
+<span id="index-copy-mode"></span>
+<span id="index-copy-mode-1"></span>
+<span id="index-mode_002c-copy"></span>
+<span id="index-mode_002c-copy-1"></span>
+
+<p>GNU
+<code>troff</code>
+processes certain requests in
+<em>copy mode</em>:
+it copies ordinary,
+special,
+and indexed characters as-is;
+interpolates the escape sequences
+<code>\n</code>,
+<code>\g</code>,
+<code>\$</code>,
+<code>\*</code>,
+<code>\V</code>,
+and
+<code>\?</code>
+normally;
+discards comments
+<code>\&quot;</code>
+and
+<code>\#</code>;
+interpolates
+<code>\a</code>,
+<code>\e</code>,
+and
+<code>\t</code>,
+as the current
+leader,
+escape,
+or
+tab
+character,
+respectively;
+represents
+<code>\RET</code>,
+<code>\&amp;</code>,
+<code>\_</code>,
+<code>\|</code>,
+<code>\^</code>,
+<code>\{</code>,
+<code>\}</code>,
+<code>\`</code>,
+<code>\'</code>,
+<code>\-</code>,
+<code>\!</code>,
+<code>\c</code>,
+<code>\%</code>,
+<code>\SPC</code>,
+<code>\E</code>,
+<code>\)</code>,
+<code>\~</code>,
+and
+<code>\:</code>
+in an encoded form,
+and copies other escape sequences as-is.
+The term &ldquo;copy mode&rdquo; reflects its most visible application
+in requests that populate macros and strings,
+but other requests also use it when interpreting arguments
+that can&rsquo;t meaningfully represent typesetting operations.
+For example,
+a font selection escape sequence has no meaning
+in a hyphenation pattern file name
+(<code>hpf</code>)
+or a diagnostic message written to the terminal
+(<code>tm</code>).
+</p>
+<span id="index-interpretation-mode"></span>
+<span id="index-mode_002c-interpretation"></span>
+<p>The complement of copy mode&mdash;a <code>roff</code> formatter&rsquo;s behavior when
+not defining or appending to a macro, string, or diversion&mdash;where all
+macros are interpolated, requests invoked, and valid escape sequences
+processed immediately upon recognition, can be termed
+<em>interpretation mode</em>.
+</p>
+<dl>
+<dt id="index-_005c_005c-1">Escape&nbsp;sequence: <strong><tt>\\</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_005c"></span>
+<span id="index-_005c_005c_002c-interpretation-in-copy-mode"></span>
+<span id="index-_005c_005c_002c-as-quotation-character"></span>
+<span id="index-quoting-the-escape-character-with-_005c_005c"></span>
+<span id="index-quoting-the-control-character-with-_005c_005c"></span>
+<p>The escape character
+(<code>\</code>
+by default)
+when used before itself
+<em>quotes</em>
+an escape character for later interpreation
+in an enclosing context.
+Escape character quotation enables you to control
+whether the formatter interprets a given
+<code>\n</code>,
+<code>\g</code>,
+<code>\$</code>,
+<code>\*</code>,
+<code>\V</code>,
+or
+<code>\?</code>
+escape sequence at the time the macro containing it is defined,
+or later when the macro is called.<a id="DOCF156" href="groff.html_fot.html#FOOT156"><sup>156</sup></a>
+</p>
+<div class="example">
+<pre class="example">.nr x 20
+.de y
+.nr x 10
+\&amp;\nx
+\&amp;\\nx
+..
+.y
+    &rArr; 20 10
+</pre></div>
+
+<p>You can think of
+<code>\\</code>
+as a &ldquo;delayed&rdquo; backslash;
+it is the escape character
+followed by a backslash
+from which the escape character
+has removed its special meaning.
+Consequently,
+&lsquo;<samp>\\</samp>&rsquo;
+is not best considered an escape sequence,
+but a quoted escape character.
+In any escape sequence
+&lsquo;<samp>\<var>X</var></samp>&rsquo;
+that
+GNU
+<code>troff</code> does not recognize,
+the formatter discards the escape character and outputs
+<var>X</var>.
+An unrecognized escape sequence causes a warning in category
+&lsquo;<samp>escape</samp>&rsquo;,
+with two exceptions&mdash;&lsquo;<samp>\\</samp>&rsquo;
+is the first.
+</p></dd></dl>
+
+<span id="index-_005c_002e_002c-interpretation-in-copy-mode"></span>
+<dl>
+<dt id="index-_005c_002e-1">Escape&nbsp;sequence: <strong><tt>\.</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_002e"></span>
+<p><code>\.</code>
+quotes the control character.
+It is similar to
+<code>\\</code>
+in that it isn&rsquo;t a true escape sequence.
+It is used to permit nested macro definitions to end
+without a named macro call to conclude them.
+Without a syntax for quoting the control character,
+this would not be possible.
+</p>
+<div class="example">
+<pre class="example">.de m1
+foo
+.
+.  de m2
+bar
+\\..
+.
+..
+.m1
+.m2
+    &rArr; foo bar
+</pre></div>
+
+<p>The first backslash is consumed while the macro is read, and the second
+is interpreted when macro <code>m1</code> is called.
+</p></dd></dl>
+
+<p>Outside of copy mode,
+<code>roff</code>
+documents should not use the
+<code>\\</code>
+or
+<code>\.</code>
+character sequences;
+they serve only to obfuscate the input.
+Use
+<code>\e</code>
+to represent the escape character,
+<code>\[rs]</code>
+to obtain a backslash glyph,
+and
+<code>\&amp;</code>
+before
+&lsquo;<samp>.</samp>&rsquo;
+and
+&lsquo;<samp>'</samp>&rsquo;
+where
+GNU
+<code>troff</code> expects them as control characters
+if you mean to use them literally (recall <a href="Requests-and-Macros.html">Requests and Macros</a>).
+</p>
+<span id="index-nesting-depth_002c-of-escape-sequences-in-macro-definitions"></span>
+<span id="index-depth_002c-nesting_002c-of-escape-sequences-in-macro-definitions"></span>
+<p>Macro definitions can be nested to arbitrary depth.  The mechanics of
+parsing the escape character have significant consequences for this
+practice.
+</p>
+<div class="example">
+<pre class="example">.de M1
+\\$1
+.  de M2
+\\\\$1
+.    de M3
+\\\\\\\\$1
+\\\\..
+.    M3 hand.
+\\..
+.  M2 of
+..
+This understeer is getting
+.M1 out
+    &rArr; This understeer is getting out of hand.
+</pre></div>
+
+<p>As seen above,
+the formatter interpets each escape character in multiple contexts;
+once,
+when populating the macro or string,
+where the first
+&lsquo;<samp>\</samp>&rsquo;
+serves its quotation function\[em]thus
+only one
+&lsquo;<samp>\</samp>&rsquo;
+is stored in the definition.
+(Verify this fact with the
+<code>pm</code>
+request.)
+The formatter interprets the second
+&lsquo;<samp>\</samp>&rsquo;
+as an escape character
+(assuming the escape character hasn&rsquo;t been changed in the meantime)
+each time it interpolates the macro or string definition.
+This fact leads to exponential growth
+in the quantity of escape characters
+required to quote and thereby delay interpolation of
+<code>\n</code>,
+<code>\g</code>,
+<code>\$</code>,
+<code>\*</code>,
+<code>\V</code>,
+and
+<code>\?</code>
+at each nesting level,
+which can be daunting.
+GNU
+<code>troff</code> offers a solution.
+</p>
+<dl>
+<dt id="index-_005cE-1">Escape&nbsp;sequence: <strong><tt>\E</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cE"></span>
+<p><code>\E</code> represents an escape character that is not interpreted in copy
+mode.  You can use it to ease the writing of nested macro definitions.
+</p>
+<div class="example">
+<pre class="example">.de M1
+.  nop \E$1
+.  de M2
+.    nop \E$1
+.    de M3
+.      nop \E$1
+\\\\..
+.    M3 better.
+\\..
+.  M2 bit
+..
+This vehicle handles
+.M1 a
+    &rArr; This vehicle handles a bit better.
+</pre></div>
+
+<p>Observe that because <code>\.</code> is not a true escape sequence, we can&rsquo;t
+use <code>\E</code> to keep &lsquo;<samp>..</samp>&rsquo; from ending a macro definition
+prematurely.  If the multiplicity of backslashes complicates
+maintenance, use end macros.
+</p>
+<p><code>\E</code> is also convenient to define strings containing escape
+sequences that need to work when used in copy mode (for example, as
+macro arguments), or which will be interpolated at varying macro nesting
+depths.  We might define strings to begin and end superscripting
+as follows.<a id="DOCF157" href="groff.html_fot.html#FOOT157"><sup>157</sup></a>
+</p>
+<div class="example">
+<pre class="example">.ds { \v'-.9m\s'\En[.s]*7u/10u'+.7m'
+.ds } \v'-.7m\s0+.9m'
+</pre></div>
+
+<p>When the <code>ec</code> request is used to redefine the escape character,
+<code>\E</code> also makes it easier to distinguish the semantics of an escape
+character from the other meaning(s) its character might have.  Consider
+the use of an unusual escape character, &lsquo;<samp>-</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.nr a 1
+.ec -
+.de xx
+--na
+..
+.xx
+    &rArr; -na
+</pre></div>
+
+<p>This result may surprise you; some people expect &lsquo;<samp>1</samp>&rsquo; to be output
+since register &lsquo;<samp>a</samp>&rsquo; has clearly been defined with that value.  What
+has happened?  The robotic replacement of &lsquo;<samp>\</samp>&rsquo; with &lsquo;<samp>-</samp>&rsquo; has led
+us astray.  You might recognize the sequence &lsquo;<samp>--</samp>&rsquo; more readily with
+the default escape character as &lsquo;<samp>\-</samp>&rsquo;, the special character escape
+sequence for the minus sign glyph.
+</p>
+<div class="example">
+<pre class="example">.nr a 1
+.ec -
+.de xx
+-Ena
+..
+.xx
+    &rArr; 1
+</pre></div>
+</dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Parameters.html" accesskey="p" rel="prev">Parameters</a>, Up: <a href="Writing-Macros.html" accesskey="u" rel="up">Writing Macros</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

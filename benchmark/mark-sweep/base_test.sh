@@ -11,7 +11,7 @@ current_test=0
 
 # Function to log test start
 log_test_start() {
-    echo "Test Case #$1: Started" | tee -a /root/SmartC2Rust/benchmark/mark-sweep/out_flow_c.log /root/SmartC2Rust/benchmark/mark-sweep/out_flow_rust.log
+    echo "Test Case #$1: Started"
 }
 
 if [ ! -f ./markandsweep ]; then

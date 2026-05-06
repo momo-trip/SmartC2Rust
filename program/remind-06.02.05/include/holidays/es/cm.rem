@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision CM in Spain
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision CM.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/es.rem
+
+OMIT [easterdate($Uy)-3] MSG %"Jueves Santo%" %! %b.
+OMIT 31 May MSG %"Día de Castilla-La Mancha%" %! %b.
+OMIT [easterdate($Uy)+60] MSG %"Corpus Christi%" %! %b.

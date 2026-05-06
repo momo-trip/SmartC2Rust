@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Using Fractional Type Sizes (The GNU troff Manual)</title>
+
+<meta name="description" content="Using Fractional Type Sizes (The GNU troff Manual)">
+<meta name="keywords" content="Using Fractional Type Sizes (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Manipulating-Type-Size-and-Vertical-Spacing.html" rel="up" title="Manipulating Type Size and Vertical Spacing">
+<link href="Colors.html" rel="next" title="Colors">
+<link href="Changing-the-Vertical-Spacing.html" rel="prev" title="Changing the Vertical Spacing">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Using-Fractional-Type-Sizes"></span><div class="header">
+<p>
+Previous: <a href="Changing-the-Vertical-Spacing.html" accesskey="p" rel="prev">Changing the Vertical Spacing</a>, Up: <a href="Manipulating-Type-Size-and-Vertical-Spacing.html" accesskey="u" rel="up">Manipulating Type Size and Vertical Spacing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Fractional-Type-Sizes"></span><span id="Using-Fractional-Type-Sizes-1"></span><h4 class="subsection">5.20.3 Using Fractional Type Sizes</h4>
+<span id="index-fractional-type-sizes"></span>
+<span id="index-fractional-point-sizes"></span>
+<span id="index-type-sizes_002c-fractional"></span>
+<span id="index-point-sizes_002c-fractional"></span>
+<span id="index-sizes_002c-fractional-type"></span>
+
+<p>When configuring the type size,
+AT&amp;T
+<code>troff</code> ignored scaling units and intepreted all measurements in points.
+Combined with integer arithmetic,
+this design choice made it impossible to support,
+for instance,
+ten-and-a-half-point type.
+In GNU
+<code>troff</code>, an output device can select a scaling factor
+that subdivides a point into &ldquo;scaled points&rdquo;.
+A type size expressed in scaled points
+can thus represent a non-integral size in points.
+</p>
+<span id="index-scaled-point-scaling-unit-_0028s_0029-1"></span>
+<span id="index-point_002c-scaled_002c-scaling-unit-_0028s_0029-1"></span>
+<span id="index-s-scaling-unit-1"></span>
+<span id="index-unit_002c-scaling_002c-s-1"></span>
+<span id="index-scaling-unit-s-1"></span>
+<span id="index-typographical-point-scaling-unit-_0028z_0029-1"></span>
+<span id="index-point_002c-typographical_002c-scaling-unit-_0028z_0029-1"></span>
+<span id="index-z-scaling-unit-1"></span>
+<span id="index-unit_002c-scaling_002c-z-1"></span>
+<span id="index-scaling-unit-z-1"></span>
+<span id="index-ps-request_002c-with-fractional-type-sizes"></span>
+<span id="index-cs-request_002c-with-fractional-type-sizes"></span>
+<span id="index-tkf-request_002c-with-fractional-type-sizes"></span>
+<span id="index-_005cH_002c-with-fractional-type-sizes"></span>
+<span id="index-_005cs_002c-with-fractional-type-sizes"></span>
+<p>A
+<em>scaled point</em>,
+scaling unit
+<code>s</code>,
+is equal to
+<em>1/<var>sizescale</var></em>
+points,
+where the device description file,
+<samp>DESC</samp>,
+specifies
+<var>sizescale</var>
+and otherwise defaults to&nbsp;1.<a id="DOCF136" href="groff.html_fot.html#FOOT136"><sup>136</sup></a>
+GNU
+<code>troff</code>
+also defines the
+<em>typographical point</em>,
+scaling unit
+<code>z</code>,
+which explicitly specifies a type size of potentially
+non-integral measure.
+The program multiplies typographical points by
+<var>sizescale</var>
+and converts the value to an integer.
+Arguments GNU
+<code>troff</code> interprets in
+<code>z</code>
+units by default comprise those to the escape sequences
+<code>\H</code>
+and
+<code>\s</code>,
+to the request
+<code>ps</code>,
+the third argument to the
+<code>cs</code>
+request,
+and the second and fourth arguments to the
+<code>tkf</code>
+request.
+</p>
+<p>For example,
+if
+<var>sizescale</var>
+is&nbsp;1000,
+then a scaled point is one thousandth of a point.
+The request
+&lsquo;<samp>.ps 10.5</samp>&rsquo;
+is synonymous with
+&lsquo;<samp>.ps 10.5z</samp>&rsquo;;
+both set the type size to 10,500&nbsp;scaled points,
+or 10.5&nbsp;typographical points.
+</p>
+<dl>
+<dt id="index-_005cn_005b_002eps_005d">Register: <strong><tt>\n[.ps]</tt></strong></dt>
+<dd><span id="index-_002eps-3"></span>
+<p>This read-only register interpolates the type size in scaled points.
+&lsquo;<samp>\n[.ps]s</samp>&rsquo;,
+&lsquo;<samp>\n[.s]z</samp>&rsquo;,
+and
+&lsquo;<samp>1m</samp>&rsquo;
+are co-equal by definition.
+</p></dd></dl>
+
+<div class="example">
+<pre class="example">.tm device=\*[.T]
+.tm A: .s=\n[.s]z, .ps=\n[.ps]s
+.ps 10.5
+.tm B: .s=\n[.s]z, .ps=\n[.ps]s
+.ps 12.3p
+.tm C: .s=\n[.s]z, .ps=\n[.ps]s
+.ps 8.1z
+.tm D: .s=\n[.s]z, .ps=\n[.ps]s
+.ps 10500s
+.tm E: .s=\n[.s]z, .ps=\n[.ps]s
+    &rArr; device=ps
+    &rArr; A: .s=10z, .ps=10000s
+    &rArr; B: .s=10.5z, .ps=10500s
+    &rArr; C: .s=12.3z, .ps=12300s
+    &rArr; D: .s=8.1z, .ps=8100s
+    &rArr; E: .s=10.5z, .ps=10500s
+</pre></div>
+
+<p>It makes no sense to use the
+&lsquo;<samp>z</samp>&rsquo;&nbsp;scaling
+unit in a numeric expression whose default scaling unit is neither
+&lsquo;<samp>u</samp>&rsquo;
+nor
+&lsquo;<samp>z</samp>&rsquo;,
+so GNU
+<code>troff</code> disallows this.
+Similarly,
+it is nonsensical to use scaling units other than
+&lsquo;<samp>p</samp>&rsquo;,
+&lsquo;<samp>s</samp>&rsquo;,
+&lsquo;<samp>z</samp>&rsquo;,
+or
+&lsquo;<samp>u</samp>&rsquo;
+in a
+numeric expression whose default scaling unit
+is&nbsp;&lsquo;<samp>z</samp>&rsquo;,
+and so GNU
+<code>troff</code>
+disallows those as well.
+</p>
+<dl>
+<dt id="index-_005cn_005b_002epsr_005d">Register: <strong><tt>\n[.psr]</tt></strong></dt>
+<dd><span id="index-_002epsr"></span>
+</dd><dt id="index-_005cn_005b_002esr_005d">Register: <strong><tt>\n[.sr]</tt></strong></dt>
+<dd><span id="index-_002esr"></span>
+<span id="index-last_002drequested-type-size-registers-_0028_002epsr_002c-_002esr_0029"></span>
+<span id="index-type-size-registers_002c-last_002drequested-_0028_002epsr_002c-_002esr_0029"></span>
+<span id="index-last_002drequested-point-size-registers-_0028_002epsr_002c-_002esr_0029"></span>
+<span id="index-point-size-registers_002c-last_002drequested-_0028_002epsr_002c-_002esr_0029"></span>
+<span id="index-_002eps-register_002c-compared-to-_002epsr"></span>
+<span id="index-_002es-register_002c-compared-to-_002esr"></span>
+<p>Output devices may be limited in the type sizes they can employ.
+The
+<code>.s</code>
+and
+<code>.ps</code>
+registers represent the type size selected by the formatter
+as it understands a device&rsquo;s capability.
+The last
+<em>requested</em>
+type size is interpolated in scaled points
+by the read-only register
+<code>.psr</code>
+and in points as a decimal fraction
+by the read-only string-valued register
+<code>.sr</code>.
+</p>
+<p>For example,
+if a document requests a type size of 10.95&nbsp;points,
+and the nearest size permitted by a
+<code>sizes</code>
+request
+(or by the
+<code>sizes</code>
+or
+<code>sizescale</code>
+directives in the device&rsquo;s
+<samp>DESC</samp>
+file)
+is 11&nbsp;points,
+<code>groff</code>
+uses the latter value.
+</p></dd></dl>
+
+<span id="index-changing-type-sizes-_0028ps_002c-_005cs_0029-1"></span>
+<span id="index-type-sizes_002c-changing-_0028ps_002c-_005cs_0029-1"></span>
+<span id="index-point-sizes_002c-changing-_0028ps_002c-_005cs_0029-1"></span>
+<p>The
+<code>\s</code>
+escape sequence offers the following syntax forms
+that work with fractional type sizes and accept scaling units.
+The delimited forms need not use the neutral apostrophe;
+see <a href="Delimiters.html">Delimiters</a>.
+</p>
+<dl compact="compact">
+<dt><code>\s[<var>n</var>]</code></dt>
+<dt><code>\s'<var>n</var>'</code></dt>
+<dd><p>Set the type size to
+<var>n</var>&nbsp;typographical
+points;
+<var>n</var>&nbsp;is
+a numeric expression with a default scaling unit of
+&lsquo;<samp>z</samp>&rsquo;.
+</p>
+</dd>
+<dt><code>\s[+<var>n</var>]</code></dt>
+<dt><code>\s[-<var>n</var>]</code></dt>
+<dt><code>\s+[<var>n</var>]</code></dt>
+<dt><code>\s-[<var>n</var>]</code></dt>
+<dt><code>\s'+<var>n</var>'</code></dt>
+<dt><code>\s'-<var>n</var>'</code></dt>
+<dt><code>\s+'<var>n</var>'</code></dt>
+<dt><code>\s-'<var>n</var>'</code></dt>
+<dd><p>Increase or decrease the type size by
+<var>n</var>&nbsp;typographical
+points;
+<var>n</var>&nbsp;is
+a numeric expression with a default scaling unit of
+&lsquo;<samp>z</samp>&rsquo;.
+If <var>n</var>&nbsp;is
+&lsquo;<samp>0</samp>&rsquo;,
+restore the previous size.
+</p></dd>
+</dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Changing-the-Vertical-Spacing.html" accesskey="p" rel="prev">Changing the Vertical Spacing</a>, Up: <a href="Manipulating-Type-Size-and-Vertical-Spacing.html" accesskey="u" rel="up">Manipulating Type Size and Vertical Spacing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

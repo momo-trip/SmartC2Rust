@@ -1,0 +1,81 @@
+# Copyright 2011-2024 Free Software Foundation, Inc.
+#
+# Written by Deri James <deri@chuzzlewit.myzen.co.uk>
+# Automake migration by Bertrand Garrigues
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+gropdf_dir = $(top_srcdir)/src/devices/gropdf
+
+bin_SCRIPTS += gropdf pdfmom
+EXTRA_DIST += \
+  src/devices/gropdf/TODO \
+  src/devices/gropdf/gropdf.pl \
+  src/devices/gropdf/pdfmom.pl \
+  src/devices/gropdf/gropdf.1.man \
+  src/devices/gropdf/pdfmom.1.man
+
+GROPDFTMACFILES = \
+  tmac/pdf.tmac \
+  tmac/pdfpic.tmac
+gropdftmacdir = $(tmacdir)
+dist_gropdftmac_DATA = $(GROPDFTMACFILES)
+
+man1_MANS += \
+  src/devices/gropdf/gropdf.1 \
+  src/devices/gropdf/pdfmom.1
+
+gropdf: $(gropdf_dir)/gropdf.pl $(SH_DEPS_SED_SCRIPT)
+	$(AM_V_GEN)$(RM) $@ \
+	&& sed -f $(SH_DEPS_SED_SCRIPT) \
+	       -e "s|[@]VERSION[@]|$(VERSION)|" \
+	       -e "s|[@]PERL[@]|$(PERL)|" \
+	       -e "s|[@]GROFF_FONT_DIR[@]|$(fontpath)|" \
+	       -e "s|[@]RT_SEP[@]|$(RT_SEP)|" $(gropdf_dir)/gropdf.pl \
+	       >$@ \
+	&& chmod +x $@
+
+pdfmom: $(gropdf_dir)/pdfmom.pl $(SH_DEPS_SED_SCRIPT)
+	$(AM_V_GEN)$(RM) $@ \
+	&& sed -f $(SH_DEPS_SED_SCRIPT) \
+	       -e "s|[@]VERSION[@]|$(VERSION)|" \
+	       -e "s|[@]RT_SEP[@]|$(RT_SEP)|" \
+	       -e "s|[@]PERL[@]|$(PERL)|" $(gropdf_dir)/pdfmom.pl \
+	       >$@ \
+	&& chmod +x $@
+
+gropdf_TESTS = \
+  src/devices/gropdf/tests/interpret-grout-correctly.sh \
+  tmac/tests/pdf_bookmark-starting-with-control-char-works.sh \
+  tmac/tests/pdf_pdfhref-W-without-link-text-works.sh \
+  tmac/tests/pdfpic_does-not-choke-on-bad-pdfinfo-output.sh \
+  tmac/tests/pdfpic_falls-back-to-PSPIC.sh
+TESTS += $(gropdf_TESTS)
+EXTRA_DIST += $(gropdf_TESTS)
+
+gropdf_XFAIL_TESTS = \
+  tmac/tests/pdf_bookmark-starting-with-control-char-works.sh
+XFAIL_TESTS += $(gropdf_XFAIL_TESTS)
+
+uninstall_groffdirs: uninstall_gropdf_hook
+uninstall_gropdf_hook:
+	-rmdir $(DESTDIR)$(tmacdir)
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

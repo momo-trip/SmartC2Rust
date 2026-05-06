@@ -1,0 +1,52 @@
+.\" --------------------------------------------------------------------
+.\" Legalese
+.\" --------------------------------------------------------------------
+.
+.ig
+glilypond - integrate lilypond parts into groff files
+
+This file was written by Bernd Warken <groff\-bernd.warken\-72@web.de>.
+
+Copyright 2013-2020 Free Software Foundation, Inc.
+
+This file is part of glilypond.
+
+glilypond is distributed with groff, the GNU roff typesetting system.
+
+groff is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+groff is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+..
+.
+.\" --------------------------------------------------------------------
+.\" Groff Part
+.\" --------------------------------------------------------------------
+.
+before
+.lilypond start
+\version "2.14.2"
+\relative c' {
+  \key c \minor
+  c d e f
+  g(
+  <ees c'>)
+  <d f gis b>-.
+  <ees g bes>-.
+}
+\paper {
+   oddHeaderMarkup = #f
+   evenHeaderMarkup = #f
+   oddFooterMarkup = #f
+   evenFooterMarkup = #f
+}
+.lilypond end
+after

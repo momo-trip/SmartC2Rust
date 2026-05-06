@@ -12,7 +12,7 @@ mkdir -p results
 
 # Function to log test start
 log_test_start() {
-    echo "Test Case #$1: Started" | tee -a /root/SmartC2Rust/benchmark/qsort/out_flow_c.log /root/SmartC2Rust/benchmark/qsort/out_flow_rust.log
+    echo "Test Case #$1: Started"
 }
 
 # Function to run a test and check its output

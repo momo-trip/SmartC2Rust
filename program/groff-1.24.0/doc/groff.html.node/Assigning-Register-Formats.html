@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Assigning Register Formats (The GNU troff Manual)</title>
+
+<meta name="description" content="Assigning Register Formats (The GNU troff Manual)">
+<meta name="keywords" content="Assigning Register Formats (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Registers.html" rel="up" title="Registers">
+<link href="Built_002din-Registers.html" rel="next" title="Built-in Registers">
+<link href="Auto_002dincrement.html" rel="prev" title="Auto-increment">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Assigning-Register-Formats"></span><div class="header">
+<p>
+Next: <a href="Built_002din-Registers.html" accesskey="n" rel="next">Built-in Registers</a>, Previous: <a href="Auto_002dincrement.html" accesskey="p" rel="prev">Auto-increment</a>, Up: <a href="Registers.html" accesskey="u" rel="up">Registers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Assigning-Formats"></span><span id="Assigning-Register-Formats-1"></span><h4 class="subsection">5.8.4 Assigning Register Formats</h4>
+<span id="index-assign-number-format-to-register-_0028af_0029"></span>
+<span id="index-number-format_002c-assigning-to-register-_0028af_0029"></span>
+<span id="index-register_002c-assigning-number-format-to-_0028af_0029"></span>
+
+<p>A writable register&rsquo;s value can be interpolated in several number
+formats.  By default, conventional Arabic numerals are used.
+Other formats see use in sectioning and outlining schemes and
+alternative page numbering arrangements.
+</p>
+<dl>
+<dt id="index-_002eaf">Request: <strong><tt>.af</tt></strong> <em>reg fmt</em></dt>
+<dd><span id="index-af"></span>
+<p>Use number format <var>fmt</var> when interpolating register <var>reg</var>.
+Valid number formats are as follows.
+</p>
+<dl compact="compact">
+<dt><code>0<span class="roman">&hellip;</span></code></dt>
+<dd><p>Arabic numerals 0, 1, 2, and so on.
+Any decimal digit is equivalent to &lsquo;<samp>0</samp>&rsquo;; the formatter merely counts
+the digits specified.  Multiple Arabic numerals in <var>fmt</var> cause
+interpolations to be zero-padded on the left if necessary to at least as
+many digits as specified (interpolations never truncate a register
+value).  A register with format &lsquo;<samp>00</samp>&rsquo; interpolates values 1, 2, 3 as
+&lsquo;<samp>01</samp>&rsquo;, &lsquo;<samp>02</samp>&rsquo;, &lsquo;<samp>03</samp>&rsquo;.  The default format for all writable
+registers is &lsquo;<samp>0</samp>&rsquo;.
+</p>
+</dd>
+<dt><code>I</code></dt>
+<dd><span id="index-Roman-numerals"></span>
+<span id="index-numerals_002c-Roman"></span>
+<p>Uppercase Roman numerals: 0, I, II, III, IV,&nbsp;<small class="enddots">...</small>
+</p>
+</dd>
+<dt><code>i</code></dt>
+<dd><p>Lowercase Roman numerals: 0, i, ii, iii, iv,&nbsp;<small class="enddots">...</small>
+</p>
+</dd>
+<dt><code>A</code></dt>
+<dd><p>Uppercase letters: 0, A, B, C, &hellip;,&nbsp;Z, AA, AB,&nbsp;<small class="enddots">...</small>
+</p>
+</dd>
+<dt><code>a</code></dt>
+<dd><p>Lowercase letters: 0, a, b, c, &hellip;,&nbsp;z, aa, ab,&nbsp;<small class="enddots">...</small>
+</p></dd>
+</dl>
+
+<p>Omitting <var>fmt</var> causes a warning in category &lsquo;<samp>missing</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>, regarding the enablement and suppression of warnings.
+Specifying an unrecognized format is an error.
+</p>
+<p>Zero values are interpolated as &lsquo;<samp>0</samp>&rsquo; in non-Arabic formats.
+Negative quantities are prefixed with &lsquo;<samp>-</samp>&rsquo; irrespective of format.
+In Arabic formats, the sign supplements the field width.  If <var>reg</var>
+doesn&rsquo;t exist, it is created with a zero value.
+</p>
+<div class="example">
+<pre class="example">.nr a 10
+.af a 0           \&quot; the default format
+\na,
+.af a I
+\na,
+.af a 321
+.nr a (-\na)
+\na,
+.af a a
+\na
+    &rArr; 10, X, -010, -j
+</pre></div>
+
+<span id="index-Roman-numerals_002c-extrema-_0028maximum-and-minimum_0029"></span>
+<span id="index-extreme-values-representable-with-Roman-numerals"></span>
+<span id="index-maximum-value-representable-with-Roman-numerals"></span>
+<span id="index-minimum-value-representable-with-Roman-numerals"></span>
+<p>The representable extrema in the &lsquo;<samp>i</samp>&rsquo; and &lsquo;<samp>I</samp>&rsquo; formats
+correspond to Arabic ±39,999.  GNU <code>troff</code> uses &lsquo;<samp>w</samp>&rsquo; and
+&lsquo;<samp>z</samp>&rsquo; to represent 5,000 and 10,000 in Roman numerals, respectively,
+following the convention of <acronym>AT&amp;T</acronym> <code>troff</code>&mdash;currently, the
+correct glyphs for Roman numerals five thousand (<code>U+2181</code>) and ten
+thousand (<code>U+2182</code>) are not used.
+</p>
+<span id="index-read_002donly-register_002c-changing-format"></span>
+<span id="index-changing-format_002c-and-read_002donly-registers"></span>
+<p>Assigning the format of a read-only register is an error.  Instead, copy
+the read-only register&rsquo;s value to, and assign the format of, a writable
+register.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cgr">Escape&nbsp;sequence: <strong><tt>\g</tt><span class="roman"><i>r</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cg"></span>
+</dd><dt id="index-_005cg_0028rg">Escape&nbsp;sequence: <strong><tt>\g(</tt><span class="roman"><i>rg</i></span><tt></tt></strong></dt>
+<dt id="index-_005cg_005breg_005d">Escape&nbsp;sequence: <strong><tt>\g[</tt><span class="roman"><i>reg</i></span><tt>]</tt></strong></dt>
+<dd><span id="index-format-of-register-_0028_005cg_0029"></span>
+<span id="index-register_002c-format-_0028_005cg_0029"></span>
+<p>Interpolate the format of the register <var>reg</var> (one-character
+name&nbsp;<var>r</var>, two-character name <var>rg</var>).  Zeroes represent
+Arabic formats.  If <var>reg</var> is not defined, <var>reg</var> is not created
+and nothing is interpolated.
+<span id="index-_005cg_002c-interpretation-in-copy-mode"></span>
+<code>\g</code> is interpreted even in copy mode (see <a href="Copy-Mode.html">Copy Mode</a>).
+</p></dd></dl>
+
+<span id="index-register-format_002c-in-expressions"></span>
+<span id="index-expressions_002c-and-register-format"></span>
+<p>GNU <code>troff</code> interprets only Arabic numerals.  The Roman numeral or
+alphabetic formats cannot be used as operands to arithmetic operators in
+expressions (see <a href="Numeric-Expressions.html">Numeric Expressions</a>).  For instance, it may be
+desirable to test the page number independently of its format.
+</p>
+<div class="example">
+<pre class="example">.af % i \&quot; front matter
+.de header-trap
+.  \&quot; To test the page number, we need it in Arabic.
+.  ds saved-page-number-format \\g%\&quot;
+.  af % 0
+.  nr page-number-in-decimal \\n%
+.  af % \\*[saved-page-number-format]
+.  ie \\n[page-number-in-decimal]=1 .do-first-page-stuff
+.  el \{\
+.    ie o .do-odd-numbered-page-stuff
+.    el   .do-even-numbered-page-stuff
+.  \}
+.  rm saved-page-number-format
+..
+.wh 0 header-trap
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Built_002din-Registers.html" accesskey="n" rel="next">Built-in Registers</a>, Previous: <a href="Auto_002dincrement.html" accesskey="p" rel="prev">Auto-increment</a>, Up: <a href="Registers.html" accesskey="u" rel="up">Registers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

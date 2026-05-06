@@ -1,0 +1,111 @@
+(1) Prerequisites
+
+Make sure that GNU gv has been installed if you want to test the translation.
+In this case also make sure you have turned on international mode for GNU gv
+(see README.I18N for details).
+
+Otherwise compiling GNU gv and taking the generated file
+"src/gv-update-userconfig" will be enough.
+Also make sure that perl 5.8 or newer is working.
+
+
+
+(2) File names of the translation file
+
+The file has to be named "$LOCLAE.dat", where $LOCALE may be e. g. "de_AT.utf8"
+for the austrian locale. See appendix "(B) Naming locales" for details.
+
+If you do not have a translation file, start with an empty one, that is, 
+create one with "touch $LOCALE.dat".
+
+
+
+
+(3) Getting the file to translate / Updating it
+
+simply run "gv-update-userconfig -i $LOCALE.dat"
+
+This command will add all strings that are not in the translation file to the
+end of that file.
+
+
+
+(4) Translating the strings
+
+After (3) you will find in your $LOCALE.dat many lines like the followings:
+
+GV*copyright.Label:                     Copyright
+GV*miscmenuLabel.label:                 Misc Menu Entries
+GV*optionsgv.Label:                     gv Options ...
+GV*mark.Label:                          Mark
+GV*dismiss.Label:                       Dismiss
+
+Just overwrite the right hand side with your translation.
+
+
+
+Important: Do not change the "GV.version" resource which may look like the
+following:
+
+GV.version:             gv 3.6.7.90
+
+
+(5) Testing your translation (optional)
+
+Create a symlink "~/.gv-$LOCALE" to the rranslation file $LOCALE.dat unless you have already done so.
+
+Just run gv, your symlink "~/.gv-$LOCALE" will ensure that your translation is
+used instead of GNU gv's own strings.
+
+
+
+(6) Submitting the translated files
+
+See my job discription on http://sv.gnu.org/projects/gv for details.
+
+I'll check if they are syntactically correct and copy them to "src/nls" in the
+distribution tarball of GNU gv and update the src/nls/LANGUAGES file.
+
+
+
+
+
+
+
+
+
+(A) What to do of more locales share the same translation strings?
+
+src/nls/LANGUAGES can contain aliases for languages.
+Assume "de_CH.utf8" uses the same translation strings as "de_AT.utf8".
+"echo 'de_AT.utf8 -> de_CH.utf8' >> LANGUAGES" tells GNU gv to use the
+strings from the locale "de_AT.utf8" for the locale "de_CH.utf8".
+
+
+
+
+(B) Naming locales
+
+A locale is named "language[_territory][.codeset][@modifier]".
+
+If the complete locale does not match to one of the translations, the modifier
+is removed. If this still does not match, the territory is removed.
+
+
+IMPORTANT NOTE:
+If international mode is turned off, the locale is prefixed with "noint:", e. g.
+"noint:en_US". So locales are named "noint:language[_territory]".
+
+Note that multibyte characters are not available in non-international mode.
+For that reason it is wise not to use the translation from the international mode
+for the non-international mode and codeset and modifier are not used to identify a
+translation.
+It's ok not to provide a translation for the non-international mode. But you can
+provide one if you think that this is a good idea.
+
+
+
+
+
+TODO: Which charset to use in non-international mode?  7-bit-ASCII might be a
+good choice.

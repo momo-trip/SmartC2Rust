@@ -1,0 +1,56 @@
+# Copyright 2014-2020 Free Software Foundation, Inc.
+#
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Moved to automake by Bertrand Garrigues
+#
+# This file is part of gpinyin.
+#
+# gpinyin is distributed with groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+gpinyin_srcdir = $(top_srcdir)/contrib/gpinyin
+bin_SCRIPTS += gpinyin
+gpinyindir = $(gpinyin_dir)
+man1_MANS += contrib/gpinyin/gpinyin.1
+EXTRA_DIST += \
+  contrib/gpinyin/COPYRIGHT \
+  contrib/gpinyin/ChangeLog \
+  contrib/gpinyin/GPLv2 \
+  contrib/gpinyin/gpinyin.1.man \
+  contrib/gpinyin/gpinyin.pl
+
+gpinyin: contrib/gpinyin/gpinyin.pl $(SH_DEPS_SED_SCRIPT)
+	$(AM_V_GEN)sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	    -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	    -e "s|[@]gpinyin_dir[@]|$(DESTIR)$(gpinyin_dir)|" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(gpinyin_srcdir)/gpinyin.pl \
+	    >$@ \
+	&& chmod +x $@
+
+uninstall_groffdirs: uninstall-gpinyin-hook
+uninstall-gpinyin-hook:
+	if test -d $(DESTDIR)$(gpinyindir); then \
+	  rmdir $(DESTDIR)$(gpinyindir); \
+	fi
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

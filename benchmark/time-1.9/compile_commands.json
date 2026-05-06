@@ -48,43 +48,29 @@
       "-I./lib",
       "-Isrc",
       "-I./src",
-      "-I./lib/",
-      "-I./lib",
+      "-Wall",
+      "-Wextra",
+      "-Wformat-security",
+      "-Wswitch-enum",
+      "-Wswitch-default",
+      "-Wformat-nonliteral",
+      "-Wunused-parameter",
+      "-Wfloat-equal",
+      "-fdiagnostics-show-option",
+      "-funit-at-a-time",
+      "-Wmissing-format-attribute",
+      "-Wstrict-overflow",
       "-finstrument-functions",
       "-g",
       "-gdwarf-4",
       "-c",
       "-o",
-      "lib/libtime_a-getprogname.o",
-      "lib/getprogname.c"
+      "src/time-time.o",
+      "src/time.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/time-1.9",
-    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/getprogname.c",
-    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-getprogname.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-DHAVE_CONFIG_H",
-      "-I.",
-      "-Ilib",
-      "-I./lib",
-      "-I./lib",
-      "-Isrc",
-      "-I./src",
-      "-I./lib/",
-      "-I./lib",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-c",
-      "-o",
-      "lib/libtime_a-stripslash.o",
-      "lib/stripslash.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/time-1.9",
-    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/stripslash.c",
-    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-stripslash.o"
+    "file": "/root/SmartC2Rust/benchmark/time-1.9/src/time.c",
+    "output": "/root/SmartC2Rust/benchmark/time-1.9/src/time-time.o"
   },
   {
     "arguments": [
@@ -144,19 +130,29 @@
       "-I./lib",
       "-Isrc",
       "-I./src",
-      "-I./lib/",
-      "-I./lib",
+      "-Wall",
+      "-Wextra",
+      "-Wformat-security",
+      "-Wswitch-enum",
+      "-Wswitch-default",
+      "-Wformat-nonliteral",
+      "-Wunused-parameter",
+      "-Wfloat-equal",
+      "-fdiagnostics-show-option",
+      "-funit-at-a-time",
+      "-Wmissing-format-attribute",
+      "-Wstrict-overflow",
       "-finstrument-functions",
       "-g",
       "-gdwarf-4",
       "-c",
       "-o",
-      "lib/libtime_a-basename-lgpl.o",
-      "lib/basename-lgpl.c"
+      "src/time-rusage-kb.o",
+      "src/rusage-kb.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/time-1.9",
-    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/basename-lgpl.c",
-    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-basename-lgpl.o"
+    "file": "/root/SmartC2Rust/benchmark/time-1.9/src/rusage-kb.c",
+    "output": "/root/SmartC2Rust/benchmark/time-1.9/src/time-rusage-kb.o"
   },
   {
     "arguments": [
@@ -175,12 +171,12 @@
       "-gdwarf-4",
       "-c",
       "-o",
-      "lib/libtime_a-version-etc.o",
-      "lib/version-etc.c"
+      "lib/libtime_a-stripslash.o",
+      "lib/stripslash.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/time-1.9",
-    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/version-etc.c",
-    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-version-etc.o"
+    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/stripslash.c",
+    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-stripslash.o"
   },
   {
     "arguments": [
@@ -205,30 +201,6 @@
     "directory": "/root/SmartC2Rust/benchmark/time-1.9",
     "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/unistd.c",
     "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-unistd.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-DHAVE_CONFIG_H",
-      "-I.",
-      "-Ilib",
-      "-I./lib",
-      "-I./lib",
-      "-Isrc",
-      "-I./src",
-      "-I./lib/",
-      "-I./lib",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-c",
-      "-o",
-      "lib/libtime_a-version-etc-fsf.o",
-      "lib/version-etc-fsf.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/time-1.9",
-    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/version-etc-fsf.c",
-    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-version-etc-fsf.o"
   },
   {
     "arguments": [
@@ -274,29 +246,19 @@
       "-I./lib",
       "-Isrc",
       "-I./src",
-      "-Wall",
-      "-Wextra",
-      "-Wformat-security",
-      "-Wswitch-enum",
-      "-Wswitch-default",
-      "-Wformat-nonliteral",
-      "-Wunused-parameter",
-      "-Wfloat-equal",
-      "-fdiagnostics-show-option",
-      "-funit-at-a-time",
-      "-Wmissing-format-attribute",
-      "-Wstrict-overflow",
+      "-I./lib/",
+      "-I./lib",
       "-finstrument-functions",
       "-g",
       "-gdwarf-4",
       "-c",
       "-o",
-      "src/time-time.o",
-      "src/time.c"
+      "lib/libtime_a-version-etc.o",
+      "lib/version-etc.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/time-1.9",
-    "file": "/root/SmartC2Rust/benchmark/time-1.9/src/time.c",
-    "output": "/root/SmartC2Rust/benchmark/time-1.9/src/time-time.o"
+    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/version-etc.c",
+    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-version-etc.o"
   },
   {
     "arguments": [
@@ -308,28 +270,66 @@
       "-I./lib",
       "-Isrc",
       "-I./src",
-      "-Wall",
-      "-Wextra",
-      "-Wformat-security",
-      "-Wswitch-enum",
-      "-Wswitch-default",
-      "-Wformat-nonliteral",
-      "-Wunused-parameter",
-      "-Wfloat-equal",
-      "-fdiagnostics-show-option",
-      "-funit-at-a-time",
-      "-Wmissing-format-attribute",
-      "-Wstrict-overflow",
+      "-I./lib/",
+      "-I./lib",
       "-finstrument-functions",
       "-g",
       "-gdwarf-4",
       "-c",
       "-o",
-      "src/time-rusage-kb.o",
-      "src/rusage-kb.c"
+      "lib/libtime_a-version-etc-fsf.o",
+      "lib/version-etc-fsf.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/time-1.9",
-    "file": "/root/SmartC2Rust/benchmark/time-1.9/src/rusage-kb.c",
-    "output": "/root/SmartC2Rust/benchmark/time-1.9/src/time-rusage-kb.o"
+    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/version-etc-fsf.c",
+    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-version-etc-fsf.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-DHAVE_CONFIG_H",
+      "-I.",
+      "-Ilib",
+      "-I./lib",
+      "-I./lib",
+      "-Isrc",
+      "-I./src",
+      "-I./lib/",
+      "-I./lib",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-c",
+      "-o",
+      "lib/libtime_a-basename-lgpl.o",
+      "lib/basename-lgpl.c"
+    ],
+    "directory": "/root/SmartC2Rust/benchmark/time-1.9",
+    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/basename-lgpl.c",
+    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-basename-lgpl.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-DHAVE_CONFIG_H",
+      "-I.",
+      "-Ilib",
+      "-I./lib",
+      "-I./lib",
+      "-Isrc",
+      "-I./src",
+      "-I./lib/",
+      "-I./lib",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-c",
+      "-o",
+      "lib/libtime_a-getprogname.o",
+      "lib/getprogname.c"
+    ],
+    "directory": "/root/SmartC2Rust/benchmark/time-1.9",
+    "file": "/root/SmartC2Rust/benchmark/time-1.9/lib/getprogname.c",
+    "output": "/root/SmartC2Rust/benchmark/time-1.9/lib/libtime_a-getprogname.o"
   }
 ]

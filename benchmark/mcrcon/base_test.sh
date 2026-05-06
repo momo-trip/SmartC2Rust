@@ -15,7 +15,7 @@ current_test=0
 
 # Test start log function
 log_test_start() {
-    echo "Test Case #$1: Started" | tee -a /root/SmartC2Rust/benchmark/mcrcon/out_flow_c.log /root/SmartC2Rust/benchmark/mcrcon/out_flow_rust.log
+    echo "Test Case #$1: Started"
 }
 
 # Build program

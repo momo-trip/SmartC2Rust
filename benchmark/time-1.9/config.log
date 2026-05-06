@@ -27,8 +27,7 @@ uname -v = #1 SMP Sun Mar  8 14:41:59 UTC 2026
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
-PATH: /root/SmartC2Rust/benchmark/time-1.9/
-PATH: /root/.vscode-server/bin/072586267e68ece9a47aa43f8c108e0dcbf44622/bin/remote-cli/
+PATH: /root/.vscode-server/bin/034f571df509819cc10b0c8129f66ef77a542f0e/bin/remote-cli/
 PATH: /root/.cargo/bin/
 PATH: /usr/local/sbin/
 PATH: /usr/local/bin/
@@ -56,10 +55,8 @@ configure:3607: result: yes
 configure:3766: checking for a race-free mkdir -p
 configure:3810: result: /usr/bin/mkdir -p
 configure:3817: checking for gawk
-configure:3852: result: no
-configure:3817: checking for mawk
-configure:3838: found /usr/bin/mawk
-configure:3849: result: mawk
+configure:3838: found /usr/bin/gawk
+configure:3849: result: gawk
 configure:3860: checking whether make sets $(MAKE)
 configure:3883: result: yes
 configure:3913: checking whether make supports nested variables
@@ -537,7 +534,7 @@ configure:7707: $? = 0
 configure:7719: result: yes
 configure:7733: checking for getprogname
 configure:7733: clang -o conftest -finstrument-functions -g -gdwarf-4   conftest.c  >&5
-/usr/bin/ld: /tmp/conftest-ddc00f.o: in function `main':
+/usr/bin/ld: /tmp/conftest-f22cf0.o: in function `main':
 /root/SmartC2Rust/benchmark/time-1.9/conftest.c:77: undefined reference to `getprogname'
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:7733: $? = 1
@@ -625,7 +622,7 @@ configure: failed program was:
 configure:7733: result: no
 configure:7733: checking for getexecname
 configure:7733: clang -o conftest -finstrument-functions -g -gdwarf-4   conftest.c  >&5
-/usr/bin/ld: /tmp/conftest-6de011.o: in function `main':
+/usr/bin/ld: /tmp/conftest-88c1a0.o: in function `main':
 /root/SmartC2Rust/benchmark/time-1.9/conftest.c:77: undefined reference to `getexecname'
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:7733: $? = 1
@@ -721,7 +718,7 @@ configure:7733: $? = 0
 configure:7733: result: yes
 configure:7733: checking for _set_invalid_parameter_handler
 configure:7733: clang -o conftest -finstrument-functions -g -gdwarf-4   conftest.c  >&5
-/usr/bin/ld: /tmp/conftest-ab454a.o: in function `main':
+/usr/bin/ld: /tmp/conftest-f6c0cc.o: in function `main':
 /root/SmartC2Rust/benchmark/time-1.9/conftest.c:79: undefined reference to `_set_invalid_parameter_handler'
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:7733: $? = 1
@@ -4299,7 +4296,7 @@ ac_cv_path_GREP=/usr/bin/grep
 ac_cv_path_SED=/usr/bin/sed
 ac_cv_path_install='/usr/bin/install -c'
 ac_cv_path_mkdir=/usr/bin/mkdir
-ac_cv_prog_AWK=mawk
+ac_cv_prog_AWK=gawk
 ac_cv_prog_CPP='clang -E'
 ac_cv_prog_ac_ct_AR=ar
 ac_cv_prog_ac_ct_CC=clang
@@ -4540,7 +4537,7 @@ ARFLAGS='cr'
 AUTOCONF='${SHELL} '\''/root/SmartC2Rust/benchmark/time-1.9/build-aux/missing'\'' autoconf'
 AUTOHEADER='${SHELL} '\''/root/SmartC2Rust/benchmark/time-1.9/build-aux/missing'\'' autoheader'
 AUTOMAKE='${SHELL} '\''/root/SmartC2Rust/benchmark/time-1.9/build-aux/missing'\'' automake-1.16'
-AWK='mawk'
+AWK='gawk'
 BITSIZEOF_PTRDIFF_T=''
 BITSIZEOF_SIG_ATOMIC_T=''
 BITSIZEOF_SIZE_T=''

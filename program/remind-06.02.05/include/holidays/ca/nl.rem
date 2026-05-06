@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision NL in Canada
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision NL.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/ca.rem
+
+OMIT 1 July MSG %"Memorial Day%" %! %b.
+
+# Optional holidays
+REM Monday 14 March SCANFROM -28 MSG %"Saint Patrick's Day%" %! %b.
+REM Monday 20 April SCANFROM -28 MSG %"Saint George's Day%" %! %b.
+REM Monday 21 June SCANFROM -28 MSG %"Discovery Day%" %! %b.
+REM Monday 9 July SCANFROM -28 MSG %"Orangemen's Day%" %! %b.

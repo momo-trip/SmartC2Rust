@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Line Continuation (The GNU troff Manual)</title>
+
+<meta name="description" content="Line Continuation (The GNU troff Manual)">
+<meta name="keywords" content="Line Continuation (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Page-Layout.html" rel="next" title="Page Layout">
+<link href="Line-Layout.html" rel="prev" title="Line Layout">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Line-Continuation"></span><div class="header">
+<p>
+Next: <a href="Page-Layout.html" accesskey="n" rel="next">Page Layout</a>, Previous: <a href="Line-Layout.html" accesskey="p" rel="prev">Line Layout</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Line-Control"></span><span id="Line-Continuation-1"></span><h3 class="section">5.16 Line Continuation</h3>
+<span id="index-line-control"></span>
+<span id="index-control_002c-line"></span>
+
+<p>When filling is enabled, input and output line breaks generally do not
+correspond.  The <code>roff</code> language therefore distinguishes input and
+output line continuation.
+</p>
+<dl>
+<dt id="index-_005cRET-1">Escape&nbsp;sequence: <strong><tt>\<span class="key">RET</span></tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cRET"></span>
+<span id="index-input-line-continuation-_0028_005cRET_0029"></span>
+<span id="index-line_002c-input_002c-continuation-_0028_005cRET_0029"></span>
+<span id="index-continuation_002c-input-line-_0028_005cRET_0029"></span>
+<span id="index-_005cnewline"></span>
+<p><code>\<span class="key">RET</span></code> (a backslash immediately followed by a newline)
+suppresses the effects of that newline in the input.  The next input
+line thus retains the classification of its predecessor as a control or
+text line.  <code>\<span class="key">RET</span></code> is useful for managing line lengths in the
+input during document maintenance; you can even break an input line in
+the middle of a word, request invocation, macro call, or escape
+sequence.  Input line continuation is invisible to the formatter, with
+two exceptions: the <code>|</code> operator recognizes the new input line
+(see <a href="Numeric-Expressions.html">Numeric Expressions</a>), and the input line counter register
+<code>.c</code> increments.
+<span id="index-_005cRET_002c-interpretation-in-copy-mode"></span>
+<code>\RET</code> is interpreted even in copy mode.<a id="DOCF106" href="groff.html_fot.html#FOOT106"><sup>106</sup></a>
+</p>
+<div class="example">
+<pre class="example">.ll 50n
+.de I
+.  ft I
+.  nop \\$*
+.  ft
+..
+Our film class watched
+.I The Effect of Gamma Rays on Man-in-the-Moon
+Marigolds. \&quot; whoops, the input line wrapped
+.br
+.I My own opus begins on line \n[.c] \
+and ends on line \n[.c].
+</pre></div>
+<div class="example">
+<pre class="example">    &rArr; Our film class watched <i>The Effect of Gamma Rays on</i>
+    &rArr; <i>Man-in-the-Moon</i> Marigolds.
+    &rArr; <i>My own opus begins on line 11 and ends on line 12.</i>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_005cc-1">Escape&nbsp;sequence: <strong><tt>\c</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cc"></span>
+</dd><dt id="index-_005cn_005b_002eint_005d">Register: <strong><tt>\n[.int]</tt></strong></dt>
+<dd><span id="index-_002eint"></span>
+<span id="index-output-line_002c-continuation-_0028_005cc_0029"></span>
+<span id="index-line_002c-output_002c-continuation-_0028_005cc_0029"></span>
+<span id="index-continuation_002c-output-line-_0028_005cc_0029"></span>
+<span id="index-interrupted-line"></span>
+<span id="index-line_002c-interrupted"></span>
+<p><code>\c</code> continues an output line.  Nothing after it on the input line
+is formatted.  In contrast to <code>\<span class="key">RET</span></code>, a line after <code>\c</code>
+remains a new input line, so a control character is recognized at its
+beginning.  The visual results depend on whether filling is enabled; see
+<a href="Manipulating-Filling-and-Adjustment.html">Manipulating Filling and Adjustment</a>.
+</p>
+<ul>
+<li> <span id="index-_005cc_002c-when-filling-enabled"></span>
+<span id="index-fill-mode_002c-and-_005cc"></span>
+<span id="index-mode_002c-fill_002c-and-_005cc"></span>
+If filling is enabled, a word interrupted with <code>\c</code> is continued
+with the text on the next input text line, without an intervening space.
+
+<div class="example">
+<pre class="example">This is a te\c
+st.
+    &rArr; This is a test.
+</pre></div>
+
+</li><li> <span id="index-_005cc_002c-when-filling-disabled"></span>
+<span id="index-no_002dfill-mode_002c-and-_005cc"></span>
+<span id="index-mode_002c-no_002dfill_002c-and-_005cc"></span>
+If filling is disabled, the next input text line after <code>\c</code> is
+handled as a continuation of the same input text line.
+
+<div class="example">
+<pre class="example">.nf
+This is a \c
+test.
+    &rArr; This is a test.
+</pre></div>
+</li></ul>
+
+<p>An intervening control line that causes a break overrides <code>\c</code>,
+flushing out the pending output line in the usual way.
+</p>
+<span id="index-interrupted-line-register-_0028_002eint_0029"></span>
+<span id="index-continued-output-line-register-_0028_002eint_0029"></span>
+<p>The <code>.int</code> register interpolates a positive value only if the
+pending output line has been continued with <code>\c</code>; this datum is
+associated with the environment
+(see <a href="Environments.html">Environments</a>).<a id="DOCF107" href="groff.html_fot.html#FOOT107"><sup>107</sup></a>
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Page-Layout.html" accesskey="n" rel="next">Page Layout</a>, Previous: <a href="Line-Layout.html" accesskey="p" rel="prev">Line Layout</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

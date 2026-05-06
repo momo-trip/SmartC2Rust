@@ -1,0 +1,173 @@
+!
+!** Copyright (C) 2011 Gajus Dirkzwager
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+! 
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+! 
+GV*copyright.Label:			Copyright
+GV*miscmenuLabel.label:			Overige Menu Items
+GV*optionsgv.Label:			gv Opties ...
+GV*mark.Label:				Markeer
+GV*dismiss.Label:			Annuleer
+GV*x11devLabel.label:			Apparaat
+GV*scratchDirLabel.label:		Klad Directory
+GV*quitstyle.always.Label:		Altijd
+GV*misc.label:				Overig
+GV*miscMenu.stop.label:			Stop Interpreter
+GV*strings.stillInProgress:		Proces momenteel lopende:
+GV*miscMenu.save_all.label:		Save All
+GV*center.Label:			Center
+GV*saveDirLabel.label:			Save Directory
+GV*printMarkedPages.Label:		Print Gemarkeerde Pagina's ...
+GV*update.Label:			Update
+GV*optionsgs.Label:			Ghostscript Opties ...
+GV*infoPopup.title:			Ghostscript Berichten
+GV*safeDir.label:			VeiligeDir
+GV*dirsLabel.label:			Standaard Directories
+GV*presentation.Label:			Presentatie Modus
+GV*scanLabel.label:			Scan PDF
+GV*optiongvPopup*magLabel.label:	Schaal
+GV*button2.label:			Open Bestand
+GV*saveAllPages.Label:			Save Document ...
+GV*optionsetupPopup.title:		Setup Opties
+GV*optiongvPopup*respectDSC.label:	Respecteer DSC
+GV*miscMenu.save_marked.label:		Save Gemarked
+GV*strings.putTexCommand:		Voeg TeX commando toe aan huidige positie.
+GV*strings.execOfFailed:		Uitvoer van %s Mislukt
+GV*scrolling.label:			Tegengesteld Scrollen
+GV*optiongvPopup*forientLabel.label:	Standaard Orientatie
+GV*pageButton*unmark.Label:		Demarkeer Alles
+GV*button1.label:			Annuleer
+GV*quitstyle.whenprocessing.Label:	Tijdens Verwerking
+GV*filters.label:			Filters:
+GV*confirmLabel.label:			Bevestig Annulering
+GV*title.filename.Label:		Bestandsnaam
+GV*automatic.Label:			Automatisch
+GV*unmark.Label:			Demarkeer
+GV*printMarked.label:			Print Gemarked
+GV*optiongvPopup*orientLabel.label:	\     Orientatie    \ 
+GV*optiongvPopup*fmediaLabel.label:	Standaard Papier Afmeting
+GV*confirmPopup*done.label:		Annuleer
+GV*optiongvPopup*autoResize.label:	Variabele Afmeting
+GV*defaults.label:			Systeeminstellingen
+GV*uncompressLabel.label:		Uitpakken
+GV*reopen.Label:			Herladen
+GV*miscMenu.unmark.label:		Demarkeer Alles
+GV*safer.label:				Veiliger
+GV*saveMarked.label:			Save Gemarkeerd
+GV*title.notitle.Label:			Geen Titel
+GV*dsc.Label:				Respecteer Document Structuur
+GV*optiongvPopup*swapLandscape.label:	Verwissel Landschap
+GV*pixmap.Label:			Backing Pixmap
+GV*miscMenu.update.label:		Update Bestand
+GV*strings.passwordPrompt:		Wachtwoord:
+GV*miscMenu.print_marked.label:		Print Gemarkeerd
+GV*strings.openFile:			Open Bestand
+GV*scalesLabel.label:			Schaalverdelingen
+GV*savepos.Label:			Savepositie
+GV*pageButton.Label:			Pagina
+GV*x11alphadevLabel.label:		Anti-alias Apparaat
+GV*saveAll.label:			Save Alles
+GV*open.Label:				Open ...
+GV*miscMenu.toggle_current.label:	Toggle Huidig
+GV*fileButton.Label:			Bestand
+GV*miscMenu.toggle_odd.label:		Toggle Oneven
+GV*miscMenu.toggle_even.label:		Toggle Even
+GV*printCommandLabel.label:		Print Commando
+GV*antialias.Label:			Anti-alias
+GV*updateFile.label:			Update Bestand
+GV*optiongsPopup.title:			Ghostscript Opties
+GV*quiet.label:				Stil
+GV*confirmPopup.title:			Bevestig
+GV*mediasLabel.label:			Media Afmetingen
+GV*optionfsPopup.title:			Bestand Selectie Opties
+GV*show.Label:				Herlaad
+GV*optiongvPopup*mediaLabel.label:	\ Papier Afmeting \ 
+GV*convLabel.label:			Converteer PDF
+GV*zoomPopup.title:			Zoem
+GV*optiongvPopup.title:			gv Opties
+GV*stateButton.Label:			Status
+GV*strings.passwordRequired:		Wachtwoord Vereist
+GV*confirmPrint.label:			Bevesting Afdrukken
+GV*pageButton*current.Label:		Toggle huidige markering
+GV*optionssetup.Label:			Configuratie Opties ...
+GV*ascaleLabel.Label:			Arbitraire Schaal
+GV*next.Label:				Volgende
+GV*filterLabel.label:			Standaard Filter
+GV*seascape.Label:			Zeegezicht
+GV*cancel.Label:			Annuleer
+GV*watch.Label:				Bestand Monitoren
+GV*titleLabel.Label:			Beeld Titel Af
+GV*filtersLabel.label:			Bestand Selectie Filters
+GV*checkFile.label:			Controleer Bestand
+GV*processButton.Label:			\ verwerken
+GV*toggleOdd.label:
+GV*strings.saveMarkedPages:		Save Gemarkeerde Pagina's
+GV*optiongvPopup*scalesLabel.label:	\   Schaal  \ 
+GV*toggleCurrent.label:
+GV*stop.Label:				Stop Interpreter
+GV*dialogPopup*cancel.label:		Annuleer
+GV*fileSelPopup.title:			Open Bestand
+GV*eyeGuide.label:			Scroll Gids
+GV*upsidedown.Label:			Ondersteboven
+GV*pageButton*even.Label:		Toggle Even Markeringen
+GV*quit.Label:				Afsluiten
+GV*magmenuLabel.label:			Mag Menu Items
+GV*gs.errors.none.Label:		Geen
+GV*nextPage.Label:			>>
+GV*eof.Label:				Negeer EOF commentaar
+GV*rescan.label:			Herlaad Directory
+GV*miscMenu.print_all.label:		Print Alles
+GV*strings.copyrightTranslation:	Gajus Dirkzwager <gajus@gmx.com>
+GV*landscape.Label:			Landschap
+GV*printAllPages.Label:			Print Document ...
+GV*gsLabel.label:	Interpreter
+GV*optiongvPopup*antialias.label:	Anti-alias
+GV*strings.texCommand:			TeX commando
+GV*printAll.label:			Print Alles 
+GV*argumentsLabel.label:		Argumenten
+GV*toggleEven.label:
+GV*infoVerboseLabel.Label:		info Popup
+GV*gs.errors.all.Label:			Alles
+GV*scaleBaseLabel.label:		Schaal Methode
+GV*screenSizeLabel.label:		Scherm Afmeting (mm)
+GV*dialogPopup.title:			Dialoog
+GV*unmarkAll.label:
+GV*strings.saveCurrentPage:		Save Huidige Pagina
+GV*strings.quitConfirm:			Weet u zeker dat u het programma wilt afsluiten?
+GV*autoCenter.label:			Auto Centreer
+GV*redisplay.label:			Herladen
+GV*size.Label:				Automatisch Herschalen
+GV*prevPage.Label:			<<
+GV*prev.Label:				Vorige
+GV*title.documenttitle.Label:		Document Titel
+GV*confirmPopup*cancel.label:		Annuleren
+GV*openFile.label:			Openen
+GV*saveMarkedPages.Label:		Save Gemarkeerde Pagina's ...
+GV*strings.saveDocument:		Save Document
+GV*pageButton*odd.Label:		Toggle Oneven Markeringen
+GV*save.label:				Save
+GV*notePopup.title:			Bericht
+GV*optionsfs.Label:			Bestand Selectie Opties ...
+GV*swap.Label:				Verwissel Landschap
+GV*portrait.Label:			Portret
+GV*optiongvPopup*eof.label:		Negeer EOF
+GV*strings.saveAsPDF:			Save als PDF
+GV*gs.errors.errors.Label:		Foutmeldingen
+GV*quitstyle.never.Label:		Nooit
+GV*apply.label:				Toepassen
+GV*watchFile.Label:			Bestand Volgen
+GV*miscMenu.redisplay.label:		Herladen
+GV*dirs.label:				Directories
+GV*notePopup*done.label:		Ok

@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Graphics Commands (The GNU troff Manual)</title>
+
+<meta name="description" content="Graphics Commands (The GNU troff Manual)">
+<meta name="keywords" content="Graphics Commands (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Command-Reference.html" rel="up" title="Command Reference">
+<link href="Device-Control-Commands.html" rel="next" title="Device Control Commands">
+<link href="Simple-Commands.html" rel="prev" title="Simple Commands">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Graphics-Commands"></span><div class="header">
+<p>
+Next: <a href="Device-Control-Commands.html" accesskey="n" rel="next">Device Control Commands</a>, Previous: <a href="Simple-Commands.html" accesskey="p" rel="prev">Simple Commands</a>, Up: <a href="Command-Reference.html" accesskey="u" rel="up">Command Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Graphics-Commands-1"></span><h4 class="subsubsection">6.2.2.3 Graphics Commands</h4>
+
+<p>Each graphics or drawing command in the page description language
+starts with the letter
+&lsquo;<samp>D</samp>&rsquo;,
+followed by one or two characters that specify a subcommand;
+this is followed by a fixed or variable number of integer
+arguments that are separated by a single space character.
+A
+&lsquo;<samp>D</samp>&rsquo;
+command may not be followed by another command on the same line
+(apart from a comment),
+so each
+&lsquo;<samp>D</samp>&rsquo;
+command is terminated by a syntactical line break.
+</p>
+<p>GNU
+<code>troff</code> output follows AT&amp;T
+<code>troff</code>&rsquo;s output conventions
+(no space between command and subcommand,
+all arguments are preceded by a single space character),
+but
+<code>groff</code>&rsquo;s
+parser allows optional space
+between the command letters
+and makes the space before the first argument optional.
+As usual,
+each space can be any sequence of tab and space characters.
+</p>
+<p>Some graphics commands can take a variable number of arguments.  In this
+case, they are integers representing a size measured in basic units
+&lsquo;<samp>u</samp>&rsquo;.  The arguments called <var>h1</var>, <var>h2</var>, &hellip;, <var>hn</var>
+stand for horizontal distances where positive means right, negative
+left.  The arguments called <var>v1</var>, <var>v2</var>, &hellip;, <var>vn</var> stand
+for vertical distances where positive means down, negative up.  All
+these distances are offsets relative to the current location.
+</p>
+<p>Each graphics command directly corresponds to a
+<code>troff</code>
+<code>\D</code>
+escape sequence.
+See <a href="Drawing-Geometric-Objects.html">Drawing Geometric Objects</a>.
+</p>
+<p>Unknown &lsquo;<samp>D</samp>&rsquo; commands are assumed to be device-specific.  Its
+arguments are parsed as strings; the whole information is then sent to
+the postprocessor.
+</p>
+<p>In the following command reference, the syntax element &lsaquo;<span class="roman">line
+break</span>&rsaquo; means a syntactical line break as defined above.
+</p>
+<dl compact="compact">
+<dt><code>D~ <var>h1</var> <var>v1</var> <var>h2</var> <var>v2</var> &hellip; <var>hn</var> <var>vn</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw B-spline from current position to offset (<var>h1</var>,<var>v1</var>), then
+to offset (<var>h2</var>,<var>v2</var>), if given, etc., up to
+(<var>hn</var>,<var>vn</var>).  This command takes a variable number of argument
+pairs; the current position is moved to the terminal point of the drawn
+curve.
+</p>
+</dd>
+<dt><code>Da <var>h1</var> <var>v1</var> <var>h2</var> <var>v2</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw arc from current position to
+(<var>h1</var>,<var>v1</var>)<em>+</em>(<var>h2</var>,<var>v2</var>) with center at
+(<var>h1</var>,<var>v1</var>); then move the current position to the final point
+of the arc.
+</p>
+</dd>
+<dt><code>DC <var>d</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dt><code>DC <var>d</var> <var>dummy-arg</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw a solid circle using the current fill color with
+diameter&nbsp;<var>d</var> (integer in basic units &lsquo;<samp>u</samp>&rsquo;) with leftmost
+point at the current position; then move the current position to the
+rightmost point of the circle.  An optional second integer argument is
+ignored (this allows the formatter to generate an even number of
+arguments).
+This command is a GNU extension.
+</p>
+</dd>
+<dt><code>Dc <var>d</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw circle line with diameter&nbsp;<var>d</var> (integer in basic units
+&lsquo;<samp>u</samp>&rsquo;) with leftmost point at the current position; then move the
+current position to the rightmost point of the circle.
+</p>
+</dd>
+<dt><code>DE <var>h</var> <var>v</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw a solid ellipse in the current fill color with a horizontal
+diameter of&nbsp;<var>h</var> and a vertical diameter of&nbsp;<var>v</var> (both
+integers in basic units &lsquo;<samp>u</samp>&rsquo;) with the leftmost point at the current
+position; then move to the rightmost point of the ellipse.
+This command is a GNU extension.
+</p>
+</dd>
+<dt><code>De <var>h</var> <var>v</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw an outlined ellipse with a horizontal diameter of&nbsp;<var>h</var> and
+a vertical diameter of&nbsp;<var>v</var> (both integers in basic units
+&lsquo;<samp>u</samp>&rsquo;) with the leftmost point at current position; then move to the
+rightmost point of the ellipse.
+</p>
+</dd>
+<dt><code>DF <var>color-scheme</var> <span class="roman">[</span><var>component</var> &hellip;<span class="roman">]</span>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Set fill color for solid drawing objects using different color schemes;
+the analogous command for setting the color of text, line graphics, and
+the outline of graphic objects is &lsquo;<samp>m</samp>&rsquo;.  The color components are
+specified as integer arguments between 0 and 65535.  The number of color
+components and their meaning vary for the different color schemes.
+These commands are generated by
+GNU
+<code>troff</code>&rsquo;s escape sequences
+&lsquo;<samp>\D'F &hellip;'</samp>&rsquo;
+and <code>\M</code>
+(with no other corresponding graphics commands).
+No position changing.
+This command is a GNU extension.
+</p>
+<dl compact="compact">
+<dt><code>DFc <var>cyan</var> <var>magenta</var> <var>yellow</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Set fill color for solid drawing objects using the CMY color scheme,
+having the 3&nbsp;color components <var>cyan</var>, <var>magenta</var>, and
+<var>yellow</var>.
+</p>
+</dd>
+<dt><code>DFd&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Set fill color for solid drawing objects to the default fill color value
+(black in most cases).  No component arguments.
+</p>
+</dd>
+<dt><code>DFg <var>gray</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Set fill color for solid drawing objects to the shade of gray given by
+the argument, an integer between 0 (black) and 65535 (white).
+</p>
+</dd>
+<dt><code>DFk <var>cyan</var> <var>magenta</var> <var>yellow</var> <var>black</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Set fill color for solid drawing objects using the CMYK color scheme,
+having the 4&nbsp;color components <var>cyan</var>, <var>magenta</var>,
+<var>yellow</var>, and <var>black</var>.
+</p>
+</dd>
+<dt><code>DFr <var>red</var> <var>green</var> <var>blue</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Set fill color for solid drawing objects using the RGB color scheme,
+having the 3&nbsp;color components <var>red</var>, <var>green</var>, and
+<var>blue</var>.
+</p></dd>
+</dl>
+
+</dd>
+<dt><code>Df <var>n</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>The argument&nbsp;<var>n</var> must be an integer in the range <em>-32767</em>
+to 32767.
+</p>
+<dl compact="compact">
+<dt><em>0 &le; <var>n</var> &le; 1000</em></dt>
+<dd><p>Set the color for filling solid drawing objects to a shade of gray,
+where 0 corresponds to solid white, 1000 (the default) to solid black,
+and values in between to intermediate shades of gray;
+this command is superseded by
+&lsquo;<samp>DFg</samp>&rsquo;.
+</p>
+</dd>
+<dt><em><var>n</var> &lt; 0</em> or <em><var>n</var> &gt; 1000</em></dt>
+<dd><p>Set the filling color to the color that is currently being used for the
+text and the outline, see command &lsquo;<samp>m</samp>&rsquo;.  For example, the command
+sequence
+</p>
+<div class="example">
+<pre class="example">mg 0 0 65535
+Df -1
+</pre></div>
+
+<p>sets all colors to blue.
+</p></dd>
+</dl>
+
+<p>No position changing.
+This command is a GNU extension.
+</p>
+</dd>
+<dt><code>Dl <var>h</var> <var>v</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw line from current position to offset (<var>h</var>,<var>v</var>) (integers in
+basic units &lsquo;<samp>u</samp>&rsquo;); then set current position to the end of the drawn
+line.
+</p>
+</dd>
+<dt><code>Dp <var>h1</var> <var>v1</var> <var>h2</var> <var>v2</var> &hellip; <var>hn</var> <var>vn</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw a polygon line from current position to offset (<var>h1</var>,<var>v1</var>),
+from there to offset (<var>h2</var>,<var>v2</var>), etc., up to offset
+(<var>hn</var>,<var>vn</var>), and from there back to the starting position.  For
+historical reasons, the position is changed by adding the sum of all
+arguments with odd index to the actual horizontal position and the even
+ones to the vertical position.  Although this doesn&rsquo;t make sense it is
+kept for compatibility.
+This command is a GNU extension.
+</p>
+</dd>
+<dt><code>DP <var>h1</var> <var>v1</var> <var>h2</var> <var>v2</var> &hellip; <var>hn</var> <var>vn</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Draw a solid polygon in the current fill color rather than an outlined
+polygon, using the same arguments and positioning as the corresponding
+&lsquo;<samp>Dp</samp>&rsquo; command.
+This command is a GNU extension.
+</p>
+</dd>
+<dt><code>Dt <var>n</var>&lsaquo;<span class="roman">line break</span>&rsaquo;</code></dt>
+<dd><p>Set the current line thickness to&nbsp;<var>n</var> (an integer in basic
+units &lsquo;<samp>u</samp>&rsquo;) if <em><var>n</var>&gt;0</em>; if <em><var>n</var>=0</em> select the
+smallest available line thickness; if <em><var>n</var>&lt;0</em> set the line
+thickness proportional to the type size (this is the default before the
+first &lsquo;<samp>Dt</samp>&rsquo; command was specified).  For historical reasons, the
+horizontal position is changed by adding the argument to the actual
+horizontal position, while the vertical position is not changed.
+Although this doesn&rsquo;t make sense it is kept for compatibility.
+This command is a GNU extension.
+</p></dd>
+</dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Device-Control-Commands.html" accesskey="n" rel="next">Device Control Commands</a>, Previous: <a href="Simple-Commands.html" accesskey="p" rel="prev">Simple Commands</a>, Up: <a href="Command-Reference.html" accesskey="u" rel="up">Command Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

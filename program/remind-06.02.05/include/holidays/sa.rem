@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Saudi Arabia
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+REM 21 February ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 5] MSG %"(ملاحظة) يوم التأسيسي%" %! %b.
+OMIT 22 February MSG %"يوم التأسيسي%" %! %b.
+REM 23 February ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 6] MSG %"(ملاحظة) يوم التأسيسي%" %! %b.
+REM 22 September ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 5] MSG %"(ملاحظة) اليوم الوطني%" %! %b.
+OMIT 23 September MSG %"اليوم الوطني%" %! %b.
+REM 24 September ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 6] MSG %"(ملاحظة) اليوم الوطني%" %! %b.

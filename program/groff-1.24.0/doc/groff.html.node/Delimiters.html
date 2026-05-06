@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Delimiters (The GNU troff Manual)</title>
+
+<meta name="description" content="Delimiters (The GNU troff Manual)">
+<meta name="keywords" content="Delimiters (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Formatter-Instructions.html" rel="up" title="Formatter Instructions">
+<link href="Comments.html" rel="next" title="Comments">
+<link href="Using-Escape-Sequences.html" rel="prev" title="Using Escape Sequences">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Delimiters"></span><div class="header">
+<p>
+Previous: <a href="Using-Escape-Sequences.html" accesskey="p" rel="prev">Using Escape Sequences</a>, Up: <a href="Formatter-Instructions.html" accesskey="u" rel="up">Formatter Instructions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Delimiters-1"></span><h4 class="subsection">5.6.5 Delimiters</h4>
+<span id="index-delimiting-escape-sequence-arguments"></span>
+<span id="index-escape-sequence-argument-delimiters"></span>
+<span id="index-delimiters_002c-for-escape-sequence-arguments"></span>
+<span id="index-arguments_002c-to-escape-sequences_002c-delimiting"></span>
+
+<span id="index-_0027_002c-as-delimiter"></span>
+<span id="index-_0022_002c-as-delimiter"></span>
+<p>Some escape sequences that require parameters delimit them.
+The neutral apostrophe
+<code>'</code>
+is a popular delimiter choice and shown in this document.
+The neutral double quote
+<code>&quot;</code>
+is also commonly seen.
+Punctuation characters are the best choice
+(and most portable to other
+<code>troff</code>s), except for those meaningful in numeric expressions;
+see below.
+</p>
+<div class="example">
+<pre class="example">\l'1.5i\[bu]' \&quot; draw 1.5 inches of bullet glyphs
+</pre></div>
+
+<span id="index-_005c_0025_002c-as-delimiter"></span>
+<span id="index-_005cSPC_002c-as-delimiter"></span>
+<span id="index-_005c_007c_002c-as-delimiter"></span>
+<span id="index-_005c_005e_002c-as-delimiter"></span>
+<span id="index-_005c_007b_002c-as-delimiter"></span>
+<span id="index-_005c_007d_002c-as-delimiter"></span>
+<span id="index-_005c_0027_002c-as-delimiter"></span>
+<span id="index-_005c_0060_002c-as-delimiter"></span>
+<span id="index-_005c_002d_002c-as-delimiter"></span>
+<span id="index-_005c_005f_002c-as-delimiter"></span>
+<span id="index-_005c_0021_002c-as-delimiter"></span>
+<span id="index-_005c_003f_002c-as-delimiter"></span>
+<span id="index-_005c_0029_002c-as-delimiter"></span>
+<span id="index-_005c_002f_002c-as-delimiter"></span>
+<span id="index-_005c_002c_002c-as-delimiter"></span>
+<span id="index-_005c_0026_002c-as-delimiter"></span>
+<span id="index-_005c_003a_002c-as-delimiter"></span>
+<span id="index-_005c_007e_002c-as-delimiter"></span>
+<span id="index-_005c0_002c-as-delimiter"></span>
+<span id="index-_005ca_002c-as-delimiter"></span>
+<span id="index-_005cc_002c-as-delimiter"></span>
+<span id="index-_005cd_002c-as-delimiter"></span>
+<span id="index-_005ce_002c-as-delimiter"></span>
+<span id="index-_005cE_002c-as-delimiter"></span>
+<span id="index-_005cp_002c-as-delimiter"></span>
+<span id="index-_005cr_002c-as-delimiter"></span>
+<span id="index-_005ct_002c-as-delimiter"></span>
+<span id="index-_005cu_002c-as-delimiter"></span>
+<p>The following escape sequences are not themselves delimited,
+and thus are allowed as delimiters:
+<code>\<span class="key">SPC</span></code>,
+<code>\%</code>,
+<code>\|</code>,
+<code>\^</code>,
+<code>\{</code>,
+<code>\}</code>,
+<code>\'</code>,
+<code>\`</code>,
+<code>\-</code>,
+<code>\_</code>,
+<code>\!</code>,
+<code>\?</code>,
+<code>\)</code>,
+<code>\/</code>,
+<code>\,</code>,
+<code>\&amp;</code>,
+<code>\:</code>,
+<code>\~</code>,
+<code>\0</code>,
+<code>\a</code>,
+<code>\c</code>,
+<code>\d</code>,
+<code>\e</code>,
+<code>\E</code>,
+<code>\p</code>,
+<code>\r</code>,
+<code>\t</code>,
+and
+<code>\u</code>.
+However,
+we discourage using them this way;
+they can make the input confusing to read.<a id="DOCF63" href="groff.html_fot.html#FOOT63"><sup>63</sup></a>
+An invalid escape sequence is valid as a delimiter
+if the character after the escape character would be valid.
+</p>
+<span id="index-_005cD_002c-delimiters-allowed-by"></span>
+<span id="index-_005ch_002c-delimiters-allowed-by"></span>
+<span id="index-_005cH_002c-delimiters-allowed-by"></span>
+<span id="index-_005cl_002c-delimiters-allowed-by"></span>
+<span id="index-_005cL_002c-delimiters-allowed-by"></span>
+<span id="index-_005cN_002c-delimiters-allowed-by"></span>
+<span id="index-_005cR_002c-delimiters-allowed-by"></span>
+<span id="index-_005cs_002c-delimiters-allowed-by"></span>
+<span id="index-_005cS_002c-delimiters-allowed-by"></span>
+<span id="index-_005cv_002c-delimiters-allowed-by"></span>
+<span id="index-_005cx_002c-delimiters-allowed-by"></span>
+<p>The escape sequences
+<code>\D</code>,
+<code>\h</code>,
+<code>\H</code>,
+<code>\l</code>,
+<code>\L</code>,
+<code>\N</code>,
+<code>\R</code>,
+<code>\s</code>,
+<code>\S</code>,
+<code>\v</code>,
+and
+<code>\x</code>
+prohibit delimiters that are meaningful in numeric expressions,
+because they accept numeric expressions as
+(or within)
+their arguments.
+For consistency,
+GNU
+<code>troff</code> prohibits the same delimiters in the argument to the
+<code>tl</code>
+request.<a id="DOCF64" href="groff.html_fot.html#FOOT64"><sup>64</sup></a>
+The
+<code>if</code>,
+<code>ie</code>,
+and
+<code>while</code>
+requests each interpret their first argument
+as a conditional expression;<a id="DOCF65" href="groff.html_fot.html#FOOT65"><sup>65</sup></a>
+only characters that are not meaningful as operators
+in that context
+can be used as output comparison delimiters.
+The following inputs are therefore invalid as delimiters in
+GNU
+<code>troff</code>. </p>
+<ul>
+<li> <span id="index-numerals_002c-as-delimiters"></span>
+<span id="index-digits_002c-as-delimiters"></span>
+<span id="index-_002e_002c-as-delimiter"></span>
+<span id="index-decimal-point_002c-as-delimiter"></span>
+<span id="index-dot_002c-as-delimiter"></span>
+the numerals <code>0</code>-<code>9</code> and the decimal point <code>.</code>
+
+</li><li> <span id="index-operators_002c-as-delimiters"></span>
+<span id="index-_002b_002c-as-delimiter"></span>
+<span id="index-_002d_002c-as-delimiter"></span>
+<span id="index-_002f_002c-as-delimiter"></span>
+<span id="index-_002a_002c-as-delimiter"></span>
+<span id="index-_0025_002c-as-delimiter"></span>
+<span id="index-_003c_002c-as-delimiter"></span>
+<span id="index-_003e_002c-as-delimiter"></span>
+<span id="index-_003d_002c-as-delimiter"></span>
+<span id="index-_0026_002c-as-delimiter"></span>
+<span id="index-_003a_002c-as-delimiter"></span>
+<span id="index-_007c_002c-as-delimiter"></span>
+<span id="index-_0028_002c-as-delimiter"></span>
+<span id="index-_0029_002c-as-delimiter"></span>
+the (single-character) operators &lsquo;<samp>+-/*%&lt;&gt;=&amp;:()|</samp>&rsquo;
+
+</li><li> <span id="index-space-character_002c-as-delimiter"></span>
+<span id="index-tab-character_002c-as-delimiter"></span>
+the space and tab characters
+
+</li><li> <span id="index-_005c_0025_002c-as-delimiter-1"></span>
+<span id="index-_005c_003a_002c-as-delimiter-1"></span>
+<span id="index-_005c_007b_002c-as-delimiter-1"></span>
+<span id="index-_005c_007d_002c-as-delimiter-1"></span>
+<span id="index-_005c_0027_002c-as-delimiter-1"></span>
+<span id="index-_005c_0060_002c-as-delimiter-1"></span>
+<span id="index-_005c_002d_002c-as-delimiter-1"></span>
+<span id="index-_005c_005f_002c-as-delimiter-1"></span>
+<span id="index-_005c_0021_002c-as-delimiter-1"></span>
+<span id="index-_005c_002f_002c-as-delimiter-1"></span>
+<span id="index-_005cc_002c-as-delimiter-1"></span>
+<span id="index-_005ce_002c-as-delimiter-1"></span>
+<span id="index-_005cp_002c-as-delimiter-1"></span>
+any escape sequences other than <code>\%</code>, <code>\:</code>, <code>\{</code>,
+<code>\}</code>, <code>\'</code>, <code>\`</code>, <code>\-</code>, <code>\_</code>, <code>\!</code>,
+<code>\/</code>, <code>\c</code>, <code>\e</code>, and <code>\p</code>
+</li></ul>
+
+<span id="index-input-level-1"></span>
+<span id="index-level_002c-input-1"></span>
+<span id="index-interpolation-depth-1"></span>
+<span id="index-depth_002c-interpolation-1"></span>
+<span id="index-nesting-depth_002c-of-interpolations-1"></span>
+<span id="index-depth_002c-nesting_002c-of-interpolations-1"></span>
+<p>Delimiter syntax is flexible
+(and laborious to describe)
+primarily for historical reasons;
+the foregoing restrictions need be kept in mind mainly when using
+GNU
+<code>troff</code> in <acronym>AT&amp;T</acronym> compatibility mode.
+Normally,
+GNU
+<code>troff</code>
+keeps track of the nesting depth of escape sequence interpolations,
+so the only characters you need to avoid using as delimiters are those
+that appear in the arguments you input,
+not those that result from interpolation.
+Typically,
+<code>'</code> works fine.<a id="DOCF66" href="groff.html_fot.html#FOOT66"><sup>66</sup></a>
+</p>
+<div class="example">
+<pre class="example">$ groff -T ps
+.de Mw
+.  nr wd \w'\\$1'
+.  tm &quot;\\$1&quot; is \\n(wd units wide.
+..
+.Mw Wet'suwet'en
+.Mw Wet+200i
+.cp 1 \&quot; turn on compatibility mode
+.Mw Wet'suwet'en
+.Mw Wet'
+.Mw Wet+200i
+    error&rarr; &quot;Wet'suwet'en&quot; is 54740 units wide.
+    error&rarr; &quot;Wet'+200i&quot; is 42610 units wide.
+    error&rarr; &quot;Wet'suwet'en&quot; is 15860 units wide.
+    error&rarr; &quot;Wet'&quot; is 15860 units wide.
+    error&rarr; &quot;Wet'+200i&quot; is 14415860 units wide.
+</pre></div>
+
+<p>We see here that in compatibility mode,
+the part of the argument after the
+<code>'</code>
+delimiter escapes,
+if you will,
+from its context and,
+if nefariously crafted,
+influences the computation of the
+<var>wd</var>
+register&rsquo;s value in a surprising way.
+</p>
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Using-Escape-Sequences.html" accesskey="p" rel="prev">Using Escape Sequences</a>, Up: <a href="Formatter-Instructions.html" accesskey="u" rel="up">Formatter Instructions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

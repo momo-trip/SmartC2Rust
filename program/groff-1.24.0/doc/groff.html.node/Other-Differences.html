@@ -1,0 +1,517 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Other Differences (The GNU troff Manual)</title>
+
+<meta name="description" content="Other Differences (The GNU troff Manual)">
+<meta name="keywords" content="Other Differences (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Implementation-Differences.html" rel="up" title="Implementation Differences">
+<link href="File-Formats.html" rel="next" title="File Formats">
+<link href="Compatibility-Mode.html" rel="prev" title="Compatibility Mode">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Other-Differences"></span><div class="header">
+<p>
+Previous: <a href="Compatibility-Mode.html" accesskey="p" rel="prev">Compatibility Mode</a>, Up: <a href="Implementation-Differences.html" accesskey="u" rel="up">Implementation Differences</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Other-Differences-1"></span><h4 class="subsection">5.39.3 Other Differences</h4>
+
+<p>GNU
+<code>troff</code> does not emit output if it has nothing to format.
+For example,
+it treats an input document consisting solely of
+<code>nr</code>
+and
+<code>tm</code>
+requests as empty,
+and produces nothing on its standard output stream.
+<acronym>AT&amp;T</acronym>
+<code>troff</code> does,
+creating a blank page.
+</p>
+<p>Use of C0 control characters in identifiers is not portable;
+Solaris,
+Plan&nbsp;9,
+and Heirloom Doctools
+<code>troff</code>s accept
+<tt class="key">Control+B</tt>,
+<tt class="key">Control+C</tt>,
+<tt class="key">Control+E</tt>,
+<tt class="key">Control+F</tt>,
+and
+<tt class="key">Control+G</tt> (only);
+DWB&nbsp;3.3
+<code>troff</code> does not.
+GNU
+<code>troff</code> rejects C0 controls in identifiers with an error diagnostic.
+</p>
+<p>Formatters that don&rsquo;t implement
+GNU
+<code>troff</code> extension request names
+tend to ignore them,
+and if they don&rsquo;t support a
+GNU
+<code>troff</code> extension escape sequence,
+they are liable to format its function selector character as text.
+<span id="index-_005c_007e_002c-incompatibilities-with-AT_0026T-troff"></span>
+For example,
+the adjustable,
+non-breaking space escape sequence
+<code>\~</code>
+is also supported by Heirloom Doctools
+<code>troff</code> 050915 (September 2005),
+<code>mandoc</code>
+1.9.5 (2009-09-21),
+<code>neatroff</code>
+(commit 1c6ab0f6e,
+2016-09-13),
+and Plan&nbsp;9 from User Space
+<code>troff</code> (commit 93f8143600, 2022-08-12),
+but not by Solaris
+or Documenter&rsquo;s Workbench
+<code>troff</code>s, which both render it as
+&lsquo;<samp>~</samp>&rsquo;.
+Recall <a href="Manipulating-Filling-and-Adjustment.html">Manipulating Filling and Adjustment</a>.
+GNU
+<code>troff</code>&rsquo;s features sometimes cause incompatibilities with documents written
+assuming old implementations of
+<code>troff</code>. </p>
+<span id="index-trailing-space_002c-on-input-lines_002c-difference-from-AT_0026T-troff"></span>
+<span id="index-space_002c-trailing_002c-on-input-lines_002c-difference-from-AT_0026T-troff"></span>
+<span id="index-end_002dof_002dsentence-detection_002c-cancellation_002c-on-AT_0026T-troff"></span>
+<span id="index-sentence_002c-cancelling-detection-of-end-of_002c-on-AT_0026T-troff"></span>
+<p><acronym>AT&amp;T</acronym> <code>troff</code> discards trailing spaces from input
+lines, like GNU <code>troff</code>, but when it does so, <acronym>AT&amp;T</acronym>
+<code>troff</code> also cancels end-of-sentence detection.  Use of the
+dummy character escape sequence <code>\&amp;</code> is more portable.
+</p>
+<span id="index-adjustment-to-both-margins_002c-difference-from-AT_0026T-troff"></span>
+<span id="index-rivers"></span>
+<p>When adjusting output lines to both margins,
+<acronym>AT&amp;T</acronym>
+<code>troff</code> at first adjusts spaces starting from the right;
+GNU
+<code>troff</code> begins from the left.
+Both implementations adjust spaces
+from opposite ends on alternating output lines
+in this adjustment mode
+to prevent &ldquo;rivers&rdquo; in the text.
+</p>
+<span id="index-hyphenation_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>GNU
+<code>troff</code> does not always hyphenate words as <acronym>AT&amp;T</acronym>
+<code>troff</code> does.
+The <acronym>AT&amp;T</acronym> implementation uses a set of hard-coded rules
+specific to U.S. English,
+while GNU
+<code>troff</code> uses language-specific hyphenation pattern files derived from TeX.
+Some versions of
+<code>troff</code> reserved meager storage for hyphenation exception words
+(arguments to the
+<code>hw</code>
+request);
+GNU
+<code>troff</code> has no such restriction.
+When the
+<code>hy</code>
+request is invoked without an argument,
+GNU
+<code>troff</code> sets the automatic hyphenation mode to the value of the
+<code>.hydefault</code>
+register;
+the <acronym>AT&amp;T</acronym> implementation sets it to
+&lsquo;<samp>1</samp>&rsquo;,
+which is not suitable in GNU
+<code>troff</code>
+for some languages,
+including English.
+</p>
+<p>Unlike
+GNU
+<code>troff</code>, <acronym>AT&amp;T</acronym>
+<code>troff</code> does not recognize an occurrence of
+<code>\%</code>
+at the beginning of a word as suppressing its hyphenation;
+instead,
+it (uselessly) marks the start of the word
+as a potential hyphenation point,
+permitting output lines to end with hyphens
+that are not interior to a word.
+</p>
+<p>GNU
+<code>troff</code> handles the dummy character
+<code>\&amp;</code>
+differently from <acronym>AT&amp;T</acronym>
+<code>troff</code> when it is followed by the hyphenation control escape sequence
+<code>\%</code>
+at the beginning of a word.
+GNU
+<code>troff</code> does not regard the dummy character as &ldquo;starting&rdquo; the word;
+<acronym>AT&amp;T</acronym>
+<code>troff</code> does.
+Further,
+Heirloom Doctools
+<code>troff</code> does not honor an explicit hyphenation point marked with
+<code>\%</code>
+after a word-initial one.<a id="DOCF189" href="groff.html_fot.html#FOOT189"><sup>189</sup></a>
+</p>
+<span id="index-file-name-arguments-to-requests_002c-in-other-implementations"></span>
+<span id="index-arguments_002c-file-name_002c-to-requests_002c-in-other-implementations"></span>
+<span id="index-requests-handling-file-name-arguments_002c-in-other-implementations"></span>
+
+<span id="index-cf-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-lf-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-nx-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-pi-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-so-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-sy-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>GNU
+<code>troff</code> interprets request arguments representing file names
+and system commands
+in the same way it does the
+<var>contents</var>
+argument to the
+<code>ds</code>
+and
+<code>as</code>
+requests:
+it removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from the argument to the
+<code>cf</code>,
+<code>nx</code>,
+<code>pi</code>,
+<code>so</code>,
+and
+<code>sy</code>
+requests,
+and the second argument
+(if present)
+to the
+<code>lf</code>
+request,
+permitting initial embedded spaces in it,
+and reads it to the end of the input line in copy mode.
+Recall <a href="Copy-Mode.html">Copy Mode</a>.
+This difference permits the formatter to handle files
+with spaces in their names,
+but requires more care with trailing comments,
+and doubling of an initial neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+if the file name has one.
+</p>
+<span id="index-output-device-name-string-_0028_002eT_0029_002c-in-other-implementations"></span>
+<p>The existence of the
+<code>.T</code>
+string is a common feature of device-independent
+<code>troff</code>s&mdash;DWB&nbsp;3.3, Solaris,
+Heirloom Doctools,
+and Plan&nbsp;9
+<code>troff</code>s all support it&mdash;but valid values are specific to each implementation.
+</p>
+<span id="index-output-device-usage-register-_0028_002eT_0029_002c-incompatibility-with-AT_0026T-troff"></span>
+<p>The (read-only) register
+<code>.T</code>
+interpolates&nbsp;1
+if GNU
+<code>troff</code> is run with the
+<samp>-T</samp>
+option,
+and 0&nbsp;otherwise.
+In contrast,
+AT&amp;T
+<code>troff</code> interpolated&nbsp;1 only if
+<code>nroff</code> was the formatter and was run with
+<samp>-T</samp>.
+</p>
+<span id="index-removal-of-read_002donly-registers_002c-incompatibility-with-AT_0026T-troff"></span>
+<span id="index-register_002c-read_002donly_002c-removal_002c-incompatibility-with-AT_0026T-troff"></span>
+<span id="index-read_002donly-register-removal_002c-incompatibility-with-AT_0026T-troff"></span>
+<p><acronym>AT&amp;T</acronym>
+<code>troff</code> ignored attempts to remove read-only registers;
+GNU
+<code>troff</code> honors such requests.
+Recall <a href="Built_002din-Registers.html">Built-in Registers</a>.
+</p>
+<span id="index-lf-request_002c-incompatibilities-with-AT_0026T-troff-1"></span>
+<p>The
+<code>lf</code>
+request sets the number of the
+<em>current</em>
+input line in AT&amp;T
+<code>troff</code> and the
+<em>next</em>
+in GNU
+<code>troff</code>. </p>
+<span id="index-environment-availability-and-naming_002c-incompatibilities-with"></span>
+<p><acronym>AT&amp;T</acronym>
+<code>troff</code> had only environments named
+&lsquo;<samp>0</samp>&rsquo;,
+&lsquo;<samp>1</samp>&rsquo;,
+and
+&lsquo;<samp>2</samp>&rsquo;.
+In GNU
+<code>troff</code>,
+any number of environments may exist,
+using any valid identifiers for their names.
+Recall <a href="Identifiers.html">Identifiers</a>.
+</p>
+<span id="index-fractional-point-sizes-1"></span>
+<span id="index-fractional-type-sizes-1"></span>
+<span id="index-point-sizes_002c-fractional-1"></span>
+<span id="index-type-sizes_002c-fractional-1"></span>
+<span id="index-sizes_002c-fractional"></span>
+<span id="index-ps-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>As noted in <a href="Using-Fractional-Type-Sizes.html">Using Fractional Type Sizes</a>,
+<acronym>AT&amp;T</acronym>
+<code>troff</code>&rsquo;s <code>ps</code>
+request ignores scaling units
+and thus
+&lsquo;<samp>.ps 10u</samp>&rsquo;
+sets the type size to 10&nbsp;points,
+whereas in GNU
+<code>troff</code> it sets the type size to
+10&nbsp;<em>scaled</em>
+points,
+possibly a much smaller measurement.
+<acronym>AT&amp;T</acronym>&rsquo;s behavior also means that
+&lsquo;<samp>.ps 10p</samp>&rsquo;
+and
+&lsquo;<samp>.ps 10z</samp>&rsquo;
+are portable.
+</p>
+<span id="index-ab-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>The <code>ab</code> request differs from <acronym>AT&amp;T</acronym> <code>troff</code>: GNU
+<code>troff</code> writes no message to the standard error stream if no
+arguments are given, and it exits with a failure status instead of a
+successful one.
+</p>
+<span id="index-bp-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>The
+<code>bp</code>
+request differs from <acronym>AT&amp;T</acronym>
+<code>troff</code>: GNU
+<code>troff</code> does not accept a scaling unit on the argument,
+a page number;
+the former does (uselessly).
+</p>
+<span id="index-pm-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>In <acronym>AT&amp;T</acronym>
+<code>troff</code>, the
+<code>pm</code>
+request reports
+macro,
+string,
+and
+diversion
+sizes in units of 128-byte blocks,
+and an argument reduces the report to a sum of the above in the same
+units.
+GNU
+<code>troff</code> reports ther lengths in characters or nodes if given no arguments,
+and otherwise dumps
+the <acronym>JSON</acronym>-encoded name,
+contents,
+and other properties of each named argument.
+</p>
+<span id="index-ss-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>AT&amp;T
+<code>troff</code> ignores the
+<code>ss</code>
+request if the output is a terminal device;
+GNU
+<code>troff</code> rounds down the values of minimum inter-word and additional
+inter-sentence space each to the nearest multiple of&nbsp;12.
+</p>
+<span id="index-bd-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-cs-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-tr-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-fp-request_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-input-characters-and-output-glyphs_002c-compatibility-with-AT_0026T-troff"></span>
+<span id="index-output-glyphs_002c-and-input-characters_002c-compatibility-with-AT_0026T-troff"></span>
+<span id="index-characters_002c-input_002c-and-output-glyphs_002c-compatibility-with-AT_0026T-troff"></span>
+<span id="index-glyphs_002c-output_002c-and-input-characters_002c-compatibility-with-AT_0026T-troff"></span>
+<p>GNU
+<code>troff</code> distinguishes characters from glyphs.
+Characters can be ordinary,
+special,
+or indexed,
+and populate strings and macros.
+Characters
+<em>per se</em>
+have not (yet) been formatted.
+Glyphs represent graphemes
+(supplied by the output device)
+and populate diversions
+(recall <a href="Diversions.html">Diversions</a>).
+Formatting converts characters into
+(sequences of)
+glyphs.
+GNU
+<code>troff</code> stores properties of the environment
+that affect how a glyph is rendered with the glyph node&rsquo;s data.
+Thus,
+subsequent formatting operations do not affect it,
+including
+<code>bd</code>,
+<code>cs</code>,
+<code>tkf</code>,
+<code>tr</code>,
+and
+<code>fp</code>
+requests.
+Normally,
+a macro or string
+contains only a list of characters
+and a diversion
+contains only a list of nodes.
+However,
+applying the
+<code>asciify</code>
+or
+<code>unformat</code>
+requests to a diversion converts some of its nodes back into characters.
+Where the formatter cannot recover the character representation
+of a node,
+it stores a null character in the character list
+corresponding to a single node in the node list.
+</p>
+<p>Consequently,
+a glyph node does not behave as a character does
+in macro interpolation:
+it does not inherit special properties
+that the character from which it was constructed might have had.
+For example,
+the input
+</p>
+<div class="example">
+<pre class="example">.di x
+\\\\
+.br
+.di
+.x
+</pre></div>
+
+<p>produces &lsquo;<samp>\\</samp>&rsquo; in GNU <code>troff</code>.  Each pair of backslashes
+becomes one backslash <em>glyph</em>; the resulting backslashes are thus
+not interpreted as escape <em>characters</em> when they are interpolated
+as the diversion is output.  <acronym>AT&amp;T</acronym> <code>troff</code> <em>would</em>
+interpret them as escape characters when interpolating them and end up
+printing one &lsquo;<samp>\</samp>&rsquo;.
+</p>
+<span id="index-printing-backslash-_0028_005c_005c_002c-_005ce_002c-_005cE_002c-_005c_005brs_005d_0029"></span>
+<span id="index-backslash_002c-printing-_0028_005c_005c_002c-_005ce_002c-_005cE_002c-_005c_005brs_005d_0029"></span>
+<span id="index-_005ce_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-_005c_0021_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-_005c_003f_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-transparent-output_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-output_002c-transparent_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>One correct way to obtain a printable backslash in most documents is to
+use the <code>\e</code> escape sequence; this always prints a single instance
+of the current escape character,<a id="DOCF190" href="groff.html_fot.html#FOOT190"><sup>190</sup></a> regardless of whether it is used in a diversion; it also works
+in both GNU <code>troff</code> and <acronym>AT&amp;T</acronym> <code>troff</code>.
+</p>
+<p>The other correct way,
+appropriate in contexts independent of the backslash&rsquo;s common use as a
+<code>roff</code>
+escape character&mdash;perhaps in discussion of character sets or other
+programming languages&mdash;is the special character escape sequence
+<code>\(rs</code> or <code>\[rs]</code>,
+for &ldquo;reverse solidus&rdquo;,
+from its name in the <acronym>ECMA</acronym>-6 and ISO&nbsp;10646<!-- /@w -->
+standards.<a id="DOCF191" href="groff.html_fot.html#FOOT191"><sup>191</sup></a>
+</p>
+<p>To store in a diversion an escape sequence
+that is interpreted when the diversion is interpolated,
+either use the traditional
+<code>\!</code>
+transparent output facility,
+or,
+if this is unsuitable,
+the new
+<code>\?</code>
+escape sequence.
+Recall <a href="Diversions.html">Diversions</a> and <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.
+</p>
+<span id="index-timing-of-output-flushes_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-output-flushes_002c-timing-of_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-flushing-of-output_002c-timing-of_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>Like <acronym>AT&amp;T</acronym>
+<code>troff</code>, GNU
+<code>troff</code> maintains a buffer of device-independent output commands,<a id="DOCF192" href="groff.html_fot.html#FOOT192"><sup>192</sup></a>
+populating the buffer as formatted output accumulates.
+GNU
+<code>troff</code> always flushes this buffer when processing a break;
+<acronym>AT&amp;T</acronym>
+<code>troff</code> does so according to no obvious schedule.
+(Perhaps,
+if the buffer is of fixed size,
+the formatter performs the flush when the buffer runs out of room.)
+</p>
+<p>In the somewhat pathological case where a diversion exists
+containing a partially collected line
+and a partially collected line at the top-level diversion
+has never existed,
+<acronym>AT&amp;T</acronym>
+<code>troff</code> outputs a partially collected but otherwise empty line
+(as if
+&lsquo;<samp>\c</samp>&rsquo;
+were in the top-level diversion)
+at the end of input;
+GNU
+<code>troff</code> does not.
+</p>
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Compatibility-Mode.html" accesskey="p" rel="prev">Compatibility Mode</a>, Up: <a href="Implementation-Differences.html" accesskey="u" rel="up">Implementation Differences</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

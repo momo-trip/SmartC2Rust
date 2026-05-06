@@ -1,0 +1,136 @@
+    Copyright 2013-2018 Free Software Foundation, Inc.
+              2022-2025 G. Branden Robinson
+
+    Copying and distribution of this file, with or without
+    modification, are permitted in any medium without royalty provided
+    the copyright notice and this notice are preserved.
+
+This information supplements the generic installation instructions in
+the file "INSTALL".  It addresses people building from the development
+repository, rather than a distribution archive.  Distribution archives
+include a "configure" script, among other files; the repository does
+not.  If you want to start building the groff system using an existing
+"configure" script, you don't need the information in this file.
+
+Dependencies
+------------
+
+The "INSTALL.extra" file documents required dependencies and discusses
+some optional ones.
+
+* You need Autoconf version 2.68 or higher and Automake version 1.12.2
+  or higher.  The "bootstrap.conf" file asserts these requirements.
+
+  On operating systems supporting concurrent installation of multiple
+  versions of the GNU Autotools, set environment variables as in the
+  following example, adjusting the version numbers as required.
+
+    $ export AUTOMAKE_VERSION=1.14
+    $ export AUTOCONF_VERSION=2.69
+
+* You need a "yacc" program.  We recommend Berkeley yacc ("byacc") or
+  GNU Bison ("bison").  The version of byacc in OpenBSD 7.4 is known to
+  not work; Bison does.
+
+* Building from a repository checkout generates groff's Texinfo manual
+  in several formats: GNU Info, HTML, plain text, TeX DVI, and PDF.  The
+  former three require "makeinfo" from GNU Texinfo 5.0 or later.  The
+  latter two additionally require a TeX installation, such as TeX Live.
+  If TeX is not installed, the DVI and PDF formats of the manual cannot
+  be generated.  TeX's absence causes a build failure only if you update
+  the file "groff.texi" and you specify "dist", "distcheck", or relevant
+  file targets to the "make" command explicitly.
+
+* You need the "xpmtoppm", "pnmdepth", and "pnmtops" programs from the
+  Netpbm distribution.
+
+
+Bootstrapping from a Git checkout
+---------------------------------
+
+Run the bootstrap script.
+
+    $ ./bootstrap
+
+This procedure does two things.
+
+  - It clones the gnulib repository as a Git submodule in "gnulib", and
+    adds any needed gnulib source files to the "lib" directory as well
+    as required gnulib m4 macros to the "gnulib_m4" directory; and
+
+  - it runs "autoreconf", which runs the GNU Autotools ("aclocal",
+    "autoconf", "automake") in the correct order to create the following
+    files.
+
+    -- INSTALL (a symlink to gnulib's "INSTALL" file)
+    -- Makefile.in
+    -- aclocal.m4
+    -- autom4te.cache/
+    -- build-aux/ (which contains all the helper scripts)
+    -- configure
+    -- src/include/config.hin
+
+"aclocal.m4" is a generated file; the repository's "acinclude.m4" file
+collects into it m4 macros specific to groff from the "m4" directory.
+
+
+Building
+--------
+
+You can now run the "configure" script.  It produces the "config.status"
+script, which generates the Makefile.  Then run "make" to build the
+groff project.  You can perform these actions from the source tree.
+
+    $ ./configure
+    $ make # run with -j option if desired
+
+You can alternatively build groff outside of its source tree, which is
+cleaner, leaving fewer files to confuse "git status" if you aim to
+undertake development.
+
+    $ mkdir build
+    $ cd build
+    $ ../configure
+    $ make # run with -j option if desired
+
+A separate build tree need not be a subdirectory of the source.
+
+
+Evaluation
+----------
+
+Several dozen sanity checks can be performed within the build tree.
+
+    $ make check # run with -j option if desired
+
+
+Installation
+------------
+
+When the build is finished you can install the groff build artifacts.
+
+    $ make install install-doc # run with "sudo" if necessary
+
+The "install-doc" target installs the typeset and HTML versions of
+groff's Texinfo manual, but does not work if TeX is not installed.
+
+
+Uninstalling
+------------
+
+See "Uninstalling" in the "INSTALL.extra" file.
+
+
+Rebuilding
+----------
+
+If you have "git pull"ed since your previous build or otherwise changed
+the code, run "make distclean".  Then start over from "Building" above.
+
+
+##### Editor settings
+Local Variables:
+fill-column: 72
+mode: text
+End:
+# vim: set autoindent textwidth=72:

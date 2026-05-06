@@ -1,0 +1,72 @@
+.TH GV 1 "2008-07-31" "gv" "User Commands"
+.SH NAME
+gv\-update\-userconfig \- update ~/.gv config file
+.SH SYNOPSIS
+.B gv\-update\-userconfig
+[\fIfilename\fR]
+.SH DESCRIPTION
+.B gv\-update\-userconfig
+is a simple script to update an
+.B .gv
+config file
+to the current version of
+.BR gv (1).
+
+You can specify a file which is used instead of
+.B .gv
+by using the optional filename argument. This is useful if the environment variable XUSERSEARCHPATH is used.
+
+This is done by removing all entries known to cause problems with
+the current version of GNU gv (i.e. the one the version of this program
+belongs to) and updating the version information in that file.
+This resets all problematic items back to the default values.
+
+.TP
+\fB\-h\fR, \fB\-\-help\fR, \fB\-\-usage\fR
+displays a short help message
+.TP
+\fB\-r\fR
+removes all resources from \fI~\fP\fB/.gv\fP that equal the default resources being shipped with GNU gv (ignoring whitespaces).
+.TP
+\fB\-n\fR
+switches to alternative navigation by adding resp. updating navigation resources
+to \fI~\fP\fB/.gv\fP, i. e. after each page switch (except if selected by the
+page number) the page is scrolled to top (if switching forward) resp. to the
+bottom (if switching backward).
+.TP
+\fB\-N\fR
+switches to standard navigation by adding resp. updating navigation resources 
+to \fI~\fP\fB/.gv\fP.
+.TP
+\fB\-s\fR
+removes navigation resources from \fI~\fP\fB/.gv\fP and therefore enables
+standard navigation.
+.TP
+\fB\-i\fR
+updates translation file. Using the optional filename parameter is strongly
+recommended for using this option. This option cannot be used together with any of
+the other options.
+
+
+.SH BACKGROUND
+The \fI$(HOME)\fP\fB/.gv\fP file is written by GNU gv when activating the
+\fBSave\fP button in one of the configuration dialogs.
+
+The values in there are used, if there is no display-specific
+resource value (loaded from \fI$(HOME)\fP\fB/.Xresources\fP at login time
+or manually \fBxrdb\fP(1)).
+
+Sometimes older values miss things needed by the new GNU gv to work properly.
+This GNU gv will notice old (or missing) version information in this
+file and refuse to start until fixed.
+
+.SH "SEE ALSO"
+.BR gv (1),
+.BR xrdb (1).
+
+.SH COPYRIGHT
+This manpage is Copyright \(co 2008 Bernhard R. Link
+and can be used, copied, distributed and/or modified without restrictions.
+.br
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

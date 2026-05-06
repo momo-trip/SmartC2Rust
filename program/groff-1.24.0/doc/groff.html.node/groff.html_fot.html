@@ -1,0 +1,994 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Footnotes (The GNU troff Manual)</title>
+
+<meta name="description" content="Footnotes (The GNU troff Manual)">
+<meta name="keywords" content="Footnotes (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="SEC_Foot"></span>
+<div class="header">
+<p>
+ &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h5><a id="FOOT1" href="Preprocessor-Intro.html#DOCF1">(1)</a></h3>
+<p><a href="https://www.lunabase.org/~faber/Vault/software/grap/">https://www.lunabase.org/~faber/Vault/software/grap/</a></p>
+<h5><a id="FOOT2" href="Conventions-Used-in-This-Manual.html#DOCF2">(2)</a></h3>
+<p>Besides <code>groff</code>,
+<code>neatroff</code>
+is an exception.</p>
+<h5><a id="FOOT3" href="Conventions-Used-in-This-Manual.html#DOCF3">(3)</a></h3>
+<p>Unix and related operating systems distinguish
+standard output and standard error streams <em>because</em> of
+<code>troff</code>:
+<a href="https://www.tuhs.org/pipermail/tuhs/2013-December/006113.html">https://www.tuhs.org/pipermail/tuhs/2013-December/006113.html</a>.</p>
+<h5><a id="FOOT4" href="Conventions-Used-in-This-Manual.html#DOCF4">(4)</a></h3>
+<p>See <a href="Line-Layout.html">Line Layout</a>.</p>
+<h5><a id="FOOT5" href="Conventions-Used-in-This-Manual.html#DOCF5">(5)</a></h3>
+<p><code>roff</code> is the language of historical Unix
+manuals, and of man pages to this day.</p>
+<h5><a id="FOOT6" href="Conventions-Used-in-This-Manual.html#DOCF6">(6)</a></h3>
+<p><acronym>POSIX</acronym> has not standardized a mechanism
+for the
+<code>man</code>
+command to distinguish pages by numeric category.
+If
+&lsquo;<samp>man 'groff(7)'</samp>&rsquo;
+produces an error,
+attempt
+&lsquo;<samp>man 7 groff</samp>&rsquo;
+or
+&lsquo;<samp>man -s 7 groff</samp>&rsquo;.</p>
+<h5><a id="FOOT7" href="Groff-Options.html#DOCF7">(7)</a></h3>
+<p>GNU
+<code>troff</code> does not,
+however,
+accept newlines
+(line feeds)
+in file names supplied as arguments to requests.</p>
+<h5><a id="FOOT8" href="Macro-Directories.html#DOCF8">(8)</a></h3>
+<p>The
+<code>mso</code> request loads a macro file of any name.
+See <a href="Host-System-Service-Access.html">Host System Service Access</a>.</p>
+<h5><a id="FOOT9" href="Font-Directories.html#DOCF9">(9)</a></h3>
+<p>See <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.</p>
+<h5><a id="FOOT10" href="Basics.html#DOCF10">(10)</a></h3>
+<p>The remainder of this chapter is based on
+&ldquo;Writing Papers with NROFF using -me&rdquo; by Eric&nbsp;P. Allman,
+which is distributed with <code>groff</code> as <samp>meintro.me</samp>.</p>
+<h5><a id="FOOT11" href="ms-Introduction.html#DOCF11">(11)</a></h3>
+<p>While manual <em>pages</em> are older, early ones used
+macros supplanted by the <samp>man</samp> package of Seventh Edition Unix
+(1979).  <samp>ms</samp> shipped with Sixth Edition (1975) and was documented
+by Mike Lesk in a Bell Labs internal memorandum.</p>
+<h5><a id="FOOT12" href="ms-Document-Control-Settings.html#DOCF12">(12)</a></h3>
+<p>defined in <a href="ms-Footnotes.html">ms Footnotes</a></p>
+<h5><a id="FOOT13" href="ms-Document-Description-Macros.html#DOCF13">(13)</a></h3>
+<p>Distinguish a
+document title from &ldquo;titles&rdquo;, which are what <code>roff</code> systems call
+headers and footers collectively.</p>
+<h5><a id="FOOT14" href="Typeface-and-decoration.html#DOCF14">(14)</a></h3>
+<p>This idiosyncrasy arose through
+feature accretion; for example, the <code>B</code> macro in Sixth Edition
+Unix <samp>ms</samp> (1975) accepted only one argument, the text to be set in
+boldface.  By Version&nbsp;7 (1979) it recognized a second argument; in
+1990, <code>groff</code> <samp>ms</samp> added a &ldquo;pre&rdquo; argument, placing it third
+to avoid breaking support for older documents.</p>
+<h5><a id="FOOT15" href="ms-Footnotes.html#DOCF15">(15)</a></h3>
+<p>Unix Version&nbsp;7 <samp>ms</samp>, its descendants, and GNU
+<samp>ms</samp> prior to <code>groff</code> version 1.23.0</p>
+<h5><a id="FOOT16" href="ms-Footnotes.html#DOCF16">(16)</a></h3>
+<p>You could reset it
+after each call to <code>1C</code>, <code>2C</code>, or <code>MC</code>.</p>
+<h5><a id="FOOT17" href="Differences-from-AT_0026T-ms.html#DOCF17">(17)</a></h3>
+<p>&ldquo;Typing Documents on the UNIX System: Using the
+-ms Macros with Troff and Nroff&rdquo;, M.&nbsp;E. Lesk, Bell Laboratories,
+1978</p>
+<h5><a id="FOOT18" href="Differences-from-AT_0026T-ms.html#DOCF18">(18)</a></h3>
+<p>Register values are converted to and stored as
+basic units.  See <a href="Measurements.html">Measurements</a>.</p>
+<h5><a id="FOOT19" href="Differences-from-AT_0026T-ms.html#DOCF19">(19)</a></h3>
+<p>If you redefine the <samp>ms</samp> <code>PT</code> macro
+and desire special treatment of certain page numbers (like &lsquo;<samp>1</samp>&rsquo;),
+you may need to handle a non-Arabic page number format, as <code>groff</code>
+<samp>ms</samp>&rsquo;s <code>PT</code> does; see the macro package source.
+In
+<code>groff</code> <samp>ms</samp>,
+the <code>PN</code> and <code>%</code> registers are aliases.</p>
+<h5><a id="FOOT20" href="Missing-Unix-Version-7-ms-Macros.html#DOCF20">(20)</a></h3>
+<p>Removal beforehand is necessary
+because
+<code>groff</code> <samp>ms</samp>
+aliases these macros with a diagnostic one;
+you want to reorient the aliased name
+before (re-)populating the macro.</p>
+<h5><a id="FOOT21" href="Filling.html#DOCF21">(21)</a></h3>
+<p>See <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.</p>
+<h5><a id="FOOT22" href="Filling.html#DOCF22">(22)</a></h3>
+<p><i>Tabs</i>
+and <i>leaders</i> also separate words.
+<i>Escape sequences</i> can function as word characters,
+word separators,
+or neither&mdash;the last simply have no effect on
+GNU
+<code>troff</code>&rsquo;s idea of whether an input character is within a word.
+We&rsquo;ll discuss all of these in due course.</p>
+<h5><a id="FOOT23" href="Sentences.html#DOCF23">(23)</a></h3>
+<p>A
+well-researched jeremiad appreciated by <code>groff</code> contributors on
+both sides of the sentence-spacing debate can be found at
+<a href="https://web.archive.org/web/20171217060354/http://www.heracliteanriver.com/?p=324">https://web.archive.org/web/20171217060354/http://www.heracliteanriver.com/?p=324</a>.</p>
+<h5><a id="FOOT24" href="Sentences.html#DOCF24">(24)</a></h3>
+<p>This
+statement oversimplifies;
+there are escape sequences
+whose purpose is precisely to produce glyphs on the output device,
+and input characters that
+<em>aren&rsquo;t</em>
+part of escape sequences
+can undergo a great deal of processing before getting to the output.</p>
+<h5><a id="FOOT25" href="Sentences.html#DOCF25">(25)</a></h3>
+<p>The mnemonics for the special
+characters shown here are &ldquo;dagger&rdquo;, &ldquo;double dagger&rdquo;, &ldquo;right
+(double) quote&rdquo;, and &ldquo;closing (single) quote&rdquo;.
+See
+<cite>groff_char<span class="roman">(7)</span></cite>.</p>
+<h5><a id="FOOT26" href="Breaking.html#DOCF26">(26)</a></h3>
+<p>See <a href="Requests-and-Macros.html#text-lines">text lines</a>.</p>
+<h5><a id="FOOT27" href="Tabs-and-Leaders.html#DOCF27">(27)</a></h3>
+<p>&ldquo;Tab&rdquo;
+abbreviates &ldquo;tabulation&rdquo;, suggesting a table arrangement mechanism.</p>
+<h5><a id="FOOT28" href="Requests-and-Macros.html#DOCF28">(28)</a></h3>
+<p>The backspace
+character is also meaningful;
+see
+<a href="Page-Motions.html">Page Motions</a>.</p>
+<h5><a id="FOOT29" href="Requests-and-Macros.html#DOCF29">(29)</a></h3>
+<p>The <code>\<span class="key">RET</span></code> escape sequence
+can alter how an input line is classified;
+see <a href="Line-Continuation.html">Line Continuation</a>.</p>
+<h5><a id="FOOT30" href="Requests-and-Macros.html#DOCF30">(30)</a></h3>
+<p>Argument handling in macros
+is more flexible but also more complex.
+See <a href="Calling-Macros.html">Calling Macros</a>.</p>
+<h5><a id="FOOT31" href="Requests-and-Macros.html#DOCF31">(31)</a></h3>
+<p>Some escape sequences undergo
+interpolation as well.</p>
+<h5><a id="FOOT32" href="Requests-and-Macros.html#DOCF32">(32)</a></h3>
+<p>GNU
+<code>troff</code>
+offers additional ones.
+See <a href="Writing-Macros.html">Writing Macros</a>.</p>
+<h5><a id="FOOT33" href="Macro-Packages.html#DOCF33">(33)</a></h3>
+<p>Macro files and packages
+frequently define registers and strings as well.</p>
+<h5><a id="FOOT34" href="Input-Format.html#DOCF34">(34)</a></h3>
+<p>The
+<em>semantics</em> of certain punctuation code points have gotten stricter
+with the successive standards, a cause of some frustration among man
+page writers; see <cite>groff_char<span class="roman">(7)</span></cite>.</p>
+<h5><a id="FOOT35" href="Input-Format.html#DOCF35">(35)</a></h3>
+<p>It also
+emits a warning in category
+&lsquo;<samp>input</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT36" href="Input-Format.html#DOCF36">(36)</a></h3>
+<p>Historically,
+control characters like
+<acronym>ASCII</acronym>
+<code>STX</code>,
+<code>ETX</code>,
+and
+<code>BEL</code>
+(<tt class="key">Control+B</tt>,
+<tt class="key">Control+C</tt>,
+and
+<tt class="key">Control+G</tt>,
+respectively)
+have been observed in
+<code>roff</code>
+documents,
+particularly in macro packages employing them as delimiters
+with the output comparison operator
+to try to avoid collisions
+with the content of arbitrary user-supplied parameters
+(see <a href="Operators-in-Conditionals.html">Operators in Conditionals</a>).
+We discourage this expedient;
+in
+GNU
+<code>troff</code> it is unnecessary
+(outside of compatibility mode)
+because the program parses delimited arguments
+at a different input level than their surrounding context.
+See <a href="Implementation-Differences.html">Implementation Differences</a>.</p>
+<h5><a id="FOOT37" href="Input-Encodings.html#DOCF37">(37)</a></h3>
+<p>KOI8-R code points in the range
+<code>0x80</code>&ndash;<code>0x9F</code> are not valid input to GNU <code>troff</code>;
+recall <a href="Input-Format.html">Input Format</a>.
+This restriction should be no impediment to practical documents,
+as these KOI8-R code points do not encode letters,
+but box-drawing symbols and characters
+that are better obtained via special character escape sequences;
+see <cite>groff_char<span class="roman">(7)</span></cite>.</p>
+<h5><a id="FOOT38" href="Input-Encodings.html#DOCF38">(38)</a></h3>
+<p>The DVI output device defaults to using the Computer Modern
+(CM) fonts; <samp>ec.tmac</samp> loads the EC fonts instead, which provide
+Euro &lsquo;<samp>\[Eu]</samp>&rsquo; and per mille &lsquo;<samp>\[%0]</samp>&rsquo; glyphs.</p>
+<h5><a id="FOOT39" href="Input-Conventions.html#DOCF39">(39)</a></h3>
+<p>Emacs: <code>fill-column: 72</code>; Vim: <code>textwidth=72</code></p>
+<h5><a id="FOOT40" href="Page-Geometry.html#DOCF40">(40)</a></h3>
+<p><code>groff</code> does not yet support right-to-left
+scripts.</p>
+<h5><a id="FOOT41" href="Page-Geometry.html#DOCF41">(41)</a></h3>
+<p><code>groff</code>&rsquo;s
+terminal output devices have page offsets of zero.</p>
+<h5><a id="FOOT42" href="Default-Units.html#DOCF42">(42)</a></h3>
+<p>See <a href="Registers.html">Registers</a>.</p>
+<h5><a id="FOOT43" href="Default-Units.html#DOCF43">(43)</a></h3>
+<p>See <a href="Numeric-Expressions.html">Numeric Expressions</a>.</p>
+<h5><a id="FOOT44" href="Numeric-Expressions.html#DOCF44">(44)</a></h3>
+<p>Provision is made for interpreting and
+reporting decimal fractions in certain cases.</p>
+<h5><a id="FOOT45" href="Numeric-Expressions.html#DOCF45">(45)</a></h3>
+<p>If that&rsquo;s not enough, see the
+<cite>groff_tmac<span class="roman">(5)</span></cite> man page for the <samp>62bit.tmac</samp> macro
+package.</p>
+<h5><a id="FOOT46" href="Numeric-Expressions.html#DOCF46">(46)</a></h3>
+<p>If overflow would
+occur,
+GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>range</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT47" href="Numeric-Expressions.html#DOCF47">(47)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>number</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT48" href="Numeric-Expressions.html#DOCF48">(48)</a></h3>
+<p>See <a href="Conditionals-and-Loops.html">Conditionals and Loops</a>.</p>
+<h5><a id="FOOT49" href="Numeric-Expressions.html#DOCF49">(49)</a></h3>
+<p>Control structure syntax
+creates an exception to this rule, but is designed to remain useful:
+recalling our example, &lsquo;<samp>.if 1 .Underline this</samp>&rsquo; would underline only
+&ldquo;this&rdquo;, precisely.  See <a href="Conditionals-and-Loops.html">Conditionals and Loops</a>.</p>
+<h5><a id="FOOT50" href="Numeric-Expressions.html#DOCF50">(50)</a></h3>
+<p>See <a href="Diversions.html">Diversions</a>.</p>
+<h5><a id="FOOT51" href="Identifiers.html#DOCF51">(51)</a></h3>
+<p>Use of escape sequences in identifiers
+is not portable.
+For example,
+DWB 3.3
+<code>troff</code> accepts
+<code>\_</code>.
+Plan&nbsp;9
+<code>troff</code> does too,
+along with
+<code>\'</code>,
+<code>\`</code>,
+and
+<code>\-</code>.
+Solaris
+<code>troff</code> rejects all of these except
+<code>\_</code>,
+but accepts
+<code>\&amp;</code>,
+<code>\{</code>,
+<code>\}</code>,
+<code>\SPC</code>,
+<code>\%</code>,
+and
+<code>\c</code>.
+Heirloom Doctools
+<code>troff</code> rejects all of these,
+including
+<code>\_</code>,
+but accepts
+<code>\!</code>,
+which the others reject.
+GNU
+<code>troff</code> rejects all of the foregoing.
+</p>
+<h5><a id="FOOT52" href="Identifiers.html#DOCF52">(52)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>mac</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT53" href="Identifiers.html#DOCF53">(53)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>reg</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT54" href="Control-Characters.html#DOCF54">(54)</a></h3>
+<p>Recall <a href="Identifiers.html">Identifiers</a>.</p>
+<h5><a id="FOOT55" href="Invoking-Requests.html#DOCF55">(55)</a></h3>
+<p>In compatibility mode,
+a space is not necessary
+after a request or macro name of two characters&rsquo; length.</p>
+<h5><a id="FOOT56" href="Invoking-Requests.html#DOCF56">(56)</a></h3>
+<p>Plan&nbsp;9
+<code>troff</code> does.</p>
+<h5><a id="FOOT57" href="Calling-Macros.html#DOCF57">(57)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>mac</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT58" href="Calling-Macros.html#DOCF58">(58)</a></h3>
+<p><code>\~</code> is fairly
+portable; see <a href="Other-Differences.html">Other Differences</a>.</p>
+<h5><a id="FOOT59" href="Calling-Macros.html#DOCF59">(59)</a></h3>
+<p>Strictly, you can neglect to
+close the last quoted macro argument, relying on the end of the control
+line to do so.   We consider this lethargic practice poor style.</p>
+<h5><a id="FOOT60" href="Using-Escape-Sequences.html#DOCF60">(60)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>escape</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT61" href="Using-Escape-Sequences.html#DOCF61">(61)</a></h3>
+<p>The omission of spaces before the comment
+escape sequences is necessary; see <a href="Strings.html">Strings</a>.</p>
+<h5><a id="FOOT62" href="Using-Escape-Sequences.html#DOCF62">(62)</a></h3>
+<p>TeX does have such a mechanism.</p>
+<h5><a id="FOOT63" href="Delimiters.html#DOCF63">(63)</a></h3>
+<p>The
+GNU
+<cite>eqn<span class="roman">(1)</span></cite>
+and
+<cite>tbl<span class="roman">(1)</span></cite>
+preprocessors use parameterized but non-delimited special character
+escape sequences
+<code>\(</code>
+and
+<code>\[</code>
+to bracket portions of their output.</p>
+<h5><a id="FOOT64" href="Delimiters.html#DOCF64">(64)</a></h3>
+<p>See <a href="Page-Layout.html">Page Layout</a>.</p>
+<h5><a id="FOOT65" href="Delimiters.html#DOCF65">(65)</a></h3>
+<p>See <a href="Operators-in-Conditionals.html">Operators in Conditionals</a>.</p>
+<h5><a id="FOOT66" href="Delimiters.html#DOCF66">(66)</a></h3>
+<p>See <a href="Implementation-Differences.html">Implementation Differences</a>.</p>
+<h5><a id="FOOT67" href="Comments.html#DOCF67">(67)</a></h3>
+<p>This claim may be more aspirational than descriptive.</p>
+<h5><a id="FOOT68" href="Comments.html#DOCF68">(68)</a></h3>
+<p>except in copy mode on Plan&nbsp;9
+<code>troff</code></p>
+<h5><a id="FOOT69" href="Comments.html#DOCF69">(69)</a></h3>
+<p>See <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT70" href="Comments.html#DOCF70">(70)</a></h3>
+<p>See <a href="Conditional-Blocks.html">Conditional Blocks</a>.</p>
+<h5><a id="FOOT71" href="Comments.html#DOCF71">(71)</a></h3>
+<p>Exception: auto-incrementing registers defined outside
+the ignored region <em>will</em> be modified if interpolated with
+<code>\n±</code> inside it.  See <a href="Auto_002dincrement.html">Auto-increment</a>.</p>
+<h5><a id="FOOT72" href="Setting-Registers.html#DOCF72">(72)</a></h3>
+<p>See <a href="Page-Motions.html">Page Motions</a>.</p>
+<h5><a id="FOOT73" href="Setting-Registers.html#DOCF73">(73)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>reg</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT74" href="Interpolating-Registers.html#DOCF74">(74)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>reg</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT75" href="Auto_002dincrement.html#DOCF75">(75)</a></h3>
+<p>A negative auto-increment can be
+considered an &ldquo;auto-decrement&rdquo;.</p>
+<h5><a id="FOOT76" href="Built_002din-Registers.html#DOCF76">(76)</a></h3>
+<p>GNU <code>troff</code> dynamically allocates memory for as
+many registers as required.</p>
+<h5><a id="FOOT77" href="Manipulating-Filling-and-Adjustment.html#DOCF77">(77)</a></h3>
+<p>See <a href="Environments.html">Environments</a>.</p>
+<h5><a id="FOOT78" href="Manipulating-Filling-and-Adjustment.html#DOCF78">(78)</a></h3>
+<p>See <a href="Manipulating-Hyphenation.html">Manipulating Hyphenation</a>.</p>
+<h5><a id="FOOT79" href="Manipulating-Filling-and-Adjustment.html#DOCF79">(79)</a></h3>
+<p>though not necessarily to the output
+device;
+see
+<a href="Diversions.html">Diversions</a></p>
+<h5><a id="FOOT80" href="Manipulating-Filling-and-Adjustment.html#DOCF80">(80)</a></h3>
+<p>If you&rsquo;re not sure whether an input line has been
+productive, you can use the <code>pline</code> request before and after it to
+see whether it produced any output nodes.  See <a href="Debugging.html">Debugging</a>.</p>
+<h5><a id="FOOT81" href="Manipulating-Filling-and-Adjustment.html#DOCF81">(81)</a></h3>
+<p>See <a href="Line-Continuation.html">Line Continuation</a>.</p>
+<h5><a id="FOOT82" href="Manipulating-Filling-and-Adjustment.html#DOCF82">(82)</a></h3>
+<p>The
+<code>.R</code>
+register interpolates the largest value that
+GNU
+<code>troff</code> can work with.
+Recall
+<a href="Built_002din-Registers.html">Built-in Registers</a>.</p>
+<h5><a id="FOOT83" href="Manipulating-Filling-and-Adjustment.html#DOCF83">(83)</a></h3>
+<p>Recall
+<a href="Filling.html">Filling</a> and <a href="Sentences.html">Sentences</a> for the definitions of word and
+sentence boundaries, respectively.</p>
+<h5><a id="FOOT84" href="Manipulating-Filling-and-Adjustment.html#DOCF84">(84)</a></h3>
+<p>See <a href="Font-Description-File-Format.html">Font Description File Format</a>.  This request is incorrectly documented in the <acronym>AT&amp;T</acronym>
+<code>troff</code> manual as using units of 1/36 em.</p>
+<h5><a id="FOOT85" href="Manipulating-Hyphenation.html#DOCF85">(85)</a></h3>
+<p>Whether a perfect algorithm for this application is
+even possible is an unsolved problem in computer science:
+<a href="https://tug.org/docs/liang/liang-thesis.pdf">https://tug.org/docs/liang/liang-thesis.pdf</a>.</p>
+<h5><a id="FOOT86" href="Manipulating-Hyphenation.html#DOCF86">(86)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>missing</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT87" href="Manipulating-Hyphenation.html#DOCF87">(87)</a></h3>
+<p><code>\%</code> itself stops marking
+hyphenation points but still produces no output glyph.</p>
+<h5><a id="FOOT88" href="Manipulating-Hyphenation.html#DOCF88">(88)</a></h3>
+<p>&ldquo;Soft&rdquo; because it appears in output
+only where a hyphenation break is performed; a &ldquo;hard&rdquo; hyphen, as in
+&ldquo;long-term&rdquo;, always appears.</p>
+<h5><a id="FOOT89" href="Manipulating-Hyphenation.html#DOCF89">(89)</a></h3>
+<p>The mode is a vector
+of Boolean values encoded as an integer.
+To a programmer,
+this fact is easily deduced
+from the exclusive use of powers of two
+for the configuration parameters;
+they are computationally easy to &ldquo;mask off&rdquo;
+and compare to zero.
+To almost everyone else,
+the arrangement seems recondite and unfriendly.</p>
+<h5><a id="FOOT90" href="Manipulating-Hyphenation.html#DOCF90">(90)</a></h3>
+<p>The formatter prevents hyphenation
+if the next page location trap
+is closer to the vertical drawing position
+than the next text baseline would be.
+See <a href="Page-Location-Traps.html">Page Location Traps</a>.
+A macro package might also employ value &lsquo;<samp>2</samp>&rsquo;
+to prevent hyphenation before a display;
+recall <a href="Displays-and-Keeps.html">Displays and Keeps</a>.</p>
+<h5><a id="FOOT91" href="Manipulating-Hyphenation.html#DOCF91">(91)</a></h3>
+<p>See
+subsection &ldquo;Localization packages&rdquo; of
+<cite>groff_tmac<span class="roman">(5)</span></cite>.</p>
+<h5><a id="FOOT92" href="Manipulating-Hyphenation.html#DOCF92">(92)</a></h3>
+<p>See <a href="Environments.html">Environments</a>.</p>
+<h5><a id="FOOT93" href="Manipulating-Hyphenation.html#DOCF93">(93)</a></h3>
+<p>For more detail on localization,
+see <cite>groff_tmac<span class="roman">(5)</span></cite>.</p>
+<h5><a id="FOOT94" href="Manipulating-Hyphenation.html#DOCF94">(94)</a></h3>
+<p>See the discussion of the
+<code>ds</code>
+request in <a href="Strings.html">Strings</a>.</p>
+<h5><a id="FOOT95" href="Manipulating-Hyphenation.html#DOCF95">(95)</a></h3>
+<p>GNU
+<code>troff</code> also emits a warning in category
+&lsquo;<samp>range</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT96" href="Manipulating-Hyphenation.html#DOCF96">(96)</a></h3>
+<p>GNU
+<code>troff</code> also emits a warning in category
+&lsquo;<samp>range</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT97" href="Manipulating-Spacing.html#DOCF97">(97)</a></h3>
+<p>See <a href="Page-Location-Traps.html">Page Location Traps</a>.</p>
+<h5><a id="FOOT98" href="Manipulating-Spacing.html#DOCF98">(98)</a></h3>
+<p>To shift the text baseline for
+<em>part</em> of an output line&mdash;to set super- or subscripts, for
+instance&ndash;use the <code>\v</code> escape sequence.  See <a href="Page-Motions.html">Page Motions</a>.</p>
+<h5><a id="FOOT99" href="Manipulating-Spacing.html#DOCF99">(99)</a></h3>
+<p>See <a href="Drawing-Geometric-Objects.html">Drawing Geometric Objects</a>.</p>
+<h5><a id="FOOT100" href="Manipulating-Spacing.html#DOCF100">(100)</a></h3>
+<p>or geometric objects; see <a href="Drawing-Geometric-Objects.html">Drawing Geometric Objects</a></p>
+<h5><a id="FOOT101" href="Manipulating-Spacing.html#DOCF101">(101)</a></h3>
+<p>to the top-level diversion;
+see <a href="Diversions.html">Diversions</a></p>
+<h5><a id="FOOT102" href="Tabs-and-Fields.html#DOCF102">(102)</a></h3>
+<p>Plan&nbsp;9 <code>troff</code>
+uses the register <code>.S</code> for this purpose.</p>
+<h5><a id="FOOT103" href="Leaders.html#DOCF103">(103)</a></h3>
+<p>Pronounce &ldquo;leader&rdquo; to rhyme with &ldquo;feeder&rdquo;; it
+refers to how the glyphs &ldquo;lead&rdquo; the eye across the page to the
+corresponding page number or other datum.</p>
+<h5><a id="FOOT104" href="troff-and-nroff-Modes.html#DOCF104">(104)</a></h3>
+<p>A
+GNU
+<code>nroff</code> program is available for convenience;
+it runs
+GNU
+<code>troff</code>
+to perform formatting;
+see
+<cite>nroff<span class="roman">(1)</span></cite>.</p>
+<h5><a id="FOOT105" href="troff-and-nroff-Modes.html#DOCF105">(105)</a></h3>
+<p>See <a href="Conditionals-and-Loops.html">Conditionals and Loops</a>, for more on
+built-in conditions.</p>
+<h5><a id="FOOT106" href="Line-Continuation.html#DOCF106">(106)</a></h3>
+<p>See <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT107" href="Line-Continuation.html#DOCF107">(107)</a></h3>
+<p>Historically, the <code>\c</code> escape
+sequence has proven challenging to characterize.  Some sources say it
+&ldquo;connects the next input text&rdquo; (to the input line on which it
+appears); others describe it as &ldquo;interrupting&rdquo; text, on the grounds
+that a text line is interrupted without breaking, perhaps to inject a
+request invocation or macro call.</p>
+<h5><a id="FOOT108" href="Page-Control.html#DOCF108">(108)</a></h3>
+<p>See <a href="Diversions.html">Diversions</a>.</p>
+<h5><a id="FOOT109" href="Using-Fonts.html#DOCF109">(109)</a></h3>
+<p>Terminals and some typesetters have fonts that render at
+only one or two sizes.  As examples, take the <code>groff</code> <code>lj4</code>
+device&rsquo;s Lineprinter, and <code>lbp</code>&rsquo;s Courier and Elite faces.</p>
+<h5><a id="FOOT110" href="Using-Fonts.html#DOCF110">(110)</a></h3>
+<p>Font designers prepare
+families such that the styles share esthetic properties.</p>
+<h5><a id="FOOT111" href="Using-Fonts.html#DOCF111">(111)</a></h3>
+<p>Historically, the fonts <code>troff</code>s dealt with were not
+Free Software or, as with the Graphic Systems C/A/T, did not even exist
+in the digital domain.</p>
+<h5><a id="FOOT112" href="Using-Fonts.html#DOCF112">(112)</a></h3>
+<p>See <a href="Font-Description-File-Format.html">Font Description File Format</a>.</p>
+<h5><a id="FOOT113" href="Selecting-Fonts.html#DOCF113">(113)</a></h3>
+<p>It also
+emits a warning in category &lsquo;<samp>font</samp>&rsquo; or &lsquo;<samp>range</samp>&rsquo;,
+as appropriate.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT114" href="Font-Families.html#DOCF114">(114)</a></h3>
+<p>See <a href="DESC-File-Format.html">DESC File Format</a>.</p>
+<h5><a id="FOOT115" href="Characters-and-Glyphs.html#DOCF115">(115)</a></h3>
+<p>Depending on the breadth
+of the output device&rsquo;s glyph repertoire,
+the characters
+<code>'</code>,
+<code>-</code>,
+<code>^</code>,
+<code>`</code>,
+and
+<code>~</code>
+can be exceptions to this rule.
+<code>&quot;</code>
+and
+<code>\</code>
+are not exceptions,
+but because they are syntactically meaningful to the formatter,
+access to their glyphs
+may require use of special characters
+(or changing or disabling the escape character).
+See <cite>groff_char<span class="roman">(7)</span></cite>.</p>
+<h5><a id="FOOT116" href="Characters-and-Glyphs.html#DOCF116">(116)</a></h3>
+<p>Fonts
+do not necessarily arrange their glyphs
+per a standard character encoding.</p>
+<h5><a id="FOOT117" href="Characters-and-Glyphs.html#DOCF117">(117)</a></h3>
+<p>See <a href="Strings.html">Strings</a>.</p>
+<h5><a id="FOOT118" href="Characters-and-Glyphs.html#DOCF118">(118)</a></h3>
+<p>See <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.</p>
+<h5><a id="FOOT119" href="Characters-and-Glyphs.html#DOCF119">(119)</a></h3>
+<p>Not all versions of the
+<code>man</code>
+program support the
+<samp>-T</samp>
+option;
+use the subsequent example for an alternative.</p>
+<h5><a id="FOOT120" href="Characters-and-Glyphs.html#DOCF120">(120)</a></h3>
+<p>This is &ldquo;Normalization Form D&rdquo;
+as documented in Unicode Standard Annex #15
+(<a href="https://unicode.org/reports/tr15/">https://unicode.org/reports/tr15/</a>).</p>
+<h5><a id="FOOT121" href="Characters-and-Glyphs.html#DOCF121">(121)</a></h3>
+<p>See <a href="Compatibility-Mode.html">Compatibility Mode</a>.</p>
+<h5><a id="FOOT122" href="Characters-and-Glyphs.html#DOCF122">(122)</a></h3>
+<p>See <a href="Character-Classes.html">Character Classes</a>.</p>
+<h5><a id="FOOT123" href="Characters-and-Glyphs.html#DOCF123">(123)</a></h3>
+<p>See <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.</p>
+<h5><a id="FOOT124" href="Characters-and-Glyphs.html#DOCF124">(124)</a></h3>
+<p>Mutually recursive
+character definitions are handled similarly.</p>
+<h5><a id="FOOT125" href="Special-Fonts.html#DOCF125">(125)</a></h3>
+<p>See <a href="Font-Description-File-Format.html">Font Description File Format</a>.</p>
+<h5><a id="FOOT126" href="Artificial-Fonts.html#DOCF126">(126)</a></h3>
+<p>See <a href="Environments.html">Environments</a>.</p>
+<h5><a id="FOOT127" href="Artificial-Fonts.html#DOCF127">(127)</a></h3>
+<p>See <a href="Miscellaneous.html">Miscellaneous</a>.</p>
+<h5><a id="FOOT128" href="Artificial-Fonts.html#DOCF128">(128)</a></h3>
+<p>See <a href="Environments.html">Environments</a>.</p>
+<h5><a id="FOOT129" href="Artificial-Fonts.html#DOCF129">(129)</a></h3>
+<p>See <a href="Miscellaneous.html">Miscellaneous</a>.</p>
+<h5><a id="FOOT130" href="Ligatures-and-Kerning.html#DOCF130">(130)</a></h3>
+<p>A
+monospaced font may possess glyphs for ligatures, but they nevertheless
+seldom see use to set text.</p>
+<h5><a id="FOOT131" href="Dummy-Characters.html#DOCF131">(131)</a></h3>
+<p>Opinions of this escape sequence&rsquo;s best name abound.
+&ldquo;Zero-width space&rdquo; is a popular misnomer: <code>roff</code> formatters do
+not treat it like a space; when filling, they do not break a line where
+<code>\&amp;</code> appears.  Ossanna called it a &ldquo;non-printing, zero-width
+character&rdquo;, but the character causes <em>output</em> even though it does
+not &ldquo;print&rdquo;.  If no output line is pending, the dummy character starts
+one.  Contrast an empty input document with one containing only
+<code>\&amp;</code>.  The former produces no output; the latter, a blank page.</p>
+<h5><a id="FOOT132" href="Manipulating-Type-Size-and-Vertical-Spacing.html#DOCF132">(132)</a></h3>
+<p>In text fonts, parentheses are often the tallest
+glyphs, but a font&rsquo;s glyphs may not match the nominal type size!  In the
+standard PostScript font families, 10-point Times sets better with
+9-point Helvetica and 11-point Courier than if all were used at
+10&nbsp;points.  Recall the <code>fzoom</code> request in <a href="Selecting-Fonts.html">Selecting Fonts</a> for a remedy.</p>
+<h5><a id="FOOT133" href="Manipulating-Type-Size-and-Vertical-Spacing.html#DOCF133">(133)</a></h3>
+<p>Rhyme with &ldquo;sledding&rdquo;; mechanical typography
+used lead metal (Latin <em>plumbum</em>).</p>
+<h5><a id="FOOT134" href="Changing-the-Type-Size.html#DOCF134">(134)</a></h3>
+<p>The claim appears to have been true of Ossanna
+<code>troff</code> for the C/A/T device; Kernighan made device-independent
+<code>troff</code> more flexible.</p>
+<h5><a id="FOOT135" href="Changing-the-Type-Size.html#DOCF135">(135)</a></h3>
+<p>In compatibility mode only, a non-zero
+<var>n</var> must be in the range 4&ndash;39.
+See <a href="Compatibility-Mode.html">Compatibility Mode</a>.</p>
+<h5><a id="FOOT136" href="Using-Fractional-Type-Sizes.html#DOCF136">(136)</a></h3>
+<p>See <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.</p>
+<h5><a id="FOOT137" href="Colors.html#DOCF137">(137)</a></h3>
+<p>These
+are known vulgarly as &ldquo;ANSI&rdquo; colors, after its X3.64 standard, now
+withdrawn.</p>
+<h5><a id="FOOT138" href="Strings.html#DOCF138">(138)</a></h3>
+<p>See <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT139" href="Strings.html#DOCF139">(139)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>mac</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT140" href="Operators-in-Conditionals.html#DOCF140">(140)</a></h3>
+<p>We refer to
+<code>vtroff</code>,
+which converted the C/A/T command stream
+produced by early-vintage <acronym>AT&amp;T</acronym>
+<code>troff</code>
+to input suitable for Versatec and Benson-Varian plotters.</p>
+<h5><a id="FOOT141" href="Operators-in-Conditionals.html#DOCF141">(141)</a></h3>
+<p>Strictly,
+letters not otherwise recognized
+<em>are</em>
+treated as output comparison delimiters.
+A portable document avoids using letters not in the list above;
+for example,
+Plan&nbsp;9
+<code>troff</code> uses
+&lsquo;<samp>h</samp>&rsquo;
+to test a mode it calls
+<code>htmlroff</code>,
+and GNU
+<code>troff</code> may provide additional operators in the future.</p>
+<h5><a id="FOOT142" href="Operators-in-Conditionals.html#DOCF142">(142)</a></h3>
+<p>Because formatting of the comparands takes place
+in a dummy environment,
+vertical motions within them cannot spring traps.
+See <a href="Traps.html">Traps</a>.</p>
+<h5><a id="FOOT143" href="Operators-in-Conditionals.html#DOCF143">(143)</a></h3>
+<p>All
+of this is to say that the lists of nodes created by formatting
+<var>xxx</var> and <var>yyy</var> must be identical.
+See <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.</p>
+<h5><a id="FOOT144" href="Operators-in-Conditionals.html#DOCF144">(144)</a></h3>
+<p>See <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT145" href="Operators-in-Conditionals.html#DOCF145">(145)</a></h3>
+<p>This bizarre behavior maintains compatibility with
+<acronym>AT&amp;T</acronym> <code>troff</code>.</p>
+<h5><a id="FOOT146" href="Conditional-Blocks.html#DOCF146">(146)</a></h3>
+<p>See <a href="while.html">while</a>.</p>
+<h5><a id="FOOT147" href="while.html#DOCF147">(147)</a></h3>
+<p>See <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT148" href="while.html#DOCF148">(148)</a></h3>
+<p>unless you redefine it</p>
+<h5><a id="FOOT149" href="while.html#DOCF149">(149)</a></h3>
+<p>&ldquo;somewhat less&rdquo; because
+things other than macro calls can be on the input stack</p>
+<h5><a id="FOOT150" href="Writing-Macros.html#DOCF150">(150)</a></h3>
+<p>See <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT151" href="Writing-Macros.html#DOCF151">(151)</a></h3>
+<p>While it is possible to define and
+call a macro &lsquo;<samp>.</samp>&rsquo;, you can&rsquo;t use it as an end macro: during a macro
+definition, &lsquo;<samp>..</samp>&rsquo; is never handled as calling &lsquo;<samp>.</samp>&rsquo;, even if
+&lsquo;<samp>.de <var>name</var> .</samp>&rsquo; explicitly precedes it.</p>
+<h5><a id="FOOT152" href="Writing-Macros.html#DOCF152">(152)</a></h3>
+<p>Its structure is
+adapted from, and isomorphic to, part of a solution by Tadziu Hoffman to
+the problem of reflowing text multiple times to find an optimal
+configuration for it.
+<a href="https://lists.gnu.org/archive/html/groff/2008-12/msg00006.html">https://lists.gnu.org/archive/html/groff/2008-12/msg00006.html</a></p>
+<h5><a id="FOOT153" href="Writing-Macros.html#DOCF153">(153)</a></h3>
+<p>as
+<samp>trace.tmac</samp>
+does</p>
+<h5><a id="FOOT154" href="Parameters.html#DOCF154">(154)</a></h3>
+<p>See <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT155" href="Parameters.html#DOCF155">(155)</a></h3>
+<p>If they were not,
+parameter interpolations would be similar to command-line
+parameters&mdash;fixed for the entire duration of a <code>roff</code> program&rsquo;s
+run.  The advantage of interpolating <code>\$</code> escape sequences even in
+copy mode is that they can interpolate different contents from one call
+to the next, like function parameters in a procedural language.  The
+additional escape character is the price of this power.</p>
+<h5><a id="FOOT156" href="Copy-Mode.html#DOCF156">(156)</a></h3>
+<p>Compare this to the
+<code>\def</code> and <code>\edef</code> commands in TeX.</p>
+<h5><a id="FOOT157" href="Copy-Mode.html#DOCF157">(157)</a></h3>
+<p>These are lightly adapted from the <code>groff</code>
+implementation of the <samp>ms</samp> macros.</p>
+<h5><a id="FOOT158" href="Page-Motions.html#DOCF158">(158)</a></h3>
+<p>See <a href="Page-Location-Traps.html">Page Location Traps</a>.</p>
+<h5><a id="FOOT159" href="Page-Motions.html#DOCF159">(159)</a></h3>
+<p>At the
+<code>grops</code> defaults of 10-point type on 12-point vertical spacing, the
+difference between half a vee and half an em can be subtle: large
+spacings like &lsquo;<samp>.vs .5i</samp>&rsquo; make it obvious.</p>
+<h5><a id="FOOT160" href="Output-Line-Annotation.html#DOCF160">(160)</a></h3>
+<p>Historically,
+tools named
+<code>nrchbar</code>
+and
+<code>changebar</code>
+were developed for marking changes with margin characters
+and could be found in archives of the
+<code>comp.sources.unix</code>
+Usenet group.
+Some proprietary Unices also offer(ed) a
+<code>diffmk</code>
+program.</p>
+<h5><a id="FOOT161" href="Drawing-Geometric-Objects.html#DOCF161">(161)</a></h3>
+<p>(<var>hc</var>, <var>vc</var>) is adjusted to the point nearest
+the perpendicular bisector of the arc&rsquo;s chord.</p>
+<h5><a id="FOOT162" href="Vertical-Position-Traps.html#DOCF162">(162)</a></h3>
+<p>See <a href="The-Implicit-Page-Trap.html">The Implicit Page Trap</a>.</p>
+<h5><a id="FOOT163" href="Page-Location-Traps.html#DOCF163">(163)</a></h3>
+<p>A trap
+planted at
+&lsquo;<samp>20i</samp>&rsquo;
+or
+&lsquo;<samp>-30i</samp>&rsquo;
+cannot spring on a page of length
+&lsquo;<samp>11i</samp>&rsquo;.</p>
+<h5><a id="FOOT164" href="Page-Location-Traps.html#DOCF164">(164)</a></h3>
+<p>It may help to think of each trap location as
+maintaining a queue; <code>wh</code> operates on the head of the queue, and
+<code>ch</code> operates on its tail.  Only the trap at the head of the queue
+is visible.</p>
+<h5><a id="FOOT165" href="The-Implicit-Page-Trap.html#DOCF165">(165)</a></h3>
+<p>See <a href="Debugging.html">Debugging</a>.</p>
+<h5><a id="FOOT166" href="The-Implicit-Page-Trap.html#DOCF166">(166)</a></h3>
+<p>See <a href="Diversions.html">Diversions</a>.</p>
+<h5><a id="FOOT167" href="End_002dof_002dinput-Traps.html#DOCF167">(167)</a></h3>
+<p>While processing an
+end-of-input macro, the formatter assumes that the next page break must
+be the last; it goes into &ldquo;sudden death overtime&rdquo;.</p>
+<h5><a id="FOOT168" href="Diversions.html#DOCF168">(168)</a></h3>
+<p>See <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.</p>
+<h5><a id="FOOT169" href="Diversions.html#DOCF169">(169)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>mac</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT170" href="Diversions.html#DOCF170">(170)</a></h3>
+<p>See <a href="Environments.html">Environments</a>.</p>
+<h5><a id="FOOT171" href="Diversions.html#DOCF171">(171)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>di</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT172" href="Diversions.html#DOCF172">(172)</a></h3>
+<p>Thus, the &ldquo;water&rdquo;
+gets &ldquo;higher&rdquo; proceeding <em>down</em> the page.</p>
+<h5><a id="FOOT173" href="Punning-Names.html#DOCF173">(173)</a></h3>
+<p>We must
+double the backslash.
+Recall <a href="Copy-Mode.html">Copy Mode</a>.</p>
+<h5><a id="FOOT174" href="Environments.html#DOCF174">(174)</a></h3>
+<p>See <a href="Debugging.html">Debugging</a>.</p>
+<h5><a id="FOOT175" href="Host-System-Service-Access.html#DOCF175">(175)</a></h3>
+<p>GNU
+<code>troff</code> emits a warning in category
+&lsquo;<samp>file</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT176" href="Host-System-Service-Access.html#DOCF176">(176)</a></h3>
+<p>See <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.</p>
+<h5><a id="FOOT177" href="Host-System-Service-Access.html#DOCF177">(177)</a></h3>
+<p><acronym>POSIX</acronym>
+command environments
+and <code>roff</code> formatters employ different integer-to-Boolean
+interpretation conventions;
+a <acronym>POSIX</acronym> command exits with a zero status if it succeeds
+and a positive one if it fails,
+whereas a <code>roff</code> register
+tests &ldquo;true&rdquo; if it has a positive value.</p>
+<h5><a id="FOOT178" href="Host-System-Service-Access.html#DOCF178">(178)</a></h3>
+<p>See <a href="Debugging.html">Debugging</a>.</p>
+<h5><a id="FOOT179" href="Postprocessor-Access.html#DOCF179">(179)</a></h3>
+<p>See <a href="GNU-troff-Output.html">GNU <code>troff</code> Output</a>.</p>
+<h5><a id="FOOT180" href="Postprocessor-Access.html#DOCF180">(180)</a></h3>
+<p>See <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.</p>
+<h5><a id="FOOT181" href="Postprocessor-Access.html#DOCF181">(181)</a></h3>
+<p>When encountered,
+these produce warnings in category
+&lsquo;<samp>char</samp>&rsquo;.
+See <a href="Warnings.html">Warnings</a>.</p>
+<h5><a id="FOOT182" href="Postprocessor-Access.html#DOCF182">(182)</a></h3>
+<p>See <a href="Device-Control-Commands.html">Device Control Commands</a>.</p>
+<h5><a id="FOOT183" href="GNU-troff-Internals.html#DOCF183">(183)</a></h3>
+<p>When not in copy mode,
+the formatter does not tokenize the escape sequences
+<code>\f</code>,
+<code>\F</code>,
+<code>\H</code>,
+<code>\m</code>,
+<code>\M</code>,
+<code>\R</code>,
+<code>\s</code>,
+and
+<code>\S</code>,
+but instead updates the environment.</p>
+<h5><a id="FOOT184" href="GNU-troff-Internals.html#DOCF184">(184)</a></h3>
+<p>GNU
+<code>troff</code>
+encodes tokens that aren&rsquo;t Unicode Basic Latin characters
+as code points in the C0 and C1 control ranges;
+we plan to move them to the Unicode Private Use Area (PUA)
+or to code points outside the Unicode encoding space
+in a future release.</p>
+<h5><a id="FOOT185" href="GNU-troff-Internals.html#DOCF185">(185)</a></h3>
+<p>Because
+GNU
+<code>troff</code>&rsquo;s internals are subject to revision,
+we do not show the output of these examples.
+The names and structures of node types may change over time.
+The <acronym>JSON</acronym> interpreter
+<cite>jq<span class="roman">(1)</span></cite>
+is not essential,
+but can be helpful in understanding the topology of the node trees
+populating output lines and diversions in particular.</p>
+<h5><a id="FOOT186" href="GNU-troff-Internals.html#DOCF186">(186)</a></h3>
+<p>You may
+wonder why a glyph node for
+&lsquo;<samp>hy</samp>&rsquo;
+exists when this example
+doesn&rsquo;t produce one on the output.
+That&rsquo;s because the break is <em>discretionary</em>;
+at the time a word is formatted into nodes,
+GNU
+<code>troff</code> doesn&rsquo;t know where the output line will break.
+Later,
+when processesing a pending output line,
+GNU
+<code>troff</code> has that knowledge,
+and iterates through the output line&rsquo;s node list,
+using its discretion to discard these hyphen glyph nodes
+everywhere except when hyphenating a word at the end of the line.</p>
+<h5><a id="FOOT187" href="Compatibility-Mode.html#DOCF187">(187)</a></h3>
+<p>The
+Graphic Systems C/A/T phototypesetter
+(the original device target for
+<acronym>AT&amp;T</acronym>
+<code>troff</code>)
+supported only a few discrete type sizes
+in the range 6&ndash;36 points,
+so Ossanna contrived a special case in the parser
+to do what the user must have meant.
+Kernighan warned of this in the 1992 revision
+of CSTR&nbsp;#54 (§2.3),
+and more recently,
+McIlroy referred to it as a &ldquo;living fossil&rdquo;.</p>
+<h5><a id="FOOT188" href="Compatibility-Mode.html#DOCF188">(188)</a></h3>
+<p>Recall
+<a href="Strings.html">Strings</a>.</p>
+<h5><a id="FOOT189" href="Other-Differences.html#DOCF189">(189)</a></h3>
+<p>Thus,
+</p><div class="example">
+<pre class="example">.ll 10n
+\%antidisestablishmen\%tarianism
+.br
+\&amp;\%antidisestablishmen\%tarianism
+.pl \n(nlu
+</pre></div>
+<p>produces different results with each of the three formatters.</p>
+<h5><a id="FOOT190" href="Other-Differences.html#DOCF190">(190)</a></h3>
+<p>Naturally, if you&rsquo;ve changed
+the escape character, you need to prefix the <code>e</code> with whatever it
+is&mdash;and you&rsquo;ll likely get something other than a backslash in the
+output.</p>
+<h5><a id="FOOT191" href="Other-Differences.html#DOCF191">(191)</a></h3>
+<p><acronym>AT&amp;T</acronym>
+<code>troff</code>&rsquo;s font description files
+did not define the
+<code>rs</code>
+special character,
+but those of
+its descendant Heirloom Doctools
+<code>troff</code> do,
+as of its 060716 release (July 2006).</p>
+<h5><a id="FOOT192" href="Other-Differences.html#DOCF192">(192)</a></h3>
+<p>In
+GNU
+<code>troff</code>, node objects produce these commands;
+recall <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.</p>
+<h5><a id="FOOT193" href="File-Formats.html#DOCF193">(193)</a></h3>
+<p>GNU
+<code>troff</code> also reads files that don&rsquo;t satisfy
+the strict <acronym>POSIX</acronym> definition of a text file&mdash;for example,
+those lacking a final newline character&mdash;and the
+<code>cf</code>
+and
+<code>trf</code> requests read arbitrary files.
+Recall <a href="Host-System-Service-Access.html">Host System Service Access</a>.</p>
+<h5><a id="FOOT194" href="Device-and-Font-Description-Files.html#DOCF194">(194)</a></h3>
+<p>Plan&nbsp;9 <code>troff</code> has also abandoned the binary
+format.</p>
+<h5><a id="FOOT195" href="Font-Description-File-Format.html#DOCF195">(195)</a></h3>
+<p><code>groff</code> requests and escape sequences
+interpret non-negative integers as mounting positions instead.  Further,
+a font named &lsquo;<samp>0</samp>&rsquo; cannot be automatically mounted by the
+<code>fonts</code> directive of a <samp>DESC</samp> file.</p>
+<h5><a id="FOOT196" href="Font-Description-File-Format.html#DOCF196">(196)</a></h3>
+<p>On typesetters, this directive is misnamed since it
+starts a list of glyphs, not characters.</p>
+<h5><a id="FOOT197" href="Font-Description-File-Format.html#DOCF197">(197)</a></h3>
+<p>that is,
+any integer parsable
+by the C standard library&rsquo;s
+<cite>strtol<span class="roman">(3)</span></cite>
+function</p>
+<h5><a id="FOOT198" href="GNU-troff-Output.html#DOCF198">(198)</a></h3>
+<p>The parser
+for device-independent output can be found in the file
+<samp><var>groff-source-dir</var>/src/libs/libdriver/input.cpp</samp>.</p>
+<h5><a id="FOOT199" href="GNU-troff-Output.html#DOCF199">(199)</a></h3>
+<p>See &ldquo;A
+Typesetter-independent TROFF&rdquo;, Bell Labs CSTR&nbsp;#97, 1982.</p>
+<hr>
+<div class="header">
+<p>
+ &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

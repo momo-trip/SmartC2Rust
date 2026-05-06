@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Greenland
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Ukioq nutaaq%" %! %b.
+OMIT [easterdate($Uy)-3] MSG %"Sisamanngornermi illernartumi%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Tallimanngorneq ajortorsiorneq%" %! %b.
+OMIT [easterdate($Uy)] MSG %"Poorskimi%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Poorskimi ullut aappaat%" %! %b.
+OMIT [easterdate($Uy)+26] MSG %"Ulloq qinuffiusoq%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"Ulloq Kristusip qilaliarnera%" %! %b.
+OMIT [easterdate($Uy)+49] MSG %"Piinsip ullua%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Piinsip ulluisa aappaanni%" %! %b.
+OMIT 25 December MSG %"Juulli%" %! %b.
+OMIT 26 December MSG %"Juullip aappaa%" %! %b.
+
+# Optional holidays
+REM 6 January MSG %"Mitaarneq%" %! %b.
+REM 1 May MSG %"Sulisartut ulluat%" %! %b.
+REM 21 June MSG %"Ullortuneq%" %! %b.
+REM 24 December MSG %"Juulliaqqami%" %! %b.
+REM 31 December MSG %"Ukiortaami%" %! %b.

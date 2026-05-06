@@ -1,0 +1,185 @@
+    Copyright 2000-2020 Free Software Foundation, Inc.
+
+    Copying and distribution of this file, with or without modification,
+    are permitted in any medium without royalty provided the copyright
+    notice and this notice are preserved.
+
+Ports of groff to non-POSIX environments
+========================================
+
+Microsoft Windows
+-----------------
+
+Cygwin makes a groff package available.
+
+  https://cygwin.com/
+
+Look for a convenient mirror site at the followung URL.
+
+  https://cygwin.com/mirrors.html
+
+Cygwin maintains a port status page.
+
+  https://cygwin.com/packages/summary/groff.html
+
+Cygwin, like most GNU/Linux distributions, separates groff build
+artifacts into multiple components, largely for dependency management.
+You may find the source package page of interest.
+
+  https://cygwin.com/packages/summary/groff-src.html
+
+The port is maintained in a Git repository.
+
+  https://cygwin.com/git-cygwin-packages/?p=git/cygwin-packages/groff.git
+
+
+grap
+----
+
+Ted Faber has written an implementation of Kernighan & Bentley's grap
+language for typesetting graphs.
+
+  http://www.lunabase.org/~faber/Vault/software/grap/
+
+
+unroff
+------
+
+Per its README file,
+
+  Unroff is a Scheme-based, programmable, extensible troff translator
+  with a back-end for the Hypertext Markup Language.  Unroff is free
+  software and is distributed both as source and as precompiled
+  binaries.
+
+    https://www-rn.informatik.uni-bremen.de/software/unroff/
+
+
+Haart deroff
+------------
+
+Per its ReadMe.txt file,
+
+  Deroff removes roff constructs from documents for the purpose of
+  indexing, spell checking etc. My own implementation is a little
+  smarter than traditional implementations, because it knows about
+  certain -man and -mm macros. It is able to generate a word list for
+  spell checking tools or omit headers for sentence analysis tools.
+
+    https://caio.ueberalles.net/deroff/
+
+
+doclifter
+---------
+
+Per its web page,
+
+  [doclifter lifts] documents in nroff markups to XML-DocBook.
+
+  Lifting documents from presentation level to semantic level is hard,
+  and a really good job requires human polishing. This tool aims to do
+  everything that can be mechanized, and to preserve any troff-level
+  information that might have structural implications in XML comments.
+  This tool does the hard parts. TBL tables are translated into DocBook
+  table markup, PIC into SVG, and EQN into MathML (relying on pic2svg
+  and GNU eqn for the last two).
+
+    http://catb.org/~esr/doclifter
+
+
+pic2plot
+--------
+
+pic2plot, part of the GNU plotutils package, can lift pic markup to SVG.
+The plotutils package is available at
+
+  http://www.gnu.org/software/plotutils/
+
+
+Miscellaneous
+-------------
+
+* Ralph Corderoy's excellent page on troff:
+
+    www.troff.org
+
+  There are links for virtually everything related to troff.
+
+* Dr. Robert Hermann's groff gems are available from
+
+    http://www.eas.slu.edu/People/RBHerrmann/GROFF/index.html
+
+  At present there are examples for
+
+  o creating business cards
+  o using groff to make large format posters for presentations
+
+* Robert Marks's collection of useful macros and scripts is available
+  from
+
+    http://www.agsm.edu.au/~bobm/odds+ends/scripts.html
+
+  Description:
+
+  - "polish": Is a sed (= the Unix stream editor) script that does many
+    things to ASCII text.  Amongst other things, it breaks lines at new
+    sentences, reduces upper-case acronyms by one point size, adds
+    diacriticals, changes simple quotes into smart quotes, and makes a
+    few simple grammar checks.  The best way to see what it does is to
+    run it as a sed script file (or files) on a text file and then
+    compare the output file with the original.
+
+  - "DropCaps" is a troff script which replaces the initial letters of
+    paragraphs immediately after H1 and H2 headings with drop-capitals
+    of specified point size, and automatically flows the text around the
+    new drop cap.
+
+  - "AJM Header" is a set of troff macros used in production of the
+    Australian Journal of Management.  They use the Memorandum Macros
+    (mm) of AT&T, and so should be invoked with the Unix troff -mm flag;
+    they should also work with the GNU troff -mm flag.
+
+* Thomas Baruchel <baruchel@libertysurf.fr> has developed Meta-tbl, a
+  tbl postprocessor to manipulate table cells (like adding gray shades).
+  The latest version can be found at
+
+    http://perso.libertysurf.fr/baruchel/
+
+* gpresent, written by Bob Diertens <B.Diertens@Uva.nl>.  From its
+  README file:
+
+    gpresent is a package for making presentations with groff and
+    [a PDF viewer].  It consist[s] of a set of macros to be used with
+    groff and a post-processor for manipulating the PostScript output of
+    groff.  Without the use of the PAUSE macro, it can also be used for
+    making slides.
+
+  It is available from
+
+    https://bob.diertens.org/corner/useful/gpresent/
+
+* groff-pdfmark, written by Keith Marshall.
+
+  Its home page describes it as providing "a suite of GNU roff macro
+  packages, together with a Bourne shell driver script, designed to
+  facilitate the creation of PDF files, using GNU roff as the primary
+  typesetting engine."
+
+  It is available from
+
+    <https://savannah.nongnu.org/projects/groff-pdfmark>.
+
+Documentation
+-------------
+
+Documentation of the AT&T implementations of the troff, tbl, pic, eqn,
+and refer programs can be found at the following site.
+
+  https://www.troff.org/papers.html
+
+##### Editor settings
+Local Variables:
+fill-column: 72
+mode: text
+End:
+vim: set textwidth=72:

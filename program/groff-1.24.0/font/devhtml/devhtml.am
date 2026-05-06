@@ -1,0 +1,81 @@
+# Copyright (C) 2014-2024 Free Software Foundation, Inc.
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+devhtml_srcdir = $(top_srcdir)/font/devhtml
+DEVHTMLFONTS = R I B BI CR CI CB CBI S CSH CSS CTH CTS JPG JPM KOG KOM
+DEVHTMLFONTSFILES = \
+  font/devhtml/R \
+  font/devhtml/I \
+  font/devhtml/B \
+  font/devhtml/BI \
+  font/devhtml/CR \
+  font/devhtml/CI \
+  font/devhtml/CB \
+  font/devhtml/CBI \
+  font/devhtml/S
+
+DEVHTMLFONTSFILES_CJK = \
+  font/devhtml/CSH \
+  font/devhtml/CSS \
+  font/devhtml/CTH \
+  font/devhtml/CTS \
+  font/devhtml/JPG \
+  font/devhtml/JPM \
+  font/devhtml/KOG \
+  font/devhtml/KOM
+
+DEVHTMLRES = 240
+DEVHTMLCPI = 10
+DEVHTMLLPI = 6
+
+devhtmlfontdir = $(fontdir)/devhtml
+devhtmlfont_DATA = $(DEVHTMLFONTSFILES) $(DEVHTMLFONTSFILES_CJK) \
+  font/devhtml/DESC
+MOSTLYCLEANFILES += $(DEVHTMLFONTSFILES) font/devhtml/DESC
+EXTRA_DIST += \
+  font/devhtml/R.proto \
+  font/devhtml/DESC.proto \
+  font/devhtml/R.in \
+  $(DEVHTMLFONTSFILES_CJK)
+
+$(DEVHTMLFONTSFILES): $(devhtml_srcdir)/R.proto
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& $(RM) $@ \
+	&& $(SHELL) $(GENFONTSSH) $(devhtml_srcdir)/R.proto \
+	  $(DEVHTMLRES) $(DEVHTMLCPI) `basename $@` >$@
+
+font/devhtml/DESC: $(devhtml_srcdir)/DESC.proto
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& $(SHELL) $(GENDESCSH) $(devhtml_srcdir)/DESC.proto \
+	  $(DEVHTMLRES) $(DEVHTMLCPI) $(DEVHTMLLPI) $(DEVHTMLFONTS) \
+	  > $@.tmp \
+	&& echo "image_generator $(GHOSTSCRIPT)" >>$@.tmp \
+	&& mv $@.tmp $@
+
+# HTML documents to be produced by troff should depend on this stamp
+# file to ensure that (post-)grohtml's device and font description files
+# are available.
+MOSTLYCLEANFILES += font/devhtml/stamp
+font/devhtml/stamp: font/devhtml/DESC $(DEVHTMLFONTSFILES)
+	$(AM_V_at)>$@
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

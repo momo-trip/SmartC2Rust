@@ -1,0 +1,32 @@
+morphine.chem:
+.cstart
+
+# Example file for chem:
+#   Morphine or C_17H_19NO_3 (CAS-RN: 57-27-2)
+#
+# Found at https://en.wikipedia.org/wiki/Morphine
+#
+# Prepared by Bernd Warken <groff-bernd.warken-72@web.de>,
+# reorganized by Norwid Behrnd <nbehrnd@yahoo.com>.
+
+R1:	ring6 double 1,2 3,4 5,6
+R2:	ring6 with .V1 at R1.V3
+R3:	ring6 with .V1 at R2.V5 double 3,4
+
+	bond -150 length 0.28 from R1.V5 ; O
+	backbond -30 length 0.28 from R3.V6
+
+	frontbond 120 from R2.V3 ; N
+	Me right of N
+BP:	bond up from N
+	frontbond 50 from R2.V5
+	bond right to BP.end
+
+	bond -60 from R1.V6 ; HO
+	frontbond 120 from R2.V4 ; H
+	backbond -120 from R3.V5 ; HO
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

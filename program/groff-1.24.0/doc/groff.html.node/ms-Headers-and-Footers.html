@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ms Headers and Footers (The GNU troff Manual)</title>
+
+<meta name="description" content="ms Headers and Footers (The GNU troff Manual)">
+<meta name="keywords" content="ms Headers and Footers (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms-Page-Layout.html" rel="up" title="ms Page Layout">
+<link href="Tab-Stops-in-ms.html" rel="next" title="Tab Stops in ms">
+<link href="ms-Page-Layout.html" rel="prev" title="ms Page Layout">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="ms-Headers-and-Footers"></span><div class="header">
+<p>
+Next: <a href="Tab-Stops-in-ms.html" accesskey="n" rel="next">Tab Stops in ms</a>, Up: <a href="ms-Page-Layout.html" accesskey="u" rel="up">ms Page Layout</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Headers-and-footers"></span><h4 class="subsubsection">4.6.6.1 Headers and footers</h4>
+<span id="index-ms-macros_002c-headers"></span>
+<span id="index-ms-macros_002c-footers"></span>
+<span id="index-headers-_005bms_005d"></span>
+<span id="index-footers-_005bms_005d"></span>
+
+<p>There are multiple ways to produce headers and footers.  One is to
+define the strings <code>LH</code>, <code>CH</code>, and <code>RH</code> to set the left,
+center, and right headers, respectively; and <code>LF</code>, <code>CF</code>, and
+<code>RF</code> to set the left, center, and right footers.  This approach
+suffices for documents that do not distinguish odd- and even-numbered
+pages.
+</p>
+<p>Another method is to call macros that set headers or footers for odd- or
+even-numbered pages.  Each such macro takes a delimited argument
+separating the left, center, and right header or footer texts from each
+other.  You can replace the neutral apostrophes (<code>'</code>) shown below
+with any character not appearing in the header or footer text.  These
+macros are Berkeley extensions.
+</p>
+<dl>
+<dt id="index-_002eOH">Macro: <strong><tt>.OH</tt></strong> <em><code>'</code><span class="roman"><i>left</i></span><code>'</code><span class="roman"><i>center</i></span><code>'</code><span class="roman"><i>right</i></span><code>'</code></em></dt>
+<dd><span id="index-OH-_005bms_005d"></span>
+</dd><dt id="index-_002eEH">Macro: <strong><tt>.EH</tt></strong> <em><code>'</code><span class="roman"><i>left</i></span><code>'</code><span class="roman"><i>center</i></span><code>'</code><span class="roman"><i>right</i></span><code>'</code></em></dt>
+<dd><span id="index-EH-_005bms_005d"></span>
+</dd><dt id="index-_002eOF">Macro: <strong><tt>.OF</tt></strong> <em><code>'</code><span class="roman"><i>left</i></span><code>'</code><span class="roman"><i>center</i></span><code>'</code><span class="roman"><i>right</i></span><code>'</code></em></dt>
+<dd><span id="index-OF-_005bms_005d"></span>
+</dd><dt id="index-_002eEF">Macro: <strong><tt>.EF</tt></strong> <em><code>'</code><span class="roman"><i>left</i></span><code>'</code><span class="roman"><i>center</i></span><code>'</code><span class="roman"><i>right</i></span><code>'</code></em></dt>
+<dd><span id="index-EF-_005bms_005d"></span>
+<p>The <code>OH</code> and <code>EH</code> macros define headers for odd- (recto)
+and even-numbered (verso) pages, respectively; the <code>OF</code> and
+<code>EF</code> macros define footers for them.
+</p></dd></dl>
+
+<p>With either method, a percent sign <code>%</code> in header or footer text is
+replaced by the current page number.  By default, <samp>ms</samp> places no
+header on a page numbered &ldquo;1&rdquo; (regardless of its number format).
+</p>
+<dl>
+<dt id="index-_002eP1">Macro: <strong><tt>.P1</tt></strong></dt>
+<dd><span id="index-P1-_005bms_005d"></span>
+<p>Typeset the header even on page&nbsp;1.  To be effective, this macro
+must be called before the header trap is sprung on any page numbered
+&ldquo;1&rdquo;; in practice, unless your page numbering is unusual, this means
+that you should call it early, before <code>TL</code> or any heading or
+paragraphing macro.  This is a Berkeley extension.
+</p></dd></dl>
+
+<p>For even greater flexibility,
+<samp>ms</samp>
+is designed to permit the redefinition of the macros that are called
+when formatter traps
+that ordinarily cause the headers and footers to be output are sprung.
+<code>PT</code> (&ldquo;page trap&rdquo;) is called by <samp>ms</samp> when the header is to
+be written, and <code>BT</code> (&ldquo;bottom trap&rdquo;) when the footer is to be.
+The <code>groff</code> page location trap that <samp>ms</samp> sets up to format the
+header also calls the (normally undefined) <code>HD</code> macro after
+<code>PT</code>; you can define <code>HD</code> if you need additional processing
+after setting the header (for example, to draw a line below it).
+The <code>HD</code> hook is a Berkeley extension.  Any such macros you
+(re)define must implement any desired specialization for odd-, even-, or
+first numbered pages.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Tab-Stops-in-ms.html" accesskey="n" rel="next">Tab Stops in ms</a>, Up: <a href="ms-Page-Layout.html" accesskey="u" rel="up">ms Page Layout</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

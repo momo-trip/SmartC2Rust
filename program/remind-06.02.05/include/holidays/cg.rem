@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Congo
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Jour de l'An%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Lundi de Pâques%" %! %b.
+OMIT 1 May MSG %"Fête du Travail%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"Ascension%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Lundi de Pentecôte%" %! %b.
+OMIT 10 June MSG %"Fête de la Réconciliation%" %! %b.
+OMIT 15 August MSG %"Fête Nationale%" %! %b.
+OMIT 1 November MSG %"Toussaint%" %! %b.
+OMIT 28 November MSG %"Jour de la République%" %! %b.
+OMIT 25 December MSG %"Noël%" %! %b.

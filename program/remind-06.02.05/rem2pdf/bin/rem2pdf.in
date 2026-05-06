@@ -1,0 +1,761 @@
+#!@PERL@
+# SPDX-License-Identifier: GPL-2.0-only
+use strict;
+use warnings;
+use lib '@prefix@/lib/perl5';
+
+use Encode;
+use Cairo;
+use Pango;
+use Getopt::Long;
+
+my $VERSION = '@VERSION@';
+
+use Remind::PDF;
+
+my $media_to_size = {
+    "Letter"    => [ 612,  792],
+    "Tabloid"   => [ 792, 1224],
+    "Ledger"    => [1224,  792],
+    "Legal"     => [ 612, 1008],
+    "Statement" => [ 396,  612],
+    "Executive" => [ 540,  720],
+    "A3"        => [ 842, 1190],
+    "A4"        => [ 595,  842],
+    "A5"        => [ 420,  595],
+    "B4"        => [ 729, 1032],
+    "B5"        => [ 519,  729],
+    "Folio"     => [ 612,  936],
+    "Quarto"    => [ 612,  780],
+    "10x14"     => [ 720, 1008],
+};
+
+my $help = 0;
+my $version = 0;
+
+my $settings = {
+        landscape => 0,
+        numbers_on_left => 0,
+        small_calendars => 0,
+        fill_entire_page => 0,
+        wrap_calendar => 0,
+        media => 'Letter',
+        width => 0,
+        height => 0,
+        avoid_overfull_boxes => 0,
+        title_font => 'Sans',
+        header_font => 'Sans',
+        daynum_font => 'Sans Bold Oblique',
+        entry_font => 'Sans',
+        small_cal_font => 'Sans',
+
+        title_url => '',
+        title_size => 14,
+        header_size => 12,
+        daynum_size => -1,
+        entry_size => 8,
+
+        border_size => 4,
+        entry_spacing => -1,
+        line_thickness => 1,
+
+        margin_top => 36,
+        margin_bottom => 36,
+        margin_left => 36,
+        margin_right => 36,
+        svg => 0,
+        ps => 0,
+        eps => 0,
+        verbose => 0,
+
+        line_color => '000000',
+        title_color => '000000',
+        header_color => '000000',
+        daynum_color => '000000',
+        smallcal_color => '000000',
+        bg_color => '',
+        weeks_per_page => 1,
+};
+
+my $me = $0;
+$me =~ s/^.*\///;
+
+set_default_media();
+
+sub usage
+{
+        print <<"EOF";
+$me (version $VERSION): Convert Remind -pp output to a PDF calendar.
+
+Usage: remind -pp [options] filename | $me [options] > out.pdf
+
+Options:
+
+--landscape, -l         Print in landscape orientation
+--small-calendars=N     Location for small calendars (monthly calendars only)
+--svg                   Output SVG instead of PDF
+--ps                    Output PostScript instead of PDF
+--eps                   Output encapsulated PostScript instead of PDF
+-cN                     Synonym for --small-calendars=N
+--avoid-overfull        Shrink font size to avoid over-full boxes.  Implies -e
+--left-numbers, -x      Print day numbers on the left (monthly calendars only)
+--fill-page, -e         Fill the entire page (monthly calendars only)
+--media=MEDIA, -mMEDIA  Size for specified media
+--width=W, -wW          Specify media width in 1/72nds of an inch
+--height=H, -hH         Specify media height in 1/72nds of an inch
+--wrap, -y              Make calendar fit in 5 rows (monthly calendars only)
+--weeks-per-page=N, -pN Number of weeks per page (weekly calendars only)
+--title-font=FONT       Specify font for calendar title
+--header-font=FONT      Specify font for weekday names
+--daynum-font=FONT      Specify font for day numbers
+--entry-font=FONT       Specify font for calendar entries
+--small-cal-font=FONT   Specify font for small calendars
+--title-size=S          Specify size of font for calendar title in points
+--header-size=S         Specify size of font for weekday names
+--daynum-size=S         Specify size of font for day numbers
+--entry-size=S          Specify size of font for calendar entries
+--entry-spacing=S       Specify extra spacing between calendar entries
+--border-size=S         Specify size of gaps between items in 1/72nds of an inch
+--line-thickness=S      Specify line thickness in 1/72nds of an inch
+--margin-top=S          Specify top margin size in 1/72nds of an inch
+--margin-bottom=S       Specify bottom margin size in 1/72nds of an inch
+--margin-left=S         Specify left margin size in 1/72nds of an inch
+--margin-right=S        Specify right margin size in 1/72nds of an inch
+--line-color=RRGGBB     Set line color
+--title-color=RRGGBB    Set title color
+--header-color=RRGGBB   Set header color
+--daynum-color=RRGGBB   Set day number color
+--smallcal-color=RRGGBB Set small calendar color
+--bg-color=RRGGBB       Set background color
+--title-url=URL         Link calendar title to URL
+--verbose, -v           Print progress messages
+--help                  Display this help
+--version               Print version and exit
+EOF
+}
+
+Getopt::Long::Configure('bundling_values');
+
+my $ret = GetOptions('landscape|l' =>        \$settings->{landscape},
+                     'small-calendars|c=i' =>  \$settings->{small_calendars},
+                     'left-numbers|x' =>     \$settings->{numbers_on_left},
+                     'svg'         =>        \$settings->{svg},
+                     'ps'          =>        \$settings->{ps},
+                     'eps'         =>        \$settings->{eps},
+                     'avoid-overfull' =>     \$settings->{avoid_overfull_boxes},
+                     'fill-page|e' =>        \$settings->{fill_entire_page},
+                     'weeks-per-page|p=i' => \$settings->{weeks_per_page},
+                     'media|m=s' =>          \$settings->{media},
+                     'width|w=i' =>          \$settings->{width},
+                     'wrap|y'    =>          \$settings->{wrap_calendar},
+                     'height|h=i' =>         \$settings->{height},
+                     'title-font=s' =>       \$settings->{title_font},
+                     'title-url=s' =>        \$settings->{title_url},
+                     'header-font=s' =>      \$settings->{header_font},
+                     'daynum-font=s' =>      \$settings->{daynum_font},
+                     'entry-font=s' =>       \$settings->{entry_font},
+                     'small-cal-font=s' =>   \$settings->{small_cal_font},
+                     'title-size=f' =>       \$settings->{title_size},
+                     'header-size=f' =>      \$settings->{header_size},
+                     'daynum-size=f' =>      \$settings->{daynum_size},
+                     'entry-size=f' =>       \$settings->{entry_size},
+                     'entry-spacing=f' =>    \$settings->{entry_spacing},
+                     'border-size=f' =>      \$settings->{border_size},
+                     'line-thickness=f' =>   \$settings->{line_thickness},
+                     'margin-top=f' =>       \$settings->{margin_top},
+                     'margin-bottom=f' =>    \$settings->{margin_bottom},
+                     'margin-left=f' =>      \$settings->{margin_left},
+                     'margin-right=f' =>     \$settings->{margin_right},
+                     'verbose|v' =>          \$settings->{verbose},
+                     'line-color=s' =>       \$settings->{line_color},
+                     'bg-color=s' =>         \$settings->{bg_color},
+                     'title-color=s' =>      \$settings->{title_color},
+                     'header-color=s' =>     \$settings->{header_color},
+                     'daynum-color=s' =>     \$settings->{daynum_color},
+                     'smallcal-color=s' =>   \$settings->{smallcal_color},
+                     'version' =>            \$version,
+                     'help' =>               \$help
+    );
+if (!$ret) {
+        usage();
+        exit(1);
+}
+
+if ($help) {
+        usage();
+        exit(0);
+}
+
+if ($version) {
+        print "rem2pdf version $VERSION\n";
+        exit(0);
+}
+
+if ($settings->{entry_spacing} < 0) {
+        $settings->{entry_spacing} = 0.5 * $settings->{border_size};
+}
+
+
+if ($settings->{avoid_overfull_boxes}) {
+        $settings->{fill_entire_page} = 1;
+}
+
+my $bad = 0;
+foreach my $setting (qw(bg_color line_color title_color header_color daynum_color smallcal_color)) {
+        my $c = $settings->{$setting};
+        if ($setting eq 'bg_color' && $c eq '') {
+                $settings->{bg_color} = [-1, -1, -1];
+                next;
+        }
+        my $color = Remind::PDF->get_rgb($c);
+        if (!defined($color)) {
+                my $s = $setting;
+                $s =~ s/_/-/g;
+                print STDERR "Invalid color value `$c' for option --$s\n";
+                $bad = 1;
+        } else {
+                $settings->{$setting} = $color;
+        }
+}
+
+if ($bad) {
+        exit(1);
+}
+
+if ($settings->{weeks_per_page} < 1) {
+        $settings->{weeks_per_page} = 1;}
+elsif ($settings->{weeks_per_page} > 4) {
+        $settings->{weeks_per_page} = 4;
+}
+
+if ($settings->{width} <= 0 ||
+    $settings->{height} <= 0) {
+        my $size = $media_to_size->{ucfirst($settings->{media})};
+        if (!$size) {
+                if (lc($settings->{media}) ne 'help') {
+                        print STDERR "Unknown media " . $settings->{media} . "\n";
+                }
+                set_default_media();
+                printf("%-12s   Size in 1/72 in\n", "Valid media:");
+                foreach my $m (sort { $a cmp $b } (keys(%$media_to_size))) {
+                        if ($m eq $settings->{media}) {
+                                print "* ";
+                        } else {
+                                print "  ";
+                        }
+                        printf("%-12s   %4d x %4d\n", $m,
+                               $media_to_size->{$m}->[0],
+                               $media_to_size->{$m}->[1]);
+                }
+                exit(1);
+        }
+        $settings->{width} = $size->[0];
+        $settings->{height} = $size->[1];
+}
+
+if ($settings->{landscape}) {
+        my $tmp = $settings->{width};
+        $settings->{width} = $settings->{height};
+        $settings->{height} = $tmp;
+}
+
+if ($settings->{svg} && $settings->{ps} ||
+    $settings->{svg} && $settings->{eps} ||
+    $settings->{eps} && $settings->{ps}) {
+        print STDERR "Only one of --eps, --ps or --svg may be used.\n";
+        exit(1);
+}
+
+if ($settings->{eps}) {
+        $settings->{ps} = 1;
+}
+
+# Don't read from a terminal
+if (-t STDIN) { ## no critic
+        print STDERR "I can't read data from a terminal.  Please run like this:\n";
+        print STDERR "  remind -pp [options] filename | $me [options] > out.pdf\n\n";
+        print STDERR "For help, run: $me --help\n";
+        exit(1);
+}
+
+my $done_one = 0;
+
+my $errored_out = 0;
+
+my $surface;
+if ($settings->{svg}) {
+        $surface = Cairo::SvgSurface->create_for_stream(sub { print $_[1] unless $errored_out; }, undef,
+                                                        $settings->{width}, $settings->{height});
+} elsif ($settings->{ps}) {
+        if ($settings->{landscape}) {
+                $surface = Cairo::PsSurface->create_for_stream(sub { print $_[1] unless $errored_out; }, undef,
+                                                               $settings->{height}, $settings->{width});
+        } else {
+                $surface = Cairo::PsSurface->create_for_stream(sub { print $_[1] unless $errored_out; }, undef,
+                                                               $settings->{width}, $settings->{height});
+        }
+        if ($settings->{eps}) {
+                $surface->set_eps(1);
+        }
+} else {
+        $surface = Cairo::PdfSurface->create_for_stream(sub { print $_[1] unless $errored_out; }, undef,
+                                                        $settings->{width}, $settings->{height});
+}
+
+# Save original entry size
+$settings->{original_entry_size} = $settings->{entry_size};
+
+# set_metadata not available in older versions of Cairo
+eval { $surface->set_metadata('title', 'Calendar'); };
+eval { $surface->set_metadata('author', 'Remind (https://dianne.skoll.ca/projects/remind/)'); };
+eval { $surface->set_metadata('creator', 'rem2pdf (https://dianne.skoll.ca/projects/remind/)'); };
+eval { $surface->set_metadata('subject', 'Calendar'); };
+
+if ($settings->{ps}) {
+        $surface->dsc_comment('%%Title: Calendar');
+        $surface->dsc_comment('%%Producer: rem2pdf (https://dianne.skoll.ca/projects/remind/)');
+        $surface->dsc_comment('%%PageOrientation: ' . (($settings->{landscape}) ? 'Landscape' : 'Portrait'));
+        $surface->dsc_begin_setup();
+}
+
+my $cr = Cairo::Context->create($surface);
+$cr->set_line_width($settings->{line_thickness});
+if ($settings->{ps} && $settings->{landscape}) {
+        $cr->translate(0, $settings->{width});
+        $cr->rotate(-1.5707963267949);  # Rotate -90 degrees
+}
+
+my $warned = 0;
+my $index = 0;
+while(1) {
+        if ($settings->{ps}) {
+                $surface->dsc_begin_page_setup();
+                $surface->dsc_comment('%%PageOrientation: ' . (($settings->{landscape}) ? 'Landscape' : 'Portrait'));
+        }
+        my ($obj, $err) = Remind::PDF->create_from_stream(*STDIN,
+                                                          {color => 1,
+                                                           colour => 1,
+                                                           shade => 1,
+                                                           moon => 1,
+                                                           pango => 1,
+                                                           week => 1,});
+
+        if (!$obj) {
+                if (!$done_one) {
+                        $errored_out = 1;
+                        print STDERR "$me: $err\n";
+                        exit(1);
+                }
+                last;
+        }
+        $index++;
+        $obj->render($cr, $settings, $index, -1);
+        $done_one = 1;
+}
+
+$surface->finish();
+
+sub set_default_media
+{
+        my $paper;
+        $paper = $ENV{PAPERSIZE};
+        if ($paper && set_media(ucfirst($paper))) {
+                return 1;
+        }
+        if ($ENV{PAPERCONF}) {
+                if (set_media_from_file($ENV{PAPERCONF})) {
+                        return 1;
+                }
+        }
+        if (set_media_from_file('/etc/papersize')) {
+                return 1;
+        }
+        return set_media('Letter');
+}
+
+sub set_media
+{
+        my ($m) = @_;
+
+        return 0 unless $media_to_size->{$m};
+        $settings->{media} = $m;
+        return 1;
+}
+
+sub set_media_from_file
+{
+        my ($fn) = @_;
+        my $IN;
+        if (!open($IN, '<', $fn)) {
+                return 0;
+        }
+        while(<$IN>) {
+                chomp;
+                s/^\s+//;
+                s/\s+$//;
+                next if ($_ eq '');
+                next if ($_ =~ /^#/);
+                my $m = $_;
+                close($IN);
+                return set_media($m);
+        }
+        close($IN);
+        return 0;
+}
+
+__END__
+
+=head1 NAME
+
+rem2pdf - draw a PDF, SVG or PostScript calendar from Remind output
+
+=head1 SYNOPSIS
+
+    remind -pp [remind_options] file | rem2pdf [options] > output.pdf
+    remind -pp [remind_options] file | rem2pdf --svg [options] > output.svg
+    remind -pp [remind_options] file | rem2pdf --ps [options] > output.ps
+    remind -pp [remind_options] file | rem2pdf --eps [options] > output.eps
+
+=head1 DESCRIPTION
+
+B<rem2pdf> reads the standard input, which should be the results of
+running B<remind> with the B<-p>, B<-pp> or B<-ppp> options.  It emits
+PDF, SVG or PostScript code that draws a calendar to standard output.  (The
+addition of support for SVG and PostScript means that rem2pdf is increasingly
+misnamed...)
+
+B<rem2pdf> uses the Pango text formatting library (L<https://pango.gnome.org/>)
+and the Cairo graphics library (L<https://www.cairographics.org/>) to produce
+its output.  The CPAN modules Pango (L<https://metacpan.org/pod/Pango>)
+and Cairo (L<https://metacpan.org/pod/Cairo>) are prerequisites.
+
+B<rem2pdf> assumes that its input stream is valid UTF-8.  If this is not
+the case, it may render output incorrectly or even fail to render
+output at all.
+
+=head1 OPTIONS
+
+=over
+
+=item --ps
+
+Output PostScript instead of PDF.
+
+=item --eps
+
+Output Encapsulated PostScript instead of PDF.  In this case, you
+should feed C<rem2pdf> only one month's worth of calendar data,
+because it cannot create a multi-page encapsulated PostScript file.
+
+=item --svg
+
+Output SVG instead of PDF.  In this case, you should feed C<rem2pdf>
+only one month's worth of calendar data, because it cannot create
+a multi-page SVG file.
+
+=item --landscape, -l
+
+Print the calendar in landscape orientation.  Essentially, this swaps
+the width and height of the output media.
+
+=item --small-calendars=I<n>, -cI<n>
+
+Control the inclusion of small calendars for the previous and next
+month.  Possible values for I<n> are:
+
+=over
+
+=item Z<>0
+
+Do not draw any small calendars
+
+=item Z<>1
+
+Place the small calendars at the bottom-right if there is room;
+otherwise, place them at the top-left.
+
+=item Z<>2
+
+Place the small calendars at the top-left if there is room; otherwise,
+place them at the bottom-right.
+
+=item Z<>3
+
+Place the previous month's small calendar at the top-left and the next
+month's at the bottom-right if there is room; otherwise, follow
+I<n>=1.  A moment's thought reveals that an option which splits the
+calendars if there is room and otherwise follows I<n>=2 yields the
+same results.
+
+=back
+
+=item --left-numbers, -x
+
+Draw the day numbers in the top-left corner of each day's box rather than
+the default top-right.
+
+=item --fill-page, -e
+
+Make the calendar fill the available space on the page.
+
+=item --avoid-overfull
+
+If a calendar box is going to overflow, try to make the entries fit by
+decreasing the font size.  Using the --avoid-overfull option automatically
+enables the --fill-page option.
+
+=item --media=I<media>, -mI<media>
+
+Specify the paper size (Letter, A4, etc.)  For a list of valid media sizes,
+run:
+
+    rem2pdf --media=help
+
+The default media size will be marked with an asterisk.
+
+=item --width=I<n>, -wI<n>, --height=I<m>, -hI<m>
+
+Rather than specifying a named media size, directly specify the width
+and height of the output in 1/72ndths of an inch.  You must specify both
+width and height for the options to be respected.
+
+=item --title-font=I<font>
+
+Specify the font used for the calendar title.  It can be any font that
+the Pango library on your system can use.  The default is Sans.  If
+you choose a font with spaces in its name, you may need to quote this
+argument.
+
+=item --header-font=I<font>
+
+Specify the font used for the weekday names.  The default is Sans.
+
+=item --daynum-font=I<font>
+
+Specify the font used for the day numbers.  The default is
+Sans Bold Oblique.
+
+=item --entry-font=I<font>
+
+Specify the font used for calendar entries.  The default is Sans.
+
+=item --small-cal-font=I<font>
+
+Specify the font used for the small next- and previous-month
+calendars.  The default is Sans.
+
+=item --title-size=I<n>
+
+Specify the size of the title font in 1/72ndths of an inch.  The default
+is 14.  This size, and indeed all following sizes, may be specified as
+floating-point numbers.
+
+=item --header-size=I<n>
+
+Specify the size of the header font in 1/72ndths of an inch.  The default is 14.
+
+=item --daynum-size=I<n>
+
+Specify the size of the day number font in 1/72ndths of an inch.  The
+default is 14 for monthly calendars or 10 for weekly calendars.  (Weekly
+calendars don't have day numbers in the calendar boxes, but this setting
+is used to scale the size of moon phase indicators.)
+
+=item --entry-size=I<n>
+
+Specify the size of the calendar entry font in 1/72ndths of an inch.
+The default is 8.
+
+=item --border-size=I<n>
+
+Specify the size of the blank border between the contents of a calendar
+box and the centre of the lines surrounding it, in 1/72ndths of an inch.
+The default is 4.
+
+=item --entry-spacing=I<n>
+
+Specify the amount of extra space, in 1/72ndths of an inch, to leave
+between calendar entries in a given calendar box.  The default is
+one-half of the --border-size value.
+
+=item --line-thickness=I<n>
+
+Specify the thickness of the lines drawn on the calendar.  The default is 1.
+
+=item --margin-top=I<n>
+
+The size of the margin at the top of the page in 1/72ndths of an inch.
+The default is 36.
+
+=item --margin-bottom=I<n>
+
+The size of the margin at the bottom of the page in 1/72ndths of an inch.
+The default is 36.
+
+=item --margin-left=I<n>
+
+The size of the margin at the left of the page in 1/72ndths of an inch.
+The default is 36.
+
+=item --margin-right=I<n>
+
+The size of the margin at the right of the page in 1/72ndths of an inch.
+The default is 36.
+
+=item --line-color=RGB
+
+The color of the calendar grid lines.  For this option and all
+following color options, the color may be specified as either 3 or 6
+hex digits, specifying the R, G and B components respectively.  For
+example, FFFFFF is white, FF0000 is a saturated red, and so on.  If
+you supply 3 hex digits, then they are effectively doubled, so that
+(for example) 5AF is expanded to 55AAFF.
+
+=item --title-color=RGB
+
+The color of the calendar title at the top of the page.
+
+=item --header-color=RGB
+
+The color of the weekday names in the header row.
+
+=item --daynum-color=RGB
+
+The color of the day numbers (and the moon phases, if any.)
+
+=item --smallcal-color=RGB
+
+The color of the small monthly calendars, if any.
+
+=item --bg-color=RGB
+
+The color of the page background.
+
+Note that all colors default to black (000) except for the
+page background, which defaults to no color at all (ie, transparent).
+
+=item --title-url=URL
+
+Make the calendar title a link to URL.  Note that no syntax checking is
+done on the URL; it's up to you to make sure it is valid.
+
+=item --wrap, -y
+
+Modify the calendar so that if it would normally require 6 rows to print,
+then the last day (or last two days, as needed) are moved to the
+first row of the calendar, and adjust the small calendar positions
+as needed.  This results in a calendar that only requires 5 rows, but
+with the last day or two appearing in the I<first> row.
+
+=item --weeks-per-page=I<n>, -pI<n>.
+
+This option is only used for weekly calendars.  I<n> is the number of weeks
+to print per page; it is an integer that can range from 1 to 4.
+
+=item --verbose, -v
+
+Print (on STDERR) the name of the month and year for each month that
+is rendered.
+
+=item --version
+
+Print the version of rem2pdf and exit.
+
+=item --help
+
+Print a brief summary of rem2pdf usage.
+
+=back
+
+=head1 USAGE
+
+To use B<rem2pdf>, pipe the output of B<remind> with one of the
+B<-p>, B<-pp> or B<-ppp> options into B<rem2pdf>.  The PDF output
+will be sent to standard output.  So for example, to print a 12-month
+calendar for the year 2030, use:
+
+  remind -pp12 /dev/null Jan 2030 | rem2pdf -e -l -c3 | lpr
+
+You can concatenate multiple B<remind> runs.  For example, the following
+will produce a PDF calendar for January through March of 2023, and
+June of 2023 (for a total of four pages);
+
+  (remind -pp3 /dev/null Jan 2023 ; \
+   remind -pp /dev/null June 2023) | rem2pdf -e -l -c3 > cal.pdf
+
+=head1 FORMATTED TEXT
+
+B<rem2pdf> supports a B<SPECIAL> reminder type called B<PANGO>.  This
+lets you format text using the Pango markup language, described at
+L<https://docs.gtk.org/Pango/pango_markup.html>.  Here are some
+examples:
+
+  REM Mon SPECIAL PANGO <b>Bold</b> and <i>italic</i>
+  REM Tue SPECIAL PANGO <span face="zapf chancery">Fancy</span>
+  REM Wed SPECIAL PANGO <span foreground="red"><b>Bold red</b></span>
+
+Other back-ends such as B<rem2ps> and B<rem2html> will ignore PANGO
+special reminders.
+
+Neither B<remind> nor B<rem2pdf> will check the markup to ensure
+it is syntactically correct.  If you use invalid Pango markup, the
+Pango library will print a warning and B<rem2pdf> will not render any
+output for the invalid reminder.
+
+=head1 INFO STRINGS SUPPORTED
+
+rem2pdf supports one INFO string, namely C<Url>.  Its value should be
+a URL.  If the C<Url> INFO string is supplied for a normal reminder, a
+COLOR special, a MOON special, a PANGO special or a WEEK special, the
+corresponding output is turned into a hyperlink.
+
+=head1 WEEKLY CALENDARS
+
+B<rem2pdf> will produce weekly calendars if you invoke B<remind> with the
+B<-p+> option.  the B<--weeks-per-page> option specifies how many
+weeks' worth of reminders to print per page, and can range from 1 to 4.
+
+=head1 ABSOLUTELY-POSITIONED TEXT
+
+If your B<PANGO> special reminder starts with C<@I<x>,I<y>> where I<x>
+and I<y> are floating-point numbers, then the Pango marked-up text is
+positioned absolutely with respect to the day's box (and is not
+counted when calculating the box's height.)
+
+A positive I<x> value positions the left edge of the text I<x> points
+to the right of the left side of the calendar box, while a negative
+I<x> value positions the right edge of the text I<x> points to the left
+of the right side of the calendar box.
+
+A positive I<y> value positions the top edge of the text I<y> points
+below the top of the calendar box, while a negative I<y> value
+positions the bottom edge of the text I<y> points above the bottom of
+the calendar box.  Note that the coordinates are relative to the center
+of the lines that delineate the boxes; you should use an I<x> value
+whose absolute value is at least 2 and a I<y> value whose absolute
+value is at least 4 to avoid colliding with the lines.
+
+If you use absolutely-positioned text, it's up to you to make sure it
+doesn't overlap other text; B<rem2pdf> takes no special precautions to
+prevent this.
+
+As an example, this places Sunrise and Sunset times at the bottom left
+of each calendar box:
+
+  REM SPECIAL PANGO @2,-4 <span size="4800"><i>Rise [sunrise($U)] Set [sunset($U)]</i></span>
+
+(Note that Pango expresses font sizes in 1024's of a point, so a size of
+4800 works out to about 4.6 points.)
+
+=head1 AUTHOR
+
+B<Rem2PDF> was written by Dianne Skoll <dianne@skoll.ca>
+
+=head1 HOME PAGE
+
+L<https://dianne.skoll.ca/projects/remind/>
+
+=head1 SEE ALSO
+
+B<remind>, B<rem2ps>, B<rem2html>, B<tkremind>
+

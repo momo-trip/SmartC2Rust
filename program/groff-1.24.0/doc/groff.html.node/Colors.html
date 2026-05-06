@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Colors (The GNU troff Manual)</title>
+
+<meta name="description" content="Colors (The GNU troff Manual)">
+<meta name="keywords" content="Colors (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Strings.html" rel="next" title="Strings">
+<link href="Using-Fractional-Type-Sizes.html" rel="prev" title="Using Fractional Type Sizes">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Colors"></span><div class="header">
+<p>
+Next: <a href="Strings.html" accesskey="n" rel="next">Strings</a>, Previous: <a href="Manipulating-Type-Size-and-Vertical-Spacing.html" accesskey="p" rel="prev">Manipulating Type Size and Vertical Spacing</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Colors-1"></span><h3 class="section">5.21 Colors</h3>
+<span id="index-colors"></span>
+
+<span id="index-stroke-color"></span>
+<span id="index-color_002c-stroke"></span>
+<span id="index-fill-color"></span>
+<span id="index-color_002c-fill"></span>
+<p>GNU <code>troff</code> supports color output with a variety of color spaces
+and up to 16 bits per channel.  Some devices, particularly terminals,
+may be more limited.  When color support is enabled, two colors are
+current at any given time: the <em>stroke color</em>, with which glyphs,
+rules (lines), and geometric objects like circles and polygons are
+drawn, and the <em>fill color</em>, which can be used to paint the interior
+of a closed geometric figure.
+</p>
+<dl>
+<dt id="index-_002ecolor">Request: <strong><tt>.color</tt></strong> <em>[<span class="roman"><i>b</i></span>]</em></dt>
+<dd><span id="index-color"></span>
+</dd><dt id="index-_005cn_005b_002ecolor_005d">Register: <strong><tt>\n[.color]</tt></strong></dt>
+<dd><span id="index-_002ecolor-1"></span>
+<p>Enable or disable output of color-related device-independent output
+commands per Boolean expression <var>b</var>.  It is enabled by default, and
+if <var>b</var> is omitted.
+</p>
+<p>The read-only register <code>.color</code> interpolates&nbsp;1 if color
+support is enabled, 0&nbsp;otherwise.
+</p>
+<p>Color can also be disabled with the <samp>-c</samp> command-line option.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002edefcolor">Request: <strong><tt>.defcolor</tt></strong> <em>ident scheme color-component &hellip;</em></dt>
+<dd><span id="index-defcolor"></span>
+<p>Define a color named <var>ident</var>.  <var>scheme</var> selects a color space
+and determines the quantity of required <var>color-component</var>s; it must
+be one of &lsquo;<samp>rgb</samp>&rsquo; (three components), &lsquo;<samp>cmy</samp>&rsquo; (three), &lsquo;<samp>cmyk</samp>&rsquo;
+(four), or &lsquo;<samp>gray</samp>&rsquo; (one).  &lsquo;<samp>grey</samp>&rsquo; is accepted as a synonym of
+&lsquo;<samp>gray</samp>&rsquo;.  The color components can be encoded as a single
+hexadecimal value starting with &lsquo;<samp>#</samp>&rsquo; or &lsquo;<samp>##</samp>&rsquo;.  The former
+indicates that each component is in the range 0&ndash;255 (0&ndash;FF), the latter
+the range 0&ndash;65,535 (0&ndash;FFFF).
+</p>
+<div class="example">
+<pre class="example">.defcolor half gray #7f
+.defcolor pink rgb #FFC0CB
+.defcolor magenta rgb  ##ffff0000ffff
+</pre></div>
+
+<span id="index-f-scaling-unit"></span>
+<span id="index-unit_002c-scaling_002c-f"></span>
+<span id="index-scaling-unit-f"></span>
+<p>Alternatively, each color component can be specified as a decimal
+fraction in the range 0&ndash;1, interpreted using a default scaling
+unit of&nbsp;<code>f</code>, which multiplies its value by 65,536 (but
+clamps it at 65,535).
+</p>
+<div class="example">
+<pre class="example">.defcolor gray50 rgb 0.5 0.5 0.5
+.defcolor darkgreen rgb 0.1f 0.5f 0.2f
+</pre></div>
+
+<p>You can obtain a report of colors defined by <code>defcolor</code> on the
+standard error stream with the <code>pcolor</code> request.  See <a href="Debugging.html">Debugging</a>.
+</p></dd></dl>
+
+<span id="index-default-color"></span>
+<span id="index-color_002c-default"></span>
+<p>Each output device has a color named &lsquo;<samp>default</samp>&rsquo;, which cannot be
+redefined.  A device&rsquo;s default stroke and fill colors are not
+necessarily the same.  For the <code>dvi</code>, <code>html</code>, <code>pdf</code>,
+<code>ps</code>, and <code>xhtml</code> output devices, GNU <code>troff</code>
+automatically loads a macro file defining many color names at startup.
+By the same mechanism, the devices supported by <code>grotty</code> recognize
+the eight standard ISO&nbsp;6429<!-- /@w -->/ECMA-48 color names.<a id="DOCF137" href="groff.html_fot.html#FOOT137"><sup>137</sup></a>
+</p>
+<dl>
+<dt id="index-_002egcolor">Request: <strong><tt>.gcolor</tt></strong> <em>[<span class="roman"><i>col</i></span>]</em></dt>
+<dd><span id="index-gcolor"></span>
+</dd><dt id="index-_005cmc">Escape&nbsp;sequence: <strong><tt>\m</tt><span class="roman"><i>c</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cm"></span>
+</dd><dt id="index-_005cm_0028co">Escape&nbsp;sequence: <strong><tt>\m(</tt><span class="roman"><i>co</i></span><tt></tt></strong></dt>
+<dt id="index-_005cm_005bcol_005d">Escape&nbsp;sequence: <strong><tt>\m[</tt><span class="roman"><i>col</i></span><tt>]</tt></strong></dt>
+<dt id="index-_005cn_005b_002em_005d">Register: <strong><tt>\n[.m]</tt></strong></dt>
+<dd><span id="index-_002em"></span>
+<p>Select
+<var>col</var>
+as the stroke color for glyphs,
+rules,
+and objects drawn with
+<code>\D'&hellip;'</code>
+escape sequences.
+The escape sequence
+<code>\M[]</code>
+restores the previous stroke color,
+or the default if there is none,
+as does a
+<code>gcolor</code>
+request without an argument.
+</p>
+<div class="example">
+<pre class="example">.gcolor red
+The next words
+.gcolor
+\m[red]are in red\m[]
+and these words are in the previous color.
+</pre></div>
+
+<span id="index-stroke-color-name-register-_0028_002em_0029"></span>
+<span id="index-name_002c-stroke-color_002c-register-_0028_002em_0029"></span>
+<span id="index-color-name_002c-stroke_002c-register-_0028_002em_0029"></span>
+<p>The current environment&rsquo;s stroke color selection
+is available in the read-only string-valued register &lsquo;<samp>.m</samp>&rsquo;
+(see <a href="Environments.html">Environments</a>).
+The default strike color is named &lsquo;<samp>default</samp>&rsquo;.
+</p>
+<span id="index-_005cm-escape-sequence_002c-untokenized-on-input"></span>
+<span id="index-untokenized-escape-sequence_002c-_005cm"></span>
+<p>GNU
+<code>troff</code> does not tokenize
+<code>\m</code>
+when reading it;
+the escape sequence updates the environment.
+It thus can be used in requests that expect a single-character argument.
+We can assign a stroke color to a margin character as follows
+(see <a href="Miscellaneous.html">Miscellaneous</a>).
+</p>
+<div class="example">
+<pre class="example">.mc \m[red]x\m[]
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002efcolor">Request: <strong><tt>.fcolor</tt></strong> <em>[<span class="roman"><i>col</i></span>]</em></dt>
+<dd><span id="index-fcolor"></span>
+</dd><dt id="index-_005cMc">Escape&nbsp;sequence: <strong><tt>\M</tt><span class="roman"><i>c</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cM"></span>
+</dd><dt id="index-_005cM_0028co">Escape&nbsp;sequence: <strong><tt>\M(</tt><span class="roman"><i>co</i></span><tt></tt></strong></dt>
+<dt id="index-_005cM_005bcol_005d">Escape&nbsp;sequence: <strong><tt>\M[</tt><span class="roman"><i>col</i></span><tt>]</tt></strong></dt>
+<dt id="index-_005cn_005b_002eM_005d">Register: <strong><tt>\n[.M]</tt></strong></dt>
+<dd><span id="index-_002eM"></span>
+<p>Select
+<var>col</var>
+as the fill color for objects drawn with
+<code>\D'&hellip;'</code>
+escape sequences.
+The escape sequence
+<code>\M[]</code>
+restores the previous fill color,
+or the default if there is none,
+as does an
+<code>fcolor</code>
+request without an argument.
+</p>
+<span id="index-_005cM-escape-sequence_002c-untokenized-on-input"></span>
+<span id="index-untokenized-escape-sequence_002c-_005cM"></span>
+<p>GNU
+<code>troff</code> does not tokenize
+<code>\F</code>
+when reading it;
+the escape sequence updates the environment.
+It thus can be used in requests that expect a single-character argument.
+We can assign a fill color to a margin character as follows
+(see <a href="Miscellaneous.html">Miscellaneous</a>);
+<code>grotty</code>
+interprets the fill color as a character cell background color.
+</p>
+<div class="example">
+<pre class="example">.mc \m[black]\M[green]x\M[]\m[]
+</pre></div>
+
+<span id="index-background-color-name-register-_0028_002eM_0029"></span>
+<span id="index-name_002c-background-color_002c-register-_0028_002eM_0029"></span>
+<span id="index-color-name_002c-background_002c-register-_0028_002eM_0029"></span>
+<span id="index-fill-color-name-register-_0028_002eM_0029"></span>
+<span id="index-name_002c-fill-color_002c-register-_0028_002eM_0029"></span>
+<span id="index-color-name_002c-fill_002c-register-_0028_002eM_0029"></span>
+<p>The current environment&rsquo;s fill color selection
+is available in the read-only string-valued register &lsquo;<samp>.M</samp>&rsquo;
+(see <a href="Environments.html">Environments</a>).
+The default fill color is named &lsquo;<samp>default</samp>&rsquo;.
+</p>
+<p>Create an ellipse with a red interior as follows.
+</p>
+<div class="example">
+<pre class="example">\M[red]\h'0.5i'\D'E 2i 1i'\M[]
+</pre></div>
+</dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Strings.html" accesskey="n" rel="next">Strings</a>, Previous: <a href="Manipulating-Type-Size-and-Vertical-Spacing.html" accesskey="p" rel="prev">Manipulating Type Size and Vertical Spacing</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

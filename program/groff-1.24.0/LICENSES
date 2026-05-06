@@ -1,0 +1,307 @@
+    Copyright 2003-2022 Free Software Foundation, Inc.
+
+    Copying and distribution of this file, with or without modification,
+    are permitted in any medium without royalty provided the copyright
+    notice and this notice are preserved.
+
+LICENSES
+--------
+
+groff is a free software project.  It is licensed under the GNU General
+Public License (GPL), version 3 or later.
+
+The file COPYING in the top directory of the groff source distribution
+contains a copy of the GPL that was downloaded from the GNU web site
+<https://www.gnu.org/copyleft/gpl.txt> on 18 December 2025.  Further
+information is available on the Web at <https://www.gnu.org/copyleft>.
+
+All files in the groff source distribution are distributed under the
+terms of this version of the GPL.  You are free to choose version 3 or
+any subsequent version of the GPL.  Some are distributed under
+alternative terms as well.
+
+groff is an effort of the GNU Project of the Free Software Foundation
+(FSF); with the exceptions noted below, the copyrights of files
+comprising it have largely been assigned to the FSF.  (Some contributors
+have not assigned copyright.)  Information on GNU and the FSF may be
+found at <https://www.fsf.org/>.
+
+The GNU troff manual, doc/groff.texi, written in Texinfo, is licensed
+under the GNU Free Documentation License (FDL), and by dint of the
+notice above is also distributed under the terms of the GNU GPLv3 or
+later.  This status is to honor the intentions of its authors and to
+permit frictionless migration of material between that manual and man
+pages documenting the formatter and related topics; see below.  Find a
+copy of the FDL in the file "FDL".
+
+groff man pages documenting the formatter, its associated file formats,
+and the groff(1) program are also licensed under the FDL (and
+distributed under the terms of the GNU GPLv3 or later).  Most other man
+pages provided by the groff project are licensed under the traditional
+GNU documentation license, also known as the "LaTeX 2e license".  See
+<https://spdx.org/licenses/Latex2e.html>.
+
+Files in the contrib/ subdirectory of the source distribution are not
+strictly part of groff.  That is, they are distributed with it and are
+free software <https://www.gnu.org/philosophy/free-sw.en.html>, but they
+are not considered essential parts of the distribution.  Further, they
+may bear licenses in addition to the GPL, or the FSF does not administer
+their copyrights.  For convenience, a "COPYRIGHT" file in the
+appropriate subdirectory of contrib/ may clarify a contributed
+component's copyright status and licensing.
+
+Some files are part of groff but bear licenses in addition to the GPL,
+or have been placed into the public domain, because they originated
+elsewhere; often, the groff project has modified them, sometimes
+extensively.  These multi-licensed groff components are as follows.
+Their file names are not always identical to those in their original
+distributions, but we have kept them similar.
+
+libgroff static library
+=======================
+
+Two files in libgroff, a utility library statically linked into most
+executables that groff provides, are licensed under the LGPLv3.  Find a
+copy of the license in the file "LGPLv3".
+
+	src/include/relocate.h
+	src/libs/libgroff/relocate.cpp
+
+grn preprocessor
+================
+
+grn, written by Barry Roitblat <barry@rentonww.com> and David
+Slattengren <slatteng@Xinet.COM>, was used with a Berkeley version of
+device-independent troff.  The files contain no AT&T code and are in the
+public domain.  Historically, the original package could be found at
+<http://ftp.cs.wisc.edu/pub/misc/grn.tar.Z>.
+
+	src/preproc/grn/gprint.h
+	src/preproc/grn/hdb.cpp
+	src/preproc/grn/hgraph.cpp
+	src/preproc/grn/hpoint.cpp
+	src/preproc/grn/main.cpp
+
+gxditview output driver
+=======================
+
+gxditview is based on the X Window System (Version 11)'s "xditview"
+program, and is licensed under the same terms as the rest of X11R5.
+
+	src/devices/xditview/DESC.in
+	src/devices/xditview/Dvi.c
+	src/devices/xditview/Dvi.h
+	src/devices/xditview/DviP.h
+	src/devices/xditview/FontMap-X11
+	src/devices/xditview/GXditview.ad
+	src/devices/xditview/Menu.h
+	src/devices/xditview/ad2c
+	src/devices/xditview/device.c
+	src/devices/xditview/device.h
+	src/devices/xditview/draw.c
+	src/devices/xditview/font.c
+	src/devices/xditview/gray1.bm
+	src/devices/xditview/gray2.bm
+	src/devices/xditview/gray3.bm
+	src/devices/xditview/gray4.bm
+	src/devices/xditview/gray5.bm
+	src/devices/xditview/gray6.bm
+	src/devices/xditview/gray7.bm
+	src/devices/xditview/gray8.bm
+	src/devices/xditview/gxditview.man
+	src/devices/xditview/lex.c
+	src/devices/xditview/page.c
+	src/devices/xditview/parse.c
+	src/devices/xditview/xdit.bm
+	src/devices/xditview/xdit_mask.bm
+	src/devices/xditview/xditview.c
+
+	src/include/DviChar.h
+	src/include/XFontName.h
+
+	src/libs/libxutil/DviChar.c
+	src/libs/libxutil/XFontName.c
+
+mdoc macro package
+==================
+
+mdoc uses the BSD "three-clause" license; that is, it is subject to the
+advertising clause rescission.
+
+	tmac/doc.tmac
+	tmac/doc-old.tmac
+	tmac/mdoc/doc-common
+	tmac/mdoc/doc-ditroff
+	tmac/mdoc/doc-nroff
+	tmac/mdoc/doc-syms
+	tmac/groff_mdoc.7.man
+
+me macro package
+================
+
+"me" uses the BSD "three-clause" license; that is, it is subject to the
+advertising clause rescission.
+
+	tmac/e.tmac
+	tmac/groff_me.man
+	doc/meintro.me
+	doc/meintro_fr.me
+	doc/meref.me
+
+Hyphenation patterns
+====================
+
+groff's hyphenation pattern files are adapted from those used by various
+TeX-related projects.
+
+* "tmac/hyphen.cs" is renamed from "czhyphen.tex", and obtained from
+  <http://dante.ctan.org/CTAN/macros/cstex/base/csplain.tar.gz>.
+
+  It is under the GNU General Public License, version 2 or later.
+
+* "tmac/hyphen.den" and "tmac/hyphen.det" are renamed from
+  "dehyphn-x-2017-03-31.pat" and "dehypht-x-2017-03-31.pat",
+  respectively, in the "dehyph-exptl-0.41" package.
+
+  Copyright (c) 2013-2017
+  Stephan Hennig, Werner Lemberg, Guenter Milde, Sander van Geloven,
+  Georg Pfeiffer, Gisbert W. Selke, Tobias Wendorf
+
+  Licensed under the MIT license. Full license text available from
+
+    http://opensource.org/licenses/mit-license.php
+
+* "tmac/hyphen.en" is renamed from "hyph-en-us.tex" in the "hyph-utf8"
+  CTAN package.
+
+  Copyright (C) 1990, 2004, 2005 Gerard D.C. Kuiken
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+* "tmac/hyphen.es" is renamed from "hyph-es.tex", obtained from
+  <https://github.com/hyphenation/tex-hyphen/blob/
+   673f7b33e664b141432ba6d78d2caa686ea5317f/hyph-utf8/tex/generic/
+   hyph-utf8/patterns/tex/hyph-es.tex>
+
+  Copyright (C) 1993, 1997 Javier Bezos, 2001-2019 Javier Bezos,
+  CervanTeX
+
+  Licensed under the MIT license. Full license text available from
+
+    http://opensource.org/licenses/mit-license.php
+
+* "tmac/hyphen.fr" is renamed from "frhyph.tex", obtained from
+  <http://dante.ctan.org/CTAN/language/hyphenation/frhyph.tex>.
+
+  It identifies no copyright holder but bears a license statement.
+
+  This file is available for free and can used and redistributed
+  asis for free. Modified versions should have another name.
+
+* "tmac/hyphen.it" is renamed from "hyph-it.tex" in the "hyph-utf8" CTAN
+  package.
+
+  Copyright (C) 2008-2011 Claudio Beccari
+
+  This file is available under any of the following licences:
+
+  name: LPPL
+  version: 1.3
+  or_later: true
+  url: http://www.latex-project.org/lppl.txt
+  status: maintained
+  maintainer: Claudio Beccari, e-mail claudio dot beccari at gmail dot
+  com
+
+  name: MIT
+  url: https://opensource.org/licenses/MIT
+  text: >
+      Permission is hereby granted, free of charge, to any person
+      obtaining a copy of this software and associated documentation
+      files (the "Software"), to deal in the Software without
+      restriction, including without limitation the rights to use,
+      copy, modify, merge, publish, distribute, sublicense, and/or sell
+      copies of the Software, and to permit persons to whom the
+      Software is furnished to do so, subject to the following
+      conditions:
+
+      The above copyright notice and this permission notice shall be
+      included in all copies or substantial portions of the Software.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+      OTHER DEALINGS IN THE SOFTWARE.
+
+* "tmac/hyphen.pl" is renamed from "hyph-pl.tex" in the "hyph-utf8" CTAN
+  package
+
+  Copyright (C) 1987-1995 Hanna Kołodziejska, Bogusław Jackowski,
+  Marek Ryćko
+
+  This file is available under any of the following licences:
+
+  name: MIT
+  url: https://opensource.org/licenses/MIT
+  text: >
+      Permission is hereby granted, free of charge, to any person
+      obtaining a copy of this software and associated documentation
+      files (the ``Software''), to deal in the Software without
+      restriction, including without limitation the rights to use,
+      copy, modify, merge, publish, distribute, sublicense, and/or sell
+      copies of the Software, and to permit persons to whom the
+      Software is furnished to do so, subject to the following
+      conditions:
+
+      The above copyright notice and this permission notice shall be
+      included in all copies or substantial portions of the Software.
+
+      THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY KIND,
+      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+      OTHER DEALINGS IN THE SOFTWARE.
+  name: Knuth license
+  text: >
+      This macro file belongs to the public domain
+      under the conditions specified by the author of TeX:
+
+    ``Macro files like PLAIN.TEX should not be changed in any way,
+      except with respect to preloaded fonts,
+      unless the changes are authorized by the authors of the macros.''
+
+                                                   Donald E. Knuth
+
+* "tmac/hyphen.ru" is renamed from "ruhyphal.tex", obtained from
+  <http://dante.ctan.org/tex-archive/language/hyphenation/ruhyphen/\
+  ruhyphal.tex>.
+
+  Copyright 1999-2003 Alexander I. Lebedev <swan@scon155.phys.msu.su>
+
+  This program may be distributed and/or modified under the conditions
+  of the LaTeX Project Public License, either version 1.2 or any later
+  version.
+
+* "tmac/hyphen.sv" is renamed from "svhyph.tex", obtained from
+  <http://dante.ctan.org/CTAN/language/hyphenation/svhyph.tex>.
+
+  Copyright 1994 by Jan Michael Rynning. All rights reserved.
+
+  This program may be distributed and/or modified under the conditions
+  of the LaTeX Project Public License, either version 1.2 of this
+  license or (at your option) any later version.  The latest version of
+  this license is in http://www.latex-project.org/lppl.txt and version
+  1.2 or later is part of all distributions of LaTeX version 1999/12/01
+  or later.
+
+Any omissions from the above list are unintentional; please contact the
+groff development mailing list at groff@gnu.org to point them out.

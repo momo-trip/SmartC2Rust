@@ -1,0 +1,821 @@
+# Copyright 2002-2020 Free Software Foundation, Inc.
+#           2021-2023 G. Branden Robinson
+#
+# Original Makefile.sub written by Werner Lemberg <wl@gnu.org>.
+# Adapted to Automake by Bertrand Garrigues
+#   (bertrand.garrigues@laposte.net).
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+doc_srcdir = $(abs_top_srcdir)/doc
+doc_builddir = doc
+
+# Some document sources are parameterized in configuration options like
+# the groff version number and the command prefix.  Use this in rules to
+# prepare formattable versions of them from .in files.
+DOC_SED = $(SED) \
+  -e "s;[@]PAGE[@];$(PAGE);" \
+  -e "s;[@]VERSION[@];$(VERSION);" \
+  -e "s;[@]g[@];$(g);g;"
+
+# Use this in rules to run the build tree's groff.
+#
+# It includes flags to locate its tmac and device/font description
+# directories and to produce verbose diagnostics in the event of syntax
+# or formatting problems.
+DOC_GROFF = \
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  $(GROFFBIN) $(MFLAG) $(FFLAG) -ww -b
+
+# There's no point crashing the build due to fonts being unavailable for
+# embedding (or selection, even, when their metrics are missing) if we
+# knew at configuration time that the venture wouldn't come off.
+#
+# We embed all fonts (-P-e) (if we can) to (1) honor the current PDF
+# standard, (2) ensure consistent rendering of the document, and (3)
+# exercise this feature of gropdf.
+if HAVE_URW_FONTS
+pdfmomoption = -P-W
+groffmanpagesoption = -P-e
+endif
+
+DOC_PDFMOM = \
+  GROFF_COMMAND=test-groff \
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  $(PDFMOMBIN) $(MFLAG) $(FFLAG) -ww -b $(pdfmomoption) --roff
+
+# This image file is used by several documents in the groff source tree.
+DOC_GNU_EPS = doc/gnu.eps
+DOC_GMP_COVER_PAGE = doc/groff-man-pages-cover.groff
+
+# Other doc, installed in $(docdir)
+# Files located in the source tree
+DOCFILES_INST = \
+  doc/me-revisions \
+  doc/pic.ms
+DOCFILES_NOINST = \
+  doc/groff-man-pages-cover.groff.in \
+  doc/meintro.me.in \
+  doc/meintro_fr.me.in \
+  doc/meref.me.in \
+  doc/ms.ms.in
+# Files that undergo a transformation prior to groff processing
+GENERATEDDOCFILES = \
+  doc/meintro.me \
+  doc/meintro_fr.me \
+  doc/meref.me \
+  doc/ms.ms
+# Files generated in the build tree
+if USE_GROHTML
+PROCESSEDDOCFILES_HTML = \
+  doc/pic.html
+endif
+PROCESSEDDOCFILES_PDF = \
+  doc/automake.pdf \
+  doc/groff-man-pages.pdf
+PROCESSEDDOCFILES_PS = \
+  doc/meref.ps \
+  doc/meintro.ps \
+  doc/meintro_fr.ps \
+  doc/ms.ps \
+  doc/pic.ps
+PROCESSEDDOCFILES_TXT = \
+  doc/groff-man-pages.utf8.txt
+# XXX: $(PROCESSEDDOCFILES_HTML) is omitted because pic.html gets
+# special handling: it needs to be placed in a subdirectory with its
+# image files.  If we include it here, a copy of its table of contents,
+# full of broken links to each section, gets placed directly in
+# $(DESTDIR)/$(docdir).
+#
+# $(PROCESSEDDOCFILES_PDF) is omitted because it's unnecessary; the
+# Automake macro nodist_docpdfdoc_DATA does what we need.
+PROCESSEDDOCFILES = \
+  $(PROCESSEDDOCFILES_PS) \
+  $(PROCESSEDDOCFILES_TXT)
+
+# Declare minimal dependencies for documents by output driver.
+PROCESSEDFILES_DEPS_HTML = pre-grohtml groff troff post-grohtml \
+  tmac/html.tmac tmac/html-end.tmac font/devhtml/stamp font/devps/stamp
+PROCESSEDFILES_DEPS_PS = groff troff grops tmac/ps.tmac \
+  font/devps/stamp
+PROCESSEDFILES_DEPS_PDF = test-groff groff troff gropdf tmac/pdf.tmac \
+  font/devpdf/stamp
+PROCESSEDFILES_DEPS_TXT = groff troff grotty tmac/tty.tmac \
+  font/devutf8/stamp
+
+if USE_GROHTML
+$(PROCESSEDDOCFILES_HTML): $(PROCESSEDFILES_DEPS_HTML)
+endif
+$(PROCESSEDDOCFILES_PS): $(PROCESSEDFILES_DEPS_PS)
+$(PROCESSEDDOCFILES_PDF): $(PROCESSEDFILES_DEPS_PDF)
+$(PROCESSEDDOCFILES_TXT): $(PROCESSEDFILES_DEPS_TXT)
+
+otherdocdir = $(docdir)
+dist_otherdoc_DATA = $(DOCFILES_INST)
+nodist_otherdoc_DATA = $(PROCESSEDDOCFILES) $(GENERATEDDOCFILES)
+MOSTLYCLEANFILES += \
+  $(GENERATEDDOCFILES) \
+  $(PROCESSEDDOCFILES) \
+  $(DOC_GMP_COVER_PAGE)
+EXTRA_DIST += $(DOCFILES_NOINST)
+
+EXTRA_DIST += doc/automake.mom
+docpdfdocdir = $(pdfdocdir)
+nodist_docpdfdoc_DATA = $(PROCESSEDDOCFILES_PDF)
+doc/automake.pdf: doc/automake.mom pdfmom $(TMAC_PACKAGE_MOM)
+
+# GNU PIC html documentation, installed in $(htmldocdir)
+# Other pic*.html files are installed by the local rule
+if USE_GROHTML
+htmlpicdir = $(htmldocdir)
+htmlpic_DATA = $(PROCESSEDDOCFILES_HTML)
+HTMLDOCFILESALL = pic*.html
+HTMLDOCIMAGEFILES = pic*
+endif
+
+# Examples files, installed in $(exampledir)
+
+# source tree files
+EXAMPLEFILES = \
+  doc/webpage.ms \
+  doc/groff.css \
+  doc/grnexmpl.g \
+  doc/grnexmpl.me
+
+# Generated in the build tree
+if USE_GROHTML
+PROCESSEDEXAMPLEFILES_HTML = doc/webpage.html
+else
+PROCESSEDEXAMPLEFILES_HTML =
+endif
+PROCESSEDEXAMPLEFILES_PS = \
+  doc/webpage.ps \
+  doc/grnexmpl.ps
+PROCESSEDEXAMPLEFILES = \
+  $(PROCESSEDEXAMPLEFILES_HTML) \
+  $(PROCESSEDEXAMPLEFILES_PS)
+
+$(PROCESSEDEXAMPLEFILES_HTML): $(PROCESSEDFILES_DEPS_HTML)
+$(PROCESSEDEXAMPLEFILES_PS): $(PROCESSEDFILES_DEPS_PS)
+
+docexamplesdir = $(exampledir)
+dist_docexamples_DATA = $(EXAMPLEFILES)
+nodist_docexamples_DATA = $(PROCESSEDEXAMPLEFILES)
+MOSTLYCLEANFILES += $(PROCESSEDEXAMPLEFILES)
+
+if USE_GROHTML
+# webpage.html is generated; webpage*.html files are installed by the
+# local rule.
+HTMLEXAMPLEFILESALL = webpage*.html
+HTMLEXAMPLEIMAGEFILES = webpage*
+htmlexamplesdir = $(exampledir)
+endif
+
+# Locate image subdirectory for HTML documents relative to an
+# installation directory such as `htmldocdir` or `exampledir`.  Do _not_
+# use for locating files within the source or build trees.
+imagedir = img
+
+EXTRA_DIST += \
+  doc/txi-en.tex
+
+# Introduce variables to house the groff man pages.  We break the list
+# of page sources into multiple chunks because we have to load Swedish
+# localization before formatting groff_mmse.7 and then reload English
+# localization afterward.  This also serves as a test of groff locale
+# switching; being lazy and shunting groff_mmse.7 off to the end of the
+# document would not achieve this goal (and not loading Swedish
+# localization at all to format it would be gauche).
+GROFF_MAN_PAGES1 = \
+  src/utils/addftinfo/addftinfo.1 \
+  src/utils/afmtodit/afmtodit.1 \
+  contrib/chem/chem.1 \
+  src/preproc/eqn/eqn.1 \
+  contrib/eqn2graph/eqn2graph.1 \
+  contrib/gdiffmk/gdiffmk.1 \
+  contrib/glilypond/glilypond.1 \
+  contrib/gperl/gperl.1 \
+  contrib/gpinyin/gpinyin.1 \
+  contrib/grap2graph/grap2graph.1 \
+  src/preproc/grn/grn.1 \
+  src/devices/grodvi/grodvi.1 \
+  src/roff/groff/groff.1 \
+  src/utils/grog/grog.1 \
+  src/devices/grohtml/grohtml.1 \
+  src/devices/grolbp/grolbp.1 \
+  src/devices/grolj4/grolj4.1 \
+  src/devices/gropdf/gropdf.1 \
+  src/devices/grops/grops.1 \
+  src/devices/grotty/grotty.1 \
+  $(GXDITVIEW_MAN1) \
+  src/utils/hpftodit/hpftodit.1 \
+  src/utils/indxbib/indxbib.1 \
+  src/utils/lkbib/lkbib.1 \
+  src/utils/lookbib/lookbib.1 \
+  contrib/mm/mmroff.1 \
+  src/preproc/eqn/neqn.1 \
+  src/roff/nroff/nroff.1 \
+  src/devices/gropdf/pdfmom.1 \
+  src/utils/pfbtops/pfbtops.1 \
+  src/preproc/pic/pic.1 \
+  contrib/pic2graph/pic2graph.1 \
+  src/preproc/preconv/preconv.1 \
+  src/preproc/refer/refer.1 \
+  src/preproc/soelim/soelim.1 \
+  src/preproc/tbl/tbl.1 \
+  src/utils/tfmtodit/tfmtodit.1 \
+  src/roff/troff/troff.1 \
+  $(XTOTROFF_MAN1) \
+  man/groff_font.5 \
+  man/groff_out.5 \
+  man/groff_tmac.5 \
+  man/groff.7 \
+  man/groff_char.7 \
+  man/groff_diff.7 \
+  contrib/hdtbl/groff_hdtbl.7 \
+  tmac/groff_man.7 \
+  tmac/groff_man_style.7 \
+  tmac/groff_mdoc.7 \
+  tmac/groff_me.7 \
+  contrib/mm/groff_mm.7
+
+GROFF_MAN_PAGES2 = \
+  contrib/mm/groff_mmse.7
+
+GROFF_MAN_PAGES3 = \
+  contrib/mom/groff_mom.7 \
+  tmac/groff_ms.7 \
+  contrib/rfc1345/groff_rfc1345.7 \
+  tmac/groff_trace.7 \
+  tmac/groff_www.7 \
+  man/roff.7
+
+GROFF_MAN_PAGES_ALL = $(GROFF_MAN_PAGES1) $(GROFF_MAN_PAGES2) \
+  $(GROFF_MAN_PAGES3)
+
+# This is a convenience target for (re-)generating all the man pages.
+man-all: $(GROFF_MAN_PAGES_ALL)
+
+# ...and for cleaning them.
+man-clean:
+	$(RM) $(GROFF_MAN_PAGES_ALL)
+
+$(DOC_GMP_COVER_PAGE): $(doc_srcdir)/groff-man-pages-cover.groff.in
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_SED) $(doc_srcdir)/groff-man-pages-cover.groff.in >$@
+
+# Many pages use tbl, a few use eqn, and soelim(1) uses pic.  We also
+# need groff's FreeEuro font so we can embed it.
+
+doc/groff-man-pages.pdf: $(GROFF_MAN_PAGES_ALL) \
+  $(DOC_GMP_COVER_PAGE) \
+  eqn pic tbl pdfmom \
+  $(TMAC_PACKAGE_MAN) $(TMAC_PACKAGE_MDOC) font/devps/freeeuro.pfa
+	$(GROFF_V)$(DOC_PDFMOM) -K utf-8 -pet -mandoc -dHF=HB -rC1 \
+	  -rCHECKSTYLE=3 -Tpdf $(groffmanpagesoption) \
+	  $(DOC_GMP_COVER_PAGE) \
+	  $(GROFF_MAN_PAGES1) \
+	  $(tmac_srcdir)/sv.tmac $(GROFF_MAN_PAGES2) \
+	  $(tmac_srcdir)/en.tmac $(GROFF_MAN_PAGES3) > $@
+
+doc/groff-man-pages.utf8.txt: $(GROFF_MAN_PAGES_ALL) eqn pic tbl \
+  $(TMAC_PACKAGE_MAN) $(TMAC_PACKAGE_MDOC)
+	$(GROFF_V)$(DOC_GROFF) -K utf-8 -pet -Tutf8 -mandoc \
+	  -rCHECKSTYLE=3 $(GROFF_MAN_PAGES1) \
+	  $(tmac_srcdir)/sv.tmac $(GROFF_MAN_PAGES2) \
+	  $(tmac_srcdir)/en.tmac $(GROFF_MAN_PAGES3) > $@
+
+# `-M $(doc_srcdir)` is so that grn can find "grnexampl.g".
+doc/grnexmpl.ps: $(doc_srcdir)/grnexmpl.me $(doc_srcdir)/grnexmpl.g \
+  $(TMAC_PACKAGE_ME) grn eqn
+	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_GROFF) -Tps -ge -M $(doc_srcdir) -me \
+	     $(doc_srcdir)/grnexmpl.me >$@
+
+# Generating *.me from *.me.in is, surprisingly, a challenge.
+# 1.  A pattern rule ("%.me: %.me.in") is not portable to NetBSD or
+#     OpenBSD make.
+# 2.  A single-suffix rule works in an isolated Makefile, but _only_
+#     with the .SUFFIXES special target, not with the
+#     (Automake-specific) SUFFIXES macro.
+#       .SUFFIXES: .in
+#       .in:
+#		$(DOC_SED) $< >$@
+#     (One can validly complain that this approach is too general.)
+# 3.  GNU Automake insists that we use the SUFFIXES macro and not the
+#     special target.
+#       error: use variable 'SUFFIXES', not target '.SUFFIXES'
+# 4.  What about a target rule?  We'd have to explicitly write the first
+#     preprequisite name in the rule commands because NetBSD make (and
+#     reportedly OpenBSD) refuses to honor the $< variable in target
+#     rules.
+#
+# So what is left?  A double-suffix rule--but you have to use it in a
+# special way that is explicitly not countenanced by POSIX.
+#
+#   "The application shall ensure that the target portion is a valid
+#   target name (see Target Rules, ...) of the form .s2 or .s1.s2 (where
+#   .s1 and .s2 are suffixes that have been given as prerequisites of
+#   the .SUFFIXES special target and s1 and s2 do not contain any
+#   <slash> or <period> characters.) If there is only one <period> in
+#   the target, it is a single-suffix inference rule. Targets with two
+#   periods are double-suffix inference rules. Inference rules can have
+#   only one target before the <colon>."
+#     (POSIX Issue 8 Draft 4.1, make(1), "Inference Rules")
+#
+# A double-suffix rule won't work in an obvious way because its
+# semantics are that the suffix is replaced, not removed.  You have to
+# add both suffixes to the .SUFFIXES special target, in order with the
+# preprequisite first.
+#   .SUFFIXES: .me.in .me
+#   .me.in.me:
+#	$(DOC_SED) $< >$@
+# Thanks to Automake, we must say
+#   SUFFIXES += .me.in .me
+# for reason 3 above.  The GNU Automake manual does not explicitly state
+# that it preserves the ordering of the suffixes, but for now it does.
+#
+# It appears to be dumb luck that this works; the rigamarole by itself
+# justifies to me the worth of GNU Make's pattern rules (which require
+# neither '.SUFFIXES' nor 'SUFFIXES') and establishing semantics for $<
+# in target rules.  But I won't hold my breath waiting on other make(1)
+# implementors to agree.  -- GBR
+.PRECIOUS: $(GENERATEDDOCFILES)
+SUFFIXES += .me.in .me
+
+doc/meintro.ps doc/meintro_fr.ps doc/meref.ps: $(TMAC_PACKAGE_ME)
+
+.me.in.me:
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_SED) $< >$@
+
+.me.ps:
+	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_GROFF) -Tps -me $< >$@
+
+# Use '-K utf8', not '-k', in case 'configure' didn't find uchardet.
+# The French translation uses tbl; its English counterpart does not.
+doc/meintro_fr.ps: doc/meintro_fr.me preconv tbl
+	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_GROFF) -K utf8 -t -Tps -me -mfr $< >$@
+
+SUFFIXES += .ms.in .ms
+.ms.in.ms:
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_SED) $< >$@
+
+doc/ms.ps: doc/ms.ms $(TMAC_PACKAGE_MS) eqn pic tbl
+	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_GROFF) -pet -Tps -ms doc/ms.ms >$@
+
+doc/pic.ps: $(doc_srcdir)/pic.ms $(TMAC_PACKAGE_MS) eqn pic tbl
+	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_GROFF) -pet -Tps -ms $(doc_srcdir)/pic.ms >$@
+
+# groff(1)'s `-I` implies `-g` and `-s`, so we must depend on grn and
+# soelim even though the document doesn't require them.
+doc/webpage.ps: grn soelim
+doc/webpage.ps: $(DOC_GNU_EPS) tmac/pspic.tmac tmac/www.tmac tbl
+doc/webpage.ps: $(doc_srcdir)/webpage.ms $(TMAC_PACKAGE_MS)
+	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_GROFF) -I $(doc_srcdir) -I $(doc_builddir) -t -Tps \
+	  -ms -mwww $(doc_srcdir)/webpage.ms >$@
+
+# We have no "generic" ms documents.
+#.ms.ps:
+#	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+#	&& $(DOC_GROFF) -Tps -ms $< >$@
+
+# XXX: We have to change directories into `doc_builddir` because
+# pre-grohtml assumes that the argument to post-grohtml's `-D` option is
+# a file specification resolvable relative to HTML "<img src=...>"
+# elements, which is inflexible, and prevents us from writing to
+# "$@.tmp".
+doc/pic.html: eqn pic tbl
+doc/pic.html: tmac/www.tmac
+doc/pic.html: $(doc_srcdir)/pic.ms $(TMAC_PACKAGE_MS)
+	$(GROFF_V)$(MKDIR_P) $(doc_builddir) \
+	&& cd $(doc_builddir) \
+	&& $(DOC_GROFF) -pet -P-Ipic -P-Dimg -P-jpic -Thtml -ms \
+	  $(doc_srcdir)/pic.ms > pic.html.tmp
+	$(AM_V_at)mv $@.tmp $@
+
+# groff(1)'s `-I` implies `-g` and `-s`, so we must depend on grn and
+# soelim even though the document doesn't require them.
+#
+# XXX: See XXX comment before "pic.html" target above.
+doc/webpage.html: grn soelim
+doc/webpage.html: $(DOC_GNU_EPS) tmac/www.tmac tbl
+doc/webpage.html: $(doc_srcdir)/groff.css
+doc/webpage.html: $(doc_srcdir)/webpage.ms $(TMAC_PACKAGE_MS)
+	$(GROFF_V)$(MKDIR_P) $(doc_builddir) \
+	&& cd $(doc_builddir) \
+	&& $(DOC_GROFF) -t -I $(doc_srcdir) -I $(doc_builddir) \
+	  -P-jwebpage -P-nrb -P-Iwebpage -P-Dimg -Thtml -ms \
+	  $(doc_srcdir)/webpage.ms > webpage.html.tmp
+	$(AM_V_at)mv $@.tmp $@
+
+# We remove groff.css only from an out-of-source build tree.
+mostlyclean-local: mostlyclean_doc
+mostlyclean_doc:
+if USE_GROHTML
+	if test -d $(doc_builddir); then \
+	  cd $(doc_builddir) \
+	  && for f in $(HTMLDOCFILESALL); do \
+	    $(RM) $$f; \
+	  done; \
+	fi
+	if test -d $(doc_builddir)/img; then \
+	  cd $(doc_builddir)/img \
+	  && for f in $(HTMLDOCIMAGEFILES); do \
+	    $(RM) $$f; \
+	  done; \
+	  rmdir  $(doc_builddir)/img || :; \
+	fi
+endif
+	if test $(top_builddir) != $(top_srcdir); then \
+	  $(RM) $(top_builddir)/doc/groff.css; \
+	fi
+if USE_GROHTML
+	if test -d $(doc_builddir); then \
+	  cd $(doc_builddir) \
+	  && for f in $(HTMLEXAMPLEFILESALL); do \
+	    $(RM) $$f; \
+	  done; \
+	fi
+	if test -d $(doc_builddir)/img; then \
+	  cd $(doc_builddir)/img \
+	  && for f in $(HTMLEXAMPLEIMAGEFILES); do \
+	    $(RM) $$f; \
+	  done; \
+	  rmdir  $(doc_builddir)/img || :; \
+	fi
+endif
+	$(RM) $(PROCESSEDDOCFILES_PDF)
+
+install-data-hook: install_doc_htmldoc
+install_doc_htmldoc:
+if USE_GROHTML
+	cd $(doc_builddir) \
+	&& for f in `ls $(HTMLDOCFILESALL)`; do \
+	  $(RM) $(DESTDIR)$(htmldocdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(htmldocdir)/$$f; \
+	done
+	-test -d $(DESTDIR)$(htmldocdir)/$(imagedir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)/$(imagedir)
+	$(RM) $(DESTDIR)$(htmldocdir)/$(imagedir)/$(HTMLDOCIMAGEFILES)
+	$(INSTALL_DATA) $(doc_builddir)/img/$(HTMLDOCIMAGEFILES) \
+	  $(DESTDIR)$(htmldocdir)/$(imagedir)
+endif
+
+install-data-hook: install_doc_gnu_eps install_doc_examples
+
+install_doc_gnu_eps: $(DOC_GNU_EPS)
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if test -f "$$d/gnu.eps"; then \
+	    $(RM) $(DESTDIR)$(exampledir)/gnu.eps; \
+	    $(INSTALL_DATA) \
+	      $$d/gnu.eps $(DESTDIR)$(exampledir)/gnu.eps; \
+	    break; \
+	  fi; \
+	done
+
+install_doc_examples: $(DOC_GNU_EPS)
+if USE_GROHTML
+	cd $(doc_builddir) \
+	&& for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
+	  $(RM) $(DESTDIR)$(exampledir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
+	done
+	-test -d $(DESTDIR)$(exampledir)/$(imagedir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)/$(imagedir)
+	$(RM) \
+	  $(DESTDIR)$(exampledir)/$(imagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	$(INSTALL_DATA) $(doc_builddir)/img/$(HTMLEXAMPLEIMAGEFILES) \
+	  $(DESTDIR)$(exampledir)/$(imagedir)
+endif
+
+uninstall-hook: \
+  uninstall_doc_examples uninstall_doc_htmldoc
+uninstall_doc_examples:
+	$(RM) $(DESTDIR)$(exampledir)/gnu.eps
+if USE_GROHTML
+	-test -d $(DESTDIR)$(docexamplesdir) \
+	&& cd $(DESTDIR)$(docexamplesdir) \
+	&& for f in $(HTMLEXAMPLEFILESALL); do \
+	  $(RM) $$f; \
+	done
+	-test -d $(DESTDIR)$(docexamplesdir)/$(imagedir) \
+	&& cd $(DESTDIR)$(docexamplesdir)/$(imagedir) \
+	&& for f in $(HTMLEXAMPLEIMAGEFILES); do \
+	  $(RM) $$f; \
+	done
+	-rmdir $(DESTDIR)$(docexamplesdir)/$(imagedir)
+	-rmdir $(DESTDIR)$(docexamplesdir)
+endif
+
+uninstall_doc_htmldoc:
+if USE_GROHTML
+	-test -d $(DESTDIR)$(htmldocdir) \
+	&& cd $(DESTDIR)$(htmldocdir) \
+	&& for f in $(HTMLDOCFILESALL); do \
+	  $(RM) $$f; \
+	done
+	-test -d $(DESTDIR)$(htmldocdir)/$(imagedir) \
+	&& cd $(DESTDIR)$(htmldocdir)/$(imagedir) \
+	&& for f in $(HTMLDOCIMAGEFILES); do \
+	  $(RM) $$f; \
+	done
+	-rmdir $(DESTDIR)$(htmldocdir)/$(imagedir)
+	-rmdir $(DESTDIR)$(htmldocdir)
+endif
+
+# groff Texinfo manual
+#
+# We produce all possible formats by by default and ship them in the
+# distribution archive ('make dist') so that people don't need to have
+# 'makeinfo' or TeX available.
+#
+# The GNU info, plain text, and HTML formats require only 'makeinfo'.
+#
+# DVI and PDF require a working TeX installation.  We can't use
+# Automake's facilities for PDF production because its 'dist' target
+# attempts to generate 'groff.pdf' by invoking 'texi2dvi' without the
+# '-E' option (use 'makeinfo' to expand macros), which is needed to
+# build this file.  'texi2dvi' honors the 'MAKEINFO' environment
+# variable.
+#
+# Were the foregoing not true, we would simply say this:
+#info_TEXINFOS = doc/groff.texi
+#doc_groff_TEXINFOS = doc/fdl.texi
+
+if HAVE_MAKEINFO
+GROFF_INFO = doc/groff.info
+GROFF_TXT = doc/groff.txt
+GROFF_HTML = doc/groff.html
+endif
+
+if USE_TEX
+GROFF_DVI = doc/groff.dvi
+GROFF_PDF = doc/groff.pdf
+endif # USE_TEX
+
+all: $(GROFF_INFO) $(GROFF_TXT) $(GROFF_HTML) $(GROFF_DVI) $(GROFF_PDF)
+
+# Distribute the manual in source form as well.
+EXTRA_DIST += doc/groff.texi.in doc/groff.texi doc/fdl.texi
+MAINTAINERCLEANFILES += doc/groff.texi
+
+doc/groff.texi: $(top_srcdir)/doc/groff.texi.in
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& $(DOC_SED) $(top_srcdir)/doc/groff.texi.in >$@
+
+EXTRA_DIST += doc/groff.info
+MAINTAINERCLEANFILES += doc/groff.info
+if HAVE_MAKEINFO
+$(GROFF_INFO): doc/groff.texi
+	$(AM_V_at)$(MKDIR_P) $(doc_builddir)
+	$(AM_V_GEN)LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) -o doc/groff.info --enable-encoding \
+	  -I $(doc_srcdir) $(doc_builddir)/groff.texi
+endif
+
+# Distribute the Info files.
+dist-hook: dist-info-bits
+dist-info-bits:
+	chmod u+w $(distdir)/doc
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if [ -f "$$d"/groff.info ]; then \
+	    cp -f "$$d"/groff.info-* $(distdir)/doc; \
+	    break; \
+	  fi; \
+	done
+
+EXTRA_DIST += doc/groff.txt
+MAINTAINERCLEANFILES += doc/groff.txt
+.texi.txt:
+	$(AM_V_at)$(MKDIR_P) $(doc_builddir)
+	$(AM_V_GEN)LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --enable-encoding -I $(doc_srcdir) --plaintext \
+	  -o $@ $<
+
+# Generate HTML, both split into several files, and as a single file.
+# 'html' and its installation counterpart 'install-html' are standard
+# Automake targets.
+EXTRA_DIST += doc/groff.html doc/groff.html.node
+MAINTAINERCLEANFILES += doc/groff.html doc/groff.html.node
+.texi.html:
+	$(AM_V_at)$(MKDIR_P) $(doc_builddir)/
+	$(AM_V_GEN)LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --html -I $(doc_srcdir) \
+	  -o doc/`basename $@`.node $<
+	$(AM_V_at)LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --html -I $(doc_srcdir) --no-split \
+	  -o $@ $<
+
+EXTRA_DIST += doc/groff.dvi doc/groff.pdf
+
+# Define suffix rules to make our Texinfo manual in DVI and PDF
+# formats.  'pdf' and 'dvi' and their installation counterparts
+# 'install-pdf' and 'install-dvi' are standard Automake targets.
+.texi.dvi:
+if HAVE_TEXI2DVI
+if USE_TEX
+	$(AM_V_at)$(MKDIR_P) $(doc_builddir)
+	$(AM_V_GEN)LANG=C \
+	LC_ALL=C \
+	TEXINPUTS="$(top_srcdir)/build-aux:$(TEXINPUTS)" \
+	MAKEINFO='$(MAKEINFO) -I $(doc_srcdir)' \
+	FORCE_SOURCE_DATE=1 \
+	$(PROG_TEXI2DVI) -e --batch --build-dir=doc/`basename $@`.t2d \
+	  -o $@ $<
+else
+	@echo "program 'tex' is missing; cannot generate $@" >&2; \
+	exit 1
+endif # USE_TEX
+else
+	@echo "program 'texi2dvi' is missing or too old;" \
+	  "cannot generate $@" >&2; \
+	exit 1
+endif # HAVE_TEXI2DVI
+
+.texi.pdf:
+if HAVE_TEXI2DVI
+if USE_TEX
+	$(AM_V_at)$(MKDIR_P) $(doc_builddir)
+	$(AM_V_GEN)LANG=C \
+	LC_ALL=C \
+	TEXINPUTS="$(top_srcdir)/build-aux:$(TEXINPUTS)" \
+	MAKEINFO='$(MAKEINFO) -I $(doc_srcdir)' \
+	$(PROG_TEXI2DVI) -e --batch --pdf \
+	  --build-dir=doc/`basename $@`.t2p -o $@ $<
+else
+	@echo "program 'tex' is missing; cannot generate $@" >&2; \
+	exit 1
+endif # USE_TEX
+else
+	@echo "program 'texi2dvi' is missing or too old;" \
+	  "cannot generate $@" >&2; \
+	exit 1
+endif # HAVE_TEXI2DVI
+
+install-doc: install-dvi install-html install-pdf
+
+maintainer-clean-local:
+	$(RM) $(doc_builddir)/gnu.eps
+	$(RM) $(doc_builddir)/groff.info*
+	$(RM) $(doc_builddir)/groff.pdf
+	$(RM) $(doc_builddir)/groff.dvi
+	$(RM) $(doc_builddir)/groff.txt
+	$(RM) -r $(doc_builddir)/groff.html.*
+	$(RM) -r $(doc_builddir)/*.t2d $(doc_builddir)/*.t2p
+	$(RM) $(doc_builddir)/groff.texi
+
+# Generated forms of the groff Texinfo manual might be in the source
+# directory (distribution archive build) or in the build directory (Git
+# repository build).
+#
+# Targets that do the work have a macro prerequisite that is empty if
+# build-time dependencies for regenerating the document are unavailable;
+# thus we (re)build the document only if we can actually do so.  If not,
+# the user gets the "stock" version from distribution archive.
+
+install-data-local: install-txt-local
+install-txt-local: $(GROFF_TXT)
+	-test -d $(DESTDIR)$(docdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(docdir)
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if [ -f "$$d"/groff.txt ]; then \
+	    cp "$$d"/groff.txt $(DESTDIR)$(docdir); \
+	    break; \
+	  fi; \
+	done
+
+install-data-local: install-info-local
+install-info-local: $(GROFF_INFO)
+	-test -d $(DESTDIR)$(infodir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(infodir)
+	$(RM) $(DESTDIR)/doc/groff.info*
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if [ -f "$$d"/groff.info ]; then \
+	    cp "$$d"/groff.info* $(DESTDIR)$(infodir); \
+	    $(INSTALL_INFO) --info-file="$$d"/groff.info \
+	      --info-dir=$(DESTDIR)$(infodir); \
+	    break; \
+	  fi; \
+	done
+
+install-dvi-local: $(GROFF_DVI)
+	-test -d $(DESTDIR)$(docdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(docdir)
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if [ -f "$$d"/groff.dvi ]; then \
+	    cp "$$d"/groff.dvi $(DESTDIR)$(docdir); \
+	    break; \
+	  fi; \
+	done
+
+install-pdf-local: $(GROFF_PDF)
+	-test -d $(DESTDIR)$(pdfdocdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(pdfdocdir)
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if [ -f "$$d"/groff.pdf ]; then \
+	    cp "$$d"/groff.pdf $(DESTDIR)$(pdfdocdir); \
+	    break; \
+	  fi; \
+	done
+
+install-html-local: $(GROFF_HTML)
+	-test -d $(DESTDIR)$(htmldocdir)/groff.html.mono \
+	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)/groff.html.mono
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if [ -f "$$d"/groff.html ]; then \
+	    cp -r "$$d"/groff.html \
+	      $(DESTDIR)$(htmldocdir)/groff.html.mono; \
+	    cp -r "$$d"/groff.html.node \
+	      $(DESTDIR)$(htmldocdir); \
+	    break; \
+	  fi; \
+	done
+
+uninstall-local: uninstall_infodoc uninstall-dvi uninstall-pdf \
+  uninstall-html uninstall-txt
+uninstall_doc: uninstall-local
+uninstall-doc: uninstall-local
+uninstall-dvi:
+	$(RM) $(DESTDIR)$(docdir)/groff.dvi
+	-rmdir $(DESTDIR)$(docdir)
+uninstall_infodoc:
+	-$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/groff.info
+	-for f in `ls $(DESTDIR)$(infodir)/groff.info*`; do \
+	  $(RM) $$f; \
+	done
+uninstall-pdf:
+	$(RM) $(DESTDIR)$(pdfdocdir)/groff.pdf
+	-rmdir $(DESTDIR)$(pdfdocdir)
+uninstall-html:
+	$(RM) $(DESTDIR)$(htmldocdir)/groff.html.mono/*
+	$(RM) $(DESTDIR)$(htmldocdir)/groff.html.node/*
+uninstall-txt:
+	$(RM) $(DESTDIR)$(docdir)/groff.txt
+
+# An image of a gnu in enscapsulated PostScript is generated during the
+# build process if necessary.  Our configure script assumes pnmdepth is
+# available if xpmtoppm is (see macro "GROFF_PROG_XPMTOPPM").
+EXTRA_DIST += $(DOC_GNU_EPS) doc/gnu.xpm
+$(DOC_GNU_EPS): doc/gnu.xpm
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& if test "$(XPMTOPPM)" != found; then \
+	  echo "program 'xpmtoppm' is missing; can't generate $@" >&2; \
+	  exit 1; \
+	fi; \
+	if test "$(pnmtops)" != found; then \
+	  echo "program 'pnmtops' is missing; can't generate $@" >&2; \
+	  exit 1; \
+	fi; \
+	if ! echo "$(pnmtops_nosetpage)" | grep -q nosetpage; then \
+	  echo "program 'pnmtops' can't handle -nosetpage option;" \
+	    "can't generate $@" >&2; \
+	  exit 1; \
+	fi; \
+	xpmtoppm $(top_srcdir)/doc/gnu.xpm | pnmdepth 15 \
+	  | $(pnmtops_nosetpage) -noturn -rle >$@
+
+# Provide a copy of the image in the distribution archive to accommodate
+# systems without a tool to generate it from an X pixmap.
+dist-hook: dist-gnueps
+dist-gnueps:
+	chmod u+w $(distdir)/doc
+	for d in $(doc_builddir) $(doc_srcdir); do \
+	  if [ -f "$$d"/$(DOC_GNU_EPS) ]; then \
+	    cp -f "$$d"/$(DOC_GNU_EPS) $(distdir)/doc; \
+	    break; \
+	  fi; \
+	done
+
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

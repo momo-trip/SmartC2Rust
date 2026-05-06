@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>End-of-input Traps (The GNU troff Manual)</title>
+
+<meta name="description" content="End-of-input Traps (The GNU troff Manual)">
+<meta name="keywords" content="End-of-input Traps (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Traps.html" rel="up" title="Traps">
+<link href="Diversions.html" rel="next" title="Diversions">
+<link href="Leading-Space-Traps.html" rel="prev" title="Leading Space Traps">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="End_002dof_002dinput-Traps"></span><div class="header">
+<p>
+Previous: <a href="Leading-Space-Traps.html" accesskey="p" rel="prev">Leading Space Traps</a>, Up: <a href="Traps.html" accesskey="u" rel="up">Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="End_002dof_002dinput-Traps-1"></span><h4 class="subsection">5.29.5 End-of-input Traps</h4>
+<span id="index-end_002dof_002dinput-traps"></span>
+<span id="index-traps_002c-end_002dof_002dinput"></span>
+
+<dl>
+<dt id="index-_002eem">Request: <strong><tt>.em</tt></strong> <em>[<span class="roman"><i>name</i></span>]</em></dt>
+<dd><span id="index-em"></span>
+<span id="index-setting-end_002dof_002dinput-trap-_0028em_0029"></span>
+<span id="index-end_002dof_002dinput-trap_002c-setting-_0028em_0029"></span>
+<span id="index-trap_002c-end_002dof_002dinput_002c-setting-_0028em_0029"></span>
+<span id="index-end_002dof_002dinput-macro-_0028em_0029"></span>
+<span id="index-macro_002c-end_002dof_002dinput-_0028em_0029"></span>
+<p>Set a trap at the end of input, calling macro <var>name</var> after the last
+line of the last input file has been processed.  If no argument is
+given, any existing end-of-input trap is removed.
+</p>
+<p>For example, if the document had to have a section at the bottom of the
+last page for someone to approve it, the <code>em</code> request could be
+used.
+</p>
+<div class="example">
+<pre class="example">.de approval
+\c
+.  ne 3v
+.  sp (\\n[.t]u - 3v)
+.  in +4i
+.  lc _
+.  br
+Approved:\t\a
+.  sp
+Date:\t\t\a
+..
+.
+.em approval
+</pre></div>
+
+<p>The <code>\c</code> in the above example needs explanation.  For historical
+reasons (compatibility with <acronym>AT&amp;T</acronym> <code>troff</code>), the
+end-of-input macro exits as soon as it causes a page break if no
+partially collected line remains.<a id="DOCF167" href="groff.html_fot.html#FOOT167"><sup>167</sup></a>
+</p>
+<span id="index-page-break_002c-final"></span>
+<span id="index-break_002c-page_002c-final"></span>
+<span id="index-page-ejection_002c-of-final-page"></span>
+<span id="index-ejection_002c-page_002c-of-final-page"></span>
+<p>Let us assume that there is no <code>\c</code> in the above <code>approval</code>
+macro, that the page is full, and last output line has been broken with,
+say, a <code>br</code> request.  Because there is no more room, a <code>ne</code>
+request at this point causes a page ejection, which in turn makes
+<code>troff</code> exit immediately as just described.  In most situations,
+this is not desired; people generally want to format the input after
+<code>ne</code>.
+</p>
+<p>To force processing of the whole end-of-input macro independently of
+this behavior, it is thus advisable to (invisibly) ensure the existence
+of a partially collected line (<code>\c</code>) whenever there is a chance
+that a page break can happen.  In the above example, invoking the
+<code>ne</code> request ensures that there is room for the subsequent
+formatted output on the same page, so we need insert <code>\c</code> only
+once.
+</p>
+<p>The next example shows how to append three lines, then start a new page
+unconditionally.  Since &lsquo;<samp>.ne&nbsp;1</samp>&rsquo;<!-- /@w --> doesn&rsquo;t give the desired
+effect&mdash;there is always one line available or we are already at the
+beginning of the next page&mdash;we temporarily increase the page length by
+one line so that we can use &lsquo;<samp>.ne&nbsp;2</samp>&rsquo;<!-- /@w -->.
+</p>
+<div class="example">
+<pre class="example">.de EM
+.pl +1v
+\c
+.ne 2
+line one
+.br
+\c
+.ne 2
+line two
+.br
+\c
+.ne 2
+line three
+.br
+.pl -1v
+\c
+'bp
+..
+.em EM
+</pre></div>
+
+<p>This specific feature affects only the first potential page break caused
+by the end-of-input macro; further page breaks emitted by the macro are
+handled normally.
+</p>
+<p>Another possible use of the
+<code>em</code>
+request is to make
+GNU
+<code>troff</code> emit a single large page instead of multiple pages.
+For example,
+one may want to produce a long plain text file
+for reading in a terminal or emulator
+without page footers and headers interrupting the body of the document.
+One approach is to set the page length at the beginning of the document
+to a very large value to hold all the text
+and automatically adjust it to the exact height of the document
+after the text has been output.
+</p>
+<div class="example">
+<pre class="example">.de adjust-page-length
+.  br
+.  pl \\n[nl]u \&quot; \n[nl]: current vertical position
+..
+.
+.de single-page-mode
+.  pl \n[.R]u
+.  em adjust-page-length
+..
+.
+.\&quot; Activate the above code if configured.
+.if \n[do-continuous-rendering] \
+.  single-page-mode
+</pre></div>
+
+<p>Since only one end-of-input trap exists and another macro package may
+already use it, care must be taken not to break the mechanism.  A simple
+solution would be to append the above macro to the macro package&rsquo;s
+end-of-input macro using the <code>am</code> request.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Leading-Space-Traps.html" accesskey="p" rel="prev">Leading Space Traps</a>, Up: <a href="Traps.html" accesskey="u" rel="up">Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

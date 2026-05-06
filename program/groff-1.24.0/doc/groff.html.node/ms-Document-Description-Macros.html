@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ms Document Description Macros (The GNU troff Manual)</title>
+
+<meta name="description" content="ms Document Description Macros (The GNU troff Manual)">
+<meta name="keywords" content="ms Document Description Macros (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms.html" rel="up" title="ms">
+<link href="ms-Body-Text.html" rel="next" title="ms Body Text">
+<link href="ms-Document-Control-Settings.html" rel="prev" title="ms Document Control Settings">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="ms-Document-Description-Macros"></span><div class="header">
+<p>
+Next: <a href="ms-Body-Text.html" accesskey="n" rel="next">ms Body Text</a>, Previous: <a href="ms-Document-Control-Settings.html" accesskey="p" rel="prev">ms Document Control Settings</a>, Up: <a href="ms.html" accesskey="u" rel="up">ms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="ms-Cover-Page-Macros"></span><span id="Document-Description-Macros"></span><h4 class="subsection">4.6.4 Document Description Macros</h4>
+<span id="index-ms-macros_002c-document-description"></span>
+<span id="index-document-description-macros_002c-_005bms_005d"></span>
+
+<p>Only the simplest document lacks a title.<a id="DOCF13" href="groff.html_fot.html#FOOT13"><sup>13</sup></a>  As its level of sophistication (or
+complexity) increases, it tends to acquire a date of revision,
+explicitly identified authors, sponsoring institutions for authors, and,
+at the rarefied heights, an abstract of its content.  Define these
+data by calling the macros below in the order shown; <code>DA</code> or
+<code>ND</code> can be called to set the document date (or other identifier)
+at any time before (a) the abstract, if present, or (b) its information
+is required in a header or footer.  Use of these macros is optional,
+except that <code>TL</code> is mandatory if any of <code>RP</code>, <code>AU</code>,
+<code>AI</code>, or <code>AB</code> is called, and <code>AE</code> is mandatory if
+<code>AB</code> is called.
+</p>
+<dl>
+<dt id="index-_002eRP">Macro: <strong><tt>.RP</tt></strong> <em>[<code>no-repeat-info</code>] [<code>no-renumber</code>]</em></dt>
+<dd><span id="index-RP-_005bms_005d"></span>
+<p>Use the &ldquo;report&rdquo; (<acronym>AT&amp;T</acronym>: &ldquo;released paper&rdquo;) format for your
+document, creating a separate cover page.  The default arrangement is to
+place most of the document description (title, author names and
+institutions, and abstract, but not the date) at the top of the first
+page.  If the optional <code>no-repeat-info</code> argument is given,
+<samp>ms</samp> produces a cover page but does not repeat any of its
+information subsequently (but see the <code>DA</code> macro below regarding
+the date).  Normally, <code>RP</code> sets the page number following the cover
+page to&nbsp;1.  Specifying the optional <code>no-renumber</code> argument
+suppresses this alteration.
+Optional arguments can occur in any order.
+<samp>ms</samp>
+recognizes
+<code>no</code>
+as a synonym of
+<code>no-repeat-info</code>
+to maintain <acronym>AT&amp;T</acronym> compatibility.
+Options other than
+<code>no</code>
+are GNU extensions.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eTL">Macro: <strong><tt>.TL</tt></strong></dt>
+<dd><span id="index-TL-_005bms_005d"></span>
+<p>Specify the document title.  <samp>ms</samp> collects text on input lines
+following this call into the title until reaching <code>AU</code>, <code>AB</code>,
+or a heading or paragraphing macro call.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eAU">Macro: <strong><tt>.AU</tt></strong></dt>
+<dd><span id="index-AU-_005bms_005d"></span>
+<p>Specify an author&rsquo;s name.  <samp>ms</samp> collects text on input lines
+following this call into the author&rsquo;s name until reaching <code>AI</code>,
+<code>AB</code>, another <code>AU</code>, or a heading or paragraphing macro call.
+Call it repeatedly to specify multiple authors.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eAI">Macro: <strong><tt>.AI</tt></strong></dt>
+<dd><span id="index-AI-_005bms_005d"></span>
+<p>Specify the preceding author&rsquo;s institutional affiliation.  An <code>AU</code>
+call is usefully followed by at most one <code>AI</code> call; if there are
+more, the last <code>AI</code> call controls.  <samp>ms</samp> collects text on
+input lines following this call into the author&rsquo;s institution until
+reaching <code>AU</code>, <code>AB</code>, or a heading or paragraphing macro call.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eDA">Macro: <strong><tt>.DA</tt></strong> <em>[<span class="roman"><i>x</i></span> &hellip;]</em></dt>
+<dd><span id="index-DA-_005bms_005d"></span>
+<p>Typeset the current date, or any arguments <var>x</var>, in the center
+footer, and, if <code>RP</code> is also called, left-aligned at the end of the
+description information on the cover page.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eND">Macro: <strong><tt>.ND</tt></strong> <em>[<span class="roman"><i>x</i></span> &hellip;]</em></dt>
+<dd><span id="index-ND-_005bms_005d"></span>
+<p>Typeset the current date, or any arguments <var>x</var>, if <code>RP</code> is also
+called, left-aligned at the end of the document description on the cover
+page.  This is <code>groff</code> <samp>ms</samp>&rsquo;s default.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eAB">Macro: <strong><tt>.AB</tt></strong> <em>[<code>no</code>]</em></dt>
+<dd><span id="index-AB-_005bms_005d"></span>
+<p>Begin the abstract.  <samp>ms</samp> collects text on input lines following
+this call into the abstract until reaching an <code>AE</code> call.  By
+default, <samp>ms</samp> places the word &ldquo;ABSTRACT&rdquo; centered and in italics
+above the text of the abstract.  The optional argument <code>no</code>
+suppresses this heading.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eAE">Macro: <strong><tt>.AE</tt></strong></dt>
+<dd><span id="index-AE-_005bms_005d"></span>
+<p>End the abstract.
+</p></dd></dl>
+
+<p>An example document description, using a cover page, follows.
+<span id="index-cover-page-in-_005bms_005d_002c-example-markup"></span>
+<span id="index-example-markup_002c-cover-page-in-_005bms_005d"></span>
+</p>
+<div class="example">
+<pre class="example">.RP
+.TL
+The Inevitability of Code Bloat
+in Commercial and Free Software
+.AU
+J.\&amp; Random Luser
+.AI
+University of West Bumblefuzz
+.AB
+This report examines the long-term growth of the code
+bases in two large,
+popular software packages;
+the free Emacs and the commercial Microsoft Word.
+While differences appear in the type or order of
+features added,
+due to the different methodologies used,
+the results are the same in the end.
+.PP
+The free software approach is shown to be superior in
+that while free software can become as bloated as
+commercial offerings,
+free software tends to have fewer serious bugs and the
+added features are more in line with user demand.
+.AE
+<span class="roman">&hellip;the rest of the paper&hellip;</span>
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="ms-Body-Text.html" accesskey="n" rel="next">ms Body Text</a>, Previous: <a href="ms-Document-Control-Settings.html" accesskey="p" rel="prev">ms Document Control Settings</a>, Up: <a href="ms.html" accesskey="u" rel="up">ms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ms Footnotes (The GNU troff Manual)</title>
+
+<meta name="description" content="ms Footnotes (The GNU troff Manual)">
+<meta name="keywords" content="ms Footnotes (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms-Body-Text.html" rel="up" title="ms Body Text">
+<link href="ms-language-and-localization.html" rel="next" title="ms language and localization">
+<link href="ms-Insertions.html" rel="prev" title="ms Insertions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="ms-Footnotes"></span><div class="header">
+<p>
+Next: <a href="ms-language-and-localization.html" accesskey="n" rel="next">ms language and localization</a>, Previous: <a href="ms-Insertions.html" accesskey="p" rel="prev">ms Insertions</a>, Up: <a href="ms-Body-Text.html" accesskey="u" rel="up">ms Body Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Footnotes"></span><h4 class="subsubsection">4.6.5.10 Footnotes</h4>
+<span id="index-ms-macros_002c-footnotes"></span>
+<span id="index-footnotes-_005bms_005d"></span>
+
+<span id="index-footnote-mark-_005bms_005d"></span>
+<span id="index-mark_002c-footnote-_005bms_005d"></span>
+<p>A footnote is typically anchored to a place in the text with a
+<em>mark</em>,
+which is a small integer,
+a symbol such as a dagger,
+or arbitrary user-specified text.
+</p>
+<dl>
+<dt id="index-_005c_002a_005b_002a_005d">String: <strong><tt>\*[*]</tt></strong></dt>
+<dd><span id="index-_002a-_005bms_005d"></span>
+<p>Place an
+<em>automatic number</em>,
+an automatically generated numeric footnote mark,
+in the text.
+Each time this string is interpolated,
+the number it produces increments by one.  Automatic numbers start at 1.
+This is a Berkeley extension.
+</p></dd></dl>
+
+<p>Enclose the footnote text in <code>FS</code> and <code>FE</code> macro calls to set
+it at the nearest available &ldquo;foot&rdquo;, or bottom, of a text column or
+page.
+</p>
+<dl>
+<dt id="index-_002eFS">Macro: <strong><tt>.FS</tt></strong> <em>[<span class="roman"><i>mark</i></span>]</em></dt>
+<dd><span id="index-FS-_005bms_005d"></span>
+</dd><dt id="index-_002eFE">Macro: <strong><tt>.FE</tt></strong></dt>
+<dd><span id="index-FE-_005bms_005d"></span>
+<p>Begin
+(<code>FS</code>)
+and end
+(<code>FE</code>)
+a footnote.
+<code>FS</code>
+calls
+<code>FS-MARK</code>
+with any supplied
+<var>mark</var> argument,
+which is then also placed at the beginning of the footnote text.
+If
+<var>mark</var>
+is omitted,
+the next pending automatic number enqueued by interpolation of the
+<code>*</code>
+string is used,
+and if none exists,
+nothing is prefixed.
+</p></dd></dl>
+
+<p>You may not desire automatically numbered footnotes in spite of their
+convenience.
+You can indicate a footnote with a symbol or other text by specifying
+its mark at the appropriate place
+(for example,
+by using
+<code>\[dg]</code>
+for the dagger glyph)
+<em>and</em>
+as an argument to the
+<code>FS</code> macro.
+Such manual marks should be repeated as arguments to
+<code>FS</code>
+or as part of the footnote text to disambiguate their correspondence.
+You may wish to use
+<code>\*{</code>
+and
+<code>\*}</code>
+to superscript the mark at the anchor point,
+in the footnote text,
+or both.
+</p>
+<p><code>groff</code> <samp>ms</samp> provides a hook macro, <code>FS-MARK</code>, for
+user-determined operations to be performed when the <code>FS</code> macro is
+called.  It is passed the same arguments as <code>FS</code> itself.  An
+application of <code>FS-MARK</code> is anchor placement for a hyperlink
+reference, so that a footnote can link back to its referential
+context.
+By default, this macro has an empty definition.
+<code>FS-MARK</code> is a GNU extension.
+</p>
+<span id="index-footnotes_002c-and-keeps-_005bms_005d"></span>
+<span id="index-keeps_002c-and-footnotes-_005bms_005d"></span>
+<span id="index-footnotes_002c-and-displays-_005bms_005d"></span>
+<span id="index-displays_002c-and-footnotes-_005bms_005d"></span>
+<p>Footnotes can be safely used within keeps and displays, but you should
+avoid using automatically numbered footnotes within floating keeps.  You
+can place a second <code>\**</code> interpolation between a <code>\**</code> and its
+corresponding <code>FS</code> call as long as each <code>FS</code> call occurs
+<em>after</em> the corresponding <code>\**</code> and occurrences of <code>FS</code>
+are in the same order as corresponding occurrences of <code>\**</code>.
+</p>
+<p>Footnote text is formatted as paragraphs are, using analogous
+parameters.  The registers <code>FI</code>, <code>FPD</code>, <code>FPS</code>, and
+<code>FVS</code> correspond to <code>PI</code>, <code>PD</code>, <code>PS</code>, and <code>CS</code>,
+respectively; <code>FPD</code>, <code>FPS</code>, and <code>FVS</code> are GNU extensions.
+</p>
+<p>The
+<code>FF</code>
+register controls the formatting of automatically numbered footnote
+paragraphs,
+and those for which
+<code>FS</code> is given a
+<var>mark</var>
+argument,
+See <a href="ms-Document-Control-Settings.html">ms Document Control Settings</a>.
+</p>
+<p>The default footnote line length is 11/12ths of the normal line length
+for compatibility with the expectations of historical <samp>ms</samp>
+documents; you may wish to set the <code>FR</code> string to &lsquo;<samp>1</samp>&rsquo; to align
+with contemporary typesetting practices.  In the
+past,<a id="DOCF15" href="groff.html_fot.html#FOOT15"><sup>15</sup></a> an <code>FL</code> register
+was used for the line length in footnotes; however, setting this
+register at document initialization time had no effect on the footnote
+line length in multi-column arrangements.<a id="DOCF16" href="groff.html_fot.html#FOOT16"><sup>16</sup></a>
+</p>
+<p>Prefer the
+<code>FR</code>
+string over the
+<code>FL</code>
+register in contemporary documents.
+The footnote line length is effectively computed as
+&lsquo;<samp><i>column-width</i> * \*[FR]</samp>&rsquo;.
+If you require an absolute footnote line length,
+recall that
+<code>roff</code>
+formatters evaluate numeric expressions strictly from left to right,
+without operator precedence
+(parentheses are honored).
+</p>
+<div class="example">
+<pre class="example">.ds FR 0+3i \&quot; Set footnote line length to 3 inches.
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="ms-language-and-localization.html" accesskey="n" rel="next">ms language and localization</a>, Previous: <a href="ms-Insertions.html" accesskey="p" rel="prev">ms Insertions</a>, Up: <a href="ms-Body-Text.html" accesskey="u" rel="up">ms Body Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

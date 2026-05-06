@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision GL in Switzerland
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision GL.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/ch.rem
+
+REM Thursday 1 April ADDOMIT SCANFROM -28 SATISFY [$T != easterdate($Ty)-3] MSG %"Näfelser Fahrt%" %! %b.
+REM Thursday 8 April ADDOMIT SCANFROM -28 SATISFY [$T == easterdate($Ty)+4] MSG %"Näfelser Fahrt%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Karfreitag%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Ostermontag%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Pfingstmontag%" %! %b.
+OMIT 1 November MSG %"Allerheiligen%" %! %b.
+OMIT 26 December MSG %"Stephanstag%" %! %b.
+
+# Optional holidays
+REM 2 January MSG %"Berchtoldstag%" %! %b.

@@ -1,0 +1,730 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Manipulating Hyphenation (The GNU troff Manual)</title>
+
+<meta name="description" content="Manipulating Hyphenation (The GNU troff Manual)">
+<meta name="keywords" content="Manipulating Hyphenation (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Manipulating-Spacing.html" rel="next" title="Manipulating Spacing">
+<link href="Manipulating-Filling-and-Adjustment.html" rel="prev" title="Manipulating Filling and Adjustment">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Manipulating-Hyphenation"></span><div class="header">
+<p>
+Next: <a href="Manipulating-Spacing.html" accesskey="n" rel="next">Manipulating Spacing</a>, Previous: <a href="Manipulating-Filling-and-Adjustment.html" accesskey="p" rel="prev">Manipulating Filling and Adjustment</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Manipulating-Hyphenation-1"></span><h3 class="section">5.10 Manipulating Hyphenation</h3>
+<span id="index-manipulating-hyphenation"></span>
+<span id="index-hyphenation_002c-manipulating"></span>
+
+<span id="index-hyphenation_002c-automatic"></span>
+<span id="index-automatic-hyphenation"></span>
+<p>When filling, GNU <code>troff</code> hyphenates words as needed at
+user-specified and automatically determined hyphenation points.  The
+machine-driven determination of hyphenation points in words requires
+algorithms and data, and is susceptible to conventions and preferences.
+Before tackling such <em>automatic hyphenation</em>, let us consider how
+hyphenation points can be set explicitly.
+</p>
+<span id="index-hyphenation_002c-explicit"></span>
+<span id="index-explicit-hyphenation"></span>
+<span id="index-hyphenation_002c-manual"></span>
+<span id="index-manual-hyphenation"></span>
+<p>Explicitly hyphenated words such as &ldquo;mother-in-law&rdquo; are eligible for
+breaking after each of their hyphens.  Relatively few words in a
+language offer such obvious break points, however, and automatic
+detection of syllabic (or phonetic) boundaries for hyphenation is not
+perfect,<a id="DOCF85" href="groff.html_fot.html#FOOT85"><sup>85</sup></a> particularly for
+unusual words found in technical literature.  We can instruct GNU
+<code>troff</code> how to hyphenate specific words if the need arises.
+</p>
+<span id="index-hyphenation-exception-words"></span>
+<dl>
+<dt id="index-_002ehw">Request: <strong><tt>.hw</tt></strong> <em>word &hellip;</em></dt>
+<dd><span id="index-hw"></span>
+<p>Define each argument <var>word</var>
+(comprising ordinary,
+special,
+or indexed characters)
+as a
+<em>hyphenation exception word</em>
+such that each occurence of a hyphen-minus
+&lsquo;-&rsquo;
+in
+<var>word</var>
+indicates a hyphenation point.
+For example,
+the request
+</p>
+<div class="example">
+<pre class="example">.hw in-sa-lub-rious alpha
+</pre></div>
+
+<p>marks potential hyphenation points in &ldquo;insalubrious&rdquo;, and prevents
+&ldquo;alpha&rdquo; from being hyphenated at all.
+</p>
+<p>Besides the space character, any character whose hyphenation code is
+zero can be used to separate the arguments (see the <code>hcode</code> request
+below).
+</p>
+<span id="index-hw-request_002c-and-hy-restrictions"></span>
+<p>Hyphenation points specified with <code>hw</code> are not subject to the
+within-word placement restrictions imposed by the <code>hy</code> request (see
+below).
+</p>
+<p>Hyphenation exception words are associated with the hyphenation language
+(see the
+<code>hla</code>
+request below);
+invoking the
+<code>hw</code>
+request in the absence of a hyphenation language is an error.
+Each hyphenation language maintains an independent set
+of hyphenation exception words.
+</p>
+<p>The formatter ignores the request if it lacks arguments.
+<a id="DOCF86" href="groff.html_fot.html#FOOT86"><sup>86</sup></a>
+</p>
+<p>Obtain a report of hyphenation exception words
+on the standard error stream
+with the <code>phw</code> request.
+See <a href="Debugging.html">Debugging</a>.
+</p></dd></dl>
+
+<p>These are known as
+<i>hyphenation exception words</i>
+in the expectation that most users
+will avail themselves of automatic hyphenation;
+these exceptions override any rules
+that would normally apply to a word
+matching a hyphenation exception word defined with
+<code>hw</code>.
+</p>
+<p>Situations also arise when only a specific occurrence of a word needs
+its hyphenation altered or suppressed, or when a URL or similar
+specialized text needs to be breakable in sensible places without
+hyphenation.
+</p>
+<dl>
+<dt id="index-_005c_0025-1">Escape&nbsp;sequence: <strong><tt>\%</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_0025"></span>
+</dd><dt id="index-_005c_003a-1">Escape&nbsp;sequence: <strong><tt>\:</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_003a"></span>
+<span id="index-hyphenation-character-_0028_005c_0025_0029"></span>
+<span id="index-character_002c-hyphenation-_0028_005c_0025_0029"></span>
+<span id="index-disabling-hyphenation-_0028_005c_0025_0029"></span>
+<span id="index-hyphenation_002c-disabling-_0028_005c_0025_0029"></span>
+<p>To tell GNU <code>troff</code> how to hyphenate words as they occur in input,
+use the <code>\%</code> escape sequence; it is the default <em>hyphenation
+character</em>.  Each instance within a word indicates to GNU <code>troff</code>
+that the word may be hyphenated at that point, while prefixing a word
+with this escape sequence prevents it from being otherwise hyphenated.
+This mechanism affects only that occurrence of the word; to change the
+hyphenation of a word for the remainder of input processing, use the
+<code>hw</code> request.
+</p>
+<span id="index-_005cX_002c-followed-by-_005c_0025"></span>
+<span id="index-_005cY_002c-followed-by-_005c_0025"></span>
+<span id="index-_005c_0025_002c-following-_005cX-or-_005cY"></span>
+<p>GNU <code>troff</code> regards the escape sequences <code>\X</code> and <code>\Y</code> as
+starting a word; that is, the <code>\%</code> escape sequence in, say,
+&lsquo;<samp>\X'...'\%foobar</samp>&rsquo;<!-- /@w --> or &lsquo;<samp>\Y'...'\%foobar</samp>&rsquo;<!-- /@w --> no longer
+prevents hyphenation of &lsquo;<samp>foobar</samp>&rsquo; but inserts a hyphenation point
+just prior to it; most likely this isn&rsquo;t what you want.
+See <a href="Postprocessor-Access.html">Postprocessor Access</a>.
+</p>
+<span id="index-non_002dprinting-break-point-_0028_005c_003a_0029"></span>
+<span id="index-breaking-without-hyphens-_0028_005c_003a_0029"></span>
+<span id="index-file-names_002c-breaking-_0028_005c_003a_0029"></span>
+<span id="index-breaking-file-names-_0028_005c_003a_0029"></span>
+<span id="index-URLs_002c-breaking-_0028_005c_003a_0029"></span>
+<span id="index-breaking-URLs-_0028_005c_003a_0029"></span>
+<p><code>\:</code> inserts a non-printing break point; that is, a word can break
+there, but the soft hyphen glyph (see below) is not written to the
+output if it does.  The remainder of the word is subject to hyphenation
+as normal.
+</p>
+<p>You can combine <code>\:</code> and <code>\%</code> to control breaking of a file
+name or URL, or to permit hyphenation only after certain explicit
+hyphens within a word.
+</p>
+<div class="example">
+<pre class="example">The \%Lethbridge-Stewart-\:\%Sackville-Baggins divorce
+was, in retrospect, inevitable once the contents of
+\%/var/log/\:\%httpd/\:\%access_log on the family web
+server came to light, revealing visitors from Hogwarts.
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002ehc">Request: <strong><tt>.hc</tt></strong> <em>[<span class="roman"><i>char</i></span>]</em></dt>
+<dd><span id="index-hc"></span>
+<p>Change the hyphenation character to <var>char</var>.  This character then
+works as the <code>\%</code> escape sequence normally does, and thus no longer
+appears in the output.<a id="DOCF87" href="groff.html_fot.html#FOOT87"><sup>87</sup></a>  Without an
+argument, <code>hc</code> resets the hyphenation character to <code>\%</code> (the
+default).  The hyphenation character is associated with the environment
+(see <a href="Environments.html">Environments</a>).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eshc">Request: <strong><tt>.shc</tt></strong> <em>[<span class="roman"><i>c</i></span>]</em></dt>
+<dd><span id="index-shc"></span>
+<span id="index-soft-hyphen-character_002c-setting-_0028shc_0029"></span>
+<span id="index-character_002c-soft-hyphen_002c-setting-_0028shc_0029"></span>
+<span id="index-glyph_002c-soft-hyphen-_0028hy_0029"></span>
+<span id="index-soft-hyphen-glyph-_0028hy_0029"></span>
+<span id="index-char-request_002c-and-soft-hyphen-character"></span>
+<span id="index-tr-request_002c-and-soft-hyphen-character"></span>
+<p>Set the <em>soft hyphen character</em>, inserted when a word is hyphenated
+automatically or at a hyphenation character, to the ordinary or special
+character&nbsp;<var>c</var>.<a id="DOCF88" href="groff.html_fot.html#FOOT88"><sup>88</sup></a>  If the argument is omitted, the soft
+hyphen character is set to the default, <code>\[hy]</code>.  If no glyph for
+<var>c</var> exists in the font in use at a potential hyphenation point, then
+the line is not broken there.  Neither character definitions (specified
+with the <code>char</code> and similar requests) nor translations (specified
+with the <code>tr</code> request) are applied to <var>c</var>.
+</p></dd></dl>
+
+<span id="index-hyphenation-parameters_002c-automatic"></span>
+<span id="index-automatic-hyphenation-parameters"></span>
+<p>Several requests influence automatic hyphenation.  Because conventions
+vary, a variety of hyphenation modes is available to the <code>hy</code>
+request; these determine whether hyphenation will apply to a
+word prior to breaking a line at the end of a page (more or less; see
+below for details), and at which positions within that word
+automatically determined hyphenation points are permissible.  The places
+within a word that are eligible for hyphenation are determined by
+language-specific data and lettercase relationships.  Furthermore,
+hyphenation of a word might be suppressed due to a limit on
+consecutive hyphenated lines (<code>hlm</code>), a minimum line length
+threshold (<code>hym</code>), or because the line can instead be adjusted with
+additional inter-word space (<code>hys</code>).
+</p>
+<span id="index-hyphenation-mode-register-_0028_002ehy_0029"></span>
+<dl>
+<dt id="index-_002ehy">Request: <strong><tt>.hy</tt></strong> <em>[<span class="roman"><i>mode</i></span>]</em></dt>
+<dd><span id="index-hy"></span>
+</dd><dt id="index-_005cn_005b_002ehy_005d">Register: <strong><tt>\n[.hy]</tt></strong></dt>
+<dd><span id="index-_002ehy-1"></span>
+<p>Set automatic hyphenation mode to <var>mode</var>, an integer encoding
+conditions for hyphenation; if omitted, the configured hyphenation mode
+default (see below) is implied.  The hyphenation mode is available in
+the read-only register &lsquo;<samp>.hy</samp>&rsquo;; it is associated with the environment
+(see <a href="Environments.html">Environments</a>).  The hyphenation mode default depends on the
+localization file loaded when GNU <code>troff</code> starts up; see the
+<code>hpf</code> request below.  If no localization file is loaded, the
+default is &lsquo;<samp>1</samp>&rsquo;.
+</p>
+<p>Typesetting practice generally does not avail itself of every
+opportunity for hyphenation, but the details differ by language and site
+mandates.  The hyphenation modes of <acronym>AT&amp;T</acronym> <code>troff</code> were
+implemented with English-language publishing practices of the 1970s in
+mind, not a scrupulous enumeration of conceivable parameters.  GNU
+<code>troff</code> extends those modes such that finer-grained control is
+possible, favoring compatibility with older implementations over a more
+intuitive arrangement.  The means of hyphenation mode control is a set
+of numbers that can be added up to encode the behavior
+sought.<a id="DOCF89" href="groff.html_fot.html#FOOT89"><sup>89</sup></a>
+The entries in the following table
+are termed
+<em>values</em>;
+the sum of the desired values is the
+<em>mode</em>.
+</p>
+<dl compact="compact">
+<dt><code>0</code></dt>
+<dd><p>disables hyphenation.
+</p>
+</dd>
+<dt><code>1</code></dt>
+<dd><p>enables hyphenation except after the first and before the last character
+of a word.
+</p></dd>
+</dl>
+
+<p>The remaining values &ldquo;imply&rdquo; 1; that is, they enable hyphenation
+under the same conditions as &lsquo;<samp>.hy 1</samp>&rsquo;, and then apply or lift
+restrictions relative to that basis.
+</p>
+<dl compact="compact">
+<dt><code>2</code></dt>
+<dd><p>disables hyphenation of the last word
+on a page or column,<a id="DOCF90" href="groff.html_fot.html#FOOT90"><sup>90</sup></a>
+even for explicitly hyphenated words.
+</p>
+</dd>
+<dt><code>4</code></dt>
+<dd><p>disables hyphenation before the last two characters of a word.
+</p>
+</dd>
+<dt><code>8</code></dt>
+<dd><p>disables hyphenation after the first two characters of a word.
+</p>
+</dd>
+<dt><code>16</code></dt>
+<dd><p>enables hyphenation before the last character of a word.
+</p>
+</dd>
+<dt><code>32</code></dt>
+<dd><p>enables hyphenation after the first character of a word.
+</p></dd>
+</dl>
+
+<p>Apart from value&nbsp;2, restrictions imposed by the hyphenation mode
+are <em>not</em> respected for words whose hyphenations have been
+specified with the hyphenation character (&lsquo;<samp>\%</samp>&rsquo; by default) or the
+<code>hw</code> request.
+</p>
+<p>Nonzero values in the previous table are additive.  For example,
+mode&nbsp;12 causes GNU <code>troff</code> to hyphenate neither the last two
+nor the first two characters of a word.  Some values cannot be used
+together because they contradict; for instance, values 4 and&nbsp;16,
+and values 8 and&nbsp;32.  As noted, it is superfluous to add 1 to any
+non-zero even mode.
+</p>
+<span id="index-hyphen_002ecs"></span>
+<span id="index-hyphen_002eden"></span>
+<span id="index-hyphen_002edet"></span>
+<span id="index-hyphen_002een"></span>
+<span id="index-hyphen_002ees"></span>
+<span id="index-hyphen_002efr"></span>
+<span id="index-hyphen_002eit"></span>
+<span id="index-hyphen_002epl"></span>
+<span id="index-hyphen_002eru"></span>
+<span id="index-hyphen_002esv"></span>
+<span id="index-hyphenex_002ecs"></span>
+<span id="index-hyphenex_002een"></span>
+<span id="index-hyphenex_002epl"></span>
+<span id="index-hyphenation-pattern-files"></span>
+<span id="index-pattern-files_002c-for-hyphenation"></span>
+<p>The automatic placement of hyphens in words is determined by
+<em>pattern files</em>, which are derived from TeX and available for
+several languages.  These files are named <samp>hyphen.<var>xx</var></samp> (for
+the patterns) and <samp>hyphenex.<var>xx</var></samp> (for a list of exceptions in
+languages that require them) where <var>xx</var> is an ISO&nbsp;639<!-- /@w --> language
+code; see the table below.
+</p>
+<p>The number of characters at the beginning of a word after which the
+first hyphenation point should be inserted is determined by the patterns
+themselves; it can&rsquo;t be reduced further without introducing additional,
+invalid hyphenation points (unfortunately, this information is not part
+of a pattern file&mdash;you have to know it in advance).  The same is true
+for the number of characters at the end of a word before the last
+hyphenation point should be inserted.  For example, you can supply the
+following input to &lsquo;<samp>echo $(nroff)</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.ll 1
+.hy 48
+splitting
+</pre></div>
+
+<p>You will get
+</p>
+<div class="example">
+<pre class="example">s- plit- t- in- g
+</pre></div>
+
+<p>instead of the correct &lsquo;split- ting&rsquo;.  English patterns as distributed
+with GNU <code>troff</code> need two characters at the beginning and three
+characters at the end; this means that value&nbsp;4 of <code>hy</code> is
+mandatory.  Value&nbsp;8 is possible as an additional restriction, but
+values&nbsp;16 and&nbsp;32 should be avoided, as should mode&nbsp;1.
+Modes&nbsp;4 and&nbsp;6 are typical.
+</p>
+<p>A table of left and right minimum character counts for hyphenation as
+needed by the patterns distributed with
+GNU
+<code>troff</code> follows.<a id="DOCF91" href="groff.html_fot.html#FOOT91"><sup>91</sup></a>
+</p>
+<table>
+<thead><tr><th>language</th><th>pattern name</th><th>left min</th><th>right min</th></tr></thead>
+<tr><td>Czech</td><td>cs</td><td>2</td><td>2</td></tr>
+<tr><td>English</td><td>en</td><td>2</td><td>3</td></tr>
+<tr><td>French</td><td>fr</td><td>2</td><td>3</td></tr>
+<tr><td>German traditional</td><td>det</td><td>2</td><td>2</td></tr>
+<tr><td>German reformed</td><td>den</td><td>2</td><td>2</td></tr>
+<tr><td>Italian</td><td>it</td><td>2</td><td>2</td></tr>
+<tr><td>Polish</td><td>pl</td><td>2</td><td>2</td></tr>
+<tr><td>Russian</td><td>ru</td><td>2</td><td>2</td></tr>
+<tr><td>Spanish</td><td>es</td><td>2</td><td>2</td></tr>
+<tr><td>Swedish</td><td>sv</td><td>1</td><td>2</td></tr>
+</table>
+
+<p>Hyphenation exceptions within pattern files
+(that is,
+the words within a
+TeX
+<code>\hyphenation</code>
+group)
+obey hyphenation restrictions imposed by <code>hy</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002enh">Request: <strong><tt>.nh</tt></strong></dt>
+<dd><span id="index-nh"></span>
+<p>Disable automatic hyphenation; i.e., set the hyphenation mode to&nbsp;0
+(see above).  The hyphenation mode of the last call to <code>hy</code> is not
+remembered, but invoking <code>hy</code> without an argument restores the
+hyphenation mode default; <code>groff</code>&rsquo;s localization macro files do so
+for the languages listed above.
+</p></dd></dl>
+
+<span id="index-hyphenation-mode-default-register-_0028_002ehydefault_0029"></span>
+<dl>
+<dt id="index-_002ehydefault">Request: <strong><tt>.hydefault</tt></strong> <em>[<span class="roman"><i>mode</i></span>]</em></dt>
+<dd><span id="index-hydefault"></span>
+</dd><dt id="index-_005cn_005b_002ehydefault_005d">Register: <strong><tt>\n[.hydefault]</tt></strong></dt>
+<dd><span id="index-_002ehydefault-1"></span>
+<p>Set hyphenation mode default to
+<var>mode</var>,
+configuring the value the automatic hyphenation mode takes if
+<code>hy</code>
+is invoked without an argument.
+The hyphenation mode default is available in the read-only register
+&lsquo;<samp>.hydefault</samp>&rsquo;;
+it is associated with the environment.<a id="DOCF92" href="groff.html_fot.html#FOOT92"><sup>92</sup></a>
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ehpf">Request: <strong><tt>.hpf</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>pattern-file</i></span></em></dt>
+<dd><span id="index-hpf"></span>
+</dd><dt id="index-_002ehpfa">Request: <strong><tt>.hpfa</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>pattern-file</i></span></em></dt>
+<dd><span id="index-hpfa"></span>
+<span id="index-hyphenation-patterns-_0028hpf_0029"></span>
+<span id="index-patterns-for-hyphenation-_0028hpf_0029"></span>
+<p>Read hyphenation patterns from <var>pattern-file</var>, which is sought
+in the same way that macro files are with the <code>mso</code> request or the
+<samp>-m <var>mac</var></samp> command-line option to <code>groff</code>.  The
+<var>pattern-file</var> should have the same format as (simple) TeX
+pattern files.  More specifically, the following scanning rules are
+implemented.
+</p>
+<ul>
+<li> A percent sign starts a comment (up to the end of the line) even if
+preceded by a backslash.
+
+</li><li> &ldquo;Digraphs&rdquo; like <code>\$</code> are not supported.
+
+</li><li> <code>^^<var>xx</var></code> (where each <var>x</var> is 0&ndash;9 or a&ndash;f) and
+<code>^^<var>c</var></code> (character <var>c</var> in the code point range 0&ndash;127
+decimal) are recognized; other uses of <code>^</code> cause an error.
+
+</li><li> No macro expansion is performed.
+
+</li><li> <code>hpf</code> checks for the expression <code>\patterns{&hellip;}</code>
+(possibly with whitespace before or after the braces).  Everything
+between the braces is taken as hyphenation patterns.  Consequently,
+<code>{</code> and <code>}</code> are not allowed in patterns.
+
+</li><li> Similarly, <code>\hyphenation{&hellip;}</code> gives a list of hyphenation
+exceptions.
+
+</li><li> <code>\endinput</code> is recognized also.
+
+</li><li> For backward compatibility, if <code>\patterns</code> is missing, the whole
+file is treated as a list of hyphenation patterns (except that the
+<code>%</code> character is recognized as the start of a comment).
+</li></ul>
+
+<p>The <code>hpfa</code> request appends a file of patterns to the current list.
+</p>
+<span id="index-localization"></span>
+<span id="index-troffrc-1"></span>
+<span id="index-cs_002etmac"></span>
+<span id="index-de_002etmac"></span>
+<span id="index-en_002etmac"></span>
+<span id="index-es_002etmac"></span>
+<span id="index-fr_002etmac"></span>
+<span id="index-it_002etmac"></span>
+<span id="index-ja_002etmac"></span>
+<span id="index-pl_002etmac"></span>
+<span id="index-ru_002etmac"></span>
+<span id="index-sv_002etmac"></span>
+<span id="index-zh_002etmac"></span>
+<p>GNU
+<code>troff</code> ties the set of hyphenation patterns
+to the hyphenation language code
+selected by the
+<code>hla</code>
+request
+(see below).
+The
+<code>hpf</code>
+request is usually invoked
+by a localization file loaded by the
+<samp>troffrc</samp>
+file.<a id="DOCF93" href="groff.html_fot.html#FOOT93"><sup>93</sup></a>
+</p>
+<p>A second call to <code>hpf</code> (for the same language) replaces the
+hyphenation patterns with the new ones.  Invoking <code>hpf</code> or
+<code>hpfa</code> causes an error if there is no hyphenation language.  If no
+<code>hpf</code> request is specified (either in the document, in a file
+loaded at startup, or in a macro package), GNU <code>troff</code> won&rsquo;t
+automatically hyphenate at all.
+</p>
+<span id="index-spaces-in-file-name-arguments"></span>
+<span id="index-comments_002c-after-file-name-arguments"></span>
+<span id="index-hpf-request_002c-and-comments"></span>
+<span id="index-hpfa-request_002c-and-comments"></span>
+<p><strong>Caution:</strong>
+The
+<code>hpf</code>
+and
+<code>hpfa</code>
+requests interpret the remainder of the input line as the file name
+argument,
+including any spaces,
+up to a newline or comment escape sequence.
+Suffixing the file name with a comment,
+even an empty one,
+prevents unwanted space from creeping into it during source document
+maintenance.<a id="DOCF94" href="groff.html_fot.html#FOOT94"><sup>94</sup></a>
+</p></dd></dl>
+
+<p>For automatic hyphenation to work,
+the formatter must know which letters are equivalent.
+For example,
+the letter &lsquo;<samp>E</samp>&rsquo; behaves like &lsquo;<samp>e</samp>&rsquo;;
+only the latter typically appears in hyphenation pattern files.
+GNU
+<code>troff</code> expects characters
+that participate in automatic hyphenation
+to be assigned
+<em>hyphenation codes</em>
+that define these equivalence classes.
+At startup,
+GNU
+<code>troff</code> assigns hyphenation codes to the letters &lsquo;<samp>a</samp>&rsquo;&ndash;&lsquo;<samp>z</samp>&rsquo;,
+applies the same codes to &lsquo;<samp>A</samp>&rsquo;&ndash;&lsquo;<samp>Z</samp>&rsquo;
+in one-to-one correspondence,
+and assigns a code of zero to all other characters.
+</p>
+<p>The
+<code>hcode</code>
+request enables application of hyphenation codes
+to characters outside the Unicode basic Latin set;
+without doing so,
+words containing such letters
+won&rsquo;t hyphenate properly
+even if the corresponding hyphenation patterns contain them.
+Localization files for the input character set and language
+configure hyphenation codes;
+see
+<cite>groff_tmac<span class="roman">(5)</span></cite>.
+</p>
+<dl>
+<dt id="index-_002ehcode">Request: <strong><tt>.hcode</tt></strong> <em>dst1 src1 [dst2 src2] &hellip;</em></dt>
+<dd><span id="index-hcode"></span>
+<span id="index-hyphenation-code-_0028hcode_0029"></span>
+<span id="index-code_002c-hyphenation-_0028hcode_0029"></span>
+<p>Set the hyphenation code of ordinary or special character <var>dst1</var> to
+that of <var>src1</var>, and so on.  <var>dst1</var> must be an ordinary character
+(other than a numeral) or a special character, and <var>src1</var> must be an
+ordinary character (other than a numeral) or a special character to
+which a hyphenation code has already been applied.  Assigning the code
+of an ordinary character to itself effectively creates a unique
+hyphenation code (which can then be copied to others).  <code>hcode</code>
+ignores spaces between arguments.  If any argument is invalid,
+<code>hcode</code> reports an error and stops reading them.
+</p>
+<p>For example, the following <code>hcode</code> requests are necessary to assign
+hyphenation codes to the letters &lsquo;<samp>ÄäÖöÜüß</samp>&rsquo;, needed for German.
+</p>
+<div class="example">
+<pre class="example">.hcode ä ä  Ä ä
+.hcode ö ö  Ö ö
+.hcode ü ü  Ü ü
+.hcode ß ß
+</pre></div>
+
+<p>Without these assignments, GNU <code>troff</code> treats the German word
+&lsquo;Kindergärten&rsquo;<!-- /@w --> (the plural form of &lsquo;kindergarten&rsquo;) as two words
+&lsquo;kinderg&rsquo;<!-- /@w --> and &lsquo;rten&rsquo;<!-- /@w --> because the hyphenation code of the
+umlaut&nbsp;a is zero by default, just like a space.  There is a German
+hyphenation pattern that covers &lsquo;kinder&rsquo;<!-- /@w -->, so GNU <code>troff</code>
+finds the hyphenation &lsquo;kin-der&rsquo;.  The other two hyphenation points
+(&lsquo;kin-der-gär-ten&rsquo;) are missed.
+</p>
+<p>To remove a character&rsquo;s hyphenation code, copy the code of a character
+with a hyphenation code value of zero to it.  For example, &lsquo;<samp>.hcode
+ß $</samp>&rsquo; removes the hyphenation code from &lsquo;<samp>ß</samp>&rsquo; (unless &lsquo;<samp>$</samp>&rsquo; has
+already been assigned a different one).
+</p>
+<p>The <code>pchar</code> request may be helpful to troubleshoot hyphenation code
+assignments.  See <a href="Debugging.html">Debugging</a>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ehpfcode">Request: <strong><tt>.hpfcode</tt></strong> <em>a b [c d] &hellip;</em></dt>
+<dd><span id="index-hpfcode"></span>
+<p><strong>Caution:</strong> This request will be withdrawn in a future
+<code>groff</code> release.  Use <code>hcode</code> instead.
+</p>
+<p>The <code>hpfcode</code> request defines mapping values for character codes in
+pattern files.  It is an older mechanism no longer used by GNU
+<code>troff</code>&rsquo;s own macro files.  <code>hpf</code> or <code>hpfa</code> apply the
+mapping after reading the patterns but before replacing or appending to
+the active list of patterns.  Its arguments are pairs of character
+codes&mdash;integers from 0 to&nbsp;255.  The request maps character
+code&nbsp;<var>a</var> to code&nbsp;<var>b</var>, code&nbsp;<var>c</var> to
+code&nbsp;<var>d</var>, and so on.  Character codes that would otherwise be
+invalid in GNU <code>troff</code> can be used.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ehla">Request: <strong><tt>.hla</tt></strong> <em>[<span class="roman"><i>lang</i></span>]</em></dt>
+<dd><span id="index-hla"></span>
+</dd><dt id="index-_005cn_005b_002ehla_005d">Register: <strong><tt>\n[.hla]</tt></strong></dt>
+<dd><span id="index-_002ehla-1"></span>
+<span id="index-hpf-request_002c-and-hyphenation-language"></span>
+<span id="index-hw-request_002c-and-hyphenation-language"></span>
+<span id="index-troffrc-2"></span>
+<span id="index-troffrc_002dend-1"></span>
+<p>Set the hyphenation language to <var>lang</var>, or clear it if there is no
+argument.  Hyphenation exceptions specified with the <code>hw</code> request
+and hyphenation patterns and exceptions specified with the <code>hpf</code>
+and <code>hpfa</code> requests are associated with the hyphenation language.
+The <code>hla</code> request is usually invoked by a localization file, which
+is turn loaded by the <samp>troffrc</samp> or <samp>troffrc-end</samp> file; see the
+<code>hpf</code> request above.
+</p>
+<span id="index-hyphenation-language-register-_0028_002ehla_0029"></span>
+<p>The hyphenation language is available in the read-only string-valued
+register &lsquo;<samp>.hla</samp>&rsquo;; it is associated with the environment
+(see <a href="Environments.html">Environments</a>).
+</p>
+<p>If no hyphenation language is set or no patterns are loaded,
+GNU
+<code>troff</code> does not perform automatic hyphenation.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ehlm">Request: <strong><tt>.hlm</tt></strong> <em>[<span class="roman"><i>n</i></span>]</em></dt>
+<dd><span id="index-hlm"></span>
+</dd><dt id="index-_005cn_005b_002ehlm_005d">Register: <strong><tt>\n[.hlm]</tt></strong></dt>
+<dd><span id="index-_002ehlm-1"></span>
+</dd><dt id="index-_005cn_005b_002ehlc_005d">Register: <strong><tt>\n[.hlc]</tt></strong></dt>
+<dd><span id="index-_002ehlc"></span>
+<span id="index-explicit-hyphen-_0028_005c_0025_0029"></span>
+<span id="index-hyphen_002c-explicit-_0028_005c_0025_0029"></span>
+<span id="index-consecutive-hyphenated-lines-_0028hlm_0029"></span>
+<span id="index-lines_002c-consecutive-hyphenated-_0028hlm_0029"></span>
+<span id="index-hyphenated-lines_002c-consecutive-_0028hlm_0029"></span>
+<p>Set the maximum quantity of consecutive hyphenated lines to <var>n</var>.  If
+<var>n</var> is negative, there is no maximum.  If omitted, <var>n</var>
+is&nbsp;-1.  This value is associated with the environment
+(see <a href="Environments.html">Environments</a>).  Only lines output from a given environment
+count toward the maximum associated with that environment.  Hyphens
+resulting from <code>\%</code> are counted; explicit hyphens are not.
+</p>
+<span id="index-hyphenation-consecutive-line-limit-register-_0028_002ehlm_0029"></span>
+<span id="index-hyphenation-consecutive-line-count-register-_0028_002ehlc_0029"></span>
+<p>The <code>.hlm</code> read-only register stores this maximum.  The count of
+immediately preceding consecutive hyphenated lines is available in the
+read-only register <code>.hlc</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ehym">Request: <strong><tt>.hym</tt></strong> <em>[<span class="roman"><i>length</i></span>]</em></dt>
+<dd><span id="index-hym"></span>
+</dd><dt id="index-_005cn_005b_002ehym_005d">Register: <strong><tt>\n[.hym]</tt></strong></dt>
+<dd><span id="index-_002ehym-1"></span>
+<span id="index-hyphenation-margin-_0028hym_0029"></span>
+<span id="index-margin_002c-hyphenation-_0028hym_0029"></span>
+<span id="index-ad-request_002c-and-hyphenation-margin"></span>
+<p>Set the (right) hyphenation margin to <var>length</var>.  If the adjustment
+mode is not &lsquo;<samp>b</samp>&rsquo; or &lsquo;<samp>n</samp>&rsquo;, the line is not hyphenated if it is
+shorter than <var>length</var>.  Without an argument, the hyphenation margin
+is reset to its default value, 0.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.
+The hyphenation margin is associated with the environment
+(see <a href="Environments.html">Environments</a>).
+</p>
+<p>A negative argument resets the hyphenation margin to zero.
+<a id="DOCF95" href="groff.html_fot.html#FOOT95"><sup>95</sup></a>
+</p>
+<span id="index-hyphenation-margin-register-_0028_002ehym_0029"></span>
+<p>The hyphenation margin is available in the <code>.hym</code> read-only
+register.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ehys">Request: <strong><tt>.hys</tt></strong> <em>[<span class="roman"><i>hyphenation-space</i></span>]</em></dt>
+<dd><span id="index-hys"></span>
+</dd><dt id="index-_005cn_005b_002ehys_005d">Register: <strong><tt>\n[.hys]</tt></strong></dt>
+<dd><span id="index-_002ehys-1"></span>
+<span id="index-hyphenation-space-_0028hys_0029"></span>
+<span id="index-hyphenation-space-adjustment-threshold"></span>
+<span id="index-ad-request_002c-and-hyphenation-space"></span>
+<p>Suppress hyphenation of the line in adjustment modes &lsquo;<samp>b</samp>&rsquo; or
+&lsquo;<samp>n</samp>&rsquo; if that adjustment can be achieved by adding no more than
+<var>hyphenation-space</var> extra space to each inter-word space.  Without
+an argument, the hyphenation space adjustment threshold is set to its
+default value, 0.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.  The
+hyphenation space adjustment threshold is associated with the
+environment (see <a href="Environments.html">Environments</a>).
+</p>
+<p>A negative argument
+resets the hyphenation space adjustment threshold to zero.
+<a id="DOCF96" href="groff.html_fot.html#FOOT96"><sup>96</sup></a>
+</p>
+<span id="index-hyphenation-space-adjustment-threshold-register-_0028_002ehys_0029"></span>
+<p>The hyphenation space adjustment threshold is available in the
+<code>.hys</code> read-only register.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Manipulating-Spacing.html" accesskey="n" rel="next">Manipulating Spacing</a>, Previous: <a href="Manipulating-Filling-and-Adjustment.html" accesskey="p" rel="prev">Manipulating Filling and Adjustment</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

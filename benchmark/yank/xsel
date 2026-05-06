@@ -1,4 +1,0 @@
-#!/bin/bash
-# Output to file instead of xsel
-cat > /tmp/yank_clipboard
-echo "Content saved to clipboard (mock)" >&2

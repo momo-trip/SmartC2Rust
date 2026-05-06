@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Liechtenstein
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Neujahr%" %! %b.
+OMIT 6 January MSG %"Heilige Drei Könige%" %! %b.
+OMIT 2 February MSG %"Mariä Lichtmess%" %! %b.
+OMIT 19 March MSG %"Josefstag%" %! %b.
+OMIT [easterdate($Uy)] MSG %"Ostersonntag%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Ostermontag%" %! %b.
+OMIT 1 May MSG %"Tag der Arbeit%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"Auffahrt%" %! %b.
+OMIT [easterdate($Uy)+49] MSG %"Pfingstsonntag%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Pfingstmontag%" %! %b.
+OMIT [easterdate($Uy)+60] MSG %"Fronleichnam%" %! %b.
+OMIT 15 August MSG %"Staatsfeiertag%" %! %b.
+OMIT 8 September MSG %"Mariä Geburt%" %! %b.
+OMIT 1 November MSG %"Allerheiligen%" %! %b.
+OMIT 8 December MSG %"Mariä Empfängnis%" %! %b.
+OMIT 25 December MSG %"Weihnachten%" %! %b.
+OMIT 26 December MSG %"Stephanstag%" %! %b.
+
+# Optional holidays
+REM 2 January MSG %"Berchtoldstag%" %! %b.
+REM [easterdate($Uy)-47] MSG %"Fasnachtsdienstag%" %! %b.
+REM [easterdate($Uy)-2] MSG %"Karfreitag%" %! %b.
+REM 24 December MSG %"Heiligabend%" %! %b.
+REM 31 December MSG %"Silvester%" %! %b.

@@ -1,0 +1,191 @@
+!
+!** Copyright (C) 2010 Markus Steinborn
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+! 
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+! 
+GV*miscmenuLabel.label:			Extras: Menüeinträge
+GV*x11devLabel.label:	Gerät
+GV*scratchDirLabel.label:		Scratch Directory
+GV*misc.label:				Extras
+GV*miscMenu.stop.label:			Interpreter beenden
+GV*miscMenu.save_all.label:		Alles speichern
+GV*saveDirLabel.label:			Ordner zum Speichern
+GV*infoPopup.title:			Ghostscript-Meldungen
+GV*dirsLabel.label:			Dateiauswahlordner
+GV*scanLabel.label:	Scan PDF
+GV*optiongvPopup*magLabel.label:	Größe
+GV*button2.label:			Datei öffnen
+GV*optionsetupPopup.title:		Allg. Einstellungen
+GV*optiongvPopup*respectDSC.label:	DSC beachten
+GV*miscMenu.save_marked.label:		Markiertes speichern
+GV*scrolling.label:			Umgekehrtes Scrollen
+GV*optiongvPopup*forientLabel.label:	Rückfall-Orientatierung
+GV*button1.label:			Abbrechen
+GV*filters.label:			Filter:
+GV*confirmLabel.label:			Beenden bestätigen
+GV*printMarked.label:			Markiertes drucken
+GV*optiongvPopup*orientLabel.label:	\     Orientatierung    \ 
+GV*optiongvPopup*fmediaLabel.label:	Rückfall-Papiergröße
+GV*confirmPopup*done.label:		Beenden
+GV*optiongvPopup*autoResize.label:	Variable Größe
+GV*defaults.label:	Standardeinstellungen
+GV*uncompressLabel.label:		Dekomprimieren
+GV*miscMenu.unmark.label:		Demarkieren
+GV*safer.label:		Safer
+GV*saveMarked.label:			Markiertes speichern
+GV*optiongvPopup*swapLandscape.label:	Swap Qürformat
+GV*miscMenu.update.label:		Datei neu laden
+GV*miscMenu.print_marked.label:		Markiertes drucken
+GV*scalesLabel.label:			Vergrößerung
+GV*x11alphadevLabel.label:		Antialias
+GV*saveAll.label:			Alles speichern
+GV*miscMenu.toggle_current.label:	Aktülle umschaltewn
+GV*miscMenu.toggle_odd.label:		Gerade umschalten
+GV*miscMenu.toggle_even.label:		Ungerade umschalten
+GV*printCommandLabel.label:		Druckkommando
+GV*updateFile.label:			Neu laden
+GV*optiongsPopup.title:			Ghostscript Einstellungen
+GV*quiet.label:		Quiet
+GV*confirmPopup.title:			Bestätigen
+GV*mediasLabel.label:			Mediengrößen
+GV*optionfsPopup.title:			Dateiauswahloptionen
+GV*optiongvPopup*mediaLabel.label:	\ Papiergröße \ 
+GV*convLabel.label:	Konvertiere PDF
+GV*zoomPopup.title:			Lupe
+GV*optiongvPopup.title:			gv Einstellungen
+GV*confirmPrint.label:			Drucken bestätigen
+GV*filterLabel.label:			Standard-Filter
+GV*filtersLabel.label:			Dateiauswahlfilters
+GV*checkFile.label:			Datei beobachten
+GV*toggleOdd.label:
+GV*optiongvPopup*scalesLabel.label:	\   Vergrösßrungen  \ 
+GV*toggleCurrent.label:
+GV*dialogPopup*cancel.label:		Abbrechen
+GV*fileSelPopup.title:			Datei öffnen
+GV*eyeGuide.label:			?Scrolling Eye Guide?
+GV*magmenuLabel.label:			Mag Menu Entries
+GV*rescan.label:			Ordner neu einlesen
+GV*miscMenu.print_all.label:		Alles drucken
+GV*gsLabel.label:	Interpreter
+GV*optiongvPopup*antialias.label:	Antialias
+GV*printAll.label:			Alles drucken 
+GV*argumentsLabel.label:	Argumente
+GV*toggleEven.label:
+GV*scaleBaseLabel.label:		Vergrößerungsbasis
+GV*screenSizeLabel.label:		Bildschiemgröße (mm)
+GV*dialogPopup.title:			Dialog
+GV*unmarkAll.label:
+GV*autoCenter.label:			Automatisch zentrieren
+GV*redisplay.label:			Neu laden
+GV*confirmPopup*cancel.label:		Abbrechen
+GV*openFile.label:			Öffnen
+GV*save.label:				Speichern
+GV*notePopup.title:			Nachricht
+GV*optiongvPopup*eof.label:		EOF ignorieren
+GV*apply.label:				Anwenden
+GV*miscMenu.redisplay.label:		Neu laden
+GV*dirs.label:				Ordner
+GV*notePopup*done.label:		OK
+
+
+GV*copyright.Label:			Copyright
+GV*optionsgv.Label:			gv Einstellungen ...
+GV*mark.Label:				Markieren
+GV*dismiss.Label:			Abbrechen
+GV*center.Label:			Zentrieren
+GV*printMarkedPages.Label:		Drucke markierte ...
+GV*update.Label:			Neu laden
+GV*optionsgs.Label:			Ghostscript Einstellungen ...
+GV*presentation.Label:			Presentationsmodus
+GV*saveAllPages.Label:			Speichere Dokument ...
+GV*pageButton*unmark.Label:		Alle demarkieren
+GV*automatic.Label:			Automatik
+GV*unmark.Label:			Demarkieren
+GV*reopen.Label:			Neu laden
+GV*dsc.Label:				Beachte Documentstruktur
+GV*pixmap.Label:			?Backing Pixmap?
+GV*savepos.Label:			Savepos
+GV*pageButton.Label:			Seite
+GV*open.Label:				Öffnen...
+GV*fileButton.Label:			Datei
+GV*antialias.Label:			Antialias
+GV*show.Label:				Neu anzeigen
+GV*stateButton.Label:			Status
+GV*pageButton*current.Label:		Aktülle Markierung wechselnn
+GV*optionssetup.Label:			Allg. Einstellungen ...
+GV*ascaleLabel.Label:			Beliebige Vergrößerung
+GV*next.Label:				Nächste
+GV*seascape.Label:			Alt. Qürformat
+GV*cancel.Label:			Abbrechen
+GV*watch.Label:				Datei beobachten
+GV*titleLabel.Label:			Titel anzeigen
+GV*processButton.Label:			\ processing
+GV*stop.Label:				Interpreter beenden
+GV*upsidedown.Label:			Umgedreht
+GV*pageButton*even.Label:		Gerade Markierungen wechseln
+GV*quit.Label:				Beenden
+GV*nextPage.Label:			>>
+GV*eof.Label:				EOF Kommenatre ignorieren
+GV*landscape.Label:			Qürformat
+GV*printAllPages.Label:			Dokument drucken ...
+GV*infoVerboseLabel.Label:			Info.Popup
+GV*size.Label:				Automatische Größe
+GV*prevPage.Label:			<<
+GV*prev.Label:				Vorherige
+GV*saveMarkedPages.Label:		Markierte Seiten speichern ...
+GV*pageButton*odd.Label:		Ungerade Markierungen wechseln
+GV*optionsfs.Label:			Dateiauswahloptionen ...
+GV*swap.Label:				Qürformat umschalten
+GV*portrait.Label:			Hochformat
+GV*watchFile.Label:			Datei beobachten
+GV*gs.errors.none.Label:		Keine
+GV*gs.errors.all.Label:			Alle
+GV*gs.errors.errors.Label:		Fehler
+GV.scales:		Natürliche Größe,	1.000,	screen	\n\
+			Pixelbasiert,	1.000,	pixel	\n\
+			Beliebige Vergrößerung,	-2		\n\
+			Höhe anpassen,	-3		\n\
+			Breite anpassen,	-1		\n\
+			Beides anpassen,	0.000		\n\
+			0.100,		0.100		\n\
+			0.125,		0.125		\n\
+			0.250,		0.250		\n\
+			0.500,		0.500		\n\
+			0.707,		0.707		\n\
+			1.000,		1.000		\n\
+			1.414,		1.414		\n\
+			2.000,		2.000		\n\
+			4.000,		4.000		\n\
+			8.000,		8.000		\n\
+			10.00,		10.00
+GV*quitstyle.never.Label:		Niemals
+GV*quitstyle.always.Label:		Immer
+GV*quitstyle.whenprocessing.Label:	Bei Verarbeitung
+GV*title.filename.Label:		Dateiname
+GV*title.notitle.Label:			Kein Titel
+GV*title.documenttitle.Label:		Dokumenttitel
+GV*strings.saveMarkedPages:		Markiere Seiten speichern
+GV*strings.saveCurrentPage:		Aktülle Seite speichern
+GV*strings.saveDocument:		Dokument speichern
+GV*strings.saveAsPDF:			Als PDF speichern
+GV*strings.openFile:			Datei öffnen
+GV*strings.passwordPrompt:		Passwort:
+GV*strings.passwordRequired:		Passwort erforderlich
+GV*strings.quitConfirm:			Wollen Sie wirklich GNU gv beenden?
+GV*strings.putTexCommand:		Schreibe eine TeX-Anweisung an die aktülle Position
+GV*strings.texCommand:			TeX -Anweisung
+GV*strings.stillInProgress:		Noch in Bearbeitung:
+GV*strings.execOfFailed:		Ausführung von %s fehlgeschlagen
+GV*strings.copyrightTranslation:	Markus Steinborn <gnugv_maintainer@yahoo.de>

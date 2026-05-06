@@ -1,0 +1,33 @@
+penicillin.chem:
+.cstart
+
+# Example file for chem:
+#    benzylpenicillin or C16_H18_N2_O4_S or
+#    (2S,5R,6R)-3,3-Dimethyl-7-oxo-6-(2-phenylacetamido)-4-thia-
+#       1-azabicyclo[3.2.0]heptane-2-carboxylic acid (CAS-RN: 61-33-6)
+#
+# Found at https://en.wikipedia.org/wiki/Benzylpenicillin
+#
+# Prepared by Bernd Warken <groff-bernd.warken-72@web.de>,
+# partial rewrite by Norwid Behrnd <nbehrnd@yahoo.com>.
+
+R1:	ring4 pointing 45 put N at 2
+R2:	ring5 pointing right with .V3 at R1.V2 put N at 3 put S at 5
+
+	doublebond -130 at R1.V3 ; O
+	frontbond -60 at R1.V4 ; N
+B1:	bond -120
+	doublebond down ; O
+	bond -60 at B1.end
+	bond -120
+	ring6 double 1,2 3,4 5,6
+	H above N
+
+	bond 60 at R2.V1
+	bond 120 at R2.V1
+	backbond 160 at R2.V2 ; CO2H
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

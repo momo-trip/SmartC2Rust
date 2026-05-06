@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Warnings (The GNU troff Manual)</title>
+
+<meta name="description" content="Warnings (The GNU troff Manual)">
+<meta name="keywords" content="Warnings (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Debugging.html" rel="up" title="Debugging">
+<link href="Implementation-Differences.html" rel="next" title="Implementation Differences">
+<link href="Debugging.html" rel="prev" title="Debugging">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Warnings"></span><div class="header">
+<p>
+Up: <a href="Debugging.html" accesskey="u" rel="up">Debugging</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Warnings-1"></span><h4 class="subsection">5.38.1 Warnings</h4>
+<span id="index-warnings-1"></span>
+
+<p>GNU
+<code>troff</code> divides its warning diagnostics into named,
+numbered categories.
+The
+<samp>-w</samp>
+and
+<samp>-W</samp>
+options use the associated names.
+A power of two characterizes each category;
+the
+<code>warn</code>
+request and the
+<code>.warn</code>
+register respectively set and report the sum of enabled category codes.
+Warnings of each category are produced under the following
+circumstances.
+</p>
+<span id="index-categories_002c-warning"></span>
+<span id="index-warning-categories"></span>
+<dl compact="compact">
+<dt>&lsquo;<samp>char</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>1</samp>&rsquo;</dt>
+<dd><p>No user-defined character of the requested name or index exists
+and no mounted font defines a glyph for it,
+or input could not be encoded for device-independent output.
+This category is enabled by default.
+</p>
+
+</dd>
+<dt>&lsquo;<samp>break</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>4</samp>&rsquo;</dt>
+<dd><span id="index-filling_002c-and-break-warnings"></span>
+<span id="index-mode_002c-fill_002c-and-break-warnings"></span>
+<span id="index-adjustment_002c-and-break-warnings"></span>
+<p>A filled output line could not be
+broken such that its length was less than or equal to,
+or
+adjusted such that its length was exactly equal to,
+the output line length
+&lsquo;<samp>\n[.l]</samp>&rsquo;.
+GNU
+<code>troff</code> reports the amount of overset or underset in the scaling unit configured
+by the
+<code>warnscale</code>
+request in
+<code>troff</code>
+mode,
+and in ens (&lsquo;<samp>n</samp>&rsquo;;
+character cells)
+in
+<code>nroff</code>
+mode.
+See <a href="troff-and-nroff-Modes.html"><code>troff</code> and <code>nroff</code> Modes</a>.
+This category is enabled by default.
+</p>
+</dd>
+<dt>&lsquo;<samp>delim</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>8</samp>&rsquo;</dt>
+<dd><p>The selected delimiter character was ambiguous
+because it is also meaningful when beginning a numeric expression,
+or
+the closing delimiter in an escape sequence was missing or mismatched.
+</p>
+<p>A future
+<code>groff</code>
+release may reject ambiguous delimiters.
+In compatibility mode,
+ambiguous delimiters are accepted without warning.
+</p>
+
+</dd>
+<dt>&lsquo;<samp>scale</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>32</samp>&rsquo;</dt>
+<dd><p>A scaling unit inappropriate to its context was used in a numeric
+expression.
+</p>
+</dd>
+<dt>&lsquo;<samp>range</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>64</samp>&rsquo;</dt>
+<dd><p>A numeric expression was out of range for its context.
+</p>
+</dd>
+<dt>&lsquo;<samp>syntax</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>128</samp>&rsquo;</dt>
+<dd><p>A self-contradictory hyphenation mode or character flags were requested;
+an empty or incomplete numeric expression was encountered;
+an operand to a numeric operator was missing;
+an attempt was made to format characters or spaces on an input line
+after an output line continuation escape sequence;
+a recognized but inapposite escape sequence
+or unprintable character code
+was used in a device extension command;
+an attempt was made to define a recursive,
+empty,
+or nonsensical character class;
+or a
+<code>groff</code>
+extension escape sequence
+or conditional expression operator
+was used while in compatibility mode.
+</p>
+</dd>
+<dt>&lsquo;<samp>di</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>256</samp>&rsquo;</dt>
+<dd><span id="index-di-request_002c-and-warnings"></span>
+<span id="index-da-request_002c-and-warnings"></span>
+<span id="index-box-request_002c-and-warnings"></span>
+<span id="index-boxa-request_002c-and-warnings"></span>
+<p>A <code>di</code>, <code>da</code>, <code>box</code>, or <code>boxa</code> request was invoked
+without an argument when there was no current diversion.
+</p>
+</dd>
+<dt>&lsquo;<samp>mac</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>512</samp>&rsquo;</dt>
+<dd><span id="index-de_002c-de1_002c-dei-requests_002c-and-warnings"></span>
+<span id="index-am_002c-am1_002c-ami-requests_002c-and-warnings"></span>
+<span id="index-ds_002c-ds1-requests_002c-and-warnings"></span>
+<span id="index-as_002c-as1-requests_002c-and-warnings"></span>
+<span id="index-di-request_002c-and-warnings-1"></span>
+<span id="index-da-request_002c-and-warnings-1"></span>
+<span id="index-box_002c-boxa-requests_002c-and-warnings"></span>
+<span id="index-_005c_002a_002c-and-warnings"></span>
+<p>An undefined string,
+macro,
+or diversion was used.
+When such an object is dereferenced,
+an empty one of that name is automatically created.
+So,
+unless it is later deleted,
+GNU
+<code>troff</code> issues at most one warning for each.
+</p>
+<p>GNU
+<code>troff</code> also uses this category to warn of an attempt to move an unplanted trap
+macro;
+recall <a href="Page-Location-Traps.html">Page Location Traps</a>.
+In such cases,
+the unplanted macro is
+<em>not</em>
+dereferenced,
+so it is not created if it does not exist.
+</p>
+</dd>
+<dt>&lsquo;<samp>reg</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>1024</samp>&rsquo;</dt>
+<dd><span id="index-nr-request_002c-and-warnings"></span>
+<span id="index-_005cR_002c-and-warnings"></span>
+<span id="index-_005cn_002c-and-warnings"></span>
+<p>An undefined register was used.
+When an undefined register is dereferenced,
+the formatter automatically defines it with a value of&nbsp;0.
+So,
+unless it is later deleted,
+GNU
+<code>troff</code> issues at most one warning for each.
+</p>
+</dd>
+<dt>&lsquo;<samp>tab</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>2048</samp>&rsquo;</dt>
+<dd><span id="index-_005ct_002c-and-warnings"></span>
+<p>A tab character appeared
+in a parameterized escape sequence,
+in an unquoted macro argument,
+or where a request expected a numeric expression argument.
+</p>
+
+</dd>
+<dt>&lsquo;<samp>missing</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>8192</samp>&rsquo;</dt>
+<dd><p>A request was invoked with a mandatory argument absent.
+</p>
+</dd>
+<dt>&lsquo;<samp>input</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>16384</samp>&rsquo;</dt>
+<dd><p>An invalid character occurred on the input stream.
+</p>
+</dd>
+<dt>&lsquo;<samp>escape</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>32768</samp>&rsquo;</dt>
+<dd><p>An unsupported escape sequence was encountered.
+</p>
+</dd>
+<dt>&lsquo;<samp>space</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>65536</samp>&rsquo;</dt>
+<dd><span id="index-compatibility-mode"></span>
+<p>A space was missing between a request or macro and its argument.  This
+warning is produced when an undefined name longer than two characters is
+encountered and the first two characters of the name constitute a
+defined name.  No request is invoked, no macro called, and an empty
+macro is not defined.  This category is enabled by default.  It never
+occurs in compatibility mode.
+</p>
+</dd>
+<dt>&lsquo;<samp>font</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>131072</samp>&rsquo;</dt>
+<dd><p>A non-existent font was selected.
+This category is enabled by default.
+</p>
+</dd>
+<dt>&lsquo;<samp>ig</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>262144</samp>&rsquo;</dt>
+<dd><p>An invalid escape sequence occurred in input ignored using the <code>ig</code>
+request.  This warning category diagnoses a condition that is an error
+when it occurs in non-ignored input.
+</p>
+</dd>
+<dt>&lsquo;<samp>color</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>524288</samp>&rsquo;</dt>
+<dd><p>An undefined color was selected,
+an attempt was made to define a color using an unrecognized color space,
+an invalid channel value in a color definition was encountered,
+or an attempt was made to redefine a default color.
+</p>
+</dd>
+<dt>&lsquo;<samp>file</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>1048576</samp>&rsquo;</dt>
+<dd><p>An attempt was made to read a file that does not exist,
+or a stream remained open at formatter exit.
+This category is enabled by default.
+</p></dd>
+</dl>
+
+<p>Two warning names group other warning categories for convenience.
+</p>
+<dl compact="compact">
+<dt>&lsquo;<samp>all</samp>&rsquo;</dt>
+<dd><p>All warning categories except &lsquo;<samp>di</samp>&rsquo;, &lsquo;<samp>mac</samp>&rsquo; and &lsquo;<samp>reg</samp>&rsquo;.
+This shorthand is intended to produce all warnings that are useful with
+macro packages written for <acronym>AT&amp;T</acronym> <code>troff</code> and its
+descendants, which have less fastidious diagnostics than GNU
+<code>troff</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>w</samp>&rsquo;</dt>
+<dd><p>All warning categories.  Authors of documents and macro packages
+targeting <code>groff</code> are encouraged to use this setting.
+</p></dd>
+</dl>
+
+
+<hr>
+<div class="header">
+<p>
+Up: <a href="Debugging.html" accesskey="u" rel="up">Debugging</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

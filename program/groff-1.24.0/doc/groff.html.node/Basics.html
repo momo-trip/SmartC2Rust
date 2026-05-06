@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Basics (The GNU troff Manual)</title>
+
+<meta name="description" content="Basics (The GNU troff Manual)">
+<meta name="keywords" content="Basics (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Tutorial-for-Macro-Package-Users.html" rel="up" title="Tutorial for Macro Package Users">
+<link href="Common-Features.html" rel="next" title="Common Features">
+<link href="Tutorial-for-Macro-Package-Users.html" rel="prev" title="Tutorial for Macro Package Users">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Basics"></span><div class="header">
+<p>
+Next: <a href="Common-Features.html" accesskey="n" rel="next">Common Features</a>, Up: <a href="Tutorial-for-Macro-Package-Users.html" accesskey="u" rel="up">Tutorial for Macro Package Users</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Basics-1"></span><h3 class="section">3.1 Basics</h3>
+<span id="index-basics-of-macro-package-usage"></span>
+<span id="index-macro-package-usage_002c-basics-of"></span>
+
+<p>Let us first survey some basic concepts necessary to use a macro package
+fruitfully.<a id="DOCF10" href="groff.html_fot.html#FOOT10"><sup>10</sup></a>
+References are made throughout to more detailed information.
+</p>
+<p>GNU
+<code>troff</code> reads input prepared by the user
+and outputs a formatted document suitable for publication or framing.
+The input consists of text,
+or words to be printed,
+and embedded commands
+(<i>requests</i>
+and
+<i>escape sequences</i>),
+which tell GNU
+<code>troff</code> how to format the output.
+See <a href="Formatter-Instructions.html">Formatter Instructions</a>.
+</p>
+<span id="index-break-_0028introduction_0029"></span>
+<span id="index-line-break-_0028introduction_0029"></span>
+<span id="index-filling-_0028introduction_0029"></span>
+<span id="index-adjustment-_0028introduction_0029"></span>
+<p>The primary function of GNU <code>troff</code> is to collect words from
+its input, <i>fill</i> output lines with those words, <i>break</i>
+the line at or near the right-hand margin
+(possibly by hyphenating a word),
+<i>adjust</i> the line to reach that margin (if necessary) by
+widening spaces between words, and output the result.
+</p>
+<div class="example">
+<pre class="example">In fact, we know full well today that it is futile to
+speak of liberty as long as economic slavery exists.
+(Kropotkin)
+  &rArr; In  fact,  we know full well today that it
+  &rArr; is futile to speak of liberty as  long  as
+  &rArr; economic slavery exists.  (Kropotkin)
+</pre></div>
+
+<span id="index-break-_0028introduction_0029-1"></span>
+<span id="index-line-break_002c-output-_0028introduction_0029"></span>
+<span id="index-output-line-break-_0028introduction_0029"></span>
+<p>Sometimes a new output line should start even though the current line is
+not yet full&mdash;for example, at the end of a paragraph.  GNU
+<code>troff</code> will do this for us automatically at the end of input,
+but we often want a break sooner, and more frequently.  We wish to
+<em>instruct</em> the formatter.
+</p>
+<p>To that end, not all input lines are <i>text lines</i> containing
+words to be formatted.  <i>Control lines</i> start with a dot
+(&lsquo;<samp>.</samp>&rsquo;) or an apostrophe (&lsquo;<samp>'</samp>&rsquo;) as the first character, and are
+followed by a request or macro name that tells a macro package (or GNU
+<code>troff</code> directly) how to format the text.
+</p>
+<p>We can command a break with the <code>br</code> request.  Some requests cause
+a break automatically, as do (normally) blank input lines and input
+lines beginning with a space or tab.
+</p>
+<p>A <i>macro</i> bundles text and/or control lines into a named
+collection that can be called like a request.  A macro can also be
+called by a <i>trap</i> that is set to &ldquo;go off&rdquo; automatically at
+certain places on the page.  Thus, while requests perform primitive
+operations, macros handle complex ones, like arranging the output into
+columns, collecting and writing out footnotes, or managing page headers
+and footers.
+</p>
+<p>Many requests and macros accept <i>arguments</i> that influence their
+behavior.  A &ldquo;plain&rdquo; <code>sp</code> request breaks and puts a blank line on
+the output.  But
+</p>
+<div class="example">
+<pre class="example">.sp 4
+</pre></div>
+
+<p>spaces four lines instead.  Spaces (but <em>not</em> tabs) separate
+arguments from the request or macro name and from each other.
+</p>
+<p>Here are a few hints for preparing text for input to GNU
+<code>troff</code>.
+</p>
+<ul>
+<li> First, keep the input lines short.  Short input lines are easier to
+edit, and, when filling, GNU <code>troff</code> packs words onto longer
+lines anyhow.
+
+</li><li> Second, it is helpful to begin a new line after every sentence,
+comma, semicolon, or colon, since common revisions are to add, delete,
+or replace sentences, clauses, phrases, or members of lists.
+
+</li><li> If you <em>don&rsquo;t</em> start a sentence on a new line, put two spaces after
+the previous sentence.  GNU <code>troff</code> then recognizes punctuation
+that ends a sentence, and inserts inter-sentence space accordingly.
+
+</li></ul>
+
+<p>We offer further advice in <a href="Input-Conventions.html">Input Conventions</a>.
+</p>
+<span id="index-vertical-spacing-_0028introduction_0029"></span>
+<span id="index-spacing_002c-vertical-_0028introduction_0029"></span>
+<p><i>Vertical spacing</i> is the distance between lines of
+text; it is expressed in the same units as the type size&mdash;the point.
+The default is 10-point type on 12-point spacing.  To get
+<i>double-spaced</i> text you would set the vertical spacing to 24
+points.  Some, but not all, macro packages expose a macro or register to
+configure the vertical spacing.
+</p>
+<p>A number of requests allow you to change the way the output is arranged
+on the page,
+sometimes called its <i>layout</i>.
+Most macro packages don&rsquo;t supply macros for performing these
+(at least not without performing other actions besides),
+as they are such basic operations.
+The macro packages for writing man pages,
+<samp>man</samp> and <samp>mdoc</samp>,
+discourage explicit use of these requests altogether.
+</p>
+<span id="index-spacing-_0028introduction_0029"></span>
+<p>Arguments to requests and macro calls can often be
+<i>measurements</i> rather than simple integers.  For instance,
+</p>
+<div class="example">
+<pre class="example">.sp 1.5i
+My thoughts on the subject
+.sp
+</pre></div>
+
+<p>outputs one and a half inches of vertical space, followed by the line
+&ldquo;My thoughts on the subject&rdquo;, followed by a single blank line (more
+measurement units are available; see <a href="Measurements.html">Measurements</a>).  Excess
+vertical space is normally discarded at page or column breaks.  If the
+above example appears one inch from the bottom of the page, the half
+inch of space &ldquo;left over&rdquo; does not appear at the top of the next.
+</p>
+<p>If you desire precise spacing control when using a macro package, be
+advised that it might not honor <code>sp</code> requests as you expect; it can
+use a formatter feature called <i>no-space mode</i> to prevent excess
+space from accumulating.  See <a href="Manipulating-Spacing.html">Manipulating Spacing</a>.  Use the
+facilities the package offers to control spacing between paragraphs,
+before section headings, and around displays (discussed below).
+</p>
+<span id="index-centering-lines-_0028introduction_0029"></span>
+<span id="index-lines_002c-centering-_0028introduction_0029"></span>
+<p>Text lines can be centered by using the <code>ce</code> request.  The line
+after <code>ce</code> is centered (horizontally) on the page.  To center more
+than one line, use &lsquo;<samp>.ce&nbsp;<var>N</var></samp>&rsquo;<!-- /@w --> (where <var>N</var> is the number
+of lines to center), followed by the <var>N</var>&nbsp;lines.  To center many
+lines without counting them, try the following technique.
+</p>
+<div class="example">
+<pre class="example">.ce 1000
+<i>up to one thousand lines of input</i>
+.ce 0
+</pre></div>
+
+<p>The &lsquo;<samp>.ce&nbsp;0</samp>&rsquo;<!-- /@w --> request tells GNU <code>troff</code> to center zero
+more text lines&mdash;in other words, to stop centering.
+</p>
+<span id="index-right_002daligning-lines-_0028introduction_0029"></span>
+<span id="index-lines_002c-right_002daligning-_0028introduction_0029"></span>
+<p>GNU <code>troff</code> also offers the <code>rj</code> request for right-aligning
+text.  It works analogously to <code>ce</code> and is convenient for setting
+epigraphs.
+</p>
+<span id="index-page-break-_0028introduction_0029"></span>
+<span id="index-break_002c-page-_0028introduction_0029"></span>
+<p>The <code>bp</code> request starts a new page.
+</p>
+<p>All of these requests cause a break, starting a new line.  If you invoke
+them with the apostrophe &lsquo;<samp>'</samp>&rsquo;, the <i>no-break control
+character</i>, the (initial) break they normally perform is suppressed.
+&lsquo;<samp>'br</samp>&rsquo; does nothing.
+</p>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Common-Features.html" accesskey="n" rel="next">Common Features</a>, Up: <a href="Tutorial-for-Macro-Package-Users.html" accesskey="u" rel="up">Tutorial for Macro Package Users</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

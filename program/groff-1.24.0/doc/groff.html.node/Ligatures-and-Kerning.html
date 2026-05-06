@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Ligatures and Kerning (The GNU troff Manual)</title>
+
+<meta name="description" content="Ligatures and Kerning (The GNU troff Manual)">
+<meta name="keywords" content="Ligatures and Kerning (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Using-Fonts.html" rel="up" title="Using Fonts">
+<link href="Italic-Corrections.html" rel="next" title="Italic Corrections">
+<link href="Artificial-Fonts.html" rel="prev" title="Artificial Fonts">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Ligatures-and-Kerning"></span><div class="header">
+<p>
+Next: <a href="Italic-Corrections.html" accesskey="n" rel="next">Italic Corrections</a>, Previous: <a href="Artificial-Fonts.html" accesskey="p" rel="prev">Artificial Fonts</a>, Up: <a href="Using-Fonts.html" accesskey="u" rel="up">Using Fonts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Ligatures-and-Kerning-1"></span><h4 class="subsection">5.19.8 Ligatures and Kerning</h4>
+<span id="index-ligatures-and-kerning"></span>
+<span id="index-kerning-and-ligatures"></span>
+
+<p>Proportional fonts commonly employ two techniques to improve the
+esthetics of typeset text.  <em>Ligatures</em> are sequences of glyphs that
+are visually connected or &ldquo;tied&rdquo;, overlapping them and slightly
+altering their shapes.  <em>Kerning</em> is the adjustment of horizontal
+spacing between glyphs.  Neither is employed on terminals.<a id="DOCF130" href="groff.html_fot.html#FOOT130"><sup>130</sup></a>
+</p>
+<p>Most typesetters support ligatures for the sequences &lsquo;fi&rsquo;, &lsquo;fl&rsquo;, &lsquo;ff&rsquo;,
+&lsquo;ffi&rsquo;, and &lsquo;ffl&rsquo;, and <code>troff</code> does likewise.  Some fonts may
+include others, but GNU <code>troff</code> does not (yet) support them.
+</p>
+<p>The formatter checks only the current font for ligatures and kerning
+adjustments; neither glyphs from special fonts nor special characters
+defined with the <code>char</code> request (and its siblings) are considered
+for these processes.
+</p>
+<dl>
+<dt id="index-_002elg">Request: <strong><tt>.lg</tt></strong> <em>[<span class="roman"><i>flag</i></span>]</em></dt>
+<dd><span id="index-lg"></span>
+</dd><dt id="index-_005cn_005b_002elg_005d">Register: <strong><tt>\n[.lg]</tt></strong></dt>
+<dd><span id="index-_002elg-1"></span>
+<span id="index-activating-ligatures-_0028lg_0029"></span>
+<span id="index-ligatures_002c-activating-_0028lg_0029"></span>
+<span id="index-ligatures-enabled-register-_0028_002elg_0029"></span>
+<p>Switch the ligature mechanism on or off; if the parameter is non-zero or
+missing, ligatures are enabled, otherwise disabled.  Default is on.  The
+current ligature mode can be found in the read-only register <code>.lg</code>
+(set to 1 or&nbsp;2 if ligatures are enabled, 0&nbsp;otherwise).
+</p>
+<p>Setting the ligature mode to&nbsp;2 enables the two-character ligatures
+(fi, fl, and ff) and disables the three-character ligatures (ffi and
+ffl).
+</p></dd></dl>
+
+<p><em>Pairwise kerning</em> is another subtle typesetting mechanism that
+modifies the distance between adjacent glyphs in a pair to improve
+readability.  In most cases (but not always) the distance is decreased.
+Monospaced (typewriter-like) fonts and terminals don&rsquo;t use kerning.
+</p>
+<dl>
+<dt id="index-_002ekern">Request: <strong><tt>.kern</tt></strong> <em>[<span class="roman"><i>flag</i></span>]</em></dt>
+<dd><span id="index-kern"></span>
+</dd><dt id="index-_005cn_005b_002ekern_005d">Register: <strong><tt>\n[.kern]</tt></strong></dt>
+<dd><span id="index-_002ekern-1"></span>
+<span id="index-activating-kerning-_0028kern_0029"></span>
+<span id="index-kerning_002c-activating-_0028kern_0029"></span>
+<span id="index-kerning-enabled-register-_0028_002ekern_0029"></span>
+<p>Enable or disable pairwise kerning of glyphs in the environment per
+<var>b</var>.  It is enabled by default, and if <var>b</var> is omitted.
+</p>
+<p>The read-only register <code>.kern</code> interpolates&nbsp;1 if pairwise
+kerning is enabled, 0&nbsp;otherwise.
+</p>
+<span id="index-dummy-character-_0028_005c_0026_0029_002c-effect-on-kerning"></span>
+<span id="index-character_002c-dummy-_0028_005c_0026_0029_002c-effect-on-kerning"></span>
+<p>If the font description file contains pairwise kerning information,
+glyphs from that font are kerned.  Kerning between two glyphs can be
+inhibited by placing <code>\&amp;</code> between them: &lsquo;<samp>V\&amp;A</samp>&rsquo;.
+</p>
+<p>See <a href="Font-Description-File-Format.html">Font Description File Format</a>.
+</p></dd></dl>
+
+<span id="index-track-kerning"></span>
+<span id="index-kerning_002c-track"></span>
+<p><em>Track kerning</em> expands or reduces the space between glyphs.  This
+can be handy, for example, if you need to squeeze a long word onto a
+single line or spread some text to fill a narrow column.  It must be
+used with great care since it is usually considered bad typography if
+the reader notices the effect.
+</p>
+<dl>
+<dt id="index-_002etkf">Request: <strong><tt>.tkf</tt></strong> <em>f s1 n1 s2 n2</em></dt>
+<dd><span id="index-tkf"></span>
+<span id="index-activating-track-kerning-_0028tkf_0029"></span>
+<span id="index-track-kerning_002c-activating-_0028tkf_0029"></span>
+<p>Enable track kerning for font&nbsp;<var>f</var>.  If the current font
+is&nbsp;<var>f</var> the width of every glyph is increased by an amount
+between <var>n1</var> and <var>n2</var> (<var>n1</var>, <var>n2</var> can be negative); if
+the current type size is less than or equal to <var>s1</var> the width is
+increased by <var>n1</var>; if it is greater than or equal to <var>s2</var> the
+width is increased by <var>n2</var>; if the type size is greater than or
+equal to <var>s1</var> and less than or equal to <var>s2</var> the increase in
+width is a linear function of the type size.
+</p>
+<p>The default scaling unit is &lsquo;<samp>z</samp>&rsquo; for <var>s1</var> and <var>s2</var>, &lsquo;<samp>p</samp>&rsquo;
+for <var>n1</var> and <var>n2</var>.
+</p>
+<p>The track kerning amount is added even to the rightmost glyph in a line;
+for large values it is thus recommended to increase the line length by
+the same amount to compensate.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Italic-Corrections.html" accesskey="n" rel="next">Italic Corrections</a>, Previous: <a href="Artificial-Fonts.html" accesskey="p" rel="prev">Artificial Fonts</a>, Up: <a href="Using-Fonts.html" accesskey="u" rel="up">Using Fonts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

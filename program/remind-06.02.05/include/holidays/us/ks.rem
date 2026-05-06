@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision KS in United States
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision KS.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/us.rem
+
+REM 22 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+2) == 0] MSG %"Christmas Eve (observed)%" %! %b.
+REM 23 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 5] MSG %"Christmas Eve (observed)%" %! %b.
+REM 23 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 6] MSG %"Christmas Eve (observed)%" %! %b.
+OMIT 24 December MSG %"Christmas Eve%" %! %b.

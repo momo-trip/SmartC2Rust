@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Lists in ms (The GNU troff Manual)</title>
+
+<meta name="description" content="Lists in ms (The GNU troff Manual)">
+<meta name="keywords" content="Lists in ms (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms-Body-Text.html" rel="up" title="ms Body Text">
+<link href="Indented-regions-in-ms.html" rel="next" title="Indented regions in ms">
+<link href="Typeface-and-decoration.html" rel="prev" title="Typeface and decoration">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Lists-in-ms"></span><div class="header">
+<p>
+Next: <a href="Indented-regions-in-ms.html" accesskey="n" rel="next">Indented regions in ms</a>, Previous: <a href="Typeface-and-decoration.html" accesskey="p" rel="prev">Typeface and decoration</a>, Up: <a href="ms-Body-Text.html" accesskey="u" rel="up">ms Body Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Lists"></span><h4 class="subsubsection">4.6.5.6 Lists</h4>
+<span id="index-ms-macros_002c-lists"></span>
+
+<p>The
+<var>mark</var>
+argument to the
+<code>IP</code>
+macro can be employed to present a variety of lists;
+for instance,
+you can use a bullet glyph
+(<code>\[bu]</code>)
+for unordered lists,
+a number
+(or auto-incrementing register)
+for numbered lists,
+or a word or phrase for glossary-style or definition lists.
+If you set the paragraph indentation register
+<code>PI</code> before calling <code>IP</code>, you can later reorder the items in
+the list without having to ensure that a <var>width</var> argument remains
+affixed to the first call.
+</p>
+<p>The following is an example of a bulleted list.
+<span id="index-example-markup_002c-bulleted-list-_005bms_005d"></span>
+<span id="index-bulleted-list_002c-example-markup-_005bms_005d"></span>
+</p>
+<div class="example">
+<pre class="example">.nr PI 2n
+A bulleted list:
+.IP \[bu]
+lawyers
+.IP \[bu]
+guns
+.IP \[bu]
+money
+</pre></div>
+
+<table class="cartouche" border="1"><tr><td>
+<div class="example">
+<pre class="example">A bulleted list:
+
+&bull; lawyers
+
+&bull; guns
+
+&bull; money
+</pre></div>
+</td></tr></table>
+
+<p>The following is an example of a numbered list.
+<span id="index-example-markup_002c-numbered-list-_005bms_005d"></span>
+<span id="index-numbered-list_002c-example-markup-_005bms_005d"></span>
+</p>
+<div class="example">
+<pre class="example">.nr step 0 1
+.nr PI 3n
+A numbered list:
+.IP \n+[step]
+lawyers
+.IP \n+[step]
+guns
+.IP \n+[step]
+money
+</pre></div>
+
+<table class="cartouche" border="1"><tr><td>
+<div class="example">
+<pre class="example">A numbered list:
+
+1. lawyers
+
+2. guns
+
+3. money
+</pre></div>
+</td></tr></table>
+
+<p>Here we have employed the <code>nr</code> request to create a register of our
+own, &lsquo;<samp>step</samp>&rsquo;.  We initialized it to zero and assigned it an
+auto-increment of 1.  Each time we use the escape sequence
+&lsquo;<samp>\n+[step]</samp>&rsquo; (note the plus sign), the formatter applies the
+increment just before interpolating the register&rsquo;s value.  Preparing the
+<code>PI</code> register as well enables us to rearrange the list without the
+tedium of updating macro calls.
+</p>
+<p>The next example illustrates a glossary-style list.
+<span id="index-example-markup_002c-glossary_002dstyle-list-_005bms_005d"></span>
+<span id="index-glossary_002dstyle-list_002c-example-markup-_005bms_005d"></span>
+</p>
+<div class="example">
+<pre class="example">A glossary-style list:
+.IP lawyers 0.4i
+Two or more attorneys.
+.IP guns
+Firearms,
+preferably large-caliber.
+.IP money
+Gotta pay for those
+lawyers and guns!
+</pre></div>
+
+<table class="cartouche" border="1"><tr><td>
+<div class="example">
+<pre class="example">A glossary-style list:
+
+lawyers
+      Two or more attorneys.
+
+guns  Firearms, preferably large-caliber.
+
+money
+      Gotta pay for those lawyers and guns!
+</pre></div>
+</td></tr></table>
+
+<p>In the previous example,
+observe how the
+<code>IP</code>
+macro places the definition on the same line as the term
+if it has enough space.
+If this is not what you want,
+there are a few workarounds we illustrate by modifying the example.
+First,
+you can use a
+<code>br</code>
+request to force a break after printing the term or label.
+</p>
+<div class="example">
+<pre class="example">.IP guns
+.br
+Firearms,
+</pre></div>
+
+<p>Second, you could apply the <code>\p</code> escape sequence to force a break.
+The space following the escape sequence is important; if you omit it,
+<code>groff</code> prints the first word of the paragraph text on the same
+line as the term or label (if it fits) <em>then</em> breaks the line.
+</p>
+<div class="example">
+<pre class="example">.IP guns
+\p Firearms,
+</pre></div>
+
+<p>Finally,
+you may append a horizontal motion to the mark with the
+<code>\h</code>
+escape sequence;
+using the same amount as the indentation ensures that the mark is
+too wide for
+<code>groff</code>
+to treat it as &ldquo;fitting&rdquo; on the same line as the paragraph text.
+</p>
+<div class="example">
+<pre class="example">.IP guns\h'0.4i'
+Firearms,
+</pre></div>
+
+<p>In each case, the result is the same.
+</p>
+<table class="cartouche" border="1"><tr><td>
+<div class="example">
+<pre class="example">A glossary-style list:
+
+lawyers
+      Two or more attorneys.
+
+guns
+      Firearms, preferably large-caliber.
+
+money
+      Gotta pay for those lawyers and guns!
+</pre></div>
+</td></tr></table>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Indented-regions-in-ms.html" accesskey="n" rel="next">Indented regions in ms</a>, Previous: <a href="Typeface-and-decoration.html" accesskey="p" rel="prev">Typeface and decoration</a>, Up: <a href="ms-Body-Text.html" accesskey="u" rel="up">ms Body Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

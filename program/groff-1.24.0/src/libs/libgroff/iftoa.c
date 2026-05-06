@@ -1,0 +1,80 @@
+/* Copyright 1989-2024 Free Software Foundation, Inc.
+     Written by James Clark (jjc@jclark.com)
+
+This file is part of groff, the GNU roff typesetting system.
+
+groff is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+groff is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include "lib.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+const char *if_to_a(int i, int decimal_point)
+{
+  static char buf[INT_DIGITS + 3]; // INT_DIGITS + '-', '.', '\0'
+  char *p = buf + INT_DIGITS + 2;
+  int point = 0;
+  buf[INT_DIGITS + 2] = '\0';
+  /* assert(decimal_point <= INT_DIGITS); */
+  if (i >= 0) {
+    do {
+      *--p = '0' + (i % 10);
+      i /= 10;
+      if (++point == decimal_point)
+	*--p = '.';
+    } while (i != 0 || point < decimal_point);
+  }
+  else {			/* i < 0 */
+    do {
+      *--p = '0' - (i % 10);
+      i /= 10;
+      if (++point == decimal_point)
+	*--p = '.';
+    } while (i != 0 || point < decimal_point);
+    *--p = '-';
+  }
+  if (decimal_point > 0) {
+    char *q;
+    /* there must be a dot, so this will terminate */
+    for (q = buf + INT_DIGITS + 2; q[-1] == '0'; --q)
+      ;
+    if (q[-1] == '.') {
+      if (q - 1 == p) {
+	q[-1] = '0';
+	q[0] = '\0';
+      }
+      else
+	q[-1] = '\0';
+    }
+    else
+      *q = '\0';
+  }
+  return p;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+// Local Variables:
+// fill-column: 72
+// mode: C++
+// End:
+// vim: set cindent noexpandtab shiftwidth=2 textwidth=72:

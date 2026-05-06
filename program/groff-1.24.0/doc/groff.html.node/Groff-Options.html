@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Groff Options (The GNU troff Manual)</title>
+
+<meta name="description" content="Groff Options (The GNU troff Manual)">
+<meta name="keywords" content="Groff Options (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Invoking-groff.html" rel="up" title="Invoking groff">
+<link href="Environment.html" rel="next" title="Environment">
+<link href="Invoking-groff.html" rel="prev" title="Invoking groff">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Groff-Options"></span><div class="header">
+<p>
+Next: <a href="Environment.html" accesskey="n" rel="next">Environment</a>, Up: <a href="Invoking-groff.html" accesskey="u" rel="up">Invoking groff</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Options"></span><h3 class="section">2.1 Options</h3>
+<span id="index-options"></span>
+
+<span id="index-groff"></span>
+<span id="index-troff"></span>
+<span id="index-pic"></span>
+<span id="index-eqn"></span>
+<span id="index-grn"></span>
+<span id="index-rap"></span>
+<span id="index-tbl"></span>
+<span id="index-chem"></span>
+<span id="index-refer"></span>
+<span id="index-soelim"></span>
+<span id="index-preconv"></span>
+<p><code>groff</code> runs the GNU <code>troff</code> program and, normally, a
+postprocessor appropriate to the selected device.  The default device is
+&lsquo;<samp>ps</samp>&rsquo;, unless changed at <code>groff</code>&rsquo;s build-time configuration.
+<code>groff</code>
+can preprocess input with any of
+<code>pic</code>,
+<code>eqn</code>,
+<code>tbl</code>,
+<code>grn</code>,
+<code>grap</code>,
+<code>chem</code>,
+<code>refer</code>,
+<code>soelim</code>,
+or
+<code>preconv</code>.
+</p>
+<span id="Output-Devices"></span><p>This section documents only options to the <code>groff</code> front end.
+Since it passes many of its arguments to GNU <code>troff</code>, we
+describe many of the latter&rsquo;s options here.
+Arguments to preprocessors and output drivers
+can be found in the man pages
+<cite>pic<span class="roman">(1)</span></cite>,
+<cite>eqn<span class="roman">(1)</span></cite>,
+<cite>tbl<span class="roman">(1)</span></cite>,
+<cite>grn<span class="roman">(1)</span></cite>,
+<cite>refer<span class="roman">(1)</span></cite>,
+<cite>chem<span class="roman">(1)</span></cite>,
+<cite>soelim<span class="roman">(1)</span></cite>,
+<cite>preconv<span class="roman">(1)</span></cite>,
+<cite>grotty<span class="roman">(1)</span></cite>,
+<cite>grops<span class="roman">(1)</span></cite>,
+<cite>gropdf<span class="roman">(1)</span></cite>,
+<cite>grohtml<span class="roman">(1)</span></cite>,
+<cite>grodvi<span class="roman">(1)</span></cite>,
+<cite>grolj4<span class="roman">(1)</span></cite>,
+<cite>grolbp<span class="roman">(1)</span></cite>,
+and
+<cite>gxditview<span class="roman">(1)</span></cite>.
+</p>
+<p>A summary of <code>groff</code>&rsquo;s usage follows.
+</p>
+<div class="example">
+<pre class="example">groff [-abcCeEgGijklNpRsStUVXzZ] [-d <var>c</var><var>s</var>]&nbsp;[-d <var>string</var>=<var>text</var>]
+      [-D <var>fallback-encoding</var>] [-f <var>font-family</var>]
+      [-F <var>font-directory</var>] [-I <var>inclusion-directory</var>]
+      [-K <var>input-encoding</var>] [-L <var>spooler-argument</var>]
+      [-m <var>macro-package</var>] [-M <var>macro-directory</var>]
+      [-n <var>page-number</var>] [-o <var>page-list</var>]
+      [-P <var>postprocessor-argument</var>]&nbsp;[-r <var>c</var><var>numeric-expression</var>]
+      [-r <var>register</var>=<var>numeric-expression</var>]&nbsp;[-T <var>output-device</var>]
+      [-w <var>warning-category</var>] [-W <var>warning-category</var>]
+      [<var>file</var> &hellip;]
+</pre></div>
+
+<p><code>troff</code>
+shares much of this interface;
+<code>groff</code>
+passes relevant options and operands to it.
+</p>
+<div class="example">
+<pre class="example">troff [-abcCEiRSUz] [-f <var>font-family</var>] [-F <var>font-directory</var>]
+      [-I <var>inclusion-directory</var>] [-m <var>macro-package</var>]
+      [-M <var>macro-directory</var>] [-n <var>page-number</var>]&nbsp;[-o <var>page-list</var>]
+      [-r <var>c</var><var>numeric-expression</var>]
+      [-r <var>register</var>=<var>numeric-expression</var>]&nbsp;[-T <var>output-device</var>]
+      [-w <var>warning-category</var>] [-W <var>warning-category</var>]
+      [<var>file</var> &hellip;]
+</pre></div>
+
+<p>Options that don&rsquo;t take arguments can be clustered after a
+single&nbsp;<samp>-</samp>.  A <var>file</var> operand of &nbsp;<samp>-</samp> denotes
+the standard input stream.
+</p>
+<p>All <code>groff</code> commands accept a <samp>--help</samp> option, which
+summarizes usage similarly to the foregoing, and <samp>--version</samp>,
+which discloses release information.
+Both exit with a successful status after reporting.
+</p>
+<p>The rest of <code>groff</code>&rsquo;s command-line options are as follows.
+</p>
+<span id="index-command_002dline-options"></span>
+<dl compact="compact">
+<dt>&lsquo;<samp>-a</samp>&rsquo;</dt>
+<dd><span id="index-plain-text-approximation-output-register-_0028_002eA_0029"></span>
+<p>Generate a plain text approximation of the typeset output.  The
+read-only register <code>.A</code> is set to&nbsp;1.  See <a href="Built_002din-Registers.html">Built-in Registers</a>.  This option produces a sort of abstract preview of the
+formatted output.
+</p>
+<ul>
+<li> Page breaks are marked by a phrase in angle brackets; for example,
+&lsquo;<samp>&lt;beginning of page&gt;</samp>&rsquo;.
+
+</li><li> Lines are broken where they would be in formatted output.
+
+</li><li> Vertical motion, apart from that implied by a break, is not represented.
+
+</li><li> A horizontal motion of any size is represented as one space.  Adjacent
+horizontal motions are not combined.  Supplemental inter-sentence space
+(configured by the second argument to the <code>ss</code> request) is not
+represented.
+
+</li><li> A special character is rendered as its identifier between angle
+brackets; for example, a hyphen appears as &lsquo;<samp>&lt;hy&gt;</samp>&rsquo;.
+</li></ul>
+
+<p>The above description should not be considered a specification; the
+details of <samp>-a</samp> output are subject to change.
+</p>
+</dd>
+<dt>&lsquo;<samp>-b</samp>&rsquo;</dt>
+<dd><p>Write a backtrace reporting the state of
+<code>troff</code>&rsquo;s
+input parser to the standard error stream with each diagnostic message.
+The line numbers given in the backtrace might not always be correct,
+because
+<code>troff</code>&rsquo;s
+idea of line numbers can be confused by requests that append to
+macros.
+</p>
+</dd>
+<dt>&lsquo;<samp>-c</samp>&rsquo;</dt>
+<dd><p>Disable multi-color output and
+<code>color</code>
+request&rsquo;s ability to enable it.
+</p>
+</dd>
+<dt>&lsquo;<samp>-C</samp>&rsquo;</dt>
+<dd><p>Enable AT&amp;T <code>troff</code> compatibility mode; implies <samp>-c</samp>.
+See <a href="Implementation-Differences.html">Implementation Differences</a>, for the list of incompatibilities
+between <code>groff</code> and <acronym>AT&amp;T</acronym> <code>troff</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-d <var>c</var><var>text</var></samp>&rsquo;</dt>
+<dt>&lsquo;<samp>-d <var>string</var>=<var>text</var></samp>&rsquo;</dt>
+<dd><p>Define
+<code>roff</code>
+string&nbsp;<var>c</var>
+or
+<var>string</var>
+as
+<var>text</var>.
+<var>c</var>&nbsp;must be one character; <var>string</var> can be
+of arbitrary length.  Such assignments happen before any macro file is
+loaded, including the startup file.  Due to <cite>getopt_long<span class="roman">(3)</span></cite>
+limitations, <var>c</var>&nbsp;cannot be, and <var>string</var> cannot contain, an
+equals sign, even though that is a valid character in a <code>roff</code>
+identifier.  See <a href="Strings.html">Strings</a>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-D <var>enc</var></samp>&rsquo;</dt>
+<dd><p>Set fallback input encoding used by <code>preconv</code> to <var>enc</var>;
+implies <samp>-k</samp>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-e</samp>&rsquo;</dt>
+<dd><p>Run
+<code>eqn</code>
+preprocessor.
+</p>
+</dd>
+<dt>&lsquo;<samp>-E</samp>&rsquo;</dt>
+<dd><p>Inhibit
+<code>troff</code>
+error messages.
+This option does
+<em>not</em>
+suppress messages sent to the standard error stream
+by documents or macro packages using
+<code>tm</code>
+or related requests.
+</p>
+</dd>
+<dt>&lsquo;<samp>-f <var>fam</var></samp>&rsquo;</dt>
+<dd><p>Use <var>fam</var> as the default font family.  See <a href="Font-Families.html">Font Families</a>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-F <var>dir</var></samp>&rsquo;</dt>
+<dd><p>Search in directory <samp><var>dir</var></samp> for the selected output device&rsquo;s
+directory of device and font description files.  See <a href="Font-Directories.html">Font Directories</a>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-g</samp>&rsquo;</dt>
+<dd><p>Run
+<code>grn</code>
+preprocessor.
+</p>
+</dd>
+<dt>&lsquo;<samp>-G</samp>&rsquo;</dt>
+<dd><p>Run <code>grap</code> preprocessor; implies <samp>-p</samp>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-h</samp>&rsquo;</dt>
+<dd><p>Display a usage message and exit.
+</p>
+</dd>
+<dt>&lsquo;<samp>-i</samp>&rsquo;</dt>
+<dd><p>Read the standard input stream after all the named input files have been
+processed.
+</p>
+</dd>
+<dt>&lsquo;<samp>-I <var>dir</var></samp>&rsquo;</dt>
+<dd><p>Search the directory <var>dir</var> for files named in several contexts;
+implies <samp>-g</samp> and <samp>-s</samp>.
+</p>
+<ul>
+<li> <code>soelim</code>
+replaces lines matching
+&lsquo;<samp>.so <var>file-name</var></samp>&rsquo;
+with the contents of <var>file-name</var>.
+
+</li><li> <code>troff</code>
+searches for files named as operands in its command line
+and as arguments to
+<code>psbb</code>,
+<code>so</code>,
+and
+<code>soquiet</code>
+requests.
+
+<span id="Embedding-PDF"></span><span id="Embedding-PostScript"></span></li><li> Output drivers may search for files; for instance, <code>grops</code> looks
+for files named in &lsquo;<samp>\X'ps: import <span class="roman">&hellip;</span>'</samp>&rsquo;, &lsquo;<samp>\X'ps: file
+<span class="roman">&hellip;</span>'</samp>&rsquo;, and &lsquo;<samp>\X'pdf: pdfpic <span class="roman">&hellip;</span>'</samp>&rsquo; device extension
+escape sequences.
+</li></ul>
+
+<p>This option may be specified more than once; the directories are
+searched in the order specified.  If you want to search the current
+directory before others, add &lsquo;<samp>-I .</samp>&rsquo; at the desired place.  The
+current working directory is otherwise searched last.  <samp>-I</samp> works
+similarly to, and is named for, the &ldquo;include&rdquo; option of Unix C
+compilers.
+</p>
+<p><code>groff</code>
+passes
+<samp>-I</samp>
+options and their arguments to
+<code>soelim</code>,
+<code>troff</code>,
+and output drivers;
+with the option letter changed to
+<samp>-M</samp>,
+it passes the same arguments to
+<code>grn</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-j</samp>&rsquo;</dt>
+<dd><p>Run <code>gchem</code> preprocessor.  Implies <samp>-p</samp>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-k</samp>&rsquo;</dt>
+<dd><p>Run <code>preconv</code> preprocessor.  Refer to its man page for its
+behavior if neither of <code>groff</code>&rsquo;s <samp>-K</samp> or <samp>-D</samp>
+options is also specified.
+</p>
+</dd>
+<dt>&lsquo;<samp>-K <var>enc</var></samp>&rsquo;</dt>
+<dd><p>Set input encoding used by <code>preconv</code> to <var>enc</var>; implies
+<samp>-k</samp>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-l</samp>&rsquo;</dt>
+<dd><p>Send the output to a spooler for printing.  The <code>print</code> directive
+in the device description file specifies the default command to be used;
+see <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.
+See options <samp>-L</samp> and <samp>-X</samp>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-L <var>arg</var></samp>&rsquo;</dt>
+<dd><p>Pass <var>arg</var> to the print spooler.  If multiple <var>arg</var>s are
+required, pass each with a separate <samp>-L</samp> option.  <code>groff</code>
+does not prefix an option dash to <var>arg</var> before passing it to the
+spooler.
+</p>
+</dd>
+<dt>&lsquo;<samp>-m <var>mac</var></samp>&rsquo;</dt>
+<dd><p>Search for the macro package <samp><var>mac</var>.tmac</samp> and read it prior to
+any input.  If not found, <samp>tmac.<var>mac</var></samp> is attempted.
+See <a href="Macro-Directories.html">Macro Directories</a>.
+<code>groff</code>
+passes
+<samp>-m</samp>
+options and their arguments to
+<code>eqn</code>,
+<code>grap</code>,
+and
+<code>grn</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-M <var>dir</var></samp>&rsquo;</dt>
+<dd><p>Search directory <samp><var>dir</var></samp> for macro files.  See <a href="Macro-Directories.html">Macro Directories</a>.
+<code>groff</code>
+passes
+<samp>-M</samp>
+options and their arguments to
+<code>eqn</code>,
+<code>grap</code>,
+and
+<code>grn</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-n <var>num</var></samp>&rsquo;</dt>
+<dd><p>Begin numbering pages at <var>num</var>.  The default is &lsquo;<samp>1</samp>&rsquo;.
+</p>
+</dd>
+<dt>&lsquo;<samp>-N</samp>&rsquo;</dt>
+<dd><p>Prohibit newlines between
+<code>eqn</code> delimiters:
+pass
+<samp>-N</samp>
+to
+<code>eqn</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-o <var>list</var></samp>&rsquo;</dt>
+<dd><span id="index-print-current-page-register-_0028_002eP_0029"></span>
+<p>Output only pages in <var>list</var>, which is a comma-separated list of page
+ranges; &lsquo;<samp><var>n</var></samp>&rsquo; means page&nbsp;<var>n</var>, &lsquo;<samp><var>m</var>-<var>n</var></samp>&rsquo;
+means every page between <var>m</var> and&nbsp;<var>n</var>, &lsquo;<samp>-<var>n</var></samp>&rsquo; means
+every page up to&nbsp;<var>n</var>, &lsquo;<samp><var>n</var>-</samp>&rsquo; means every page from
+<var>n</var>&nbsp;on.
+<code>troff</code>
+stops processing and exits after formatting the last page enumerated in
+<var>list</var>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-p</samp>&rsquo;</dt>
+<dd><p>Run
+<code>pic</code>
+preprocessor.
+</p>
+</dd>
+<dt>&lsquo;<samp>-P <var>arg</var></samp>&rsquo;</dt>
+<dd><p>Pass <var>arg</var> to the postprocessor.  If multiple <var>arg</var>s are
+required, pass each with a separate <samp>-P</samp> option.  <code>groff</code>
+does not prefix an option dash to <var>arg</var> before passing it to the
+postprocessor.
+</p>
+</dd>
+<dt>&lsquo;<samp>-r <var>c</var><var>numeric-expression</var></samp>&rsquo;</dt>
+<dt>&lsquo;<samp>-r <var>register</var>=<var>numeric-expression</var></samp>&rsquo;</dt>
+<dd><p>Define <code>roff</code> register&nbsp;<var>c</var> or <var>register</var> as
+<var>numeric-expression</var> (see <a href="Numeric-Expressions.html">Numeric Expressions</a>).
+<var>c</var>&nbsp;must be one character; <var>register</var> can be of arbitrary
+length.  Such assignments happen before any macro file is loaded,
+including the startup file.  Due to <cite>getopt_long<span class="roman">(3)</span></cite>
+limitations, <var>c</var>&nbsp;cannot be, and <var>register</var> cannot contain,
+an equals sign, even though that is a valid character in a <code>roff</code>
+identifier.  See <a href="Registers.html">Registers</a>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-R</samp>&rsquo;</dt>
+<dd><p>Run
+<code>refer</code>
+preprocessor.
+No mechanism is provided for passing
+arguments to it;
+most
+<code>refer</code>
+options have equivalent language elements
+that can be specified within the document.
+</p>
+<span id="index-troffrc"></span>
+<span id="index-troffrc_002dend"></span>
+<p><code>troff</code>
+also accepts a
+<samp>-R</samp>
+option,
+which is not accessible via
+<code>groff</code>.
+This option facilitates troubleshooting
+by preventing the loading of the
+<samp>troffrc</samp>
+and
+<samp>troffrc-end</samp> files.
+</p>
+</dd>
+<dt>&lsquo;<samp>-s</samp>&rsquo;</dt>
+<dd><p>Run
+<code>soelim</code>
+preprocessor.
+</p>
+</dd>
+<dt>&lsquo;<samp>-S</samp>&rsquo;</dt>
+<dd><span id="index-open-request_002c-and-safer-mode"></span>
+<span id="index-opena-request_002c-and-safer-mode"></span>
+<span id="index-pso-request_002c-and-safer-mode"></span>
+<span id="index-sy-request_002c-and-safer-mode"></span>
+<span id="index-pi-request_002c-and-safer-mode"></span>
+<span id="index-safer-mode"></span>
+<span id="index-mode_002c-safer"></span>
+<p>Operate in &ldquo;safer&rdquo; mode;
+see
+<samp>-U</samp>
+below for its opposite.
+Safer mode is enabled by default.
+Explicitly specifying
+<code>-S</code>
+causes
+<code>troff</code>
+to ignore any subsequent
+<code>-U</code>
+option.
+</p>
+</dd>
+<dt>&lsquo;<samp>-t</samp>&rsquo;</dt>
+<dd><p>Run
+<code>tbl</code>
+preprocessor.
+</p>
+</dd>
+<dt>&lsquo;<samp>-T <var>dev</var></samp>&rsquo;</dt>
+<dd><p>Prepare output for device
+<var>dev</var>.
+<code>groff</code>
+passes the
+<samp>-T</samp>
+option and its argument to
+<code>troff</code>,
+then
+(unless the
+<samp>-Z</samp>
+option is used)
+runs an output driver to convert
+<code>troff</code>&rsquo;s
+output to a form appropriate for
+<var>dev</var>.
+The following output devices are available.
+</p>
+<dl compact="compact">
+<dt><code>ps</code></dt>
+<dd><p>For PostScript printers and previewers.
+</p>
+</dd>
+<dt><code>pdf</code></dt>
+<dd><p>For PDF viewers or printers.
+</p>
+</dd>
+<dt><code>dvi</code></dt>
+<dd><p>For TeX DVI format.
+</p>
+</dd>
+<dt><code>X75</code></dt>
+<dd><p>For a 75dpi X11 previewer.
+</p>
+</dd>
+<dt><code>X75-12</code></dt>
+<dd><p>For a 75dpi X11 previewer with a 12-point base font in the
+document.
+</p>
+</dd>
+<dt><code>X100</code></dt>
+<dd><p>For a 100dpi X11 previewer.
+</p>
+</dd>
+<dt><code>X100-12</code></dt>
+<dd><p>For a 100dpi X11 previewer with a 12-point base font in the
+document.
+</p>
+</dd>
+<dt><code>ascii</code></dt>
+<dd><span id="index-encoding_002c-output_002c-ASCII"></span>
+<span id="index-encoding_002c-output_002c-ISO-646"></span>
+<span id="index-ASCII-output-encoding"></span>
+<span id="index-ISO-646-output-encoding"></span>
+<span id="index-output-encoding_002c-ASCII"></span>
+<span id="index-output-encoding_002c-ISO-646"></span>
+<p>For typewriter-like devices using the (7-bit) ISO&nbsp;646:1991&nbsp;IRV<!-- /@w -->
+(US-<acronym>ASCII</acronym>) character set.
+</p>
+</dd>
+<dt><code>latin1</code></dt>
+<dd><span id="index-encoding_002c-output_002c-ISO-Latin_002d1-_00288859_002d1_0029"></span>
+<span id="index-Latin_002d1-_0028ISO-8859_002d1_0029-output-encoding"></span>
+<span id="index-ISO-Latin_002d1-_00288859_002d1_0029-output-encoding"></span>
+<span id="index-output-encoding_002c-ISO-Latin_002d1-_00288859_002d1_0029"></span>
+<p>For typewriter-like devices that support the ISO&nbsp;<span class="nolinebreak">Latin-1</span><!-- /@w --> (8859-1)
+character set.
+</p>
+</dd>
+<dt><code>utf8</code></dt>
+<dd><span id="index-encoding_002c-output_002c-UTF_002d8"></span>
+<span id="index-UTF_002d8-output-encoding"></span>
+<span id="index-output-encoding_002c-UTF_002d8"></span>
+<p>For typewriter-like devices that use the ISO&nbsp;10646<!-- /@w --> (Unicode)
+character set with <span class="nolinebreak">UTF-8</span><!-- /@w --> encoding.
+</p>
+</dd>
+<dt><code>lj4</code></dt>
+<dd><p>For HP LaserJet4-compatible (or other PCL5-compatible) printers.
+</p>
+</dd>
+<dt><code>lbp</code></dt>
+<dd><p>For Canon <acronym>CaPSL</acronym> printers (<span class="nolinebreak">LBP-4</span><!-- /@w --> and <span class="nolinebreak">LBP-8</span><!-- /@w --> series laser
+printers).
+</p>
+<span id="index-pre_002dgrohtml"></span>
+<span id="index-post_002dgrohtml"></span>
+<span id="index-grohtml_002c-the-program"></span>
+</dd>
+<dt><code>html</code></dt>
+<dt><code>xhtml</code></dt>
+<dd><p>To produce HTML and XHTML output, respectively.
+This driver consists of two parts, a preprocessor
+(<code>pre-grohtml</code>) and a postprocessor (<code>post-grohtml</code>).
+</p></dd>
+</dl>
+
+<span id="index-output-device-name-string-_0028_002eT_0029"></span>
+<span id="index-output-device-usage-register-_0028_002eT_0029"></span>
+<p>The predefined GNU <code>troff</code> string <code>.T</code> contains the name of
+the output device; the read-only register <code>.T</code> is set to&nbsp;1 if
+this option is used (which is always true if <code>groff</code> is used to
+run GNU <code>troff</code>).  See <a href="Built_002din-Registers.html">Built-in Registers</a>.
+</p>
+<p>The postprocessor to be used for a device is specified by the
+<code>postpro</code> command in the device description file.  (See <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.)  This selection can be overridden with the
+<samp>-X</samp> option.
+</p>
+</dd>
+<dt>&lsquo;<samp>-U</samp>&rsquo;</dt>
+<dd><span id="index-mode_002c-unsafe"></span>
+<span id="index-unsafe-mode"></span>
+<p>Operate in
+<em>unsafe mode</em>,
+enabling the
+<code>cf</code>,
+<code>open</code>,
+<code>opena</code>,
+<code>pi</code>,
+<code>pso</code>,
+and
+<code>sy</code>
+requests,
+which are disabled by default because they
+allow an untrusted input document to run arbitrary commands,
+put arbitrary content into
+<code>troff</code> output,
+or write to arbitrary file names.<a id="DOCF7" href="groff.html_fot.html#FOOT7"><sup>7</sup></a>
+This option also adds the current directory to the macro package search
+path;
+see the
+<samp>-m</samp>
+and
+<samp>-M</samp>
+option above.
+<code>groff</code>
+passes
+<samp>-U</samp>
+to
+<code>pic</code>
+and GNU
+<code>troff</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-v</samp>&rsquo;</dt>
+<dd><p>Write version information for <code>groff</code> and all programs run by it
+to the standard output stream; that is, the given command line is
+processed in the usual way, passing <samp>-v</samp> to the formatter and any
+pre- or postprocessors invoked.
+</p>
+</dd>
+<dt>&lsquo;<samp>-V</samp>&rsquo;</dt>
+<dd><p>Output the pipeline that <code>groff</code> would run to the standard
+output stream and exit.  If given more than once, <code>groff</code> both
+writes the pipeline to the standard error stream and runs it.
+</p>
+</dd>
+<dt>&lsquo;<samp>-w <var>cat</var></samp>&rsquo;</dt>
+<dt>&lsquo;<samp>-W <var>cat</var></samp>&rsquo;</dt>
+<dd><p>Enable and inhibit, respectively, warnings in category <var>cat</var>.
+See <a href="Warnings.html">Warnings</a>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-X</samp>&rsquo;</dt>
+<dd><p>Use <code>gxditview</code> instead of the usual postprocessor to (pre)view
+a document on an X11 display.  Combining this option with
+<samp>-T ps</samp> uses the font metrics of the PostScript device, whereas
+the <samp>-T X75</samp>, <samp>-T X75-12</samp>, <samp>-T X100</samp>, and
+<samp>-T X100-12</samp> options use the metrics of X11 fonts.
+</p>
+</dd>
+<dt>&lsquo;<samp>-z</samp>&rsquo;</dt>
+<dd><p>Suppress formatted output from
+<code>troff</code>.
+</p>
+</dd>
+<dt>&lsquo;<samp>-Z</samp>&rsquo;</dt>
+<dd><p>Disable postprocessing.
+<code>troff</code>
+output appears on the standard output stream
+(unless suppressed with
+<samp>-z</samp>);
+see
+<a href="GNU-troff-Output.html">GNU <code>troff</code> Output</a>
+for a description of this format.
+</p></dd>
+</dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Environment.html" accesskey="n" rel="next">Environment</a>, Up: <a href="Invoking-groff.html" accesskey="u" rel="up">Invoking groff</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

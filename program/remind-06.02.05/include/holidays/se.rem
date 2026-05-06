@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Sweden
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Nyårsdagen%" %! %b.
+OMIT 6 January MSG %"Trettondedag July%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Långfredagen%" %! %b.
+OMIT [easterdate($Uy)] MSG %"Påskdagen%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Annandag påsk%" %! %b.
+OMIT 1 May MSG %"Första maj%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"Kristi himmelsfärdsdag%" %! %b.
+OMIT [easterdate($Uy)+49] MSG %"Pingstdagen%" %! %b.
+OMIT 6 June MSG %"Sveriges nationaldag%" %! %b.
+REM Friday 19 June ADDOMIT SCANFROM -28 MSG %"Midsommarafton%" %! %b.
+REM Saturday 20 June ADDOMIT SCANFROM -28 MSG %"Midsommardagen%" %! %b.
+REM Saturday 31 October ADDOMIT SCANFROM -28 MSG %"Alla helgons dag%" %! %b.
+OMIT 24 December MSG %"Julafton%" %! %b.
+OMIT 25 December MSG %"Juldagen%" %! %b.
+OMIT 26 December MSG %"Annandag July%" %! %b.
+OMIT 31 December MSG %"Nyårsafton%" %! %b.

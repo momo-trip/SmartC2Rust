@@ -1,0 +1,38 @@
+mepacrine.chem:
+.cstart
+
+# Example file for chem:
+#    mepacrine or atabrine or quinacrine or C_23H30_ClN_3O (CAS-RN: 83-89-6)
+#
+# Found at https://en.wikipedia.org/wiki/Mepacrine
+#
+# Prepared by Bernd Warken <groff-bernd.warken-72@web.de>,
+# reorganized by Norwid Behrnd <nbehrnd@yahoo.com>.
+
+R1:	ring6 double 1,2 3,4 5,6
+R2:	ring6 with .V5 at R1.V3 put N at 4 double 1,2 3,4
+R3:	ring6 with .V5 at R2.V3 double 1,2 3,4
+
+	bond -120 at R1.V5 ; Cl
+
+	bond up at R2.V1 ; N
+	H left of N
+	bond  60 from N
+BP:	bond 120
+	bond up from BP.start
+	bond 120 from BP.start
+	bond  60
+	bond 120
+	bond  60 ; N
+	bond up
+	bond  60
+	bond 120 from N
+	bond  60
+
+	bond 60 at R3.V2 ; O
+	bond 120
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

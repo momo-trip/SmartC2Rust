@@ -1,0 +1,459 @@
+#############################################################################
+# 									    #
+# DEFS.REM								    #
+# 									    #
+# This file is a reminder script, which contains a few handy definitions.   #
+# Cut and paste as desired!  Also, near the end, there are a bunch of	    #
+# holiday definitions for the U.S.					    #
+# 									    #
+# *** NOTE ***                                                              #
+# 									    #
+# This file is simply a grab-bag of examples.  It is NOT meant to be	    #
+# included as-is in a live reminder file.				    #
+# 									    #
+# Some examples provided by George M. Sipe <gsipe@pyratl.ga.pyramid.com>    #
+# 									    #
+# U.S. holidays provided by Dave Rickel <drickel@sjc.mentorg.com>	    #
+# 									    #
+# Use your text editor to search for:					    #
+#  "#USHOLS" for U.S. holidays						    #
+#  "#JHOLS"  for Jewish holidays					    #
+#  "#PSSTUFF" for nifty PostScript examples				    #
+# 									    #
+# This file is part of REMIND.						    #
+# Copyright (C) 1992-2026 Dianne Skoll                                      #
+# SPDX-License-Identifier: GPL-2.0-only
+# 									    #
+#############################################################################
+
+RUN OFF
+
+################################################
+# Ensure required version of remind is used... #
+################################################
+IF version() < "03.04.02"
+   ERRMSG This file requires at least version 03.04.02 of Remind.%
+   ERRMSG This version is version [version()].
+   EXIT
+ENDIF
+
+###########################################################
+# Symbolic constants and functions for "pasting"...       #
+###########################################################
+SET Quote CHAR(34)
+
+# Handy constants/function for specifying week of month...
+SET  Week_1		 1
+SET  Week_2		 8
+SET  Week_3		15
+SET  Week_4		22
+
+#################################################################
+# Function that removes a single leading zero from a string...  #
+#################################################################
+FSET _no_lz(s) IIF(SUBSTR(s, 1, 1)=="0", SUBSTR(s, 2), s)
+
+#################################################################
+# Return the length of the daylight/night portion of a date,    #
+# in minutes.                                                   #
+#################################################################
+FSET _light_len(date) MAX(SUNSET(date)-SUNRISE(date), 0)
+FSET _dark_len(date) 1440-_light_len(date)
+
+############################################################
+# Function to calculate number of years since a given year #
+# or number of months since a given month and year...      #
+############################################################
+FSET _yr_num(yr)		ORD($Ty - yr)
+FSET _mo_num(mo, yr)		ORD(12 * ($Ty - yr) + $Tm - mo)
+
+# Here's an example of how to use them:
+REM 1 Nov ++12 MSG %"John's [_yr_num(1984)] birthday%" is %b.
+REM 1 MSG John's [_mo_num(11, 1984)] 'monthly' anniversary
+
+#############################################################################
+# Here's a tricky problem:  The 4th of July is a holiday in the U.S.
+# However, if it falls on a Saturday, the previous Friday is a holiday.
+# If it falls on a Sunday, the next Monday is a holiday.  Here's how
+# to do it.
+#
+# For those reminders that update the OMIT context with ADDOMIT, we use
+# SCANFROM -7 for safety; see the man page about moveable OMITs.
+############################################################################
+
+# If it falls on a Saturday, bump to previous Friday
+REM 3 JULY SCANFROM -7 ADDOMIT SATISFY [$Tw == 5]  MSG Independence day (observed)
+
+# If it falls on a Sunday, bump to following Monday
+REM 5 July SCANFROM -7 ADDOMIT SATISFY [$Tw == 1] MSG Independence day (observed)
+
+# If it falls on Sat or Sun, note the actual day
+REM 4 July SCANFROM -7 ADDOMIT SATISFY [$Tw == 0 || $Tw == 6] MSG Independence day (actual)
+
+# Otherwise observed and actual is on the 4th
+REM 4 July SCANFROM -7 ADDOMIT SATISFY [$Tw >= 1 && $Tw <= 5] MSG Independence Day
+
+##########################################################################
+#								         #
+# On our UNIX system, I run a program that queries the university       #
+# library and creates a file called ".booksdue".  This file is           #
+# a REMIND script to tell me when my library books are due.  Here's      #
+# an example from my reminder file - it shows the use of filedate().     #
+# When the .booksdue file is at least 7 days old, I create a new version #
+# by querying the library computer.  Note the use of realtoday() rather  #
+# than today().  						         #
+#								         #
+##########################################################################
+IF !$RunOff && !$CalMode && !$SimpleCal
+   IF REALTODAY()-FILEDATE("/home/dfs/.booksdue") >= 7
+      REM RUN /home/dfs/bilge/library/getbooks
+   ENDIF
+ENDIF
+
+#PSSTUFF1
+##########################################################################
+#								         #
+# This portion of the file contains some cute examples of the new        #
+# PS-type reminders.  You need a PostScript printer or viewer to         #
+# appreciate these.  To use them, pipe the output of remind -p into the  #
+# rem2ps program.  More examples are in the PSSTUFF2 section, below.     #
+#								         #
+##########################################################################
+
+# The following reminder will shade the Saturday and Sunday calendar
+# entries.
+REM Sat Sun SPECIAL SHADE 220
+
+#USHOLS
+#############################################################################
+#       								    #
+# The following holidays were provided by Dave Rickel			    #
+# Modified by D. Skoll to give safe OMITs for moveable holidays		    #
+#									    #
+# NOTE: See include/holidays/us.rem for more up-to-date definitions         #
+#									    #
+#############################################################################
+
+SET SaveTrig $NumTrig
+SET easter EASTERDATE($Uy)
+REM  [easter-46] MSG %"Ash Wednesday%"
+REM  [easter-7]  MSG %"Palm Sunday%"
+OMIT [easter-2]  MSG %"Good Friday%"
+OMIT [easter]    MSG %"Easter%" Sunday
+REM  [easter+39] MSG %"Ascension Day%"
+REM  [easter+49] MSG %"Pentecost%"
+
+# Some holidays are omitted, some are not.  You may want to change
+# which ones are omitted - use the general forms shown below.  You'll
+# need the Week_n variables defined way up in the file.
+
+OMIT    Jan  1		MSG %"New Year's Day%"
+REM Third Monday in Jan MSG Martin Luther King - %"MLK Day%"
+REM     Feb  2		MSG %"Ground Hog Day%"
+REM     Feb 14		MSG %"Valentine's Day%"
+REM Third Monday in Feb SCANFROM -7 ADDOMIT MSG %"President's Day%"
+REM     Mar 17		MSG %"St. Patrick's Day%"
+
+# The DST rules are accurate for most locations in
+# North America
+REM Sun Apr 1 ++2 UNTIL 1 Jan 2007 MSG Daylight Saving Time - %"DST starts%" %b
+REM Sun Mar 8 ++2 FROM 1 Jan 2007 MSG Daylight Saving Time - %"DST starts%" %b
+
+REM Last Sunday in October ++2 UNTIL 1 Jan 2007 MSG Daylight Saving Time - %"DST ends%" %b
+REM First Sunday in November ++2 FROM 1 Jan 2007 MSG Daylight Saving Time - %"DST ends%" %b
+
+REM     Apr  1		MSG %"April Fool's%" Day
+
+# US Tax Day
+PUSH-OMIT-CONTEXT
+# Normal case: 16 April falls Mon-Fri
+REM 16 Apr SCANFROM -7 ADDOMIT SATISFY [$Tw >= 1 && $Tw <= 5] MSG Emancipation Day
+
+# 16 April falls on Saturday: Observe on the 15th
+REM 15 Apr SCANFROM -7 ADDOMIT SATISFY [$Tw == 5] MSG Emancipation Day (observed)
+
+# 16 April falls on Sunday: Observe on the 17th
+REM 17 Apr SCANFROM -7 ADDOMIT SATISFY [$Tw == 1] MSG Emancipation Day (observed)
+
+# If you live in Maine or Massachussetts, uncomment the next line
+# REM Third Monday in April SCANFROM -7 ADDOMIT MSG Patriots Day
+
+REM Apr 15 OMIT Sat Sun AFTER MSG Tax Day
+POP-OMIT-CONTEXT
+
+REM     May  5		MSG %"Cinco de Mayo%"
+REM First Sat in May 	MSG %"Kentucky Derby%"
+REM Second Sun in May	MSG %"Mother's Day%"
+REM Third Sat in May	MSG %"Armed Forces Day%"
+REM Last Monday in May	SCANFROM -7 ADDOMIT MSG %"Memorial Day%"
+REM     Jun 14		MSG %"Flag Day%"
+REM Third Sun in June	MSG %"Father's Day%"
+REM First Mon in Sep	SCANFROM -7 ADDOMIT MSG %"Labor Day%"
+REM Second Mon in Oct	MSG %"Columbus Day%"
+REM     Nov 11		MSG %"Veterans Day%"
+
+REM     Oct 30		MSG %"Mischief Night%"
+REM     Oct 31		MSG %"Halloween%"
+REM Tue Nov  2 SCANFROM -7 SATISFY [($Ty % 4) == 0] MSG %"Election Day%"
+REM Thu Nov [Week_4]	SCANFROM -7 ADDOMIT MSG %"Thanksgiving Day%"
+REM Fri Nov [Week_4+1]	SCANFROM -7 ADDOMIT MSG %"Thanksgiving (cont.)%"
+OMIT    Dec 24		MSG %"Christmas Eve%"
+OMIT    Dec 25		MSG %"Christmas%" Day
+
+##########################################################################
+#								         #
+# If any US holidays were triggered above, shade in the calendar         #
+# entry in PostScript.                                                   #
+#								         #
+##########################################################################
+if $NumTrig > SaveTrig
+	REM SPECIAL SHADE 220
+endif
+
+############################################################################
+# A meeting on the first Monday of every month which is moved to the       #
+# second Monday in the event of a holiday.                                 #
+############################################################################
+
+# First, the normal meeting.  However, the SKIP keyword means this
+# one won't be triggered if the first Monday is a holiday
+REM First Monday SKIP MSG Meeting
+
+# Now, calculate the "potential" delayed meeting
+REM Second Monday SATISFY 1
+
+# But only actually trigger the delayed meeting if the previous
+# Monday was a holiday
+IF ISOMITTED($T-7)
+   REM [$T] MSG Delayed meeting
+ENDIF
+
+#PSSTUFF2
+##########################################################################
+#									 #
+# Since the SHADE special blots out any previous PostScript		 #
+# reminders for a date, these examples need to follow the US Holidays	 #
+# section, which uses SHADE.                                             #
+#									 #
+##########################################################################
+
+# The following will fill in the Hebrew dates on the calendar.  For this
+# example, I recommend that you use the -sd 10 option for Rem2PS.
+REM PS Border Border moveto \
+   /DayFont findfont DaySize scalefont setfont \
+   ([hebday($U)] [hebmon($U)]) show
+
+# Fill in the phases of the moon on the PostScript calendar
+REM [moondate(0)] SPECIAL MOON 0
+REM [moondate(1)] SPECIAL MOON 1
+REM [moondate(2)] SPECIAL MOON 2
+REM [moondate(3)] SPECIAL MOON 3
+
+# The following example puts sunrise and sunset times in PostScript in the
+# calendar - the sizes are hard-coded, however, and work best in landscape.
+REM PS Border Border 5 sub moveto \
+	/SmallFont findfont 4 scalefont setfont \
+	(Sunrise: [sunrise($T)] Sunset: [sunset($T)]) show
+
+# The next one puts the day number (1-366) and days left in the year at the
+# bottom of the post-script calendar.  Again, the hard-coded sizes work best
+# in landscape.
+FSET _DayOfYear(x) x-(date(year(x),1,1) - 1)
+REM PS BoxWidth 3 mul 4 div Border 5 sub moveto \
+	/SmallFont findfont 4 scalefont setfont \
+	([_DayOfYear($U)]([365+isleap($U)-_DayOfYear($U)])) show
+
+#JHOLS
+##########################################################################
+#								         #
+# This portion of the file contains reminders for Jewish holidays.  The	 #
+# dates were obtained from "The First Jewish Catalog" by Richard Siegel	 #
+# and Michael and Sharon Strassfeld, published by the Jewish Publication #
+# Society of America.  The Reform version of the calendar was guessed	 #
+# at by Dianne Skoll based on experience.  There is probably no standard  #
+# Reform position on many of the holidays, so you may have to adjust     #
+# the file as required.                                                  #
+#									 #
+# Additional corrections were made from the paper "Calendrical		 #
+# Calculations" by Nachum Dershowitz and Edward M. Reingold.  Any	 #
+# further corrections are welcome.					 #
+#				        			         #
+##########################################################################
+
+# Here are some general functions that you might find nice to use
+
+# _hstr:  Returns a string which is the full Hebrew date of its argument.
+#         Example: hstr('1994/02/02') returns "21 Shvat 5754"
+FSET _hstr(x) HEBDAY(x) + " " + HEBMON(x) + " " + HEBYEAR(x)
+
+# _hyrlen:  Return the length of the specified Hebrew year
+#           Example: _hyrlen(5754) returns 355
+FSET _hyrlen(x) HEBDATE(1, "Tishrey", x+1) - HEBDATE(1, "Tishrey", x)
+
+# --- HERE ARE THE JEWISH HOLIDAYS ---
+# Set the variable InIsrael to 1 if you live in Israel.  Otherwise,
+# you get the Diaspora versions of Jewish holidays
+SET InIsrael 0
+
+# Set the variable Reform to 1 if you want the Reform version of the
+# Jewish calendar.  Otherwise, you get the traditional version
+SET Reform 0
+
+# Convenient function definition to save typing
+FSET _h(x, y) HEBDATE(x,y)
+FSET _h2(x, y) HEBDATE(x, y, $U-7)
+FSET _PastSat(x, y) IIF(WKDAYNUM(_h2(x,y))!=6, _h2(x,y), _h2(x,y)+1)
+FSET _PastSun(x, y) IIF(WKDAYNUM(_h2(x,y))!=0, _h2(x,y), _h2(x,y)+1)
+FSET _PastMon(x, y) IIF(WKDAYNUM(_h2(x,y))!=1, _h2(x,y), _h2(x,y)+1)
+
+# Default values in case InIsrael and Reform are not set
+SET InIsrael VALUE("InIsrael", 0)
+SET Reform   VALUE("Reform", 0)
+
+REM [_h(1,  "Tishrey")] ++4 MSG %"Rosh Hashana 1%" is %b.
+
+# No RH-2 or Tzom Gedalia in Reform
+IF !Reform
+   REM [_h(2,  "Tishrey")] ++4 MSG %"Rosh Hashana 2%" is %b.
+   REM [_PastSat(3,  "Tishrey")] ++4 MSG %"Tzom Gedalia%" is %b.
+ENDIF
+
+REM [_h(10, "Tishrey")] ++4 MSG %"Yom Kippur%" is %b.
+REM [_h(15, "Tishrey")] ++4 MSG %"Sukkot 1%" is %b.
+
+IF !InIsrael
+   REM [_h(16, "Tishrey")] MSG %"Sukkot 2%"
+ENDIF
+
+REM [_h(21, "Tishrey")] ++4 MSG %"Hoshana Rabba%" is %b.
+REM [_h(22, "Tishrey")] ++4 MSG %"Shemini Atzeret%" is %b.
+
+IF InIsrael
+   REM [_h(22, "Tishrey")] ++4 MSG %"Simchat Torah%" is %b.
+ELSE
+   REM [_h(23, "Tishrey")] ++4 MSG %"Simchat Torah%" is %b.
+ENDIF
+
+# Because Kislev can change length, we must be more careful about Chanukah
+FSET _chan(x) HEBDATE(24, "Kislev", $U-9)+x
+REM [_chan(1)] ++4 MSG %"Chanukah 1%" is %b.
+REM [_chan(2)] MSG %"Chanukah 2%"
+REM [_chan(3)] MSG %"Chanukah 3%"
+REM [_chan(4)] MSG %"Chanukah 4%"
+REM [_chan(5)] MSG %"Chanukah 5%"
+REM [_chan(6)] MSG %"Chanukah 6%"
+REM [_chan(7)] MSG %"Chanukah 7%"
+REM [_chan(8)] MSG %"Chanukah 8%"
+
+# Not sure about Reform's position on the next one.
+IF !Reform
+# 10 Tevet will never be a Saturday, so whether or not to
+# move it is moot.  (Thanks to Art Werschulz.)
+   REM [_h(10, "Tevet")] MSG %"Tzom Tevet%" is %b.
+ENDIF
+
+REM [_h(15, "Shvat")] ++4 MSG %"Tu B'Shvat%" is %b.
+REM [_h(14, "Adar A")] ++4 MSG %"Purim Katan%" is %b.
+REM [_h(15, "Adar A")] ++4 MSG %"Shushan Purim Katan%" is %b.
+
+# If Purim is on Sunday, then Fast of Esther is 11 Adar.
+IF WKDAYNUM(_h2(13, "Adar")) != 6
+   REM [_h2(13, "Adar")] ++4 MSG %"Fast of Esther%" is %b.
+ELSE
+   REM [_h2(11, "Adar")] ++4 MSG %"Fast of Esther%" is %b.
+ENDIF
+REM [_h(14, "Adar")] ++4 MSG %"Purim%" is %b.
+REM [_h(15, "Adar")] ++4 MSG %"Shushan Purim%" is %b.
+REM [_h(15, "Nisan")] ++4 MSG %"Pesach%" is %b.
+
+IF !InIsrael
+   REM [_h(16, "Nisan")] MSG %"Pesach 2%"
+ENDIF
+
+REM [_h(21, "Nisan")] MSG %"Pesach 7%"
+
+IF !InIsrael && !Reform
+   REM [_h(22, "Nisan")] MSG %"Pesach 8%"
+ENDIF
+
+REM [_PastSun(27, "Nisan")] SATISFY 1
+
+IF $Tw == 5
+   REM [_PastSun(26, "Nisan")] ++4 MSG %"Yom HaShoah%" is %b.
+ELSE
+   REM [_PastSun(27, "Nisan")] ++4 MSG %"Yom HaShoah%" is %b.
+ENDIF
+
+# If 4 Iyar is a Thursday or Friday, then Yom Hazikaron is
+# the Wednesday before and Yom Ha'atzmaut is on
+# Thursday.  If 4 Iyar is a Sunday, then Yom Hazikaron
+# moves to 5 Iyar and Yom Ha'atzmaut to 6 Iyar.
+IF WKDAYNUM(_h2(4, "Iyar")) == 4 || WKDAYNUM(_h2(4, "Iyar")) == 5
+   REM [_h(2, "Iyar")] ++4 MSG %"Yom Hazikaron%" is %b.
+   REM [_h(3, "Iyar")] ++4 MSG %"Yom Ha'atzmaut%" is %b.
+ELSE
+IF WKDAYNUM(_h2(4, "Iyar")) == 0
+   REM [_h(5, "Iyar")] ++4 MSG %"Yom Hazikaron%" is %b.
+   REM [_h(6, "Iyar")] ++4 MSG %"Yom Ha'atzmaut%" is %b.
+ELSE
+   REM [_h(4, "Iyar")] ++4 MSG %"Yom Hazikaron%" is %b.
+   REM [_h(5, "Iyar")] ++4 MSG %"Yom Ha'atzmaut%" is %b.
+ENDIF
+ENDIF
+
+# Not sure about Reform's position on Lag B'Omer
+IF !Reform
+   REM [_h(18, "Iyar")] ++4 MSG %"Lag B'Omer%" is %b.
+ENDIF
+
+REM [_h(28, "Iyar")] ++4 MSG %"Yom Yerushalayim%" is %b.
+REM [_h(6,  "Sivan")] ++4 MSG %"Shavuot%" is %b.
+
+IF !InIsrael && !Reform
+   REM [_h(7, "Sivan")] MSG %"Shavuot 2%"
+ENDIF
+
+# Fairly sure Reform Jews don't observe the next two
+IF !Reform
+# Tzom Tamuz and Tish'a B'Av are moved to Sunday if they normally
+# fall on a Saturday
+   REM [_PastSat(17, "Tamuz")] ++4 MSG %"Tzom Tammuz%" is %b.
+   REM [_PastSat(9,  "Av")] ++4 MSG %"Tish'a B'Av%" is %b.
+ENDIF
+
+# Counting the omer - do the whole spiel, i.e:
+# "This is the xth day of the omer, being y weeks and z days of the omer."
+# Nice Remind programming example here!
+SET ostart HEBDATE(16, "Nisan", $U-50)
+IF ostart <= $U && ($U - ostart < 49)
+   SET odays $U-ostart+1
+   IF odays < 7
+      MSG %"%"Today is the [ORD(odays)] day of the Omer.
+   ELSE
+      IF !(odays % 7)
+         MSG %"%"Today is the [ORD(odays)] day of the Omer, being [odays / 7] [PLURAL(odays/7, "week")] of the Omer.
+      ELSE
+	 MSG %"%"Today is the [ORD(odays)] day of the Omer, being [odays/7] [PLURAL(odays/7, "week")] and [odays%7] [PLURAL(odays%7, "day")] of the Omer.
+      ENDIF
+   ENDIF
+   CAL [ORD(odays)] of Omer
+ENDIF
+
+### Candle lighting and Havdalah.  You should probably add candle lighting
+### for other holidays besides Shabbat.  These just create calendar entries
+### for Friday and Saturday.  Note:  You must set your latitude, longitude
+### and possibly time zone for these to work properly!
+
+REM Friday   CAL Candle lighting at [sunset($T)-18]
+REM Saturday CAL Havdalah at [sunset($T)+42]
+
+#COLORS
+
+# Examples
+REM 1 SPECIAL COLOR 0 0 255 A blue reminder.
+REM 2 SPECIAL COLOR 255 0 0 %"A red reminder%" safe to use in the calendar mode.
+
+# The next examples are great for putting right at the end of the reminder
+# file.  They make queued reminders more eye-catching when they pop up.
+FSET msgprefix(x) char(13,10,13,10)+"******************"+char(13,10,13,10)
+FSET msgsuffix(x) char(13,10)+"******************"+char(13,10,13,10)

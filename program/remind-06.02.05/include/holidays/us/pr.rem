@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision PR in United States
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision PR.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/us.rem
+
+OMIT 6 January MSG %"Epiphany%" %! %b.
+REM Third Monday in February ADDOMIT SCANFROM -28 MSG %"Presidents' Day%" %! %b.
+OMIT 22 March MSG %"Emancipation Day%" %! %b.
+REM 23 March ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Emancipation Day (observed)%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Good Friday%" %! %b.
+OMIT 25 July MSG %"Constitution Day%" %! %b.
+REM 26 July ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Constitution Day (observed)%" %! %b.
+OMIT 19 November MSG %"Discovery Day%" %! %b.
+REM 20 November ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Discovery Day (observed)%" %! %b.

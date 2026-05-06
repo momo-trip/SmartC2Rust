@@ -11,8 +11,6 @@ mkdir -p results
 
 # Function to log test start
 log_test_start() {
-    echo "Test Case #$1: Started" >> /root/SmartC2Rust/benchmark/Tinyhttpd/out_flow_c.log
-    echo "Test Case #$1: Started" >> /root/SmartC2Rust/benchmark/Tinyhttpd/out_flow_rust.log
     echo "Test Case #$1: Started"
 }
 

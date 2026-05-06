@@ -1,0 +1,7 @@
+# List of LGBTQ awareness days
+# Sourced from https://en.wikipedia.org/wiki/List_of_LGBTQ_awareness_periods
+# These are the holidays recognized in Ireland
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+REM     22 May INFO "Url: https://en.wikipedia.org/wiki/Thirty-fourth_Amendment_of_the_Constitution_of_Ireland" MSG %"Irish Marriage Referendum Day%" %! %b.

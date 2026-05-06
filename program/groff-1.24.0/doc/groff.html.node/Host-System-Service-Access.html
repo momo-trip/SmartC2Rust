@@ -1,0 +1,788 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Host System Service Access (The GNU troff Manual)</title>
+
+<meta name="description" content="Host System Service Access (The GNU troff Manual)">
+<meta name="keywords" content="Host System Service Access (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Postprocessor-Access.html" rel="next" title="Postprocessor Access">
+<link href="Suppressing-Output.html" rel="prev" title="Suppressing Output">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Host-System-Service-Access"></span><div class="header">
+<p>
+Next: <a href="Postprocessor-Access.html" accesskey="n" rel="next">Postprocessor Access</a>, Previous: <a href="Suppressing-Output.html" accesskey="p" rel="prev">Suppressing Output</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="I_002fO"></span><span id="Host-System-Service-Access-1"></span><h3 class="section">5.34 Host System Service Access</h3>
+<span id="index-Host-System-Service-Access"></span>
+<span id="index-input-and-output-requests"></span>
+<span id="index-requests-for-input-and-output"></span>
+<span id="index-output-and-input-requests"></span>
+
+<p>Occasionally a document wants to access the system clock,
+file storage,
+or other services provided by the operating environment.
+</p>
+<dl>
+<dt id="index-_005cn_005b_0024_0024_005d">Register: <strong><tt>\n[$$]</tt></strong></dt>
+<dd><span id="index-_0024_0024"></span>
+<span id="index-process-ID-of-GNU-troff-register-_0028_0024_0024_0029"></span>
+<span id="index-PID-of-GNU-troff-register-_0028_0024_0024_0029"></span>
+<span id="index-GNU-troff_002c-process-ID-register-_0028_0024_0024_0029"></span>
+<span id="index-GNU-troff_002c-PID-register-_0028_0024_0024_0029"></span>
+<span id="index-_0024_0024-1"></span>
+<p>Process identifier (PID) of the
+GNU
+<code>troff</code>
+program in its operating environment.
+</p></dd></dl>
+
+<p>Date- and time-related registers are set per the local time as
+determined by <cite>localtime<span class="roman">(3)</span></cite> when the formatter launches.  This
+initialization can be influenced by the environment variable <code>TZ</code> or
+overridden by <code>SOURCE_DATE_EPOCH</code>; see <a href="Environment.html">Environment</a>.
+</p>
+<dl compact="compact">
+<dt><code>\n[seconds]</code></dt>
+<dd><span id="index-seconds_002c-current-time-_0028seconds_0029"></span>
+<span id="index-time_002c-current_002c-seconds-_0028seconds_0029"></span>
+<span id="index-current-time_002c-seconds-_0028seconds_0029"></span>
+<span id="index-seconds"></span>
+<p>Count of seconds elapsed in the minute (0&ndash;60). </p>
+</dd>
+<dt><code>\n[minutes]</code></dt>
+<dd><span id="index-minutes_002c-current-time-_0028minutes_0029"></span>
+<span id="index-time_002c-current_002c-minutes-_0028minutes_0029"></span>
+<span id="index-current-time_002c-minutes-_0028minutes_0029"></span>
+<span id="index-minutes"></span>
+<p>Count of minutes elapsed in the hour (0&ndash;59).
+</p>
+</dd>
+<dt><code>\n[hours]</code></dt>
+<dd><span id="index-hours_002c-current-time-_0028hours_0029"></span>
+<span id="index-time_002c-current_002c-hours-_0028hours_0029"></span>
+<span id="index-current-time_002c-hours-_0028hours_0029"></span>
+<span id="index-hours"></span>
+<p>Count of hours elapsed since midnight (0&ndash;23).
+</p>
+</dd>
+<dt><code>\n[dw]</code></dt>
+<dd><span id="index-day-of-the-week-register-_0028dw_0029"></span>
+<span id="index-date_002c-day-of-the-week-register-_0028dw_0029"></span>
+<span id="index-dw"></span>
+<p>Day of the week (1&ndash;7; 1 is Sunday).
+</p>
+</dd>
+<dt><code>\n[dy]</code></dt>
+<dd><span id="index-day-of-the-month-register-_0028dy_0029"></span>
+<span id="index-date_002c-day-of-the-month-register-_0028dy_0029"></span>
+<span id="index-dy"></span>
+<p>Day of the month (1&ndash;31).
+</p>
+</dd>
+<dt><code>\n[mo]</code></dt>
+<dd><span id="index-month-of-the-year-register-_0028mo_0029"></span>
+<span id="index-date_002c-month-of-the-year-register-_0028mo_0029"></span>
+<span id="index-mo"></span>
+<p>Month of the year (1&ndash;12).
+</p>
+</dd>
+<dt><code>\n[year]</code></dt>
+<dd><span id="index-date_002c-year-register-_0028year_002c-yr_0029"></span>
+<span id="index-year_002c-current_002c-register-_0028year_002c-yr_0029"></span>
+<span id="index-year"></span>
+<p>Gregorian year.
+</p>
+<span id="index-CSTR-_002354-errata-8"></span>
+<span id="index-CSTR-_002354-erratum_002c-yr-register"></span>
+</dd>
+<dt><code>\n[yr]</code></dt>
+<dd><span id="index-yr"></span>
+<p>Gregorian year minus&nbsp;1900.
+This register is incorrectly documented in the <acronym>AT&amp;T</acronym>
+<code>troff</code> manual as storing the last two digits of the current year.
+That claim stopped being true in 2000.
+Old
+<code>troff</code> input that looks like:
+</p>
+<div class="example">
+<pre class="example">'\&quot; The year number is a surprise after 1999.
+This document was formatted in 19\n(yr.
+</pre></div>
+
+<p>can be corrected to:
+</p>
+<div class="example">
+<pre class="example">This document was formatted in \n[year].
+</pre></div>
+
+<p>or, for portability across many <code>roff</code> programs, to the following.
+</p>
+<div class="example">
+<pre class="example">.nr y4 1900+\n(yr
+This document was formatted in \n(y4.
+</pre></div>
+</dd>
+</dl>
+
+<p>If you wish to embed the date and/or time of a document&rsquo;s formatting
+into its output,
+interpolate these registers into its text.
+Use the
+<code>af</code>
+request to format their values for output.
+</p>
+<div class="example">
+<pre class="example">.af year 0000
+.af mo 00
+.af dy 00
+.af hours 00
+.af minutes 00
+.af seconds 00
+ISO 8601 date stamp:
+\n[year]-\n[mo]-\n[dy]T\n[hours]:\n[minutes]:\n[seconds]
+    &rArr; ISO 8601 date stamp: 2025-12-07T02:17:54
+</pre></div>
+
+<p><code>roff</code>
+formatters allow files to be read into the input stream.
+Enabling
+GNU
+<code>troff</code>&rsquo;s unsafe mode at the command line
+permits the writing of files and execution of external commands,
+with or without inclusion of their output in the document.
+</p>
+<span id="index-spaces-in-file-name-or-system-command-arguments"></span>
+<span id="index-comments_002c-after-file-name-or-system-command-arguments"></span>
+<span id="index-_0022_002c-at-the-start-of-a-request-argument"></span>
+<span id="index-double-quote_002c-at-the-start-of-a-request-argument"></span>
+<span id="index-cf-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-mso-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-msoquiet-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-nx-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-open-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-opena-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-pi-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-so-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-soquiet-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-sy-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-trf-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<p><strong>Caution:</strong>
+The requests discussed below that accept a file name or system command
+as an argument treat the remainder of the input line as that argument,
+including any spaces,
+up to a newline or comment escape sequence.
+Suffixing the file name or command with a comment,
+even an empty one,
+prevents unwanted space from creeping into it during source document
+maintenance.
+GNU
+<code>troff</code> removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from such an argument,
+permitting initial embedded spaces in it,
+and reads it to the end of the input line in copy mode.
+Recall <a href="Copy-Mode.html">Copy Mode</a>.
+</p>
+<dl>
+<dt id="index-_002eso">Request: <strong><tt>.so</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>file</i></span></em></dt>
+<dd><span id="index-so"></span>
+</dd><dt id="index-_002esoquiet">Request: <strong><tt>.soquiet</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>file</i></span></em></dt>
+<dd><span id="index-soquiet"></span>
+<span id="index-including-a-file-_0028so_0029"></span>
+<span id="index-file_002c-inclusion-_0028so_0029"></span>
+<p>Replace the request&rsquo;s control line
+with the contents of
+<var>file</var>,
+&ldquo;sourcing&rdquo; it.
+GNU
+<code>troff</code> searches for
+<var>file</var>
+in any directories specified by
+<samp>-I</samp>
+command-line options,
+followed by the current working directory.
+If
+<var>file</var>
+does not exist,
+the formatter ignores the request.<a id="DOCF175" href="groff.html_fot.html#FOOT175"><sup>175</sup></a>
+</p>
+<p><code>so</code> can be useful for large documents,
+allowing each chapter of a book,
+for example,
+to be maintained in a separate file.
+However,
+files interpolated with
+<code>so</code>
+are not preprocessed;
+to overcome this limitation,
+see
+<cite>soelim<span class="roman">(1)</span></cite>.
+</p>
+<p><strong>Caution:</strong>
+Since the formatter replaces the entire control line
+with the contents of a file,
+<var>file</var>
+must end with a newline,
+or the formatter will continue reading the next input line
+of the
+<code>roff</code>
+file as if it were part of the last line of the sourced file.
+Consider a file
+<samp>xxx</samp>
+containing only the word &lsquo;<samp>foo</samp>&rsquo; without a trailing newline.
+</p>
+<div class="example">
+<pre class="example">$ printf 'foo' &gt; xxx
+$ groff -T ascii &lt;&lt;EOF
+The situation is
+.so xxx
+bar.
+EOF
+    &rArr; The situation is foobar.
+</pre></div>
+
+<p><code>soquiet</code> works the same way, except that GNU <code>troff</code>
+issues no warning diagnostic if <var>file</var> does not exist.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epso">Request: <strong><tt>.pso</tt></strong> <em>[<code>&quot;</code>]command</em></dt>
+<dd><span id="index-pso"></span>
+<p>Read the standard output from the specified <var>command</var> when passed to
+<cite>popen<span class="roman">(3)</span></cite> and include it in place of the <code>pso</code> request.
+</p>
+<span id="index-safer-mode-3"></span>
+<span id="index-mode_002c-safer-3"></span>
+<span id="index-unsafe-mode-3"></span>
+<span id="index-mode_002c-unsafe-3"></span>
+<p>It is an error to use this request in safer mode,
+which is the default.
+Invoke
+GNU
+<code>troff</code> or a front end with the
+<samp>-U</samp>
+option to enable unsafe mode.
+</p>
+<p>The cautionary note regarding a final newline in the stream read by the
+<code>so</code> request applies to <code>pso</code> as well.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002emso">Request: <strong><tt>.mso</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>file</i></span></em></dt>
+<dd><span id="index-mso"></span>
+</dd><dt id="index-_002emsoquiet">Request: <strong><tt>.msoquiet</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>file</i></span></em></dt>
+<dd><span id="index-msoquiet"></span>
+<p>As the
+<code>so</code>
+and
+<code>soquiet</code>
+requests,
+respectively,
+except that GNU
+<code>troff</code> searches for the specified
+<var>file</var>
+in the same directories as macro files;
+recall
+<code>GROFF_TMAC_PATH</code>
+in
+<a href="Environment.html">Environment</a>
+and
+<samp>-m</samp>
+in
+<a href="Groff-Options.html">Groff Options</a>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002etrf">Request: <strong><tt>.trf</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>file</i></span></em></dt>
+<dd><span id="index-trf"></span>
+</dd><dt id="index-_002ecf">Request: <strong><tt>.cf</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>file</i></span></em></dt>
+<dd><span id="index-cf"></span>
+<span id="index-transparent-output-_0028cf_002c-trf_0029"></span>
+<span id="index-output_002c-transparent-_0028cf_002c-trf_0029"></span>
+<span id="index-cf-request_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-cf-request"></span>
+<span id="index-mode_002c-copy_002c-and-cf-request"></span>
+<span id="index-trf-request_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-trf-request"></span>
+<span id="index-mode_002c-copy_002c-and-trf-request"></span>
+<p>Break and copy the contents of
+<var>file</var>
+as &ldquo;throughput&rdquo; to GNU
+<code>troff</code>&rsquo;s
+output.
+Each line of
+<var>file</var>
+is output as if preceded by
+<code>\!</code>,
+but is not interpreted by the formatter.
+If
+<var>file</var>
+does not end with a newline,
+<code>trf</code>
+appends one.
+Both requests break the line before reading
+<var>file</var>,
+unless invoked with the no-break control character.
+If a diversion is in use,
+GNU
+<code>troff</code> performs the copy only when the diversion is emitted.
+</p>
+<span id="index-trf-request_002c-and-invalid-characters"></span>
+<span id="index-characters_002c-invalid-for-trf-request"></span>
+<span id="index-invalid-characters-for-trf-request"></span>
+<p><code>cf</code> copies the contents of <var>file</var> completely unprocessed;
+it is therefore an error to use this request in safer mode,
+which is the default.
+Invoke GNU
+<code>troff</code> or a front end with the
+<samp>-U</samp>
+option to enable unsafe mode.
+</p>
+<p><code>trf</code> discards invalid input characters;
+recall <a href="Input-Format.html">Input Format</a>.
+</p>
+<p>For <code>cf</code>, within a diversion, &ldquo;completely unprocessed&rdquo; means that
+each line of a file to be inserted is handled as if it were preceded by
+<code>\!\\!</code>.
+</p>
+<p><strong>Caution:</strong>
+Use of these requests can put syntactically invalid content
+into the formatter&rsquo;s output,
+which
+<code>groff</code>&rsquo;s
+output drivers then fail to process.
+One application is to pass instructions
+to a postprocessor that interprets
+<var>file</var>&rsquo;s
+contents and filters it out
+before sending it to the output driver.
+</p>
+<p>To define a macro&nbsp;<code>x</code> containing the contents of
+file&nbsp;<samp>f</samp>, use
+</p>
+<div class="example">
+<pre class="example">.ev 1
+.di x
+.trf f
+.di
+.ev
+</pre></div>
+
+<p>The calls to <code>ev</code> prevent the partially collected output line
+from becoming part of the diversion; recall <a href="Diversions.html">Diversions</a>.
+</p>
+<span id="index-AT_0026T-troff-bugs"></span>
+<span id="index-AT_0026T-troff-bug_002c-in-cf-request"></span>
+<span id="index-bug_002c-in-AT_0026T-troff-cf-request"></span>
+<p>In <acronym>AT&amp;T</acronym>
+<code>troff</code>, <code>cf</code>
+copies the contents of
+<var>file</var>
+to the output immediately even if a diversion is active;
+this behavior is so anomalous that it must be considered a bug.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002enx">Request: <strong><tt>.nx</tt></strong> <em>[[<code>&quot;</code>]<span class="roman"><i>file</i></span>]</em></dt>
+<dd><span id="index-nx"></span>
+<span id="index-read-next-file-_0028nx_0029"></span>
+<span id="index-file_002c-next_002c-read-_0028nx_0029"></span>
+<span id="index-next-file_002c-read-_0028nx_0029"></span>
+<p>Stop processing the input file.
+If
+<var>file</var> is specified,
+read it;
+otherwise,
+read the next pending input file,
+if any.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002erd">Request: <strong><tt>.rd</tt></strong> <em>[<span class="roman"><i>prompt</i></span> [<span class="roman"><i>arg1</i></span> <span class="roman"><i>arg2</i></span> &hellip;]]</em></dt>
+<dd><span id="index-rd"></span>
+<span id="index-read-_0028interpolate_0029-from-standard-input-stream-_0028rd_0029"></span>
+<span id="index-standard-input-stream_002c-interpolate-from-_0028rd_0029"></span>
+<span id="index-input-stream_002c-standard_002c-interpolate-from-_0028rd_0029"></span>
+<p>Read from standard input, and include what is read as though it were
+part of the input file.  Text is read until a blank line is encountered.
+</p>
+<p>If standard input is a TTY input device (keyboard), write <var>prompt</var>
+to standard error, followed by a colon (or send BEL for a beep if no
+argument is given).
+</p>
+<p>Arguments after <var>prompt</var> are available for the input.  For example,
+the line
+</p>
+<div class="example">
+<pre class="example">.rd data foo bar
+</pre></div>
+
+<p>with the input &lsquo;<samp>This&nbsp;is&nbsp;\$2.</samp>&rsquo;<!-- /@w --> prints
+</p>
+<div class="example">
+<pre class="example">This is bar.
+</pre></div>
+</dd></dl>
+
+<span id="index-form-letters"></span>
+<span id="index-letters_002c-form"></span>
+<p>Using the <code>nx</code> and <code>rd</code> requests, it is easy to set up form
+letters.  The form letter template is constructed like this, putting the
+following lines into a file called <samp>repeat.let</samp>:
+</p>
+<div class="example">
+<pre class="example">.ce
+\*(td
+.sp 2
+.nf
+.rd
+.sp
+.rd
+.fi
+Body of letter.
+.bp
+.nx repeat.let
+</pre></div>
+
+<span id="index-ex-request_002c-used-with-nx-and-rd"></span>
+<p>When this is run, a file containing the following lines should be
+redirected in.  Requests included in this file are executed as though
+they were part of the form letter.  The last block of input is the
+<code>ex</code> request, which tells GNU <code>troff</code> to stop processing.  If
+this were not there, <code>troff</code> would not know when to stop.
+</p>
+<div class="example">
+<pre class="example">Trent A. Fisher
+708 NW 19th Av., #202
+Portland, OR  97209
+
+Dear Trent,
+
+Len Adollar
+4315 Sierra Vista
+San Diego, CA  92103
+
+Dear Mr. Adollar,
+
+.ex
+</pre></div>
+
+<dl>
+<dt id="index-_002epi">Request: <strong><tt>.pi</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>command</i></span></em></dt>
+<dd><span id="index-pi"></span>
+<p>Use
+the formatter&rsquo;s device-independent output
+as the input to the commands specified in
+<var>pipe</var>
+and emit their output to the standard output stream
+instead of the formatter&rsquo;s usual output.
+The formatter reads the remainder of the input line into
+<var>command</var>
+and passes it to
+<cite>popen<span class="roman">(3)</span></cite>.
+The formatter does not capture output produced by the command(s).
+</p>
+<p>Multiple
+<code>pi</code>
+requests construct a multi-stage pipeline
+in the same order as the formatter encounters the requests.
+</p>
+<div class="example">
+<pre class="example">.pi foo
+.pi bar
+</pre></div>
+
+<p>is the same as
+&lsquo;<samp>.pi&nbsp;foo&nbsp;|&nbsp;bar</samp>&rsquo;<!-- /@w -->.
+</p>
+<p><code>pi</code>
+must be invoked before
+GNU
+<code>troff</code> writes any nodes to its output.<a id="DOCF176" href="groff.html_fot.html#FOOT176"><sup>176</sup></a> The formatter reports an error and ignores the request if
+<code>pi</code>
+is invoked &ldquo;too late&rdquo;.
+Roughly,
+this means you should set up your
+<code>pi</code>
+pipeline early in a document,
+before anything but register,
+string,
+and macro definitions
+(and/or sourcing of files that comprise these exclusively).
+</p>
+<span id="index-safer-mode-4"></span>
+<span id="index-mode_002c-safer-4"></span>
+<span id="index-unsafe-mode-4"></span>
+<span id="index-mode_002c-unsafe-4"></span>
+<p>Use of this request in safer mode
+(GNU
+<code>troff</code>&rsquo;s default)
+is erroneous.
+Invoke
+GNU
+<code>troff</code> or a front end with the
+<samp>-U</samp>
+option to enable unsafe mode.
+</p>
+<p><strong>Caution:</strong>
+Use of the
+<code>pi</code>
+request can put syntactically invalid content
+into the formatter&rsquo;s output,
+which
+<code>groff</code>&rsquo;s
+output drivers then fail to process.
+The pipeline you construct is responsible
+for maintaining the validity of the input to the output driver.
+</p></dd></dl>
+
+<span id="index-system-commands_002c-running"></span>
+<span id="index-running-system-commands"></span>
+<dl>
+<dt id="index-_002esy">Request: <strong><tt>.sy</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>command</i></span></em></dt>
+<dd><span id="index-sy"></span>
+</dd><dt id="index-_005cn_005bsystat_005d">Register: <strong><tt>\n[systat]</tt></strong></dt>
+<dd><span id="index-systat"></span>
+<p>Execute the specified shell command(s).
+The formatter reads the remainder of the input line into a buffer
+and passes it to
+<cite>system<span class="roman">(3)</span></cite>.
+The formatter does not capture the output produced by the command(s).
+</p>
+<span id="index-safer-mode-5"></span>
+<span id="index-mode_002c-safer-5"></span>
+<span id="index-unsafe-mode-5"></span>
+<span id="index-mode_002c-unsafe-5"></span>
+<p>It is an error to use this request in safer mode;
+this is the default.
+Give
+GNU
+<code>troff</code> or a front end program the
+<samp>-U</samp>
+command-line option to enable unsafe mode.
+</p>
+<span id="index-system_0028_0029-return-value-register-_0028systat_0029"></span>
+<p>The writable register <code>systat</code> contains the return value of the
+<cite>system<span class="roman">(3)</span></cite> function executed by the most recent <code>sy</code>
+request.
+</p>
+<p>Real-world
+(and non-malicious)
+applications of
+<code>sy</code>
+are esoteric;
+the request interpolates
+neither the standard output nor the standard error streams of
+<var>command</var>
+into the document&mdash;worse,
+<acronym>AT&amp;T</acronym>
+<code>troff</code> afforded no means of verifying that
+<var>command</var>
+operated as expected.
+We therefore offer a silly example of its use,
+making a document refuse to format if the system user name
+running the formatter is
+&lsquo;<samp>branden</samp>&rsquo;.<a id="DOCF177" href="groff.html_fot.html#FOOT177"><sup>177</sup></a>
+</p>
+<div class="example">
+<pre class="example">.ds user branden\&quot;
+.sy test &quot;$(id -un)&quot; = \*[user]
+.if \n[systat]=0 .ab formatting refused for \*[user]
+Hello, world!
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002eopen">Request: <strong><tt>.open</tt></strong> <em>stream [<code>&quot;</code>]file</em></dt>
+<dd><span id="index-open"></span>
+</dd><dt id="index-_002eopena">Request: <strong><tt>.opena</tt></strong> <em>stream [<code>&quot;</code>]file</em></dt>
+<dd><span id="index-opena"></span>
+<span id="index-opening-file-_0028open_0029"></span>
+<span id="index-file_002c-opening-_0028open_0029"></span>
+<span id="index-appending-to-a-file-_0028opena_0029"></span>
+<span id="index-file_002c-appending-to-_0028opena_0029"></span>
+<p>Open
+<var>file</var>
+for writing and associate a stream named
+<var>ident</var>
+with it,
+making it available for
+<code>write</code>
+requests.
+</p>
+<p>The
+<code>opena</code>
+request is like
+<code>open</code>,
+but appends to
+<var>file</var>
+if it already exists instead of overwriting it.
+</p>
+<span id="index-safer-mode-6"></span>
+<span id="index-mode_002c-safer-6"></span>
+<span id="index-unsafe-mode-6"></span>
+<span id="index-mode_002c-unsafe-6"></span>
+<p>It is an error to use these requests in safer mode;
+this is the default.
+Give
+GNU
+<code>troff</code> or a front end program the
+<samp>-U</samp>
+command-line option to enable unsafe mode.
+</p>
+<p>The
+<code>pstream</code>
+request dumps the list of open streams
+to the standard error stream.<a id="DOCF178" href="groff.html_fot.html#FOOT178"><sup>178</sup></a>
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ewrite">Request: <strong><tt>.write</tt></strong> <em>stream [<code>&quot;</code>]<span class="roman"><i>contents</i></span></em></dt>
+<dd><span id="index-write"></span>
+</dd><dt id="index-_002ewritec">Request: <strong><tt>.writec</tt></strong> <em>stream [<code>&quot;</code>]<span class="roman"><i>contents</i></span></em></dt>
+<dd><span id="index-writec"></span>
+<span id="index-copy-mode_002c-and-write-request"></span>
+<span id="index-write-request_002c-and-copy-mode"></span>
+<span id="index-mode_002c-copy_002c-and-write-request"></span>
+<span id="index-copy-mode_002c-and-writec-request"></span>
+<span id="index-writec-request_002c-and-copy-mode"></span>
+<span id="index-mode_002c-copy_002c-and-writec-request"></span>
+<span id="index-file-stream_002c-writing-to-_0028write_002c-writec_0029"></span>
+<p>Write <var>contents</var> to <var>stream</var>, which must previously have been
+the subject of an <code>open</code> (or <code>opena</code>) request.  GNU
+<code>troff</code> flushes the stream after writing to it.
+</p>
+<p>The <code>writec</code> request is like <code>write</code>, but only <code>write</code>
+appends a newline to <var>contents</var>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ewritem">Request: <strong><tt>.writem</tt></strong> <em>stream name</em></dt>
+<dd><span id="index-writem"></span>
+<span id="index-asciify-request_002c-and-writem"></span>
+<p>Write the contents of the macro or string
+<var>name</var>
+to
+<var>stream</var>,
+which must previously have been the subject of an
+<code>open</code>
+(or
+<code>opena</code>)
+request.
+<span id="index-writem-request_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-writem-request"></span>
+<span id="index-mode_002c-copy_002c-and-writem-request"></span>
+GNU
+<code>troff</code> reads the contents of
+<var>name</var>
+in copy mode.
+That is,
+it ignores already formatted elements (nodes).
+Consequently,
+diversions must be unformatted with
+the
+<code>asciify</code>
+request before calling
+<code>writem</code>.
+Usually,
+this means a loss of information.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eclose">Request: <strong><tt>.close</tt></strong> <em>stream</em></dt>
+<dd><span id="index-close"></span>
+<span id="index-closing-file-_0028close_0029"></span>
+<span id="index-file_002c-closing-_0028close_0029"></span>
+<p>Close the specified <var>stream</var>; the stream is no longer an acceptable
+argument to the <code>write</code> request.
+</p>
+<p>Here a simple macro to write an index entry.
+</p>
+<div class="example">
+<pre class="example">.open idx test.idx
+.
+.de IX
+.  write idx \\n[%] \\$*
+..
+.
+.IX test entry
+.
+.close idx
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_005cVe">Escape&nbsp;sequence: <strong><tt>\V</tt><span class="roman"><i>e</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cV"></span>
+</dd><dt id="index-_005cV_0028ev">Escape&nbsp;sequence: <strong><tt>\V(</tt><span class="roman"><i>ev</i></span><tt></tt></strong></dt>
+<dt id="index-_005cV_005benv_005d">Escape&nbsp;sequence: <strong><tt>\V[</tt><span class="roman"><i>env</i></span><tt>]</tt></strong></dt>
+<dd><span id="index-_005cV_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-_005cV"></span>
+<span id="index-mode_002c-copy_002c-and-_005cV"></span>
+<p>Interpolate the contents of the system environment variable
+<var>env</var>
+(one-character
+name&nbsp;<var>e</var>,
+two-character
+name <var>ev</var>)
+as returned by <cite>getenv<span class="roman">(3)</span></cite>.
+<span id="index-_005cV_002c-interpretation-in-copy-mode"></span>
+<code>\V</code> is interpreted even in copy mode;
+recall <a href="Copy-Mode.html">Copy Mode</a>.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Postprocessor-Access.html" accesskey="n" rel="next">Postprocessor Access</a>, Previous: <a href="Suppressing-Output.html" accesskey="p" rel="prev">Suppressing Output</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

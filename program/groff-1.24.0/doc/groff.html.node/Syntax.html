@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Syntax (The GNU troff Manual)</title>
+
+<meta name="description" content="Syntax (The GNU troff Manual)">
+<meta name="keywords" content="Syntax (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Language-Concepts.html" rel="up" title="Language Concepts">
+<link href="Argument-Units.html" rel="next" title="Argument Units">
+<link href="Language-Concepts.html" rel="prev" title="Language Concepts">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Syntax"></span><div class="header">
+<p>
+Next: <a href="Argument-Units.html" accesskey="n" rel="next">Argument Units</a>, Up: <a href="Language-Concepts.html" accesskey="u" rel="up">Language Concepts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Separation"></span><span id="Syntax-1"></span><h4 class="subsubsection">6.2.1.1 Syntax</h4>
+
+<p><code>roff</code>&rsquo;s
+page description language is a sequence of
+<em>tokens</em>:
+single-letter commands or their arguments.
+Some commands accept a subcommand as a first argument,
+followed by one or more further arguments.
+</p>
+<p>AT&amp;T device-independent
+<code>troff</code> used whitespace minimally when producing output.
+GNU
+<code>troff</code>, in contrast,
+attempts to make its output more human-readable.
+The whitespace characters&mdash;tab,
+space,
+and newline&mdash;are always meaningful.
+They are never used to represent spacing in the document;
+that is done with horizontal
+(<code>h</code>, <code>H</code>)
+and vertical
+(<code>v</code>, <code>V</code>)
+positioning commands.
+Any sequence of space and/or tab characters is equivalent to a single
+space,
+separating commands from arguments and arguments from each other.
+Space is required only where omitting it would cause ambiguity.
+A line break separates commands.
+The comment character is a pound/hash sign
+(<code>#</code>),
+and marks the remainder of the line as a comment.
+A line comprising only whitespace after comment removal does nothing but
+separate input tokens.
+</p>
+<p>The positioning commands noted above,
+and the command to write one glyph
+(<code>c</code>),
+each take a single argument;
+the former a signed integer,
+and the latter a printable ISO&nbsp;646/&ldquo;ASCII&rdquo; character.
+A series of such commands could validly occur without spaces
+on an input line,
+but GNU
+<code>troff</code> follows each with a newline.
+</p>
+<p>Some commands have a more complex syntax;
+the GNU
+<code>troff</code> extension command for writing glyph sequences
+(<code>t</code>)
+accepts a variable number of arguments.
+Those that draw geometric objects
+(<code>D</code>)
+or control the device
+(<code>x</code>)
+furthermore recognize subcommand arguments.
+Such commands thus must end with a newline.
+In GNU
+<code>troff</code>, the device extension (sub)command
+&lsquo;<samp>x&nbsp;X<!-- /@w --></samp>&rsquo;
+uniquely supports a line continuation syntax;
+a single input line contains any other.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Argument-Units.html" accesskey="n" rel="next">Argument Units</a>, Up: <a href="Language-Concepts.html" accesskey="u" rel="up">Language Concepts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

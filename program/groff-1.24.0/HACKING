@@ -1,0 +1,518 @@
+    Copyright 2022-2026 G. Branden Robinson
+
+    Copying and distribution of this file, with or without
+    modification, are permitted in any medium without royalty provided
+    the copyright notice and this notice are preserved.
+
+This file contains advice on developing and contributing to groff.  It
+assumes that developers will install the 'git' revision control
+system and build groff using the instructions in 'INSTALL.REPO'.
+Familiarize yourself with the structure of the source tree by studying
+its 'MANIFEST' file at the top level.
+
+Implementation languages
+------------------------
+
+Beyond what is said under "Dependencies" in 'INSTALL.extra',
+contributors should note that due to the age of the code base, much of
+the C++ dialect employed by groff components, while standard, is older
+than C++98--closer to Annotated Reference Manual C++ (Ellis, Stroustrup;
+Addison-Wesley, 1990).  groff implements its own string class and the
+Standard Template Library is little used.  A modest effort is underway
+to update the code to more idiomatic C++98.  Where a C++11 feature
+promises to be advantageous, it may be annotated in a code comment.
+
+Portability notes:
+
+* `std::size` is not available in C++98.  Use `countof()`, which is
+  provided by the gnulib module `stdcountof-h` and expected to be
+  standardized in C2y, instead of `sizeof` and dividing.
+
+* C++98 lacks value initialization for array types.
+
+  https://cplusplus.github.io/CWG/issues/178.html
+
+  Use `memset()` after allocating an array from the stack or the heap
+  unless you are sure that every path through subsequent logic
+  determines the contents of every array element.
+
+
+Automake
+--------
+
+A document explaining the basics of GNU Automake and its usage in groff
+is available in 'doc/automake.mom'; peruse a PDF rendering in
+'doc/automake.pdf' in your build tree.
+
+Tips:
+
+* Don't define macros, including those ending in `_srcdir` or
+  `_builddir`, unless Automake itself demands them or you need to
+  interpolate them elsewhere in the *.am file.
+
+* If you need to define a `_builddir` macro, give it a plain literal
+  value; do _not_ lead it with an interpolation of `top_builddir` or
+  anything else.  Failure to heed this advice leads to out-of-tree build
+  failures with BSD Make.
+
+
+Testing
+-------
+
+Running the test suite with 'make check' after building any substantive
+change to groff logic is encouraged.  You should certainly do so, and
+confirm that the tests pass, before submitting patches to the groff
+mailing list <groff@gnu.org> or Savannah issue tracker.
+
+If you find a defect in a test script, that can be reported via Savannah
+like any other bug.
+
+
+Documenting changes
+-------------------
+
+The groff project has a long history and a large, varied audience.
+Changes may need to be documented in up to three places depending on
+their impact.
+
+1.  Changes should of course be documented in the Git commit message.
+    If a change alters only comments or formatting of source code, or
+    makes editorial changes to documentation or a test script, and does
+    not resolve a Savannah ticket, you can stop at that.
+
+2.  The 'ChangeLog' file follows the format and practices documented in
+    the GNU Coding Standards.
+      https://www.gnu.org/prep/standards/html_node/Change-Logs.html
+
+    The sub-projects in the 'contrib' directory each have their own
+    dedicated ChangeLog files.  The file specifications documented there
+    are relative to the sub-project, not the root of the groff source
+    tree.  When converted to a commit message, add 'contrib/$SUBPROJECT'
+    to the entries.
+
+    Apart from 'contrib', groff uses a single (current) 'ChangeLog' file
+    for the rest of its source tree.
+
+    It is convenient to write the ChangeLog entry or entries first, then
+    construct a commit message from it (or them).
+
+3.  The 'NEWS' file documents changes to groff that a user, not just a
+    developer, would notice, not including the resolution of defects.
+
+    As a hypothetical example, correcting a rendering error in tbl(1)
+    such that any table with more than 20 rows no longer had the text
+    "FOOBAR" spuriously added to some entries would not be a 'NEWS'
+    item, because the appearance of such text in the first place is a
+    surprising deviation from tbl's ideal and historical behavior.  In
+    contrast, adding a command-line option to tbl, or changing the
+    meaning of its "expand" region option such that it no longer
+    horizontally compresses tables as well, _would_ be 'NEWS'-worthy.
+
+
+Updating copyright notices
+--------------------------
+
+Background
+..........
+
+* A lay person's views and opinion follow; they are not legal advice.
+  If you require legal advice, consult a licensed attorney competent in
+  copyright law in your jurisdiction.  The following discussion attempts
+  to establish a coherent basis from which to make consistent decisions
+  about the inclusion and maintenance of copyright notices in groff.
+
+* Copyright notices in groff generally look as follows...
+
+    Copyright YYYY-ZZZZ Umbrella Organization, Inc.
+                   QQQQ J. Random Hacker
+              WWWW-XXXX S. O. Gui
+
+  ...where the repeated sequences of a capital letter are replaced by
+  (an) applicable Gregorian calendar year(s).
+
+  An exception is made for copyright notices applicable to "foreign"
+  code and files incorporated from other projects, which generally
+  retain the forms extant at their time of incorporation.  Where these
+  files are supplemented with contributions by groff developers and meet
+  the originality and significance criteria discussed below, we add
+  copyright notices in the form shown above.
+
+  In files not encoded in UTF-8, we avoid use of the copyright sign
+  (Unicode U+00A9).  See below regarding "ersatz" copyright symbols.
+
+* The purpose of a copyright notice is to record legal facts about a
+  work.  It is not to express acknowledgement of, gratitude about, or
+  appreciation for the efforts of contributors, past or present, which
+  is better done in documentation--and with explicit expression!
+
+* Copyright protection is a legal monopoly of limited duration and an
+  economic policy scheme for the purpose of promoting, as the U.S.
+  Constitution puts it, "science and the useful arts".  Over decades,
+  the scope of copyright (the nature of the works to which it can be
+  applied), the ease of its attachment, and the measure of its limited
+  duration, have all increased dramatically.  (An economist might
+  observe that this is a progression characteristic of rentierism.)
+
+* In U.S. statutory law, copyright protection extends to portions of a
+  work that constitute "original expression" (see below) and that are
+  "fixed in a tangible medium" (such as paper or a non-volatile memory
+  device) at some point in time.  The copyright notice records the year
+  corresponding to that point in time.  A notice should declare a list
+  of one or more such years reflecting the initial "fixation" and
+  further alterations to the work constituting original expression in
+  later years.  An exception can be made for portions of the work whose
+  copyright durations have elapsed.  But these durations are so lengthy
+  that, in the United States as of 2025, no work of computer software or
+  documentation has ever yet even _partially_ aged into the public
+  domain.  (Some has been placed into the public domain deliberately,
+  and some never enjoyed copyright protection at all.)
+
+  Historically--decades ago, and before digital computing was commonly
+  undertaken in the home or even in small- to medium-scale business--a
+  copyright notice also asserted a legal claim.  (It remains useful to
+  establish a basis for recovery of damages in U.S. civil copyright
+  infringement cases.)  But copyright notices have not constituted
+  "assertions" of copyright for factual or criminal infringement
+  purposes (in the United States) for around 50 years as of 2026.
+  Removing a party's name from a copyright notice (as might happen
+  consequent to code deletion or wholesale rewriting of documentation)
+  is not a challenge or insult to that person or organization, and does
+  not deprive them of legitimate legal rights, when and where doing so
+  _makes the copyright notice more accurate_.
+
+  Software developers relying upon copyright protection are responsible
+  for maintaining accurate copyright notices.  In the U.S., making a
+  claim of copyright fraudulently can be a criminal offense (17 USC
+  §506(c)).  Making an overbroad claim of copyright, by naming parties
+  who don't legitimately have copyright in a work or by deliberately
+  overstating the recency of their efforts is, in the lay opinion of the
+  maintainer as of this writing, neglectful of responsibility.
+
+* For a deeper treatment of the subject from a domain expert, please see
+  Jessica D. Litman's monograph, _Digital Copyright_, freely available
+  on the Web at <https://repository.law.umich.edu/books/1/>.
+
+What To Do
+..........
+
+* Update the overall copyright notice for groff as a work of software
+  at release time.  See the 'FOR-RELEASE' file in the Git repository.
+
+* Update a _file_'s copyright notice in a year when committing a change
+  to it that is "original expression" and would thus merit copyright
+  protection.  This is a subjective and arguable matter, so it's not
+  necessarily offensive to apply an expansive interpretation, but
+  "bumping" the copyright notice when _no_ change has been made, or when
+  the alterations are trivial by another standard (code style changes
+  that don't require regression testing; editorial changes to text that
+  are _invisible_ to the lay reader without technological assistance--
+  like trailing tab/space removal) abuses the principle, as noted above.
+
+  The GNU Maintainers' Guide's threshold for a "legally significant"
+  change is 15 lines.
+
+  "A change of just a few lines (less than 15 or so) is not legally
+  significant for copyright."
+
+  https://www.gnu.org/prep/maintain/html_node/Legally-Significant.html
+
+  Conversely, >= 15 lines would be.  This guidance is vague, as it makes
+  no claim of an expected, typical, or mean line length, and different
+  file formats and stylistic practices in code and documentation
+  production exhibit different typical line lengths.  Bearing in mind
+  that the 15 lines must constitute "original expression", and lacking
+  further guidance from that manual, in groff we ignore the issue of
+  line length and interpret "15 lines" as requiring a _net increase_ in
+  a file's line count of at least that magnitude, as calculated by
+  taking the output of "git diff --stat" on the file (or "git log
+  --stat" on a relevant commit to it) and subtracting lines removed from
+  lines added, a procedure that can result in a nonpositive number.
+  This rule has the advantage that it tends to exclude voluminous but
+  robotic changes, as one might make with "sed -i", which seldom
+  constitute "original expression".
+
+  Where a change produces a net increase of 15 lines or more but _still_
+  seems robotic or unoriginal, consider (1) applying the annotation
+  "Copyright-paperwork-exempt: yes" to the Git commit log message, and
+  (2) recording, in the corresponding commit log message, the robotic
+  procedure that produced the change.
+
+  Regarding "original expression", see section 308 of
+  <https://www.copyright.gov/comp3/chap300/
+  ch300-copyrightable-authorship.pdf>.
+
+* If you forget the foregoing step, or contributions to a file seem to
+  accrete original status and legal significance over time or a series
+  of commits, it's fine to later update the notice to include the
+  relevant (hopefully current) year in a stand-alone commit.  Use "git
+  log --oneline" on a file to gather commit IDs and change summaries
+  that justify the update and put them in the commit message so that
+  other people understand the basis of your claim.
+
+* Similarly, it is also virtuous to correct existing copyright notices
+  that apply overbroad principles of update as described above.  Doing
+  so demands careful study of a file's history, and one must be mindful
+  of file renames and relocations of content, neither of which have any
+  impact on copyright.  When revising a copyright notice thus, document
+  your research procedure (for example, by recording in the commit log
+  the exact Git commands you used) so that anyone can reproduce it.
+
+* It's okay to simply report a range of years in the copyright notice
+  instead of a comma-separated list.  As far as the current maintainer
+  knows, there is no hard rule that such ranges are interpreted
+  exhaustively, and unless someone has a chronological record of changes
+  to the file--which is present in groff's Git commit repository going
+  back to about 2014, but absent from distribution archives--a broken
+  sequence of copyright coverage years makes little difference.
+
+  Prior to 2014, groff's Git history is coarser, being reconstructed
+  from CVS, and prior to February 2000, each commit is a snapshot of a
+  distribution archive.
+
+  https://lists.gnu.org/archive/html/groff/2013-12/msg00033.html
+  https://lists.gnu.org/archive/html/groff/2013-12/msg00005.html
+
+* When adding a new file to groff, include a copyright notice only if it
+  is "legally significant" per the 15-line threshold.  But even a new
+  file of legally significant size does not merit a copyright notice if
+  it does not constitute original, non-robotic expression as discussed
+  above.  Include "Copyright-paperwork-exempt: yes" in the Git commit
+  log message.  To summarize, the same rules apply to new files as to
+  changes to existing ones.
+
+* In UTF-8-encoded files, it is fine to use a true copyright sign
+  (Unicode U+00A9).  Place it in the notice between the word "Copyright"
+  and the year (or year range) with one space on each side of it.
+
+  In other files, avoid use of the ersatz copyright sign "(C)".
+  Software developers have long labored under the no-longer-correct
+  misconception that omitting a copyright symbol from one's notice was a
+  fatal defect that effectively placed the work in the public domain.
+  That stopped being true as of 1 March 1989.  Further, prior to
+  guidance issued by the U.S. Copyright Office in the decades since, the
+  use of "(C)" as a substitute for a copyright sign _may not have
+  sufficed_ to prevent the copyright notice from being regarded as
+  defective.  The Copyright Office, then and now, prefers the
+  abbreviation "copr." when a true copyright sign is typographically
+  unavailable.  Nowadays, its advice is that "c" (note lowercase) is an
+  "acceptable variant", that _may_ retain the efficacy of the copyright
+  notice.  The word "copyright", spelled out in full, also suffices per
+  that resource, and is already present in this notice.
+
+  See <https://www.copyright.gov/circs/circ03.pdf>.
+
+
+Writing tests
+-------------
+
+Here is some advice on writing portable automated test scripts.
+
+* Write to the POSIX standard for the shell and utilities where
+  possible.  Issue 4 from 1994 is old enough that no contemporary system
+  has a good reason for not conforming.  A copy of the standard is
+  available at the Open Group's web site.
+    https://pubs.opengroup.org/onlinepubs/009656399/toc.pdf
+
+* The GNU coreutils "seq" command is handy but not standardized by
+  POSIX.  Replace it with a while loop.
+
+    # emulate "seq 53"
+    n=1; while [ $n -le 53 ]; do echo $n; n=$(( n + 1 )); done; unset n
+
+* The "wc" command on macOS can prefix the numeric count in its output
+  with spaces, which can be undesirable when storing that output to
+  variable that is later expanded within double quotes in the shell.
+
+  Here is a workaround.
+
+  res=$(whatever | wc -l)
+  res=$(( res + 0 )) || exit 99
+
+  If for some reason we get unacceptable non-integer garbage from "wc",
+  we exit the test script with the code reserved for "hard errors".
+  Shell arithmetic is unfortunately one of the many POSIX shell features
+  that Solaris 10's /bin/sh does not implement; see the "PROBLEMS" file.
+
+* The "od" command on macOS can put extra space characters (i.e., spaces
+  that don't correspond to the input) at the ends of lines when using
+  the "-t c" format; GNU od does not.
+
+  So a regex like this that works with GNU od:
+    grep -Eqx '0000000 +A +\\b +B +\\b +C       D +\\n'
+  might need to be weakened to the following to work on macOS.
+    grep -Eqx '0000000 +A +\\b +B +\\b +C       D +\\n *'
+
+* The "od" command on macOS, NetBSD, and OpenBSD puts extra space
+  characters between the hexadecimal values when using the "-t x1"
+  format; GNU od does not.
+
+  So a regex like this that works with GNU od:
+    grep -q '81 30 55 81 30 56 81 6c e2'
+  might need to be weakened to the following to work on macOS/[NO]*BSD.
+    grep -q '81  *30  *55  *81  *30  *56  *81  *6c  *e2'
+
+* The "od" command on FreeBSD 14.0 and 15.0, NetBSD 10.0, and OpenBSD
+  7.8 (at least) pad out the line length with spaces to 73 columns; GNU
+  od does not.
+
+  So a regex like this that works with GNU od:
+    grep -q '0000040 .*  *e2  *94  *a4  *0.$'
+  likely must be weakened to the following.
+    grep -q '0000040 .*  *e2  *94  *a4  *0. *$'
+
+* The "od" command on macOS does not respect the environment variable
+  assignment "LC_ALL=C" when processing byte values 127<x<256 decimal
+  and using the "character" output format (option "-t c").  An
+  alternative output must be used, like bytewise octal (option "-t o1").
+  (macOS od may be non-conforming here, despite the claim of its man
+  page.  POSIX Issue 4 od's description says "The type specifier
+  character c specifies that bytes will be interpreted as characters
+  specified by the current setting of the LC_CTYPE locale category. ...
+  Other non-printable characters will be written as one three-digit
+  octal number for each byte in the character." (p. 538)  The language
+  in Issue 7 (2018) appears unchanged.
+    https://pubs.opengroup.org/onlinepubs/9699919799/utilities/od.html )
+
+* Prior to POSIX.1-2024, the meaning of the sequence `\]` in a basic or
+  extended regular expression is undefined.  Spell it as `]` instead.
+
+* macOS sed requires semicolons after commands even if they are followed
+  immediately by a closing brace.
+
+  Rewrite
+    sed -n '/Foo\./{n;s/^$/FAILURE/;p}'
+  as follows.
+    sed -n '/Foo\./{n;s/^$/FAILURE/;p;}'
+
+  But see below regarding the opening braces.
+
+* POSIX doesn't say that sed has to accept semicolons as command
+  separators after label (':') and test ('t') commands, or after brace
+  commands, so macOS sed doesn't.  GNU sed does.
+
+  So rewrite tidy, compact sed scripts like this:
+    sed -n '/Foo\./{n;s/^$/FAILURE/;tA;s/.*/SUCCESS/;:A;p}'
+  as this more cumbersome alternative.
+    sed -n \
+      -e '/Foo\./{n;s/^$/FAILURE/;tA;' \
+      -e 's/.*/SUCCESS/;:A;' \
+      -e 'p;}')
+
+  But see below regarding the opening braces.
+
+  Similarly, a brace sequence as shown in this partial sed script:
+    /f1/p}}}}}}
+  must be rewritten as follows (or with '-e' expressions).
+    /f1/p;}
+    }
+    }
+    }
+    }
+    }
+
+* macOS and GNU sed don't require newlines (or '-e' expression endings)
+  after _opening_ braces, but Solaris 11 sed does.
+
+  So the sed script
+    /i/{N;/Table of Contents/{N;/Foo[. ][. ]*1/p;};}
+  must be rewritten as follows (or with '-e' expressions).
+    /i/{
+    N;/Table of Contents/{
+    N;/Foo[. ][. ]*1/p;
+    };
+    }
+
+* Solaris 10's /usr/bin/cksum output is non-conforming with XPG4.  It
+  uses tabs as field delimiters instead of spaces.
+
+* Solaris 10's /usr/bin/grep is non-conforming with XPG4; it lacks
+  support for the `-E`, `-F`, `-q`, and `-x` options.
+
+* Solaris 10's /bin/sh is non-conforming with XPG4; it does not support
+  POSIX parameter expansion syntax.
+
+* Solaris 10's /usr/bin/tr exits with an error if you try to use a POSIX
+  character class (such as "[:cntrl:]") in any locale but "C".
+
+* Solaris 10's /usr/xpg4/bin/sh is non-conforming with XPG4.
+  (Good job, guys!)
+
+  Its "unset" builtin is buggy.  (The /usr/bin/sh in Solaris 11 does not
+  have this problem.)
+
+  We sometimes must use the "unset" shell builtin command to prevent
+  environment variables from confounding test results.
+
+  POSIX says "[u]nsetting a variable ... that was not previously set is
+  not considered an error and will not cause the shell to abort."
+
+  Nevertheless this builtin returns an error exit status in this
+  circumstance.
+
+  $ /usr/xpg4/bin/sh -c 'unset _NON_EXISTENT_XYZ; echo $?'
+  1
+
+  You may want to check for this misbehavior and skip the test if
+  running under an afflicted shell.
+
+  if ! unset VARIABLE_OF_INTEREST
+  then
+      echo "unable to clear environment; skipping" >&2
+      exit 77 # skip
+  fi
+
+
+Updating gnulib
+---------------
+
+Here's how to update the submodule, using that project's "stable-202501"
+branch as an example.  Run the commands below from the root directory
+of your working copy.
+
+  $ cd gnulib
+  $ git pull
+  $ git checkout -b stable-202501 --track origin/stable-202501
+  $ cd ..
+  $ git add gnulib
+  $ editor ChangeLog # log it
+  $ git add ChangeLog
+  $ git commit
+
+It's likely a good idea to update the "bootstrap" script at the same
+time (not necessarily in the same commit, however).
+
+  $ ./bootstrap --bootstrap-sync
+  $ git add bootstrap
+  $ editor ChangeLog # log it
+  $ git add ChangeLog
+  $ git commit
+
+
+Theory of operation
+-------------------
+
+groff language parser
+.....................
+
+The "troff" program in "src/roff/troff" parses the groff input language.
+There, "input.cpp" implements the main loop and tokenizes input.  Input
+tokens are transformed into nodes (a GNU troff internal data structure)
+by "env.cpp" and "node.cpp".  Routines in the latter file generate the
+page description language from lists of nodes.
+
+
+page description language parser
+................................
+
+The parser for the page description language produced by troff is
+implemented in "src/libs/libdriver/input.cpp".  This is used by all
+groff output drivers written in C++.  ("gropdf", written in Perl,
+performs its own parsing.)
+
+
+##### Editor settings
+Local Variables:
+fill-column: 72
+mode: text
+End:
+vim: set autoindent textwidth=72:

@@ -7,14 +7,9 @@ mkdir -p $RESULTS_DIR
 
 # Log files
 LOG_FILE="$RESULTS_DIR/buffer_test.log"
-C_LOG_FILE="/root/SmartC2Rust/benchmark/buffer/out_flow_c.log"
-RUST_LOG_FILE="/root/SmartC2Rust/benchmark/buffer/out_flow_rust.log"
 
 # Expected values directory
 EXPECTED_DIR="expected"
-
-# Timestamp for the test run
-TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 
 # Print a divider
 print_divider() {
@@ -27,8 +22,6 @@ logstart() {
     local test_name=$2
     
     echo "Running test #${test_num}: ${test_name}" | tee -a $LOG_FILE
-    echo "Test Case #${test_num}: Started" >> $C_LOG_FILE
-    echo "Test Case #${test_num}: Started" >> $RUST_LOG_FILE
 }
 
 # Compare test output with expected values
@@ -90,11 +83,6 @@ for ((current_test=1; current_test<=17; current_test++)); do
     # Run the test and capture both stdout and stderr
     echo "Running buffer test $current_test..." | tee -a $LOG_FILE
     TEST_OUTPUT=$(./test $current_test 2>&1)
-    TEST_RESULT=$?
-    
-    # Record the end time and calculate duration
-    END_TIME=$(date +%s)
-    DURATION=$((END_TIME - START_TIME))
     
     # Save the complete test output
     echo "$TEST_OUTPUT" | tee "$RESULTS_DIR/test_output_$current_test.txt"

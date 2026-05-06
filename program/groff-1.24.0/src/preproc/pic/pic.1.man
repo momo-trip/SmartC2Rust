@@ -1,0 +1,1685 @@
+.TH @g@pic @MAN1EXT@ "@MDATE@" "groff @VERSION@"
+.SH Name
+@g@pic \- compile pictures for
+.I troff
+or TeX
+.
+.
+.\" ====================================================================
+.\" Legal Terms
+.\" ====================================================================
+.\"
+.\" Copyright 1989-2025 Free Software Foundation, Inc.
+.\"
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of
+.\" this manual under the conditions for verbatim copying, provided that
+.\" the entire resulting derived work is distributed under the terms of
+.\" a permission notice identical to this one.
+.\"
+.\" Permission is granted to copy and distribute translations of this
+.\" manual into another language, under the above conditions for
+.\" modified versions, except that this permission notice may be
+.\" included in translations approved by the Free Software Foundation
+.\" instead of in the original English.
+.
+.
+.\" Save and disable compatibility mode (for, e.g., Solaris 10/11).
+.do nr *groff_pic_1_man_C \n[.cp]
+.cp 0
+.
+.\" Define fallback for groff 1.23's MR macro if the system lacks it.
+.nr do-fallback 0
+.if !\n(.f           .nr do-fallback 1 \" mandoc
+.if  \n(.g .if !d MR .nr do-fallback 1 \" older groff
+.if !\n(.g           .nr do-fallback 1 \" non-groff *roff
+.if \n[do-fallback]  \{\
+.  de MR
+.    ie \\n(.$=1 \
+.      I \%\\$1
+.    el \
+.      IR \%\\$1 (\\$2)\\$3
+.  .
+.\}
+.rr do-fallback
+.
+.
+.\" ====================================================================
+.\" Definitions
+.\" ====================================================================
+.
+.ie t \{\
+.  ds tx T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X
+.  ds lx L\h'-0.36m'\v'-0.22v'\s-2A\s0\h'-0.15m'\v'0.22v'\*[tx]
+.\}
+.el \{\
+.  ds tx TeX
+.  ds lx LaTeX
+.\}
+.
+.ie \n(.g .ds ic \/
+.el       .ds ic \^
+.
+.
+.\" ====================================================================
+.SH Synopsis
+.\" ====================================================================
+.
+.SY @g@pic
+.RB [ \-CnSU ]
+.RI [ file\~ .\|.\|.]
+.YS
+.
+.
+.P
+.SY @g@pic
+.B \-t
+.RB [ \-cCSUz ]
+.RI [ file\~ .\|.\|.]
+.YS
+.
+.
+.P
+.SY @g@pic
+.B \-\-help
+.YS
+.
+.
+.P
+.SY @g@pic
+.B \-v
+.YS
+.
+.SY @g@pic
+.B \%\-\-version
+.YS
+.
+.
+.\" ====================================================================
+.SH Description
+.\" ====================================================================
+.
+The GNU implementation of
+.I pic \" generic
+is part of the
+.MR groff @MAN1EXT@
+document formatting system.
+.
+.I @g@pic
+is a
+.MR @g@troff @MAN1EXT@
+preprocessor that translates descriptions of diagrammatic pictures
+embedded in
+.MR roff @MAN7EXT@
+or \*[tx] input into the language understood by \*[tx] or
+.IR @g@troff .
+.
+It copies each
+.IR file 's
+contents to the standard output stream,
+translating each
+.I picture
+between lines starting with
+.B .PS
+and any of
+.BR .PE ,
+.BR .PF ,
+or
+.BR .PY .
+.
+End a
+.I @g@pic
+picture with
+.B .PE
+to leave the drawing position at the bottom of the picture,
+and with
+.B .PF
+or
+.B .PY
+to leave it at the top.
+.
+Normally,
+.I @g@pic
+is not executed directly by the user,
+but invoked by specifying the
+.B \-p
+option to
+.MR groff @MAN1EXT@ .
+.
+If no
+.I file
+operands are present,
+or if
+.I file
+is
+.RB \[lq] \- \[rq],
+.I @g@pic
+reads the standard input stream.
+.
+.
+.P
+It is the user's responsibility to provide appropriate definitions
+of the
+.BR PS ,
+.BR PE ,
+and one or both of the
+.B PF
+and
+.B PY
+macros.
+.
+When a macro package does not supply these,
+obtain simple definitions with the
+.I groff
+option
+.BR \-mpic ;
+these horizontally center each picture.
+.
+.
+.P
+GNU
+.I pic \" GNU
+supports
+.B PY
+as a synonym of
+.B PF
+to work around a name space collision with the
+.I mm
+macro package,
+which defines
+.B PF
+as a page footer management macro.
+.
+Use
+.B PF
+preferentially unless a similar problem faces your document.
+.
+.
+.\" ====================================================================
+.SH Options
+.\" ====================================================================
+.
+.B \-\-help
+displays a usage message,
+while
+.B \-v
+and
+.B \%\-\-version
+show version information;
+all exit afterward.
+.
+.
+.TP
+.B \-c
+Be more compatible with
+.IR tpic ;
+implies
+.BR \-t .
+.
+Lines beginning with
+.B \[rs]
+are not passed through transparently.
+.
+Lines beginning with
+.B .\&
+are passed through with the initial
+.B .\&
+changed to
+.BR \[rs] .
+.
+GNU
+.I pic \" GNU
+gives a line beginning with
+.B .ps
+special treatment:
+it takes an optional integer argument specifying the line thickness
+(pen size)
+in milliinches,
+a missing argument restores the previous line thickness,
+and the default line thickness is 8\~milliinches.
+.
+The line thickness thus specified takes effect only when a
+non-negative line thickness has not been specified by use of the
+.B \%thickness
+attribute or by setting the
+.B \%linethick
+variable.
+.
+.
+.TP
+.B \-C
+Recognize
+.BR .PS ,
+.BR .PE ,
+.BR .PF ,
+and
+.B .PY
+even when followed by a character other than space or newline.
+.
+.
+.TP
+.B \-n
+Don't use
+.I groff
+extensions to the
+.I troff \" generic
+drawing commands.
+.
+Specify this option if a postprocessor you're using doesn't support
+these extensions,
+described in
+.MR groff_out @MAN5EXT@ .
+.
+This option also causes
+.I @g@pic
+not to use zero-length lines to draw dots in
+.I troff \" generic
+mode.
+.
+.
+.TP
+.B \-S
+Enable safer mode and ignore any subsequent
+.B \-U
+option.
+.
+In
+.I "safer mode,"
+.I @g@pic
+ignores
+.B sh
+commands,
+which can be useful when operating on untrustworthy input.
+.
+.I @g@pic
+operates in safer mode by default.
+.
+.
+.TP
+.B \-t
+Produce \*[tx] output.
+.
+.
+.TP
+.B \-U
+Operate in
+.I unsafe mode;
+.B sh
+commands are interpreted.
+.
+.
+.TP
+.B \-z
+In \*[tx] mode,
+draw dots using zero-length lines.
+.
+.
+.P
+The following options supported by other versions of
+.I pic \" generic
+are ignored.
+.
+.
+.TP 8n \" "-T dev" + 2n
+.B \-D
+Draw all lines using the \[rs]D escape sequence.
+GNU
+.I pic \" GNU
+always does this.
+.
+.
+.TP
+.BI \-T\~ dev
+Generate output for the
+.I troff \" generic
+device
+.IR dev .
+.
+This option is unnecessary in GNU
+.I pic \" GNU
+because the
+.I troff \" generic
+it generates is device-independent.
+.
+.
+.\" ====================================================================
+.SH Usage
+.\" ====================================================================
+.
+This section primarily discusses the differences between GNU
+.I pic \" GNU
+and the Eighth Edition Unix version of AT&T
+.I pic \" AT&T
+(1985).
+.
+Many of these differences also apply to later versions of AT&T
+.IR pic .
+.
+.
+.\" ====================================================================
+.SS "\*[tx] mode"
+.\" ====================================================================
+.
+\*[tx]-compatible output is produced when the
+.B \-t
+option is specified.
+.
+You must use a \*[tx] driver that supports
+.I tpic
+version 2 specials.
+.
+.RI ( tpic
+was a fork of AT&T
+.I pic \" AT&T
+by Tim Morgan of the University of California at Irvine that diverged
+from its source around 1984.
+.
+It is best known today for lending its name to a group of
+.B \[rs]special
+commands it produced for \*[tx].)
+.\" http://ftp.cs.stanford.edu/tex/texhax/texhax90.019
+.
+.
+.P
+Lines beginning with
+.B \[rs]
+are passed through unaltered except for a
+.B %
+suffix to avoid unwanted spaces.
+.
+Use this feature to change fonts or the value of
+.BR \[rs]baselineskip .
+.
+Other applications may produce undesirable results;
+use at your own risk.
+.
+By default,
+lines beginning with a dot are not treated specially\[em]but see the
+.B \-c
+option.
+.
+.
+.P
+In \*[tx] mode,
+.I @g@pic
+defines a vbox called
+.B \[rs]graph
+for each picture.
+.
+Use GNU
+.IR pic 's \" GNU
+.B figname
+command to change the name of the vbox.
+.
+You must print that vbox yourself using the command
+.
+.RS
+.EX
+\[rs]centerline{\[rs]box\[rs]graph}
+.EE
+.RE
+.
+for instance.
+.
+Since the vbox has a height of zero\[em]it is defined with
+.BR \[rs]vtop \[em]\c
+this produces slightly more vertical space above the picture than
+below it;
+.
+.RS
+.EX
+\[rs]centerline{\[rs]raise 1em\[rs]box\[rs]graph}
+.EE
+.RE
+.
+would avoid this.
+.
+To give the vbox a positive height and a depth of zero
+(as used by \*[lx]'s
+.IR \%graphics.sty ,
+for example),
+define the following macro in your document.
+.
+.RS
+.EX
+\[rs]def\[rs]gpicbox#1{%
+  \[rs]vbox{\[rs]unvbox\[rs]csname #1\[rs]endcsname\[rs]kern 0pt}}
+.EE
+.RE
+.
+You can then simply say
+.B \[rs]gpicbox{graph}
+instead of
+.BR \[rs]box\[rs]graph .
+.
+.
+.\" ====================================================================
+.SS Commands
+.\" ====================================================================
+.
+Several commands new to GNU
+.I pic \" GNU
+accept delimiters,
+shown in their synopses as braces
+.BR "{ }" .
+.
+Nesting of braces is supported.
+.
+Any other characters
+(except a space,
+tab,
+or newline)
+.\" XXX even crazy control characters, ugh--src/preproc/pic/lex.cpp:1266
+may be used as alternative delimiters,
+in which case the members of a given pair must be identical.
+.
+GNU
+.I pic \" GNU
+recognizes double-quoted strings within delimiters of either kind;
+such strings may contain the delimiter character or unbalanced braces.
+.
+.
+.TP
+\fBfor\fR \fIvariable\fR \fB=\fR \fIexpr1\fR \fBto\fR \fIexpr2\fR \
+[\fBby\fR [\fB*\fR]\,\fIexpr3\/\fR] \fBdo\fR \fIX\fR \fIbody\fR \fIX\fR
+Set
+.I variable
+to
+.IR expr1 .
+.
+While the value of
+.I variable
+is less than or equal to
+.IR expr2 ,
+do
+.I body
+and increment
+.I variable
+by
+.IR expr3 ;
+if
+.B by
+is not given,
+increment
+.I variable
+by 1.
+.
+.I expr3
+can be negative,
+in which case
+.I variable
+is then tested whether it is greater than or equal to
+.IR expr2 .
+.
+A
+.B *
+prefix on
+.I variable
+multiplies it by
+.I expr3
+(which must be greater than zero)
+at each iteration rather than incrementing it.
+.
+If the range constraint on
+.I expr3
+isn't met,
+the loop does not execute.
+.
+.I X
+can be any character not in
+.IR body .
+.
+.TP
+\fBif\fR \fIexpr\fR \fBthen\fR \fIX\fR \fIif-true\fR \fIX\fR \
+[\fBelse\fR \fIY\fR \fIif-false\fR \fIY\fR]
+Evaluate
+.IR expr ;
+if it is non-zero then do
+.IR if-true ,
+otherwise do
+.IR if-false .
+.
+.I X
+can be any character not in
+.IR if-true .
+.
+.I Y
+can be any character not in
+.IR if-false .
+.
+.TP
+.BI print\~ arg\c
+\~.\|.\|.
+Catenate and write arguments to the standard error stream followed by a
+newline.
+.
+Each
+.I arg
+must be an expression,
+a position,
+or text.
+.
+This feature is useful for debugging.
+.
+.TP
+.BI command\~ arg\c
+\~.\|.\|.
+.\" Move right margin to indentation since we must indent more later.
+.RS
+Catenate arguments
+and pass them as a line to
+.I troff \" generic
+or \*[tx].
+.
+Each
+.I arg
+must be an expression,
+a position,
+or text.
+.
+.B command
+allows the values of
+.I pic
+variables to be passed to the formatter.
+.
+Thus,
+.
+.RS
+.EX
+\&.PS
+x = 14
+command ".ds string x is " x "."
+\&.PE
+\[rs]*[string]
+.EE
+.RE
+.
+produces
+.
+.RS
+.EX
+x is 14.
+.EE
+.RE
+when formatted with
+.IR troff . \" generic
+.RE
+.
+.
+.TP
+\fBsh\fR \fIX\fR \fIcommand\fR \fIX\fR
+Pass
+.I command
+to a shell via
+.MR system 3 .
+.
+Ignored if
+.B \-U
+option not specified.
+.
+.
+.TP
+\fBcopy\fR \fB"\,\fIfilename\/\fB"\fR
+Include
+.I filename
+at this point in the file.
+.
+.
+.TP
+.BR copy\~ [ \[dq]\c
+.IB filename \[dq]\c
+.RB ]\~ thru\~\c
+.IR "X body X" \~\c \" space in roman: we must use 2-font macro with \c
+.RB [ until\~ \[dq]\c
+.IB word \[dq]\c
+]
+.TQ
+.BR copy\~ [ \[dq]\c
+.IB filename \[dq]\c
+.RB ]\~ thru\~\c
+.IR macro \~\c \" space roman because we must use 2-font macro with \c
+.RB [ until\~ \[dq]\c
+.IB word \[dq]\c
+]
+.\" Move right margin to indentation since we must indent more later.
+.RS
+This construct does
+.I body
+once for each line of
+.IR filename ;
+the line is split into blank-delimited words,
+and occurrences of
+.BI $ i
+in
+.IR body ,
+for
+.I i
+between 1 and 9,
+are replaced by the
+.IR i -th
+word of the line.
+.
+If
+.I filename
+is not given,
+lines are taken from the current input up to
+.BR .PE .
+.
+If an
+.B until
+clause is specified,
+GNU
+.I pic \" GNU
+reads lines only until encountering one beginning with
+.IR word ;
+which it then discards.
+.
+.I X
+can be any character not in
+.IR body .
+.
+For example,
+.
+.RS \" now move further
+.EX
+\&.PS
+copy thru % circle at ($1,$2) % until "END"
+1 2
+3 4
+5 6
+END
+box
+\&.PE
+.EE
+.RE
+.
+and
+.
+.RS
+.EX
+\&.PS
+circle at (1,2)
+circle at (3,4)
+circle at (5,6)
+box
+\&.PE
+.EE
+.RE
+.
+are equivalent.
+.
+The commands to be performed for each line can also be taken from a
+macro defined earlier by giving the name of the macro as the argument to
+.BR thru .
+.
+The argument after
+.B thru
+is looked up as a macro name first;
+if not defined,
+its first character is interpreted as a delimiter.
+.RE
+.
+.
+.TP
+.B reset
+.TQ
+.BI reset\~ pvar1\c
+.RB [ , ]\~\c
+.IR pvar2 \~.\|.\|.
+Reset predefined variables
+.IR pvar1 ,
+.I pvar2
+\&.\|.\|.\& to their default values;
+if no arguments are given,
+reset all predefined variables to their default values.
+.
+Variable names may be separated by commas,
+spaces,
+or both.
+.
+Assigning a value to
+.B scale
+also causes all predefined variables that control dimensions to be reset
+to their default values times the new value of
+.BR scale .
+.
+.
+.TP
+.BI plot\~ expr\~\c
+.RI [\[dq] text \[dq]]
+Create a text object by using
+.I text
+as a format string for
+.MR sprintf 3
+with an argument of
+.IR expr .
+.
+If
+.I text
+is omitted,
+.B \[dq]%g\[dq]
+is implied.
+.
+Attributes can be specified in the same way as for a normal text object.
+.
+.I Caution:
+be very careful that you specify an appropriate format string in
+.I text;
+.IR @g@pic 's
+validation of it is limited.
+.
+.B plot
+is deprecated in favour of
+.BR sprintf .
+.
+.TP
+.IB var \~:=\~ expr
+.RS
+Update an existing variable.
+.
+.I var
+must already be defined,
+and
+.I expr
+is assigned to
+.I var
+without creating a variable local to the current block.
+.
+(By contrast,
+.B =
+defines
+.I var
+in the current block if it is not already defined there,
+and then changes the value in the current block only.)
+.
+For example,
+.
+.RS
+.EX
+.B .PS
+.B x = 3
+.B y = 3
+.B [
+.B   x := 5
+.B   y = 5
+.B ]
+.B print x " " y
+.B .PE
+.EE
+.RE
+.
+writes
+.
+.RS
+.EX
+5 3
+.EE
+.RE
+.
+to the standard error stream.
+.RE
+.
+.
+.\" ====================================================================
+.SS Expressions
+.\" ====================================================================
+.
+The syntax for expressions has been significantly extended.
+.
+.
+.P
+.IB  x\  \[ha]\  y
+(exponentiation)
+.br
+.BI sin( x )
+.br
+.BI cos( x )
+.br
+.BI atan2( y , \ x )
+.br
+.BI log( x )
+(base 10)
+.br
+.BI exp( x )
+(base 10, i.e.\&
+.ie t 10\v'-.4m'\fIx\*(ic\fR\v'.4m')
+.el   10\[ha]\fIx\fR)
+.br
+.BI sqrt( x )
+.br
+.BI int( x )
+.br
+.B rand()
+(return a random number between 0 and 1)
+.br
+.BI rand( x )
+(return a random number between 1 and
+.IR x ;
+deprecated)
+.br
+.BI srand( x )
+(set the random number seed)
+.br
+.BI max( e1 , \ e2 )
+.br
+.BI min( e1 , \ e2 )
+.br
+.BI ! e
+.br
+\fIe1\fB && \fIe2\fR
+.br
+\fIe1\fB || \fIe2\fR
+.br
+\fIe1\fB == \fIe2\fR
+.br
+\fIe1\fB != \fIe2\fR
+.br
+\fIe1\fB >= \fIe2\fR
+.br
+\fIe1\fB > \fIe2\fR
+.br
+\fIe1\fB <= \fIe2\fR
+.br
+\fIe1\fB < \fIe2\fR
+.br
+\fB"\,\fIstr1\*(ic\fB" == "\,\fIstr2\*(ic\fB"\fR
+.br
+\fB"\,\fIstr1\*(ic\fB" != "\,\fIstr2\*(ic\fB"\fR
+.br
+.
+.
+.LP
+String comparison expressions must be parenthesised in some contexts
+to avoid ambiguity.
+.
+.
+.\" ====================================================================
+.SS "Other changes"
+.\" ====================================================================
+.
+A bare expression,
+.IR expr ,
+is acceptable as an attribute;
+it is equivalent to
+.RI \[lq] "dir expr" \[rq],
+where
+.I dir
+is the current direction.
+.
+For example,
+.RB \[lq] "line 2i" \[rq]
+draws a line 2\~inches long in the current direction.
+.
+The \[oq]i\[cq]
+(or \[oq]I\[cq])
+character is ignored;
+to use another measurement unit,
+set the
+.B scale
+variable to an appropriate value.
+.
+.
+.P
+The maximum width and height of the picture are taken from the variables
+.B maxpswid
+and
+.BR maxpsht .
+.
+Initially,
+these have values 8.5 and 11,
+respectively.
+.
+.
+.P
+Scientific notation is allowed for numbers,
+as with
+.RB \[lq] "x = 5e\-2" \[rq].
+.
+.
+.P
+Text attributes can be compounded.
+.
+For example,
+.RB \[lq]\^ "\[dq]foo\[dq] above ljust" \^\[rq]
+is valid.
+.
+.
+.P
+There is no limit to the depth to which blocks can be nested.
+.
+For example,
+.
+.RS
+.EX
+[A: [B: [C: box ]]] with .A.B.C.sw at 1,2
+circle at last [].A.B.C
+.EE
+.RE
+.
+is acceptable.
+.
+.
+.P
+Arcs have compass points determined by the circle of which the arc is a
+part.
+.
+.
+.P
+Circles,
+ellipses,
+and arcs can be dotted or dashed.
+.
+In \*[tx] mode,
+splines can be dotted or dashed as well.
+.
+.
+.P
+Boxes can have rounded corners.
+.
+The
+.B rad
+attribute specifies the radius of the quarter-circles at each corner.
+If no
+.B rad
+or
+.B diam
+attribute is given,
+a radius of
+.B boxrad
+is used.
+.
+Initially,
+.B boxrad
+has a value of\~0.
+.
+A box with rounded corners can be dotted or dashed.
+.
+.
+.br
+.ne 3v
+.P
+Boxes can have slanted sides,
+generalizing them from rectangles to parallelograms.
+.
+The
+.B \%xslanted
+and
+.B \%yslanted
+attributes specify the
+.I x
+and
+.I y
+offsets of the box's upper right corner from its default position.
+.
+.
+.P
+The
+.B .PS
+line accepts a second argument specifying a maximum height for the
+picture.
+.
+If a width of zero is specified,
+it is ignored when computing the scaling factor for the picture.
+.
+GNU
+.I pic \" GNU
+always scales a picture by the same amount vertically and horizontally.
+.
+This differs from DWB 2.0
+.IR pic , \" foreign
+which may change the picture's aspect ratio if a height is specified.
+.
+.
+.P
+Each text object has an associated invisible box that determines its
+compass points and implicit motion.
+.
+The dimensions of the box are taken from its width and height
+attributes.
+.
+If the width attribute is not supplied,
+the value of
+.B textwid
+is assumed.
+.
+If the height attribute is not supplied,
+the height defaults to the number of text strings associated with
+the object times
+.BR textht .
+.
+Initially,
+.B textwid
+and
+.B textht
+have values of\~0.
+.
+.
+.P
+In
+(almost all)
+.\" XXX: So what _are_ the exceptions?
+places where a quoted text string can be used,
+an expression of the form
+.
+.
+.IP
+.BI sprintf(\[dq] format \[dq],\~ arg ,\fR\~.\|.\|.\fB)
+.
+.
+.P
+can be used instead;
+it transforms its arguments per
+.IR format ,
+which should be a string as described in
+.MR printf 3 ,
+and appropriate to the quantity of arguments supplied.
+.
+GNU
+.I pic
+supports only the conversion specifiers
+.BR e ,
+.BR E ,
+.BR f ,
+.BR g ,
+.BR G ,
+and
+.BR % ,
+modifiers
+.RB \[lq] # \[rq],
+.RB \[lq] \- \[rq],
+.RB \[lq] + \[rq],
+and \[lq]\~\[rq] [space]),
+a minimum field width,
+and an optional precision.
+.
+.
+.P
+The thickness of the lines used to draw objects is controlled by the
+.B linethick
+variable,
+which is measured in points.
+.
+A negative value indicates the default thickness.
+.
+In \*[tx] output mode when the
+.B \-c
+option is not given,
+this means 8 milliinches.
+.
+In
+.I troff
+and \*[tx]
+.B \-c
+output modes,
+the default thickness corresponds to the type size.
+.
+(Thus,
+if the type size is 10 points,
+a line is 10 points thick.)
+.
+A
+.B linethick
+value of zero draws the thinnest possible line supported by the output
+device.
+.
+Initially,
+.B linethick
+has a value of \-1.
+.
+A
+.BR thick [ ness ]
+attribute is also available.
+.
+For example,
+.RB \[lq] "circle thickness 1.5" \[rq]
+draws a circle with a line thickness of 1.5 points.
+.
+The thickness of lines is not affected by the
+value of the
+.B scale
+variable,
+nor by the width or height given in the
+.B .PS
+line.
+.
+.
+.P
+Boxes
+(including boxes with rounded corners or slanted sides),
+circles,
+and ellipses can be filled by giving them an attribute of
+.BR fill [ ed ],
+which takes an optional expression argument with a value between
+0 and 1;
+0 fills it with white,
+1 with black,
+and values in between with a proportionally gray shade.
+.
+A value greater than 1 is interpreted as the shade of gray that is
+being used for text and lines.
+.
+Normally this is black,
+but output devices may provide a mechanism for changing this.
+.
+Without an argument,
+the value of the variable
+.B \%fillval
+is used.
+.
+Initially,
+.B \%fillval
+has a value of 0.5.
+.
+The
+.B \%invisible
+attribute does not affect the filling of objects.
+.
+Text associated with a filled object is added after the object is
+filled,
+so that the text is not obscured by the filling.
+.
+.
+.P
+Additional modifiers are available to draw colored objects:
+.BR \%outline [ d ]
+sets the color of the outline,
+.B shaded
+the fill color,
+and
+.BR colo [ u ] r [ ed ]
+sets both.
+.
+All expect a subsequent string argument specifying the color.
+.
+.RS
+.EX
+circle shaded \[dq]green\[dq] outline \[dq]black\[dq]
+.EE
+.RE
+.
+Color is not yet supported in \*[tx] mode.
+.
+Device macro files like
+.I ps.tmac
+declare color names;
+you can define additional ones with the
+.B \%defcolor
+request
+(see
+.MR groff @MAN7EXT@ ).
+.
+.I @g@pic
+assumes at the beginning of each picture that the stroke and fill colors
+are set to the device defaults.
+.
+.
+.P
+To change the name of the vbox in \*[tx] mode,
+set the pseudo-variable
+.B \%figname
+(which is actually a specially parsed command)
+within a picture.
+.
+For example,
+.RS
+.EX
+\&.PS
+figname = foobar;
+circle "dig here";
+\&.PE
+.EE
+.RE
+.
+makes the picture available in the box
+.BR \[rs]foobar .
+.
+.
+.P
+Arrow heads are drawn as solid triangles if the variable
+.B \%arrowhead
+is non-zero and either \*[tx] mode is enabled or the
+.B \-n
+option is not used.
+.
+Initially,
+.B \%arrowhead
+has a value of\~1.
+.
+Solid arrow heads are always filled with the current outline (stroke)
+color.
+.
+.
+.P
+The
+.I troff
+output of
+.I @g@pic
+is device-independent.
+.
+The
+.B \-T
+option is therefore redundant.
+.
+Except where noted,
+all measurements and dimensions use inches implicitly;
+they are never interpreted as
+.I troff
+basic units.
+.
+.
+.P
+Objects can have an
+.B \%aligned
+attribute,
+but it is supported only by the
+.MR grops @MAN1EXT@
+and
+.MR gropdf @MAN1EXT@
+output drivers.
+.
+Any text associated with an
+.B \%aligned
+object is rotated about the object's center
+such that it is oriented along a line connecting the start and end
+points of the object.
+.
+.B \%aligned
+has no effect on objects whose start and end points are coincident.
+.
+.
+.P
+In places where
+.IB n th
+is allowed,
+.BI \[ga] expr \[aq]th
+is also allowed.
+.
+.RB \[lq] \[aq]th \[rq]
+is a single token:
+no space is allowed between the apostrophe and the
+.RB \[lq] th \[rq].
+.
+Consider the following example.
+.
+.
+.IP
+.EX
+for i = 1 to 4 do {
+   box
+   move right 0.5
+}
+for i = 1 to 3 do {
+   arrow from \[ga]i\[aq]th box.ne to \[ga]i+1\[aq]th box.sw
+}
+.EE
+.
+.
+.P
+Arbitrary polygons can be drawn using the
+.B polygon
+keyword followed by a series of
+.IR n \-1
+line segments,
+where
+.I n
+is the number of edges of the polygon.
+.
+This allows
+GNU
+.I troff \" GNU
+to interpret the line segments as a complete object such that the
+.B \%filled
+and
+.B \%shaded
+attributes may be used.
+.
+The last user-specified line segment determines the polygon's
+final drawing position and direction.
+.
+For example,
+draw and fill a triangle
+with the following.
+.
+.
+.RS
+.P
+.EX
+polygon up 1 then right 1 down 0.5 fill 0.5
+.EE
+.RE
+.
+.
+.P
+Two reference point suffixes permit the positioning
+of drawing elements relative to a polygon.
+.
+.RB \[lq] .vertex
+.IR expr \[rq]
+locates the vertices,
+and
+.RB \[lq] .midpoint
+.IR expr \[rq]
+for locating the midpoints of edges.
+.
+GNU
+.B pic
+numbers vertices and midpoints in drawing order starting from
+.B 1 .
+.
+You can abbreviate
+.B \%.vertex
+as
+.B .v
+or
+.BR .ver ,
+and
+.B \%.midpoint
+as
+.BR .mid .
+.
+.
+.P
+For example,
+.IP
+.EX
+arrow down
+polygon up 0.5 right 1 \[rs]
+then down 0.5 right 1 \[rs]
+then down 0.5 left 1 \[rs]
+with .v2 at last line.end
+arrow down from last polygon.v4
+.EE
+.
+.
+.P
+creates and correctly places a flowchart decision diamond.
+.
+.
+.P
+.B \%.center
+.RB ( .c )
+is also available,
+but compass points do not work as expected
+and should not be used with polygons.
+.
+.
+.\" ====================================================================
+.SS "Converting \f[I]pic\f[] to other image formats"
+.\" ====================================================================
+.
+To create a stand-alone graphics file from a
+.I @g@pic
+file,
+first compose the picture.
+.
+Bracket your
+.I pic \" language
+code with
+.B .PS
+and
+.B .PE
+tokens.
+.
+.I groff
+requests that don't produce formatted output may precede
+.BR .PS ,
+but format no text,
+not even any injected by a macro package,
+which may include a page number even on the first page,
+as
+.I mm
+does by default.
+.
+Consider writing a \[lq]raw\[rq]
+.I roff
+document that uses no macro package.
+.
+.
+.P
+Next,
+convert
+the
+.IR roff / pic
+input into the desired format.
+.
+.I groff
+distributes a simple utility,
+.MR pic2graph @MAN1EXT@ ,
+for this purpose.
+.
+Other possibilities exist,
+particularly if you first transform your picture into PostScript format
+with
+.RB \[lq] "groff \-T ps" \[rq].
+.
+However,
+such a PostScript file lacks bounding box information;
+.I roff
+formatters produce page-sized output.
+.
+Several tools with names beginning \[lq]psto\[rq] or \[lq]ps2\[rq] exist
+that can infer the bounding box and perform a format conversion.
+.
+One of these is
+the PostScript interpreter Ghostscript
+.RI ( gs (1)),
+which exposes format converters via its
+.B \%\-sDEVICE=
+option.
+.
+.RB \[lq] "gs \-\-help" \[rq]
+lists available devices.
+.
+.
+.P
+Alternatively,
+produce a PDF with
+.RB \[lq] "groff \-T pdf" \[rq];
+.MR gropdf @MAN1EXT@ 's
+.B \-p
+option sets the MediaBox of the file.
+.
+.
+.P
+The Encapsulated PostScript File (EPS) format is still sometimes seen.
+.
+The aforementioned Ghostscript offers
+.MR ps2epsi 1 ,
+and a standalone package and command
+.MR ps2eps 1
+is also available.
+.
+.
+.br
+.ne 2v
+.P
+For raster image formats,
+use
+.MR pstopnm 1 ;
+the resulting
+.MR pnm 5
+file can be then converted to virtually any image format using the
+.I netpbm
+tools.
+.
+.
+.P
+GNU
+.I plotutils
+offers a
+.MR pic2plot 1
+utility for converting
+.I pic
+input to a wide variety of other image formats,
+including SVG.
+.
+.
+.\" ====================================================================
+.SH "Exit status"
+.\" ====================================================================
+.
+.I @g@pic
+exits with
+.RB status\~ 0
+on successful operation,
+.RB status\~ 2
+if the program cannot interpret its command-line arguments,
+and
+.RB status\~ 1
+if it encounters an error during operation.
+.
+.
+.\" ====================================================================
+.SH Files
+.\" ====================================================================
+.
+.TP
+.I @MACRODIR@/pic.tmac
+offers simple definitions of the
+.BR PS ,
+.BR PE ,
+.BR PF ,
+and
+.B PY
+macros.
+.
+Load it with the
+.B mso
+request
+when eschewing a full-service macro package,
+or using one that doesn't supply its own definitions for them.
+.
+.
+.\" ====================================================================
+.SH Caveats
+.\" ====================================================================
+.
+The spacing of dots and dashes in broken lines
+scales with other graphics,
+and is configurable.
+.
+For example,
+.
+.
+.RS
+.P
+.EX
+line from 0,0 to 100,0 dotted 5
+.EE
+.RE
+.
+.
+.P
+spaces the dots in a dotted line 5 units apart.
+.
+The spacing of dashes can be set the same way.
+.
+The
+.B \%dashwid
+variable sets the length of dashes.
+.
+.
+.\" ====================================================================
+.SH Bugs
+.\" ====================================================================
+.
+Characters that are invalid as input to GNU
+.I troff \" GNU
+(see the
+.I groff
+Texinfo manual or
+.MR groff_char @MAN7EXT@
+for a list)
+are rejected even in \*[tx] mode.
+.
+.
+.P
+Research Tenth Edition Unix
+.IR pic 's \" AT&T
+.B \%fillval
+interprets
+0 as black and 1 as white,
+incompatibly with GNU
+.IR pic .
+.
+.
+.\" ====================================================================
+.SH "See also"
+.\" ====================================================================
+.
+.TP
+.I @DOCDIR@/\:pic\:.ps
+\[lq]Making Pictures with GNU pic\[rq],
+by
+.MT esr@\:thyrsus\:.com
+Eric S.\& Raymond
+.ME .
+.
+This file,
+together with its source,
+.IR pic.ms ,
+is part of the
+.I groff
+distribution.
+.
+.
+.br
+.ne 2v
+.P
+\[lq]PIC\[em]A Graphics Language for Typesetting: User Manual\[rq],
+by Brian W.\& Kernighan,
+1984
+(revised 1991),
+AT&T Bell Laboratories Computing Science Technical Report No.\& 116
+.
+.
+.P
+.I ps2eps
+is available from CTAN mirrors, e.g.,
+.UR ftp://\:ftp\:.dante\:.de/\:tex\-archive/\:support/\:ps2eps/
+.UE .
+.
+.
+.LP
+W.\& Richard Stevens,
+.UR http://\:www\:.kohala\:.com/\:start/\:troff/\:pic2html\:.html
+.I Turning PIC into HTML
+.UE
+.
+.
+.LP
+W.\& Richard Stevens,
+.UR http://\:www\:.kohala\:.com/\:start/\:troff/\:pic\:.examples\:.ps
+.IR "Examples of " pic " Macros"
+.UE
+.
+.
+.P
+.MR @g@troff @MAN1EXT@ ,
+.MR groff_out @MAN5EXT@ ,
+.MR tex 1 ,
+.MR gs 1 ,
+.MR ps2eps 1 ,
+.MR pstopnm 1 ,
+.MR ps2epsi 1 ,
+.MR pnm 5
+.
+.
+.\" Clean up.
+.rm tx
+.rm lx
+.rm ic
+.
+.\" Restore compatibility mode (for, e.g., Solaris 10/11).
+.cp \n[*groff_pic_1_man_C]
+.do rr *groff_pic_1_man_C
+.
+.
+.\" Local Variables:
+.\" fill-column: 72
+.\" mode: nroff
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

@@ -1,0 +1,31 @@
+lsd.chem:
+.cstart
+
+# Example file for chem:
+#   LSD or Lysergic acid diethylamide or C20_H25_N3_O (CAS-RN: 50-37-3)
+#
+# Prepared by Bernd Warken <groff-bernd.warken-72@web.de>,
+# reorganized by Norwid Behrnd <nbehrnd@yahoo.com>.
+
+A:	ring6 double 1,2 3,4 5,6
+B:	flatring5 pointing up with .V4 at A.V3 put N at 3 double 1,2
+C:	ring6 with .V3 at B.V1
+D:	ring6 with .V3 at C.V1 put N at 2 double 4,5
+
+	H right of B.N
+	bond 60 from D.V2
+	frontbond 60 from D.V3 ; H
+BP:	frontbond -60 from D.V6
+	doublebond up ; O
+	bond -120 from BP.end ; N
+	bond  -60 from N
+	bond -120
+	bond down from N
+	bond -120
+
+# Local Variables:
+# fill-column: 72
+# mode: Nroff
+# End:
+# vim: set textwidth=72:
+.cend

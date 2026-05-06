@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Input Conventions (The GNU troff Manual)</title>
+
+<meta name="description" content="Input Conventions (The GNU troff Manual)">
+<meta name="keywords" content="Input Conventions (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Text.html" rel="up" title="Text">
+<link href="Page-Geometry.html" rel="next" title="Page Geometry">
+<link href="Input-Encodings.html" rel="prev" title="Input Encodings">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Input-Conventions"></span><div class="header">
+<p>
+Previous: <a href="Input-Encodings.html" accesskey="p" rel="prev">Input Encodings</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Input-Conventions-1"></span><h4 class="subsection">5.1.11 Input Conventions</h4>
+<span id="index-input-conventions"></span>
+<span id="index-conventions-for-input"></span>
+
+<p>Since a
+<code>roff</code>
+formatter fills text automatically,
+its experienced users tend to avoid visual composition
+of text in input files:
+the esthetic appeal of the formatted output is what matters.
+Therefore,
+<code>roff</code>
+input should be arranged
+such that it is easy for authors and maintainers
+to compose and develop the document,
+understand the syntax of
+<code>roff</code>
+requests,
+macro calls,
+and preprocessor languages used,
+and predict the behavior of the formatter.
+Several traditions have accrued in service of these goals.
+</p>
+<ul>
+<li> Follow sentence endings in the input with newlines to ease their
+recognition (see <a href="Sentences.html">Sentences</a>).  It is frequently convenient to end
+text lines after colons and semicolons as well, as these typically
+precede independent clauses.  Consider doing so after commas; they often
+occur in lists that become easy to scan when itemized by line, or
+constitute supplements to the sentence that are added, deleted, or
+updated to clarify it.  Parenthetical and quoted phrases are also good
+candidates for placement on text lines by themselves.
+
+</li><li> Set your text editor&rsquo;s line length to 72 characters or
+fewer.<a id="DOCF39" href="groff.html_fot.html#FOOT39"><sup>39</sup></a>
+This limit, combined with the previous item of advice, makes it less
+common that an input line will wrap in your text editor, and thus will
+help you perceive excessively long constructions in your text.  Recall
+that natural languages originate in speech, not writing, and that
+punctuation is correlated with pauses for breathing and changes in
+prosody.
+
+</li><li> Use
+<code>\&amp;</code>
+after
+&lsquo;<samp>!</samp>&rsquo;,
+&lsquo;<samp>?</samp>&rsquo;,
+and
+&lsquo;<samp>.</samp>&rsquo;
+if they are followed by space or newline characters
+and don&rsquo;t end a sentence.
+
+</li><li> In filled text lines, use <code>\&amp;</code> before &lsquo;<samp>.</samp>&rsquo; and &lsquo;<samp>'</samp>&rsquo; if they
+are preceded by space, so that revisions to the input don&rsquo;t turn them
+into control lines.
+
+</li><li> Do not use spaces to perform indentation or align columns of a table.
+Leading spaces are reliable when text is not being filled.
+(Exception:
+when laying out a table with
+GNU
+<code>tbl</code>, specifying the
+<code>nospaces</code>
+region option
+causes the program to ignore spaces at the boundaries of table cells.)
+
+</li><li> Comment your document.
+It is never too soon to apply comments
+to record information of use to future document maintainers
+(including your future self).
+We thus introduce another escape sequence,
+<code>\&quot;</code>,
+which causes the formatter to ignore the remainder of the input line.
+
+</li><li> Use the empty request&mdash;a control character followed immediately by a
+newline&mdash;to visually manage separation of material in input files.
+Many of the <code>groff</code> project&rsquo;s own documents use an empty request
+between sentences, after macro definitions, and where a break is
+expected, and two empty requests between paragraphs or other requests or
+macro calls that will introduce vertical space into the document.
+
+<p>You can combine the empty request with the comment escape sequence to
+include whole-line comments in your document, and even &ldquo;comment out&rdquo;
+sections of it.
+</p></li></ul>
+
+<p>We conclude this section with an example sufficiently long to illustrate
+most of the above suggestions in practice.  For the purpose of fitting
+the example between the margins of this manual with the font used for
+its typeset version, we have shortened the input line length to 56
+columns.  As before, an arrow &rarr; indicates a tab character.
+</p>
+<table class="cartouche" border="1"><tr><td>
+<div class="example">
+<pre class="example">.\&quot;   nroff this_file.roff | less
+.\&quot;   groff -T ps this_file.roff &gt; this_file.ps
+&rarr;The theory of relativity is intimately connected with
+the theory of space and time.
+.
+I shall therefore begin with a brief investigation of
+the origin of our ideas of space and time,
+although in doing so I know that I introduce a
+controversial subject.  \&quot; remainder of paragraph elided
+.
+.
+
+&rarr;The experiences of an individual appear to us arranged
+in a series of events;
+in this series the single events which we remember
+appear to be ordered according to the criterion of
+\[lq]earlier\[rq] and \[lq]later\[rq], \&quot; punct swapped
+which cannot be analysed further.
+.
+There exists,
+therefore,
+for the individual,
+an I-time,
+or subjective time.
+.
+This itself is not measurable.
+.
+I can,
+indeed,
+associate numbers with the events,
+in such a way that the greater number is associated with
+the later event than with an earlier one;
+but the nature of this association may be quite
+arbitrary.
+.
+This association I can define by means of a clock by
+comparing the order of events furnished by the clock
+with the order of a given series of events.
+.
+We understand by a clock something which provides a
+series of events which can be counted,
+and which has other properties of which we shall speak
+later.
+.\&quot; Albert Einstein, _The Meaning of Relativity_, 1922
+</pre></div>
+</td></tr></table>
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Input-Encodings.html" accesskey="p" rel="prev">Input Encodings</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

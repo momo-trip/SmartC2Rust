@@ -1,0 +1,108 @@
+# Copyright 2006-2014 Free Software Foundation, Inc.
+#
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
+#
+# This file is part of chem.
+#
+# chem is distributed with groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+chem_srcdir = $(top_srcdir)/contrib/chem
+prefixexecbin_SCRIPTS += chem
+
+# chem.pic is not really a troff macro ("tmac") file.
+CHEMTMACFILES = $(chem_srcdir)/chem.pic
+chemtmacdir = $(tmacdir)
+dist_chemtmac_DATA = $(CHEMTMACFILES)
+
+CHEM_EXAMPLES =  \
+  contrib/chem/examples/README \
+  contrib/chem/examples/atp.chem \
+  contrib/chem/examples/cholesterol.chem \
+  contrib/chem/examples/ethamivan.chem \
+  contrib/chem/examples/lsd.chem \
+  contrib/chem/examples/mepacrine.chem \
+  contrib/chem/examples/morphine.chem \
+  contrib/chem/examples/penicillin.chem \
+  contrib/chem/examples/reserpine.chem
+
+# Files installed in $(exampledir)/chem
+chemexampledir = $(exampledir)/chem
+dist_chemexample_DATA = $(CHEM_EXAMPLES)
+
+# Files installed in $(exampledir)/chem/cstr-122.  All the .chem files
+# in that directory are lazily installed by the local install target.
+chemexample122dir = $(chemexampledir)/cstr-122
+EXTRA_DIST += \
+  contrib/chem/COPYRIGHT \
+  contrib/chem/ChangeLog \
+  contrib/chem/GPLv2 \
+  contrib/chem/README \
+  contrib/chem/chem.1.man \
+  contrib/chem/chem.pic \
+  contrib/chem/chem.pl \
+  contrib/chem/examples/cstr-122/README \
+  contrib/chem/examples/README
+
+chem_TESTS = contrib/chem/tests/smoke-test.sh
+TESTS += $(chem_TESTS)
+EXTRA_DIST += $(chem_TESTS)
+
+man1_MANS += contrib/chem/chem.1
+
+chem: $(chem_srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
+	$(AM_V_GEN)$(RM) $@ \
+	&& sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	       -e "s|[@]PERL[@]|$(PERL)|" \
+	       -e "s|[@]g[@]|$(g)|g" \
+	       -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	       -e "s|[@]MACRODIR[@]|$(DESTDIR)$(tmacdir)|g" \
+	       -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	       -e "$(SH_SCRIPT_SED_CMD)" \
+	       $(chem_srcdir)/chem.pl \
+	       >$@ \
+	&& chmod +x $@
+
+install-data-local: install_chem_extra
+install_chem_extra:
+	-test -d $(DESTDIR)$(chemexample122dir) \
+          || $(mkinstalldirs) $(DESTDIR)$(chemexample122dir);
+	for i in $(chem_srcdir)/examples/cstr-122/*; do \
+	  n=`echo $$i | sed 's|$(chem_srcdir)/examples/cstr-122/||g'`; \
+	  $(INSTALL_DATA) $$i $(DESTDIR)$(chemexample122dir)/$$n; \
+	done
+
+uninstall-local: uninstall_chem_hook
+uninstall_chem_hook:
+	$(RM) $(DESTDIR)$(exampledir)/chem/cstr-122/*
+	-rmdir $(DESTDIR)$(exampledir)/chem/cstr-122
+	$(RM) $(DESTDIR)$(exampledir)/chem/*
+	-rmdir $(DESTDIR)$(exampledir)/chem
+	-rmdir $(DESTDIR)$(tmacdir)
+
+dist-hook: dist_chem
+dist_chem:
+	chmod u+w $(distdir)/contrib/chem/examples/cstr-122
+	for i in $(chem_srcdir)/examples/cstr-122/*.chem; do \
+	  cp -f $$i $(distdir)/contrib/chem/examples/cstr-122; \
+	done
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

@@ -1,0 +1,113 @@
+#!/bin/sh
+#
+# Copyright 2018-2025 Free Software Foundation, Inc.
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+builddir="@abs_top_builddir@"
+have_urw_fonts="@groff_have_urw_fonts@"
+examplesdir="$builddir/contrib/mom/examples"
+ret=0
+examples="
+  letter.pdf
+  mom-pdf.pdf
+  mon_premier_doc.pdf
+  sample_docs.pdf
+  slide-demo.pdf
+  typesetting.pdf
+  copyright-chapter.pdf
+  copyright-default.pdf
+  "
+
+if [ "$have_urw_fonts" != yes ]
+then
+    echo "$0: URW fonts needed to generate mom examples; skipping" >&2
+    exit 77 # skip
+fi
+
+for cmd in pdfinfo pdfimages
+do
+    if ! command -v $cmd >/dev/null
+    then
+        echo "$0: cannot locate '$cmd' command; skipping" >&2
+        exit 77 # skip
+    fi
+done
+
+# At least two different implementations of pdfimages exist, poppler and
+# xpdfreader.com.  The latter uses a slightly different input and output
+# syntax; detect and cope with it.
+image_root=
+if pdfimages -v 2>&1 | grep -q xpdfreader
+then
+  image_root=1
+fi
+
+# $1: PDF file
+# $2: expected number of pages
+check_number_pages()
+{
+    echo "Checking number of pages in $1"
+    page_count=$(pdfinfo "$1" | awk '/Pages/ { print $2}')
+    if [ "$page_count" != "$2" ]
+    then
+       echo "...FAILED: expected $2 pages, found $page_count"
+       ret=1
+    fi
+}
+
+# $1: PDF file
+# $2: expected number of images
+check_has_images()
+{
+    echo "Checking whether $1 has images"
+    image_list=$(pdfimages -list "$1" $image_root)
+    echo "$image_list"
+    # Strip header out of poppler pdfimages output.
+    image_count=$(echo "$image_list" | sed -n '1,/^---/d;p' | wc -l)
+    if [ "$image_count" -ne "$2" ]
+    then
+        echo "...FAILED: expected $2 images, found $image_count"
+        ret=1
+    fi
+}
+
+# TODO: Make this a "hard error" (status 99).  See, e.g.,
+# "font/devpdf/tests/check-default-foundry.sh.in".
+for k in $examples
+do
+    if ! [ -f "$examplesdir"/$k ]
+    then
+        echo "File '$k' not found"
+        exit 2
+    fi
+done
+
+check_number_pages "$examplesdir/letter.pdf" 1
+check_number_pages "$examplesdir/mom-pdf.pdf" 8
+check_number_pages "$examplesdir/mon_premier_doc.pdf" 5
+check_number_pages "$examplesdir/sample_docs.pdf" 12
+check_number_pages "$examplesdir/slide-demo.pdf" 33
+check_number_pages "$examplesdir/typesetting.pdf" 3
+check_number_pages "$examplesdir/copyright-chapter.pdf" 5
+check_number_pages "$examplesdir/copyright-default.pdf" 5
+
+check_has_images "$examplesdir/typesetting.pdf" 2
+check_has_images "$examplesdir/slide-demo.pdf" 2
+
+exit $ret
+
+# vim:set autoindent expandtab shiftwidth=4 tabstop=4 textwidth=72:

@@ -85,11 +85,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/main-eb387f.o",
+      "/tmp/main-216882.o",
       "main.c"
     ],
     "directory": "/root/SmartC2Rust/benchmark/mark-sweep",
     "file": "/root/SmartC2Rust/benchmark/mark-sweep/main.c",
-    "output": "/tmp/main-eb387f.o"
+    "output": "/tmp/main-216882.o"
   }
 ]

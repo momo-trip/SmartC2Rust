@@ -1,0 +1,39 @@
+chAb_vinyl_chloro.chem:
+.br
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+    Cl
+    bond 120 length .25 ; BP
+    bond 60 length .25 from BP ; Cl
+B1: double bond down length .3 from BP
+    bond 120 length .35 ; BP
+# now comes the ring
+R1: ring6 double 1,2 3,4 5,6 with .V6 at BP
+    bond up length .1 from R1.V1 ; H
+    bond 60 length .1 from R1.V2 ; H
+    bond 120 from R1.V3 ; O
+    bond 60 from O ; C
+    double bond up from C ; O
+    bond 120 from C
+# continue decorating the ring
+    bond down length .1 from R1.V4 ; H
+    bond -120 length .1 from R1.V5 ; H
+# now go back and do the left hand ring
+    bond -120 length .35 from B1.end ; BP
+R2: ring6 double 1,2 3,4 5,6 with .V2 at BP
+    bond up length .1 from R2.V1 ; H
+    bond -60 length .1 from R2.V6 ; H
+    bond -120 from R2.V5 ; O
+    bond -60 from O
+    bond down length .1 from R2.V4 ; H
+    bond 120 length .1 from R2.V3 ; H
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

@@ -1,0 +1,239 @@
+.\" groff extension macros for man(7) package
+.\"
+.\" See groff_man(7).
+.
+.\" Copyright 2007-2014 Free Software Foundation, Inc.
+.\"           2021-2024 G. Branden Robinson
+.\"
+.\" Written by Eric S. Raymond <esr@thyrsus.com>
+.\"            Werner Lemberg <wl@gnu.org>
+.\"            G. Branden Robinson <g.branden.robinson@gmail.com>
+.\"
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" The code below provides extension macros for the 'man' macro
+.\" package.  Care has been taken to make the code portable; groff
+.\" extensions are properly hidden so that all troff implementations can
+.\" use it without changes.
+.\"
+.\" With groff, this file is sourced by the 'man' macro package itself.
+.\" Man page authors who are concerned about portability might add the
+.\" used macros directly to the prologue of their man page(s), after
+.\" calling `TH`.
+.\"
+.\" Convention: Auxiliary string, macros, and registers start with 'm'
+.\"             followed by an uppercase letter or digit.
+.\"
+.\" Setting the `mG` register to a positive value (e.g., on the command
+.\" line) enables usage of macros defined here that have alternative
+.\" definitions in the main groff man macro file.  This is for testing.
+.\" The logic uses subtraction due to frustrating, AT&T troff-compatible
+.\" limitations on the '!' operator.
+.
+.
+.\" Protect against being sourced twice.
+.nr mZ +1
+.if \n(mZ>1 \
+.  nx
+.
+.\" Set `mC` to your implementation's constant-width typeface for
+.\" typesetter (not terminal) output.  (You can do so either here or in
+.\" "man.local"; see groff_man(7).)  There is no globally portable
+.\" choice; `CW`, `C`, and `CR` are all seen.  AT&T troff offers no
+.\" mechanism to query font availability.
+.ds mC CW
+.
+.\" Save the automatic hyphenation mode.
+.\"
+.\" In AT&T troff, there was no register exposing the hyphenation mode,
+.\" and no way to save and restore it.  Set `mH` to a reasonable value
+.\" for your implementation and preference.
+.de mY
+.  ie !\\n(.g \
+.    nr mH 14
+.  el \
+.    do nr mH \\n[.hy] \" groff extension register
+..
+.
+.nr mS 0 \" reuse indentation of previous synopsis?
+.nr mE 0 \" in an example (EX/EE)?
+.
+.
+.\" Declare start of a command or function synopsis.
+.\" .SY keyword [punctuation]
+.de SY
+.  ie \\n(.$ \{\
+.    if !\\n(mS \{\
+.      nr mI \\n(.i
+.      nr mT \\n(.k+\w'\fB\\$1\fP'
+.      if \\n(.$=1 \
+.        nr mT +\w'\ '
+.      if \\n(.$>1 \
+.        nr mT +\w'\fB\\$2\fP'
+.    \}
+.
+.    mY
+.    nh
+.    nr mA \\n(.j
+.    ad l
+.    \" Ensure that a partially collected line exists so that the `in`
+.    \" request affects only _subsequent_ output lines.  (CSTR #54 §6)
+\&\c
+'    in +\\n(mTu
+.
+.    if \\n(.$=1 \{\
+.      nr .X +0 \" Ensure this Heirloom register exists for testing.
+.      \" If the formatter is not groff, work around DWB/Heirloom/
+.      \" Solaris 10 glitch.  Something in their man(7) defeats the
+.      \" rules set forth in CSTR #54 §6.
+.      if \\n(.g=0:\\n(.X \
+'        ti -\\n(mTu
+.      B \\$1
+.    \}
+.    if \\n(.$>1 \
+.      B \\$1\\$2\c
+.  \}
+.  el \{\
+.    \" If (invalidly) given no arguments, do as little as possible.
+.    \" Set these registers for subsequent `YS` use.
+.    nr mA \\n(.j
+.    nr mI \\n(.i
+.  \}
+..
+.
+.
+.\" End a synopsis.  With any argument, the next `SY` call on the page
+.\" reuses the indentation computed for the one ended by this call.
+.\" .YS [argument]
+.de YS
+.  in \\n(mIu
+.  ad \\n(mA
+.  hy \\n(mH
+.
+.  ie \\n(.$ .nr mS 1
+.  el \{\
+.    nr mS 0
+.    rr mA
+.    rr mI
+.    rr mT
+.  \}
+..
+.
+.
+.\" Prepare link text for mail/web hyperlinks.  `MT` and `UR` call this.
+.de mV
+.  ds mU \\$1\"
+..
+.
+.
+.\" Emit hyperlink.  The optional argument supplies trailing punctuation
+.\" after link text.  `ME` and `UE` call this.
+.de mQ
+.  mY
+.  nh
+<\\*(mU>\\$1
+.  hy \\n(mH
+.  rm mU
+..
+.
+.
+.\" Start URL.
+.\" .UR url
+.if \n(.g-\n(mG \{\
+.de UR
+.  mV \\$1
+..
+.\}
+.
+.
+.\" End URL.
+.\" .UE [punctuation]
+.if \n(.g-\n(mG \{\
+.de UE
+.  mQ \\$1
+..
+.\}
+.
+.
+.\" Start email address.
+.\" .MT address
+.if \n(.g-\n(mG \{\
+.de MT
+.  mV \\$1
+..
+.\}
+.
+.
+.\" End email address.
+.\" .ME [punctuation]
+.if \n(.g-\n(mG \{\
+.de ME
+.  mQ \\$1
+..
+.\}
+.
+.
+.\" Set a man page cross reference.
+.\" .MR page-topic page-section [trailing-text]
+.if \n(.g-\n(mG \{\
+.de MR
+.  mY
+.  nh
+.  ie \\n(.$=1 \
+.    I \\$1
+.  el \
+.    IR \\$1 (\\$2)\\$3
+.  hy \\n(mH
+..
+.\}
+.
+.
+.\" Add supplementary paragraph tag on its own line after TP.
+.de TQ
+.  br
+.  ns
+.  \" Do not quote the argument to `TP`; the user might specify
+.  \" their own quotes for multi-word tags or to exercise AT&T troff
+.  \" quoting rules.
+.  TP \\$1\"
+..
+.
+.
+.\" `EX` and `EE` are Ninth Edition Unix extensions that survived into
+.\" Plan 9 troff but other AT&T troff descendants did not adopt.
+.
+.\" Start example.
+.if \n(.g-\n(mG \{\
+.de EX
+.  br
+.  if !\\n(mE \{\
+.    nr mF \\n(.f
+.    nr mP \\n(PD
+.    nr PD 1v
+.    nf
+.    ie n .ft \\*(mC
+.    el   .ft R
+.    nr mE 1
+.  \}
+..
+.\}
+.
+.
+.\" End example.
+.if \n(.g-\n(mG \{\
+.de EE
+.  br
+.  if \\n(mE \{\
+.    ft \\n(mF
+.    nr PD \\n(mP
+.    fi
+.    nr mE 0
+.  \}
+..
+.\}
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" fill-column: 72
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

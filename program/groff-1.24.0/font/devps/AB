@@ -1,0 +1,699 @@
+# This file has been generated with GNU afmtodit (groff) version 1.20.1
+#
+#   FullName ITC Avant Garde Gothic Demi
+#   Version 003.001
+#   FamilyName ITC Avant Garde Gothic
+#
+# The original AFM file contains the following comments:
+#
+#   Notice Copyright (c) 1985, 1987, 1989, 1990, 1991, 1992, 1997, 1998, 1999 Adobe Systems Incorporated.  All Rights Reserved.ITC Avant Garde Gothic is a registered trademark of International Typeface Corporation.
+#   Comment Copyright (c) 1985, 1987, 1989, 1990, 1991, 1992, 1997, 1998, 1999 Adobe Systems Incorporated.  All Rights Reserved.
+#   Comment Creation Date: Mon Aug 23 13:42:33 1999
+#   Comment UniqueID 44726
+#   Comment VMusage 27573 34509
+
+name AB
+internalname AvantGarde-Demi
+spacewidth 280
+encoding text.enc
+ligatures fi fl 0
+
+kernpairs
+A T -73
+A V -127
+A W -96
+A Y -139
+A 'Y -139
+A :Y -139
+A v -50
+A w -50
+A y -50
+A 'y -50
+A :y -50
+'A T -73
+'A V -127
+'A W -96
+'A Y -139
+'A 'Y -139
+'A :Y -139
+'A v -50
+'A w -50
+'A y -50
+'A 'y -50
+'A :y -50
+^A T -73
+^A V -127
+^A W -96
+^A Y -139
+^A 'Y -139
+^A :Y -139
+^A v -50
+^A w -50
+^A y -50
+^A 'y -50
+^A :y -50
+:A T -73
+:A V -127
+:A W -96
+:A Y -139
+:A 'Y -139
+:A :Y -139
+:A v -50
+:A w -50
+:A y -50
+:A 'y -50
+:A :y -50
+`A T -73
+`A V -127
+`A W -96
+`A Y -139
+`A 'Y -139
+`A :Y -139
+`A v -50
+`A w -50
+`A y -50
+`A 'y -50
+`A :y -50
+oA T -73
+oA V -127
+oA W -96
+oA Y -139
+oA 'Y -139
+oA :Y -139
+oA v -50
+oA w -50
+oA y -50
+oA 'y -50
+oA :y -50
+~A T -73
+~A V -127
+~A W -96
+~A Y -139
+~A 'Y -139
+~A :Y -139
+~A v -50
+~A w -50
+~A y -50
+~A 'y -50
+~A :y -50
+F A -95
+F 'A -95
+F ^A -95
+F :A -95
+F `A -95
+F oA -95
+F ~A -95
+F , -42
+F . -42
+F u2026 -42
+L T -50
+L V -90
+L W -90
+L Y -90
+L 'Y -90
+L :Y -90
+L y -75
+L 'y -75
+L :y -75
+/L T -50
+/L V -90
+/L W -90
+/L Y -90
+/L 'Y -90
+/L :Y -90
+/L y -75
+/L 'y -75
+/L :y -75
+P A -100
+P 'A -100
+P ^A -100
+P :A -100
+P `A -100
+P oA -100
+P ~A -100
+P , -16
+P . -16
+P u2026 -16
+R T 16
+R V -26
+R W -20
+R Y -20
+R 'Y -20
+R :Y -20
+R y 31
+R 'y 31
+R :y 31
+T A -70
+T 'A -70
+T ^A -70
+T :A -70
+T `A -70
+T oA -70
+T ~A -70
+T a -40
+T 'a -40
+T ^a -40
+T :a -40
+T `a -40
+T oa -40
+T ~a -40
+T c -50
+T ,c -50
+T : -12
+T , 4
+T e -50
+T 'e -50
+T ^e -50
+T :e -50
+T `e -50
+T - -10
+T hy -10
+T i -5
+T 'i 10
+T ^i 10
+T :i 10
+T `i 10
+T o -50
+T 'o -50
+T ^o -50
+T :o -50
+T `o -50
+T /o -50
+T ~o -50
+T . 4
+T u2026 4
+T r -42
+T s -43
+T ; -12
+T u -56
+T 'u -56
+T ^u -56
+T :u -56
+T `u -56
+T w -15
+T y -12
+T 'y -12
+T :y -12
+V A -125
+V 'A -125
+V ^A -125
+V :A -125
+V `A -125
+V oA -125
+V ~A -125
+V a -80
+V 'a -80
+V ^a -80
+V :a -80
+V `a -80
+V oa -80
+V ~a -80
+V : -13
+V , -13
+V e -80
+V 'e -80
+V ^e -80
+V :e -80
+V `e -80
+V - -20
+V hy -20
+V i -9
+V 'i -9
+V o -80
+V 'o -80
+V ^o -80
+V :o -80
+V `o -80
+V /o -80
+V ~o -80
+V . -13
+V u2026 -13
+V r -40
+V ; -13
+V u -68
+V 'u -68
+V ^u -68
+V :u -68
+V `u -68
+V y -15
+V 'y -15
+V :y -15
+W A -94
+W 'A -94
+W ^A -94
+W :A -94
+W `A -94
+W oA -94
+W ~A -94
+W a -50
+W 'a -50
+W ^a -50
+W :a -50
+W `a -50
+W oa -50
+W ~a -50
+W : -12
+W , -12
+W e -50
+W 'e -50
+W ^e -50
+W :e -50
+W `e -50
+W - -10
+W hy -10
+W i -7
+W 'i 10
+W ^i 10
+W :i 10
+W `i 10
+W o -50
+W 'o -50
+W ^o -50
+W :o -50
+W `o -50
+W /o -50
+W ~o -50
+W . -12
+W u2026 -12
+W r -39
+W ; -12
+W u -40
+W 'u -40
+W ^u -40
+W :u -40
+W `u -40
+W y 1
+W 'y 1
+W :y 1
+Y A -138
+Y 'A -138
+Y ^A -138
+Y :A -138
+Y `A -138
+Y oA -138
+Y ~A -138
+Y a -100
+Y 'a -100
+Y ^a -100
+Y :a -100
+Y `a -100
+Y oa -100
+Y ~a -100
+Y : -8
+Y , -8
+Y e -100
+Y 'e -100
+Y ^e -100
+Y :e -100
+Y `e -100
+Y - -60
+Y hy -60
+Y i -5
+Y 'i -5
+Y ^i 10
+Y :i 10
+Y `i 10
+Y o -100
+Y 'o -100
+Y ^o -100
+Y :o -100
+Y `o -100
+Y /o -100
+Y ~o -100
+Y p -60
+Y . -8
+Y u2026 -8
+Y q -100
+Y ; -8
+Y u -82
+Y 'u -82
+Y ^u -82
+Y :u -82
+Y `u -82
+Y v -25
+'Y A -138
+'Y 'A -138
+'Y ^A -138
+'Y :A -138
+'Y `A -138
+'Y oA -138
+'Y ~A -138
+'Y a -100
+'Y 'a -100
+'Y ^a -100
+'Y :a -100
+'Y `a -100
+'Y oa -100
+'Y ~a -100
+'Y : -8
+'Y , -8
+'Y e -100
+'Y 'e -100
+'Y ^e -100
+'Y :e -100
+'Y `e -100
+'Y - -60
+'Y hy -60
+'Y i -5
+'Y 'i -5
+'Y ^i 10
+'Y :i 10
+'Y `i 10
+'Y o -100
+'Y 'o -100
+'Y ^o -100
+'Y :o -100
+'Y `o -100
+'Y /o -100
+'Y ~o -100
+'Y p -60
+'Y . -8
+'Y u2026 -8
+'Y q -100
+'Y ; -8
+'Y u -82
+'Y 'u -82
+'Y ^u -82
+'Y :u -82
+'Y `u -82
+'Y v -25
+:Y A -138
+:Y 'A -138
+:Y ^A -138
+:Y :A -138
+:Y `A -138
+:Y oA -138
+:Y ~A -138
+:Y a -100
+:Y 'a -100
+:Y ^a -100
+:Y :a -100
+:Y `a -100
+:Y oa -100
+:Y ~a -100
+:Y : -8
+:Y , -8
+:Y e -100
+:Y 'e -100
+:Y ^e -100
+:Y :e -100
+:Y `e -100
+:Y - -60
+:Y hy -60
+:Y i -5
+:Y 'i -5
+:Y ^i 10
+:Y :i 10
+:Y `i 10
+:Y o -100
+:Y 'o -100
+:Y ^o -100
+:Y :o -100
+:Y `o -100
+:Y /o -100
+:Y ~o -100
+:Y p -60
+:Y . -8
+:Y u2026 -8
+:Y q -100
+:Y ; -8
+:Y u -82
+:Y 'u -82
+:Y ^u -82
+:Y :u -82
+:Y `u -82
+:Y v -25
+f f 38
+r c -27
+r ,c -27
+r , 9
+r d -8
+r e -8
+r 'e -8
+r ^e -8
+r :e -8
+r `e -8
+r f 38
+r g -8
+r - -10
+r hy -10
+r m 5
+r n 5
+r ~n 5
+r o -18
+r 'o -18
+r ^o -18
+r :o -18
+r `o -18
+r /o -18
+r ~o -18
+r . 9
+r u2026 9
+r q -18
+
+charset
+ha	600,740	2	0	asciicircum	--	005E
+ti	600,347	0	1	asciitilde	--	007E
+vS	520,944,15	2	2	Scaron	--	0160
+vZ	500,944	2	3	Zcaron	--	017D
+vs	440,774,18	2	4	scaron	--	0161
+vz	460,774	2	5	zcaron	--	017E
+:Y	620,939,0,2,2	2	6	Ydieresis	--	0178
+tm	1000,740	2	7	trademark	--	2122
+aq	220,740	2	8	quotesingle	--	0027
+Eu	560,755,15,1	2	9	Euro	--	20AC
+space	280	0	32	space
+!	280,740	2	33	exclam	--	0021
+"	360,740	2	34	quotedbl	--	0022
+dq	"
+#	560,700	0	35	numbersign	--	0023
+sh	"
+$	560,857,86	2	36	dollar	--	0024
+Do	"
+%	860,755,15	2	37	percent	--	0025
+&	680,755,15	2	38	ampersand	--	0026
+'	280,740	2	39	quoteright	--	2019
+cq	"
+(	380,754,157	2	40	parenleft	--	0028
+)	380,754,157	2	41	parenright	--	0029
+*	440,755	2	42	asterisk	--	002A
++	600,506	0	43	plus	--	002B
+,	280,133,141	0	44	comma	--	002C
+-	420,348	0	45	hyphen	--	002D
+hy	"
+.	280,133	0	46	period	--	002E
+/	460,740,100	2	47	slash	--	002F
+sl	"
+0	560,755,15	2	48	zero	--	0030
+1	560,740	2	49	one	--	0031
+2	560,755	2	50	two	--	0032
+3	560,755,15	2	51	three	--	0033
+4	560,740	2	52	four	--	0034
+5	560,740,15	2	53	five	--	0035
+6	560,739,15	2	54	six	--	0036
+7	560,740	2	55	seven	--	0037
+8	560,755,15	2	56	eight	--	0038
+9	560,754	2	57	nine	--	0039
+:	280,555	0	58	colon	--	003A
+;	280,555,141	0	59	semicolon	--	003B
+<	600,514,8	0	60	less	--	003C
+=	600,425	0	61	equal	--	003D
+>	600,514,8	0	62	greater	--	003E
+?	560,755	2	63	question	--	003F
+@	740,712,12,10	0	64	at	--	0040
+at	"
+A	740,740	2	65	A	--	0041
+B	580,740	2	66	B	--	0042
+C	780,755,15	2	67	C	--	0043
+D	700,740	2	68	D	--	0044
+E	520,740	2	69	E	--	0045
+F	480,740	2	70	F	--	0046
+G	840,755,15	2	71	G	--	0047
+H	680,740	2	72	H	--	0048
+I	280,740	2	73	I	--	0049
+J	480,740,15	2	74	J	--	004A
+K	620,740	2	75	K	--	004B
+L	440,740	2	76	L	--	004C
+M	900,740	2	77	M	--	004D
+N	740,740	2	78	N	--	004E
+O	840,755,15	2	79	O	--	004F
+P	560,740	2	80	P	--	0050
+Q	840,755,15	2	81	Q	--	0051
+R	580,740	2	82	R	--	0052
+S	520,755,15	2	83	S	--	0053
+T	420,740	2	84	T	--	0054
+U	640,740,15	2	85	U	--	0055
+V	700,740	2	86	V	--	0056
+W	900,740	2	87	W	--	0057
+X	680,740	2	88	X	--	0058
+Y	620,740,0,2,2	2	89	Y	--	0059
+Z	500,740	2	90	Z	--	005A
+[	320,754,157	2	91	bracketleft	--	005B
+lB	"
+\	640,740,100	2	92	backslash	--	005C
+rs	"
+]	320,754,157	2	93	bracketright	--	005D
+rB	"
+^	540,774	2	94	circumflex	--	02C6
+a^	"
+_	500,0,125	0	95	underscore	--	005F
+`	280,740	2	96	quoteleft	--	2018
+oq	"
+a	660,574,18	0	97	a	--	0061
+b	660,740,18	2	98	b	--	0062
+c	640,574,18	0	99	c	--	0063
+d	660,740,18	2	100	d	--	0064
+e	640,574,18	0	101	e	--	0065
+f	280,755	2	102	f	--	0066
+g	660,574,226	1	103	g	--	0067
+h	600,740	2	104	h	--	0068
+i	240,740	2	105	i	--	0069
+j	260,740,185	3	106	j	--	006A
+k	580,740	2	107	k	--	006B
+l	240,740	2	108	l	--	006C
+m	940,574	0	109	m	--	006D
+n	600,574	0	110	n	--	006E
+o	640,574,18	0	111	o	--	006F
+p	660,574,185	1	112	p	--	0070
+q	660,574,185	1	113	q	--	0071
+r	320,574	0	114	r	--	0072
+s	440,574,18	0	115	s	--	0073
+t	300,740	2	116	t	--	0074
+u	600,555,18	0	117	u	--	0075
+v	560,555	0	118	v	--	0076
+w	800,555	0	119	w	--	0077
+x	560,555	0	120	x	--	0078
+y	580,555,185	1	121	y	--	0079
+z	460,555	0	122	z	--	007A
+{	340,747,191,0,3	3	123	braceleft	--	007B
+lC	"
+|	600,750,250	3	124	bar	--	007C
+ba	"
+}	340,747,191,3	3	125	braceright	--	007D
+rC	"
+~	480,767	2	126	tilde	--	02DC
+a~	"
+bq	280,133,141	0	128	quotesinglbase	--	201A
+Fo	460,469	0	129	guillemotleft	--	00AB
+Fc	460,469	0	130	guillemotright	--	00BB
+bu	600,532	0	131	bullet	--	2022
+Fn	560,824,151	2	132	florin	--	0192
+f/	160,740,0,122,123	2	133	fraction	--	2044
+%0	1280,755,15	2	134	perthousand	--	2030
+dg	560,740,142	2	135	dagger	--	2020
+dd	560,740,142	2	136	daggerdbl	--	2021
+en	500,348	0	137	endash	--	2013
+em	1000,348	0	138	emdash	--	2014
+fi	520,755	2	140	fi	--	FB01
+fl	520,755	2	141	fl	--	FB02
+.i	240,555	0	144	dotlessi	--	0131
+ga	420,851	2	146	grave	--	0060
+a"	700,849	2	147	hungarumlaut	--	02DD
+a.	280,769	2	148	dotaccent	--	02D9
+ab	480,770	2	149	breve	--	02D8
+ah	540,774	2	150	caron	--	02C7
+ao	360,834	2	151	ring	--	02DA
+ho	340,9,195	1	152	ogonek	--	02DB
+lq	480,740	2	153	quotedblleft	--	201C
+rq	480,740	2	154	quotedblright	--	201D
+oe	1080,574,18	0	155	oe	--	0153
+/l	320,740	2	156	lslash	--	0142
+Bq	480,133,141	0	157	quotedblbase	--	201E
+OE	1060,755,15	2	158	OE	--	0152
+/L	480,740	2	159	Lslash	--	0141
+r!	280,555,185	1	161	exclamdown	--	00A1
+ct	560,715	0	162	cent	--	00A2
+Po	560,755,0,2,2	2	163	sterling	--	00A3
+Cs	560,577	0	164	currency	--	00A4
+Ye	560,740,0,10,10	2	165	yen	--	00A5
+bb	600,675,175	0	166	brokenbar	--	00A6
+sc	560,755,158	2	167	section	--	00A7
+ad	500,769	2	168	dieresis	--	00A8
+co	740,752,12,12,12	2	169	copyright	--	00A9
+Of	360,755	2	170	ordfeminine	--	00AA
+fo	240,469	0	171	guilsinglleft	--	2039
+tno	600,425	0	172	logicalnot	--	00AC
+\-	600,313	0	173	minus	--	2212
+rg	740,752,12,12,12	2	174	registered	--	00AE
+a-	420,759	2	175	macron	--	00AF
+de	400,712	0	176	degree	--	00B0
+t+-	600,556,62	0	177	plusminus	--	00B1
+S2	336,749	2	178	twosuperior	--	00B2
+S3	336,749	2	179	threesuperior	--	00B3
+aa	420,851	2	180	acute	--	00B4
+mc	600,555,192	1	181	mu	--	00B5
+ps	600,740,103,7,7	2	182	paragraph	--	00B6
+pc	280,320	0	183	periodcentered	--	00B7
+ac	340,6,251	1	184	cedilla	--	00B8
+S1	336,740	2	185	onesuperior	--	00B9
+Om	360,755	2	186	ordmasculine	--	00BA
+fc	240,469	0	187	guilsinglright	--	203A
+14	840,740	2	188	onequarter	--	00BC
+12	840,740	2	189	onehalf	--	00BD
+34	840,749	2	190	threequarters	--	00BE
+r?	560,555,200	1	191	questiondown	--	00BF
+`A	740,1021	2	192	Agrave	--	00C0
+'A	740,1021	2	193	Aacute	--	00C1
+^A	740,944	2	194	Acircumflex	--	00C2
+~A	740,937	2	195	Atilde	--	00C3
+:A	740,939	2	196	Adieresis	--	00C4
+oA	740,969	2	197	Aring	--	00C5
+AE	900,740,0,0,5	2	198	AE	--	00C6
+,C	780,755,251	3	199	Ccedilla	--	00C7
+`E	520,1021	2	200	Egrave	--	00C8
+'E	520,1021	2	201	Eacute	--	00C9
+^E	520,944	2	202	Ecircumflex	--	00CA
+:E	520,939	2	203	Edieresis	--	00CB
+`I	280,1021,0,0,45	2	204	Igrave	--	00CC
+'I	280,1021,0,43	2	205	Iacute	--	00CD
+^I	280,944,0,60,59	2	206	Icircumflex	--	00CE
+:I	280,939,0,32,32	2	207	Idieresis	--	00CF
+-D	742,740	2	208	Eth	--	00D0
+~N	740,937	2	209	Ntilde	--	00D1
+`O	840,1021,15	2	210	Ograve	--	00D2
+'O	840,1021,15	2	211	Oacute	--	00D3
+^O	840,944,15	2	212	Ocircumflex	--	00D4
+~O	840,937,15	2	213	Otilde	--	00D5
+:O	840,939,15	2	214	Odieresis	--	00D6
+tmu	600,494	0	215	multiply	--	00D7
+/O	840,814,71	2	216	Oslash	--	00D8
+`U	640,1021,15	2	217	Ugrave	--	00D9
+'U	640,1021,15	2	218	Uacute	--	00DA
+^U	640,944,15	2	219	Ucircumflex	--	00DB
+:U	640,939,15	2	220	Udieresis	--	00DC
+'Y	620,1021,0,2,2	2	221	Yacute	--	00DD
+TP	560,740	2	222	Thorn	--	00DE
+ss	600,755,18	2	223	germandbls	--	00DF
+`a	660,851,18	2	224	agrave	--	00E0
+'a	660,851,18	2	225	aacute	--	00E1
+^a	660,774,18	2	226	acircumflex	--	00E2
+~a	660,767,18	2	227	atilde	--	00E3
+:a	660,769,18	2	228	adieresis	--	00E4
+oa	660,834,18	2	229	aring	--	00E5
+ae	1080,574,18	0	230	ae	--	00E6
+,c	640,574,251	1	231	ccedilla	--	00E7
+`e	640,851,18	2	232	egrave	--	00E8
+'e	640,851,18	2	233	eacute	--	00E9
+^e	640,774,18	2	234	ecircumflex	--	00EA
+:e	640,769,18	2	235	edieresis	--	00EB
+`i	240,851,0,0,65	2	236	igrave	--	00EC
+'i	240,851,0,63	2	237	iacute	--	00ED
+^i	240,774,0,80,79	2	238	icircumflex	--	00EE
+:i	240,769,0,52,52	2	239	idieresis	--	00EF
+Sd	640,754,18	2	240	eth	--	00F0
+~n	600,767	2	241	ntilde	--	00F1
+`o	640,851,18	2	242	ograve	--	00F2
+'o	640,851,18	2	243	oacute	--	00F3
+^o	640,774,18	2	244	ocircumflex	--	00F4
+~o	640,767,18	2	245	otilde	--	00F5
+:o	640,769,18	2	246	odieresis	--	00F6
+tdi	600,526,20	0	247	divide	--	00F7
+/o	660,608,50	0	248	oslash	--	00F8
+`u	600,851,18	2	249	ugrave	--	00F9
+'u	600,851,18	2	250	uacute	--	00FA
+^u	600,774,18	2	251	ucircumflex	--	00FB
+:u	600,769,18	2	252	udieresis	--	00FC
+'y	580,851,185	3	253	yacute	--	00FD
+Tp	660,740,185	3	254	thorn	--	00FE
+:y	580,769,185	3	255	ydieresis	--	00FF
+u2026	1000,133	0	256	ellipsis	--	0102

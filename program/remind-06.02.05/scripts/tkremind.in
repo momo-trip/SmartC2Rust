@@ -1,0 +1,5617 @@
+#!/bin/sh
+# -*-Mode: TCL;-*-
+# SPDX-License-Identifier: GPL-2.0-only
+
+#--------------------------------------------------------------
+#   TKREMIND
+#
+#   A cheesy graphical front/back end for Remind using Tcl/Tk
+#
+#   This file is part of REMIND.
+#   Copyright (C) 1992-2026 Dianne Skoll
+#
+#--------------------------------------------------------------
+
+# the next line restarts using wish \
+exec wish "$0" "$@"
+
+tk appname tkremind
+
+# We need at least version 8.5 because of {*} list expansion operator
+if {[catch {package require Tcl 8.5-}]} {
+    puts stderr "This program requires Tcl 8.5 or higher."
+    puts stderr "You have version [info tclversion]"
+    exit 1
+}
+
+wm withdraw .
+
+catch {
+    set Hostname [exec hostname]
+}
+
+set Translations [dict create]
+
+global env
+set HOME $env(HOME)
+
+# Check if we have "tk sysnotify"
+set HAVE_SYSNOTIFY 0
+set NOTIFY_SEND_PATH ""
+catch { tk sysnotify } err opt
+if { [dict get $opt -errorcode] == "TCL WRONGARGS" } {
+    set HAVE_SYSNOTIFY 1
+} else {
+    set path [split $env(PATH) :]
+    foreach d $path {
+        if { [file executable [file join $d "notify-send"]] } {
+            set NOTIFY_SEND_PATH [file join $d "notify-send"]
+            break
+        }
+    }
+}
+
+proc home { f } {
+    global HOME
+    return [string cat $HOME $f]
+}
+
+# Our icon photo
+catch {
+    image create photo rpicon -data {
+        iVBORw0KGgoAAAANSUhEUgAAAEAAAABbCAYAAADDeIOGAAAACXBIWXMAAAtEAAALRAHk62/EAAAA
+        GXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAD5RJREFUeJzdXHtQFNea/80DZ2SQ
+        l8CMkEUQH0QQAUWXiKKiUVGjxmvFupqUGpMQU1nLSmpTtbkbTWW33GTzWG8iZbIxlUqMsLnxZkwG
+        klosFbM+koDGOL5AUECYAeU1w2Ngmv72j6GpRqZ7unsG2b2/qlMz5/T5zuN3Xt/5zulWERH+hhED
+        YAuAxQBSAUQDGA9AA4AF8Jvqb5CApwHsBJAOIBQA7ty5g8rKSrS0tMBut0OlUiE9PR3r1q2zg4j+
+        vzstEb1ARBVE5GZZls6dO0dvv/02bdy4kaZOnUparZYAEACaNWsWFRYWktvtJiJyj3Xh/XFbiegy
+        ETEMw5DFYqGXX36ZkpOThyrLd8nJyfyKExG5iOg/xroS3twkIsonoj8S0Rwi0vOeRRLRYSLqcrvd
+        ZLFY6KWXXqKpU6d6rTQACg8Pp9dee40cDsewig/2HIx1ZTlnJKLviaiLvOM+EV0lIra2tpb27dsn
+        2NKcU6vVtHbtWrJarVwaLBEVEdE4ft7/FybBfwewp6KiQmOxWHD9+nW0t7cjJCQEcXFxyMrKwqpV
+        q3D+/HkcPXoUJSUl6OrqEk1w9uzZeOutt7B27Vou6CqAdQBqRkQe45Y/WVNTQ1u2bKGgoCDB1hw/
+        frxoa3NOp9PR7t27yel0cq3eQURPiZVhLCv/3z/99BMlJSVJqpwvl5SURKWlpfxhU0xEal/lGKvK
+        /9ulS5coLi4uIJVfvHgx1dbWchV3EFGe1LKMReWT29vbB1JTUwNS+eeff576+vq4yl8momA55XnY
+        lVcTkf3FF1+UNJ4PHTpEZrOZIiIiRjxXqVS0Z88eYlmWq/zHSsr0sAn4saioSHTC43drDkuXLh3x
+        /NVXXyUe3lRapodZ+X+4ceMGmUwmSV07IyODGIah+vp6iomJGfZs5cqVxDAMV3k7Ef2JiBbRoHLz
+        gNMT0T8RUfpYEpDW3d098Nhjj8ka31lZWTRlypRhYRqNhl555RX69ttv6d69e+QFveSZCDsH/5PT
+        6SSGYTpouFYJooejCKkBNBcUFER9/PHHAU1Yp9Nh6tSpSEhIwJQpUzB58mRERkYCADQaDe7evQur
+        1Ypp06bhzTffBIALALKHJfIQWv9oUVERaTSagMz6Up1Wq6Xc3Fw6fvw41zNYInr1YfeA3KamplML
+        FixQ3blzZzTzQXh4OGbOnImUlBTMnj0bubm5SE1N5R63A9gBwDxCcBRbXktEHZs3bx61VjYajbR7
+        926yWCzkcrm8zQWXyGMrGJNV4C+fffYZqVSqUan8jBkzyGaz8bt3PREdI6IC8uwuJZVT62/XE0Ca
+        zWbb+MYbbyDQQ0yr1WL79u0IDg5Gd3c3F/wGgH9RlOAotf7tnTt3+mzFtLQ0mjt3LoWEhPiMq9Pp
+        aM2aNWSxWIiIqKioiD766COuB1QqLetoTIIvl5eX/3nFihXo6+sTjWixWLB69Wo4nU78/PPPaGho
+        QFNTExwOB1iWBQBMnDgRCQkJyMnJwSOPPDIke//+fRQUFOCbb74BAAZAkKLSBrjl9QzDuLKzs322
+        aHp6Ol+PV4T8/Hz+RujvlZRZrYg1YXzy4Ycf6s6fP+8z4rp166BSqfzKLCEhAWfOnOG8W5SkEUgC
+        Ih0Oxx8PHjwoKfLcuXP9zjA1NRWVlZWcd5GSNAJJQPF7772nuXXrls+IBoMBCxYs8DvDtLQ0XLp0
+        ifPOUJRIgMZ+UmNjI2s0GiWt4SkpKX6NfQ5ut5syMjL4QZLX/0DPAZ+9++67qubmZkmRDQZDQDLV
+        arXQarWor6/ngvLlphEIAiY1Nzcv/OqrryQL6HS6AGTrweTJk/Hbb79x3hy58oEg4PCBAwdULS0t
+        kgV86QdykJCQAN68M0uuvL8EhLe1ta344osvZAnV1dUNKTr+Ij4+nk9Aglx5fwn4c2FhobqxsVGW
+        UEtLC27evOln1h7ExMTg9u3bnDdcrrxfBDAM84cjR47IliMi5OXlYevWrSguLsbAwIDiMsTExMBm
+        s3HeIMitkx9L367PP/88YFvb999/n6/WSkZtbS0ZjUa+Wj1dTj38IaBu5cqVAd3jZ2VlUWVlpSwC
+        +vv7KSwsjG8bED0LDBQBMysrKyXZ9+W6iRMnUllZmSwSjEYjlZeXc969cuqidA741yNHjsDtdisU
+        F0ZrayuefvppVFVVSZYxGAzo7OzkvEY5+SkigGGYFSUlJUpEJcFut2Pv3r2S4xsMBr51KFJOXkoI
+        WHfs2LHxclpICcxmM+rq6iTF1ev1cDqdnDdCTj5KCHj9+++/VyAmDq1WC71eP+R3uVwoLS2VJKtS
+        qeBwODhvqJx85RKg7ujoyPjhhx9kivlGYmIi+vv7h4U1NDRIlufJytpoyCVgi9ls1ra1tckU8w2j
+        0ThCPeZNbKJQq9WeJW3QKydfuQQUnDhxQqaINEyaNGlE2IwZ0mwcLMvytUlZdjZZBLhcrjknT56U
+        IyIZcXFxw/wqlQq5ubmSZHt7e/m9RyMnXzkEPG6xWHQ8vTtgMBqNiIqKGhaWmZmJ2bNnS5J3uVyK
+        85ZDwHPl5eWKMxLDnDlz0NTUNCxs8+bNkuV7e3v5K4gsNuQQsPDs2bNy0paM9PT0YWt+WFgYtm3b
+        JkmWZVl0d3ePOgEh169fj7ly5YqctCUjIyMDd+/eHfI7HA5IzevevXtwOBx8M1uvnLylErDzxIkT
+        KoZh5KQtCQaDAdnZ2XzDJogI77zzDn9pE0RdXR0GBgb4PaBHTv5SCdgg5bRHCebNm4fa2lq0t7cP
+        C//xxx+xf/9+n/Ktra0APMNmEPfl5C+VgFkVFRWSEw0LC4NGI201ys3NhdVq9fps//798DXxckpZ
+        RMTQFqBJMLIXSCFAb7Vaw2tqRl60FoLJZJJs5lqyZAmuX7/u9VlXVxf/5McruNXDZDJxQXcFI3uB
+        FAI2nTt3TiXHihsTEyMp3vTp07Fw4ULcuHFDME58fLxoGo2NjRg3bhz/6Fz6BgLSCNhw8eJFOWki
+        ODhYUrzc3FwwDIPff/9dMM706dNF02hqaoLJZEJISAgXdFliMQFIIyD98mVZaUo++Vm0aBFOnjwJ
+        oSO1yMhIJCcni6bR2NjIb30CIMtG75MAl8sVK9ZFvSE2NtZnnNDQUKxevRq//PKLYJz4+HhotcLX
+        mIgId+7c4RMgawkEfBMQdfbsWV1HR4esRI1Go88D0JycHERERODXX38VjMO75+cV1dXVsNlsfALa
+        xeJ7gy8C/nDt2jW5aUKlUg1dWRXC6tWr4XK5RHtAZmamaBpXr14FEfF3kvKOqOCbgMVCS5QYWJbF
+        xIkTBZ9HRUVh8+bNsFgsguMf8GySxMAdifF6wG3ByALwRcCjUm58PIjOzk7+ujwC+fn5iIyMhJht
+        ITY21uctEk6B4i2Vsjcrvgj4OzkKEIfW1lbR8fvkk0+CZVmIWZcyMzN9apNWqxV6vZ6fl3R1dRCi
+        BNjt9lA5hkkOra2tSEtL8/psxowZWLt2LU6dOoXq6mrBNJYuXSqah8PhwI0bNxAfH8/XAYQnFAGI
+        ERB38eJFjZLTn/r6emRnZ3tdwtavXw+1Wg2zeeTFbQ46nQ5r1qwRzePMmTNwOp18PaEfgLzlCuIE
+        5PK3qHJw+/ZtmEwmJCUlDQsPCgrCU089hb6+Pnz33XeC8vPnz8e0adNE87h69SoA8AmwKymrGAFp
+        fCOFHPT09KCiomLEXcAVK1YgIyMDX3/9NcTIzcvL85kHZzDhESB/uYI4AdPtdkWkAvAUcNmyZcPC
+        tm/fDgCi3T8oKAjr16/3mT7XA3iG0/9RVFCRo+NfV61apfiYe9u2bdTe3j70zt+8efOIZVmqqqoi
+        g8EgKLds2TKfx+EtLS2k1+vJZDLx3x5LU3LUL9YDTP6YwC9evIjw8HAsWbIEALBr1y6oVCocOnSI
+        f5I7Ahs2bPCZ9unTp+FyuZCcnMwtlSwA4S2lGISYYVnW+eD7enKcVqslq9VKhYWFlJmZSQzDUFtb
+        G8XGxgrKREdHU1tbm88esGfPHgJABQUFXNA9Ja1PJPLGiM1mG3//vizz2jAwDIPS0lJs3boVBoMB
+        Go0Ghw8fHmH/5+OJJ57gm7YEwdkneROgfG2NgwAzIWVlZX5fd1m1atVQq/X19VFKSopojzl//rzP
+        1m9oaCC9Xk8A+NdiPlDaA4QeLPnyyy/9JmDChAnU2NhIREQHDhwQjZufn++z8kREn376KQGeN8Z4
+        H0TJUkqA0CSYKvXisxicTieKi4vR09ODQ4cOicaVehJ04cIFAJ69wqCmyQAQNir4gNAcEPegnV4p
+        zGYzGIYRtPwCnm3vxo0bJaXHjX+erUCZtjYIIQJipF5O8IVz587B147ymWeegVrt2zx5+fLlISJ5
+        BFzwp3xCuUYFioCBgQHRmX/y5MnYsWOHpLROnToFlmVhMBj4dweO+VM+IQIiA0WAL2zZsoW/nRXF
+        6dOnAXhelRm0OBEA4V2VBAgREMa7dTVqCAsLwwsvvCApbnt7+9AxGa/7t8KzDVYMIQJCHgYBmzZt
+        8nnyw8FsNoOzTvMIUKb+8iBIwGgPAZ1Oh127dkmOX1ZWBgAYN24c31r0V78L4kU5mE5EvdHR0QG/
+        CM13mzZtkqT4EBH19PQQ90ZaVlYW/1GIUgXImyK0HB67+s2uri79aA4BlUqF5557TnL848ePD5nP
+        582bxwXfByD+UTEJ4PSAvW63e98nn3yCkpIS3Lx5M6AvNj2IvLw8LF++XHJ8vvU4O3voEyCyDaBe
+        QURzmpub2UWLFo1ql+e74uJiyd2fYRhKTEwkABQcHEx2u517tNXf7k+Dm6H7e/fufWiVnzNnDg0M
+        DEiqPMuydPTo0SHZnJycoUfk/ZtBiuwBf9q3b99HRqNR88EHH4ja6gOBHTt2DFN7+/v7UVVVhdra
+        WtTX16OhoWHYL/+NtPnz53N/bfBsgvzHIBPJRGTv6uqigwcP0uOPP07BwcEBb/0JEybQ66+/Ts8+
+        +ywtX76cHn30UVH7IOdCQ0Np2rRpQ1+PIKL/CkTrE438gsRLAP4ZgNFms6GsrAzXrl3DrVu3UF1d
+        jZqaGlF7nhyo1WpEREQgIiICkZGRiIiIQFRUFKKiohAbG4vo6GiYTCYkJiYiKSkJQUHDPhCxBkBA
+        XlkR+oRGGoB/BLAEgAmDClN3dzeuXLkCh8OBjo4OdHZ2orOzc8Q9fz5CQ0Oh1+sxfvx4GAwGhIaG
+        Ijg4GImJiTAaRV/vGYDnwkMHgHsA6uExfd0E8J/yq+odUr8hkgTPm9nZAGbC84amAZ6vNI+D8LYa
+        8HTjAQBueMatG57bnF3wrOX34DnVqYOngjXwfAPULx1fKv4X5zAnLNolSeQAAAAASUVORK5CYII=}
+    wm iconphoto . -default rpicon
+}
+
+proc die_with_error { msg } {
+    tk_messageBox -message "Fatal Error" -detail $msg -icon error -type ok
+    exit 1
+}
+
+proc show_error { msg } {
+    tk_messageBox -message "Error" -detail $msg -icon error -type ok
+}
+proc missing_tcllib { pkg } {
+    catch { puts stderr "Could not find the '$pkg' package -- you must install tcllib.\nPlease see http://tcllib.sourceforge.net/" }
+    tk_messageBox -message "Error: tcllib not installed" -detail "Could not find the '$pkg' package -- you must install tcllib.  Please see http://tcllib.sourceforge.net/" -icon error -type ok
+    exit 1
+}
+if {[catch {package require mime}]} {
+    missing_tcllib mime
+}
+
+if {[catch {package require smtp}]} {
+    missing_tcllib smtp
+}
+if {[catch {package require json}]} {
+    missing_tcllib json
+}
+
+#---------------------------------------------------------------------------
+# GetRemindVersion
+# Arguments:
+#    none
+# Returns:
+#    The version of Remind
+#---------------------------------------------------------------------------
+proc GetRemindVersion {} {
+    global Remind
+    set ver [exec sh -c "(echo \"banner %\"; echo \"msg \[version()\]%\") | $Remind -"]
+    return $ver
+}
+
+#---------------------------------------------------------------------------
+# GLOBAL VARIABLES
+#---------------------------------------------------------------------------
+
+set Option(ConfirmQuit) 0
+set OptDescr(ConfirmQuit) "(0/1) If 1, TkRemind prompts you to confirm 'Quit' operation"
+set Option(AutoClose) 1
+set OptDescr(AutoClose) "(0/1) If 1, TkRemind automatically closes pop-up reminders after a minute"
+set Option(RingBell) 0
+set OptDescr(RingBell) "(0/1) If 1, TkRemind beeps the terminal when a pop-up reminder appears"
+
+set Option(StartIconified) 0
+set OptDescr(StartIconified) "(0/1) If 1, TkRemind starts up in the iconified state"
+
+set Option(Deiconify) 0
+set OptDescr(Deiconify) "(0/1) If 1, TkRemind deiconifies the calendar window when a reminder pops up"
+
+set Option(ShowTodaysReminders) 1
+set OptDescr(ShowTodaysReminders) "(0/1) If 1, TkRemind shows all of today's non-timed reminders in a window at startup and when the date changes"
+
+set Option(SysNotify) 0
+set OptDescr(SysNotify) "(0/1) If 1, TkRemind uses the system notification mechanism when a reminder pops up (Tcl 9.0 or newer)"
+
+set Option(RunCmd) ""
+set OptDescr(RunCmd) "(String) If non-blank, run specified command when a pop-up reminder appears"
+set Option(FeedReminder) 0
+set OptDescr(FeedReminder) "(0/1) If 1, feed the reminder to RunCmd on standard input (see RunCmd option)"
+
+set Option(DayAnchor) "center"
+set OptDescr(DayAnchor) "(w/center/e) Anchor the day number to the left (w), center or right (e) of its container"
+
+set Option(Editor) "emacs +%d %s"
+set OptDescr(Editor) "(String) Specify command to edit a file.  %d is replaced with line number and %s with filename"
+
+set Option(MailAddr) ""
+set OptDescr(MailAddr) "(String) Specify an e-mail address to which reminders should be sent if the popup window is not manually dismissed"
+
+set Option(SMTPServer) "127.0.0.1"
+set OptDescr(SMTPServer) "(String) IP address or host name of SMTP server to use for sending e-mail"
+
+set Option(ExtraRemindArgs) ""
+set OptDescr(ExtraRemindArgs) "(String) Extra arguments when invoking remind"
+
+set Option(CalboxFont) [font actual TkFixedFont]
+set OptDescr(CalboxFont) "Font to use in calendar boxes in Tk font format"
+
+set Option(HeadingFont) [font actual TkDefaultFont]
+set OptDescr(HeadingFont) "Font to use in calendar headings in Tk font format"
+
+set Option(BackgroundColor) "#d9d9d9"
+set OptDescr(BackgroundColor) "Default background color of calendar boxes"
+
+set Option(TextColor) "#000000"
+set OptDescr(TextColor) "Default text color in calendar boxes"
+
+set Option(TodayColor) "#00C0C0"
+set OptDescr(TodayColor) "Background color for today heading"
+
+set Option(LineColor) "#000000"
+set OptDescr(LineColor) "Color of gridlines on calendar"
+
+set Option(LabelColor) "#000000"
+set OptDescr(LabelColor) "Default label color for headings"
+
+set Option(WinBackground) "#d9d9d9"
+set OptDescr(WinBackground) "Background color of calendar window"
+
+set Option(View) "Month"
+set OptDescr(View) "Calendar view: One of Month, Week-1, Week-2 or Week-4"
+
+set TimerUpdateForChanges ""
+
+# Window properties
+set WinProps [dict create]
+
+# Date-to-window mappings
+set DateToWinOffset [dict create]
+
+# Remind program to execute -- supply full path if you want
+set Remind "remind"
+
+# Rem2PDF program to execute -- supply full path if you want
+set Rem2PDF "rem2pdf"
+
+# Check if we have Rem2PDF
+set HaveRem2PDF 0
+
+set InModalDialog 0
+
+set a [exec sh -c "$Rem2PDF < /dev/null 2>&1 || true"]
+
+if {[string match "rem2pdf:*" "$a"]} {
+    set HaveRem2PDF 1
+}
+
+# Reminder file to source -- default
+set ReminderFile [file nativename [home "/.reminders"]]
+
+# Default options file
+set ConfigFile ""
+
+set EditorPid -1
+
+# Errors from last remind run
+set RemindErrors ""
+
+# Reminder file to append to -- default
+set AppendFile $ReminderFile
+
+# Array of tags -> JSON dicts
+array unset TagToObj
+
+# Array of __syn__ tags -> JSON dicts
+array unset SynToObj
+
+set SetFontsWorked 0
+#---------------- DON'T CHANGE STUFF BELOW HERE ------------------
+
+# 24-hour clock mode
+set TwentyFourHourMode 0
+
+# Is Monday in first column?
+set MondayFirst 0
+
+# Month names in English
+set MonthNames {January February March April May June July August September October November December}
+
+# Day name in English
+set EnglishDayNames {Sunday Monday Tuesday Wednesday Thursday Friday Saturday}
+
+# Day names in Remind's pre-selected language - will be overwritten
+set DayNames $EnglishDayNames
+
+# Background reminder counter
+set BgCounter 0
+
+# Absolutely today -- unlike the CurMonth and CurYear, these won't change
+set now [clock seconds]
+
+set TodayMonth [expr [string trim [clock format $now -format %N]] - 1]
+set TodayYear [clock format $now -format %Y]
+set TodayDay [string trim [clock format $now -format %e]]
+
+# Current month and year -- initially the same as today
+set CurMonth $TodayMonth
+set CurYear $TodayYear
+set CurDay $TodayDay
+
+set DateOfEventBeingEdited ""
+
+# Reminder option types and skip types
+set OptionType 1
+set SkipType 1
+# Remind command line
+set CommandLine {}
+set PSCmd {}
+
+# Print options -- destination file; letter-size; landscape; fill page; default
+# encoding; 36pt margins; print small calendars
+set OptDescr(PrintDest) "Print destination: file or command"
+set Option(PrintDest) file
+
+set OptDescr(PrintSize) "Page size: a4 or letter"
+set Option(PrintSize) letter
+
+set OptDescr(PrintOrient) "Page orientation: portrait or landscape"
+set Option(PrintOrient) landscape
+
+set OptDescr(PrintFill) "(0/1) If 1, fill entire page when printing"
+set Option(PrintFill) 1
+
+set OptDescr(PrintAvoidOverfull) "(0/1) If 1, avoid over-full calendar boxes if possible"
+set Option(PrintAvoidOverfull) 0
+
+set OptDescr(WrapCal) "(0/1) If 1, make printed calendars occupy at most 5 rows"
+set Option(WrapCal) 0
+
+set OptDescr(PrintDaysRight) "(0/1) If 1, put day numbers in the top-right of each calendar box"
+set Option(PrintDaysRight) 1
+
+set OptDescr(PrintMargins) "Print margins: One of 24pt, 36pt or 48pt"
+set Option(PrintMargins) 36pt
+
+set OptDescr(PrintSmallCalendars) "(0/1) If 1, print small calendars in PostScript output"
+set Option(PrintSmallCalendars) 1
+
+set OptDescr(PrintFormat) "Print format: pdf or ps"
+set Option(PrintFormat) pdf
+
+set WarningHeaders [list "# Lines starting with REM TAG TKTAGnnn ... were created by tkremind" "# Do not edit them by hand or results may be unpredictable."]
+
+# Highest tag seen so far.
+set HighestTagSoFar 0
+
+# Check Remind version
+set ver [GetRemindVersion]
+
+if {"$ver" < "06.00.00"} {
+    tk_messageBox -message "This version of TkRemind requires Remind version 06.00.00 or newer; you have version $ver" -icon error -type ok
+    exit 1
+}
+
+proc get_weekday { yyyymmdd } {
+    global EnglishDayNames
+    return [lindex $EnglishDayNames [clock format [clock scan $yyyymmdd] -format %w -locale C]]
+}
+
+proc write_warning_headers { out } {
+    global WarningHeaders
+    foreach h $WarningHeaders {
+	puts $out $h
+    }
+}
+
+proc is_warning_header { line } {
+    global WarningHeaders
+    foreach h $WarningHeaders {
+	if {"$line" == "$h"} {
+	    return 1
+	}
+        # Ignore prior typo line too
+        if {"$line" == "# Lines staring with REM TAG TKTAGnnn ... were created by tkremind"} {
+            return 1
+        }
+    }
+    return 0
+}
+
+proc extract_tag { regex tag } {
+    if {[regexp $regex $tag extracted]} {
+        return $extracted
+    }
+    return "*"
+}
+
+proc extract_tktag { tag } {
+    extract_tag {TKTAG[0-9]+} $tag
+}
+
+proc extract_syntag { tag } {
+    extract_tag {__syn__[0-9a-f]+} $tag
+}
+
+#***********************************************************************
+# %PROCEDURE: Initialize
+# %ARGUMENTS:
+#  None
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Initializes TkRemind -- sets day names, Remind command line,
+#  MondayFirst flag, current date, etc.
+#***********************************************************************
+proc Initialize {} {
+    global DayNames argc argv CommandLine ReminderFile AppendFile Remind PSCmd
+    global MondayFirst TwentyFourHourMode
+    global TodayDay TodayMonth TodayYear
+
+    global Option ConfigFile
+
+    # In case date has rolled over, recalculate Today* values
+    set now [clock seconds]
+
+    set TodayMonth [expr [string trim [clock format $now -format %N]] - 1]
+    set TodayYear [clock format $now -format %Y]
+    set TodayDay [string trim [clock format $now -format %e]]
+    set CurMonth $TodayMonth
+    set CurYear $TodayYear
+    set CurDay $TodayDay
+
+    set CommandLine "$Remind -itkremind=1 -ppp%WEEKS% -y -l %EXTRA%"
+    set PSCmd "$Remind -itkremind=1 -itkprint=1 -pp%WEEKS% -l %EXTRA%"
+    set i 0
+    while {$i < $argc} {
+        if {"[lindex $argv $i]" == "--version"} {
+            puts "tkremind version @VERSION@"
+            exit 0
+        }
+	if {[regexp -- {-[bgxim].*} [lindex $argv $i]]} {
+	    append CommandLine " [lindex $argv $i]"
+	    append PSCmd " [lindex $argv $i]"
+	    if {[regexp -- {m} [lindex $argv $i]]} {
+		set MondayFirst 1
+	    }
+	    if {"[lindex $argv $i]" == "-b1"} {
+		set TwentyFourHourMode 1
+	    }
+	} elseif { [regexp -- {-.*} [lindex $argv $i]]} {
+	    append CommandLine " [lindex $argv $i]"
+	    append PSCmd " [lindex $argv $i]"
+        } else {
+	    break
+	}
+	incr i
+    }
+    if {$i < $argc} {
+	set ReminderFile [lindex $argv $i]
+	set AppendFile $ReminderFile
+	incr i
+	if {$i < $argc} {
+	    set AppendFile [lindex $argv $i]
+	    incr i
+            if {$i < $argc} {
+                set ConfigFile [lindex $argv $i]
+                incr i
+            }
+	}
+    }
+
+    # If reminder file is a directory and appendfile is the same as
+    # reminder file, choose append file to be $ReminderFile/100-tkremind.rem
+    if {[file isdirectory $ReminderFile]} {
+	if {"$ReminderFile" == "$AppendFile"} {
+	    set AppendFile [file join $ReminderFile "100-tkremind.rem"]
+	}
+    }
+
+    # Check system sanity
+    if {! [file readable $ReminderFile]} {
+        set ans [tk_messageBox -message "Can't read reminder file `$ReminderFile'.  Create it and continue?" -type yesno -icon question]
+	if {$ans != "yes"} {
+	    exit 1
+	}
+	catch {
+	    set out [open $ReminderFile w]
+	    write_warning_headers $out
+	    puts $out ""
+	    close $out
+	}
+    }
+    if {! [file readable $ReminderFile]} {
+        die_with_error "Could not create reminder file `$ReminderFile'"
+	exit 1
+    }
+
+    if {[file isdirectory $ReminderFile] && ! [file exists $AppendFile]} {
+	if {![catch {
+	    set out [open $AppendFile "a"]
+	    write_warning_headers $out
+	    puts $out ""
+	    close $out}]} {
+	    tk_messageBox -message "Created File" -detail "Created blank file `$AppendFile'" -icon info -type ok
+	}
+    }
+
+    if {! [file writable $AppendFile]} {
+	die_with_error "Can't write reminder file `$AppendFile'"
+	exit 1
+    }
+
+    append CommandLine " "
+    append CommandLine [posix_escape $ReminderFile]
+    append PSCmd " "
+    append PSCmd [posix_escape $ReminderFile]
+
+    set CommandLine "|/bin/sh -c \"$CommandLine %MONTH% %YEAR% %DAY%\""
+}
+
+#***********************************************************************
+# %PROCEDURE: CalEntryOffset
+# %ARGUMENTS:
+#  firstDay -- first day of month (0=Sunday, 6=Saturday)
+# %RETURNS:
+#  Offset mapping day numbers (1-31) to window numbers (0-41)
+# %DESCRIPTION:
+#  Computes offset from day number to window number
+#***********************************************************************
+proc CalEntryOffset { firstDay } {
+    global MondayFirst
+    if {$MondayFirst} {
+	incr firstDay -1
+	if {$firstDay < 0} {
+	    set firstDay 6
+	}
+    }
+    return [expr $firstDay-1]
+}
+
+#***********************************************************************
+# %PROCEDURE: CreateCalFrame
+# %ARGUMENTS:
+#  w -- name of frame window
+#  dayNames -- names of weekdays
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Creates a frame holding a grid of labels and a grid of text entries
+#***********************************************************************
+proc CreateCalFrame { w dayNames } {
+    # Figure out reasonable height for text frames
+    global SetFontsWorked
+    global Option
+    global MondayFirst
+    set h [winfo screenheight .]
+    if {$h <= 480} {
+	if {$SetFontsWorked} {
+	    set h 3
+	} else {
+	    set h 2
+	}
+    } elseif {$h <= 600} {
+	set h 4
+    } else {
+	set h 5
+    }
+
+    frame $w -background $Option(LineColor)
+    for {set i 0} {$i < 7} {incr i} {
+	if {$MondayFirst} {
+	    set index [expr ($i+1)%7]
+	} else {
+	    set index $i
+	}
+
+	label $w.day$i -bd 0 -text [lindex $dayNames $index] -justify center -font HeadingFont -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 0
+	grid configure $w.day$i -row 0 -column $i -sticky ew -padx 1 -pady 1
+    }
+    for {set i 0} {$i < 6} {incr i} {
+	set n [expr $i*7]
+	for {set j 0} {$j < 7} {incr j} {
+	    set f [expr $n+$j]
+	    button $w.l$f -text "" -justify center -command "" -anchor $Option(DayAnchor) \
+		-state disabled -relief flat -bd 0 -padx 0 -pady 0 -font HeadingFont -highlightthickness 1
+	    text $w.t$f -width 12 -height $h -bd 0 -spacing3 3 -wrap word -relief flat \
+		-state disabled -takefocus 0 -cursor {} -font CalboxFont -foreground $Option(TextColor) -background $Option(BackgroundColor) \
+                -highlightthickness 0
+            frame $w.f$f -padx 0 -pady 0 -highlightthickness 0 -relief flat -bd 0  -background $Option(BackgroundColor)
+	    $w.t$f tag bind TAGGED <ButtonPress-1> "EditTaggedReminder $w.t$f $f"
+            $w.t$f tag bind TAGGED <Enter> [list TaggedEnter $w.t$f]
+            $w.t$f tag bind TAGGED <Leave> [list TaggedLeave $w.t$f]
+	    $w.t$f tag bind REM <ButtonPress-2> "OpenUrl $w.t$f"
+	    $w.t$f tag bind REM <ButtonPress-3> "FireEditor $w.t$f"
+            pack $w.l$f -in $w.f$f -side top -expand 0 -fill x
+            pack $w.t$f -in $w.f$f -side top -expand 1 -fill both
+            grid configure $w.f$f -row [expr $i+1] -column $j -sticky nsew -padx 1 -pady 1
+            set_win_prop $w.t$f date ""
+	}
+    }
+
+    for {set i 0} {$i < 7} {incr i} {
+	grid columnconfigure $w $i -weight 1
+    }
+    for {set i 1} {$i < 7} {incr i} {
+	grid rowconfigure $w $i -weight 1
+    }
+}
+
+
+#***********************************************************************
+# %PROCEDURE: ConfigureCalFrameWeekly
+# %ARGUMENTS:
+#  w -- window name of calendar frame
+#  day -- day number of "today"
+#  month -- month name of "today"
+#  year -- year of "today"
+#  nweeks -- one of 1, 2 or 4.
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Sets up button labels; configures text justification
+#***********************************************************************
+proc ConfigureCalFrameWeekly { w day month year nweeks } {
+    global CurMonth CurYear CurDay TodayMonth TodayYear TodayDay
+    global tk_version Option
+    if { $nweeks != 1 && $nweeks != 2 && $nweeks != 4 } {
+        error "Invalid value $nweeks for nweeks!"
+    }
+    init_win_dates
+    CreateMoonWindows
+    for {set i 0} {$i < $nweeks*7} {incr i} {
+	set row [expr ($i/7)+1]
+	grid $w.f$i
+        grid rowconfigure $w $row -weight 1
+        pack $w.l$i -in $w.f$i -side top -expand 0 -fill x
+        pack $w.t$i -in $w.f$i -side top -expand 1 -fill both
+        raise $w.l$i
+        raise $w.t$i
+	$w.l$i configure -text "" -state normal -relief flat \
+            -command "ModifyDay $i" -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+        bind $w.l$i <ButtonPress-3> [list ShowSpecificDayReminders $w.t$i]
+	balloon_add_help $w.l$i "Add a reminder..."
+	$w.t$i configure -relief sunken -takefocus 1 -state normal -foreground $Option(TextColor) -background $Option(BackgroundColor)
+	$w.t$i delete 1.0 end
+	foreach t [$w.t$i tag names] {
+	    $w.t$i tag delete $t
+	}
+	$w.t$i tag bind TAGGED <ButtonPress-1> "EditTaggedReminder $w.t$i $i"
+        $w.t$i tag bind TAGGED <Enter> [list TaggedEnter $w.t$i]
+        $w.t$i tag bind TAGGED <Leave> [list TaggedLeave $w.t$i]
+        $w.t$i tag bind REM <ButtonPress-2> "OpenUrl $w.t$i"
+	$w.t$i tag bind REM <ButtonPress-3> "FireEditor $w.t$i"
+	$w.t$i configure -state disabled -takefocus 0
+    }
+    for {set i [expr $nweeks*7]} {$i < 42} {incr i} {
+	set row [expr ($i/7)+1]
+        grid remove $w.f$i
+        grid rowconfigure $w $row -weight 0
+        grid rowconfigure $w [expr $row+1] -weight 0
+
+	$w.l$i configure -text "" -command "" -state normal -relief flat -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+        $w.l$i configure -state disabled
+	balloon_add_help $w.l$i ""
+	$w.t$i configure -relief flat -takefocus 0 -state normal -background $Option(WinBackground)
+	$w.t$i delete 1.0 end
+	foreach t [$w.t$i tag names] {
+	    $w.t$i tag delete $t
+	}
+    }
+}
+
+#***********************************************************************
+# %PROCEDURE: ConfigureCalFrameMonthly
+# %ARGUMENTS:
+#  w -- window name of calendar frame
+#  firstDay -- first weekday of month
+#  numDays -- number of days in month
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Sets up button labels; configures text justification
+#***********************************************************************
+proc ConfigureCalFrameMonthly { w firstDay numDays } {
+    global CurMonth CurYear CurDay TodayMonth TodayYear TodayDay
+    global tk_version Option
+
+    init_win_dates
+    CreateMoonWindows
+    set offset [CalEntryOffset $firstDay]
+    set first [expr $offset+1]
+    set last [expr $offset+$numDays]
+
+    for {set i 0} {$i < $first} {incr i} {
+	grid $w.f$i
+        pack $w.l$i -in $w.f$i -side top -expand 0 -fill x
+        pack $w.t$i -in $w.f$i -side top -expand 1 -fill both
+        raise $w.l$i
+        raise $w.t$i
+	$w.l$i configure -text "" -command "" -state normal -relief flat -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+        $w.l$i configure -state disabled
+	balloon_add_help $w.l$i ""
+	$w.t$i configure -relief flat -takefocus 0 -state normal -background $Option(WinBackground)
+	$w.t$i delete 1.0 end
+	foreach t [$w.t$i tag names] {
+	    $w.t$i tag delete $t
+	}
+	$w.t$i configure -state disabled -takefocus 0
+    }
+    for {set i $first} {$i <= $last} {incr i} {
+	set row [expr ($i/7)+1]
+	grid $w.f$i
+        grid rowconfigure $w $row -weight 1
+        pack $w.l$i -in $w.f$i -side top -expand 0 -fill x
+        pack $w.t$i -in $w.f$i -side top -expand 1 -fill both
+        raise $w.l$i
+        raise $w.t$i
+	set d [expr $i-$first+1]
+	$w.l$i configure -text $d -state normal -relief flat \
+            -command "ModifyDay $i" -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+        bind $w.l$i <ButtonPress-3> [list ShowSpecificDayReminders $w.t$i]
+	balloon_add_help $w.l$i "Add a reminder..."
+	$w.t$i configure -relief sunken -takefocus 1 -state normal -foreground $Option(TextColor) -background $Option(BackgroundColor)
+	$w.t$i delete 1.0 end
+        set_win_date $w.t$i $i [format "%04d-%02d-%02d" $CurYear [expr $CurMonth + 1] $d]
+	foreach t [$w.t$i tag names] {
+	    $w.t$i tag delete $t
+	}
+	$w.t$i tag bind TAGGED <ButtonPress-1> "EditTaggedReminder $w.t$i $i"
+        $w.t$i tag bind TAGGED <Enter> [list TaggedEnter $w.t$i]
+        $w.t$i tag bind TAGGED <Leave> [list TaggedLeave $w.t$i]
+        $w.t$i tag bind REM <ButtonPress-2> "OpenUrl $w.t$i"
+	$w.t$i tag bind REM <ButtonPress-3> "FireEditor $w.t$i"
+	$w.t$i configure -state disabled -takefocus 0
+    }
+    set forgetIt 0
+    for {set i [expr $last+1]} {$i < 42} {incr i} {
+	if {$i%7 == 0} {
+	    set forgetIt 1
+	}
+	set row [expr ($i/7)+1]
+	if {$forgetIt} {
+	    grid remove $w.f$i
+	    grid rowconfigure $w $row -weight 0
+	    grid rowconfigure $w [expr $row+1] -weight 0
+	} else {
+	    grid $w.f$i
+            pack $w.l$i -in $w.f$i -side top -expand 0 -fill x
+            pack $w.t$i -in $w.f$i -side top -expand 1 -fill both
+            raise $w.l$i
+            raise $w.t$i
+	    grid rowconfigure $w $row -weight 1
+	}
+	$w.l$i configure -text "" -command "" -state normal -relief flat -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+        $w.l$i configure -state disabled
+	balloon_add_help $w.l$i ""
+	$w.t$i configure -relief flat -takefocus 0 -state normal -background $Option(WinBackground)
+	$w.t$i delete 1.0 end
+	foreach t [$w.t$i tag names] {
+	    $w.t$i tag delete $t
+	}
+	$w.t$i configure -state disabled -takefocus 0
+    }
+    if { $CurMonth == $TodayMonth && $CurYear == $TodayYear } {
+	set n [expr $TodayDay + $offset]
+	$w.l$n configure -background $Option(TodayColor)
+    }
+}
+
+proc DoQueue {} {
+    global DaemonFile
+    puts $DaemonFile "JSONQUEUE"
+    flush $DaemonFile
+}
+
+proc DoTranslate {} {
+    global DaemonFile
+    global Translations
+
+    # Clear out any existing translations
+    set Translations [dict create]
+
+    # Get just the translations we can use
+    puts $DaemonFile "TRANSLATE New Moon"
+    puts $DaemonFile "TRANSLATE Full Moon"
+    puts $DaemonFile "TRANSLATE First Quarter"
+    puts $DaemonFile "TRANSLATE Last Quarter"
+    flush $DaemonFile
+}
+
+proc SetView { what } {
+    global Option
+    set Option(View) $what
+    WriteOptionsToFile
+    FillCalWindow
+    catch { UpdateNavigationHelp }
+}
+
+proc UpdateNavigationHelp { } {
+    global Option
+    if {"$Option(View)" == "Month"} {
+        balloon_add_help .b.prev "Go to previous month"
+        balloon_add_help .b.this "Go to this month"
+        balloon_add_help .b.next "Go to next month"
+    } else {
+        balloon_add_help .b.prev "Go back one week"
+        balloon_add_help .b.this "Go to today"
+        balloon_add_help .b.next "Go forward one week"
+    }
+}
+
+#---------------------------------------------------------------------------
+# CreateCalWindow -- create the calendar window.
+# Arguments:
+#   dayNames -- names of weekdays in current language {Sun .. Sat}
+#---------------------------------------------------------------------------
+proc CreateCalWindow { dayNames } {
+    global Option
+
+    frame .h -background $Option(LineColor)
+    label .h.title -text "" -justify center -pady 2 -bd 0 -relief flat -font HeadingFont -background $Option(WinBackground) -foreground $Option(LabelColor)
+    pack .h.title -side top -fill x -pady 1 -padx 1
+    pack .h -side top -expand 0 -fill x
+    . configure -background $Option(LineColor)
+    CreateCalFrame .cal $dayNames
+
+    frame .b -background $Option(LineColor)
+    menubutton .b.view -text "View..." -menu .b.view.menu -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground) -direction above
+    menu .b.view.menu -tearoff 0 -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.view.menu add command -label "1 Month" -command [list SetView Month]
+    .b.view.menu add command -label "4 Weeks" -command [list SetView Week-4]
+    .b.view.menu add command -label "2 Weeks" -command [list SetView Week-2]
+    .b.view.menu add command -label "1 Week" -command [list SetView Week-1]
+    button .b.prev -text "\u2b9c" -command {MoveMonth -1} -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.prev "Go to previous month"
+    button .b.this -text {Today} -command {ThisMonth} -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.this "Go to this month"
+    button .b.next -text "\u2b9e" -command {MoveMonth 1} -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.next "Go to next month"
+    button .b.goto -text {Go To Date...} -command {GotoDialog} -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.goto "Go to a specific date"
+    button .b.print -text {Print...} -command {DoPrint} -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.print "Print a PostScript or PDF calendar"
+    button .b.options -text {Options...} -command EditOptions -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.options "Set TkRemind options"
+    button .b.queue -text {Queue...} -command {DoQueue} -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.queue "See the queue of pending reminders (debugging purposes only)"
+    button .b.quit -text {Quit} -command {Quit} -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.quit "Quit TkRemind"
+    button .b.help -text {Help} -command [list ShowManPage tkremind 1 1] -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help .b.help "Show TkRemind manual"
+    label .b.status -text "" -width 25 -relief flat -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 0
+    bind .b.status <ButtonPress-1> [list ShowTodaysReminders 1 ""]
+    bind .b.status <ButtonPress-3> [list ShowTodaysReminders 1 ""]
+    balloon_add_help .b.status "Show Today's Reminders"
+    label .b.nqueued -text "" -width 20 -relief flat -bd 0 -foreground $Option(LabelColor) -background $Option(WinBackground) -highlightthickness 0
+    balloon_add_help .b.nqueued "See the queue of pending reminders (debugging purposes only)"
+    bind .b.nqueued <ButtonPress-1> [list DoQueue]
+    bind .b.nqueued <ButtonPress-3> [list DoQueue]
+    pack .b.prev .b.this .b.next .b.goto .b.view .b.print .b.options .b.queue .b.quit .b.help -side left -fill both -padx 1
+    pack .b.status -side left -fill both -expand 1 -padx 1
+    pack .b.nqueued -side left -fill both -padx 1
+    pack .b -side bottom -fill x -expand 0 -pady 1
+    pack .cal -side top -fill both -expand 1
+    wm title . "TkRemind"
+    wm iconname . ""
+    wm protocol . WM_DELETE_WINDOW Quit
+    wm deiconify .
+    bind . <Control-KeyPress-q> Quit
+    bind . <Control-KeyPress-p> ".b.print flash; .b.print invoke"
+    bind . <KeyPress-p> ".b.print flash; .b.print invoke"
+    bind . <KeyPress-t> [list ShowTodaysReminders 1 ""]
+    bind . <KeyPress-F1> ".b.help flash; .b.help invoke"
+    bind . <KeyPress-h> ".b.help flash; .b.help invoke"
+    bind . <KeyPress-g> ".b.goto flash; .b.goto invoke"
+    bind . <KeyPress-o> ".b.options flash; .b.options invoke"
+    bind . <KeyPress-question> ".b.help flash; .b.help invoke"
+    bind . <KeyPress-Left> ".b.prev flash; .b.prev invoke"
+    bind . <KeyPress-Right> ".b.next flash; .b.next invoke"
+    bind . <KeyPress-Prior> ".b.prev flash; .b.prev invoke"
+    bind . <KeyPress-Next> ".b.next flash; .b.next invoke"
+    bind . <KeyPress-Home> ".b.this flash; .b.this invoke"
+    bind . <KeyPress-1> "SetView Week-1"
+    bind . <KeyPress-2> "SetView Week-2"
+    bind . <KeyPress-4> "SetView Week-4"
+    bind . <KeyPress-m> "SetView Month"
+    catch { bind . <KeyPress-KP_Home> ".b.this flash; .b.this invoke" }
+    catch { bind . <KeyPress-KP_Prior> ".b.prev flash; .b.prev invoke" }
+    catch { bind . <KeyPress-KP_Next> ".b.next flash; .b.next invoke" }
+    catch { bind . <KeyPress-KP_Left> ".b.prev flash; .b.prev invoke" }
+    catch { bind . <KeyPress-KP_Right> ".b.next flash; .b.next invoke" }
+    . configure -background $Option(WinBackground)
+    if {$Option(StartIconified)} {
+	wm iconify .
+    }
+    update
+    grid propagate .cal 0
+}
+
+#***********************************************************************
+# %PROCEDURE: EditOptions
+# %ARGUMENTS:
+#  None
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Lets user edit options
+#***********************************************************************
+proc EditOptions {} {
+    global Option tmpOpt HAVE_SYSNOTIFY NOTIFY_SEND_PATH ver
+
+    # Make a working copy of current option set
+    foreach name [array names Option] {
+	set tmpOpt($name) $Option($name)
+    }
+
+    set w .opt
+    catch { destroy $w }
+    toplevel $w
+    wm title $w "TkRemind Options"
+    wm iconname $w "Options"
+    frame $w.f
+    frame $w.b
+    pack $w.f -side top -expand 1 -fill both
+    pack $w.b -side top -expand 0 -fill x
+
+    label $w.ver -text "TkRemind version @VERSION@ on Tcl/Tk version [info patchlevel] with Remind version $ver"
+    pack $w.ver -in $w.f -side top -expand 0 -fill x
+    # Start iconified
+    checkbutton $w.startIconified -text "Start up Iconified" \
+	    -anchor w -justify left \
+	    -variable tmpOpt(StartIconified)
+
+    # Show today's reminders on startup
+    checkbutton $w.showTodays -text "Show Today's Reminders on Startup" \
+	    -anchor w -justify left \
+	    -variable tmpOpt(ShowTodaysReminders)
+
+    # Confirm quit
+    checkbutton $w.confirmQuit -text "Confirm Quit" -anchor w -justify left \
+	    -variable tmpOpt(ConfirmQuit)
+
+    # Bring down reminder windows after one minute
+    checkbutton $w.bringDown \
+	    -text "Automatically close pop-up reminders after a minute" \
+	    -anchor w -justify left -variable tmpOpt(AutoClose)
+
+    checkbutton $w.sysNotify \
+        -text "Use system notifications when issuing a reminder" \
+        -anchor w -justify left -variable tmpOpt(SysNotify)
+
+    if { ! $HAVE_SYSNOTIFY } {
+        if { "$NOTIFY_SEND_PATH" == "" } {
+            $w.sysNotify configure -state disabled -takefocus 0
+        }
+    }
+
+    # Ring bell when popping up reminder
+    checkbutton $w.ring -text "Beep terminal when popping up a reminder" \
+	    -anchor w -justify left -variable tmpOpt(RingBell)
+
+    checkbutton $w.deic -text "Deiconify calendar window when popping up a reminder" \
+	    -anchor w -justify left -variable tmpOpt(Deiconify)
+
+    # Run command when popping up reminder
+    frame $w.rf
+    label $w.rl -text "Run command when popping up reminder:" -anchor w \
+	    -justify left
+    entry $w.cmd -width 30
+    pack $w.rl -in $w.rf -side left -expand 0 -fill none
+    pack $w.cmd -in $w.rf -side left -expand 1 -fill x
+    $w.cmd insert 0 $tmpOpt(RunCmd)
+
+    frame $w.sep3 -bd 1 -relief sunken
+    # E-mail reminder if popup not dismissed
+    frame $w.eml
+    label $w.lab_email_address -text "E-mail reminders here if popup not dismissed:" -anchor w -justify left
+    entry $w.email_address -width 30
+    pack $w.lab_email_address -in $w.eml -side left -expand 0 -fill none
+    pack $w.email_address -in $w.eml -side left -expand 1 -fill x
+    $w.email_address insert 0 $tmpOpt(MailAddr)
+
+    frame $w.fsmtp
+    label $w.lab_smtp -text "Name or IP address of SMTP server:" -anchor w -justify left
+    entry $w.smtp -width 30
+    pack $w.lab_smtp -in $w.fsmtp -side left -expand 0 -fill none
+    pack $w.smtp -in $w.fsmtp -side left -expand 1 -fill x
+    $w.smtp insert 0 $tmpOpt(SMTPServer)
+
+    # Editor
+    frame $w.ef
+    label $w.el -text "Text Editor:" -anchor w -justify left
+    entry $w.editor -width 30
+    pack $w.el -in $w.ef -side left -expand 0 -fill none
+    pack $w.editor -in $w.ef -side left -expand 1 -fill x
+    $w.editor insert 0 $tmpOpt(Editor)
+
+    # extra args
+    frame $w.eaf
+    label $w.eal -text "Extra Arguments for Remind:" -anchor w -justify left
+    entry $w.extraargs -width 30
+    pack $w.eal -in $w.eaf -side left -expand 0 -fill none
+    pack $w.extraargs -in $w.eaf -side left -expand 1 -fill x
+    $w.extraargs insert 0 $tmpOpt(ExtraRemindArgs)
+
+    # Fonts
+    frame $w.fframe
+    button $w.font -text "Change entry font..." -command "ChooseCalboxFont"
+    button $w.hfont -text "Change heading font..." -command "ChooseHeadingFont"
+    pack $w.font $w.hfont -in $w.fframe -side left -expand 1 -fill x
+
+    # Colors
+    frame $w.colors1
+    label $w.textcolor -text "Text Color:"
+    button $w.btextcolor -background $Option(TextColor) -command [list PickColor TextColor $w.btextcolor] -text ...
+    label $w.bgcolor -text "  Background color:"
+    button $w.bbgcolor -background $Option(BackgroundColor) -command [list PickColor BackgroundColor $w.bbgcolor] -text ...
+
+    label $w.tbgcolor -text "Color for highlighting \"today\":"
+    button $w.tbbgcolor -background $Option(TodayColor) -command [list PickColor TodayColor $w.tbbgcolor] -text ...
+
+    label $w.gridcolor -text "  Gridline color:"
+    button $w.gridbcolor -background $Option(LineColor) -command [list PickColor LineColor $w.gridbcolor] -text ...
+
+    grid $w.textcolor $w.btextcolor $w.bgcolor $w.bbgcolor -in $w.colors1
+    grid $w.bgcolor $w.bbgcolor -in $w.colors1
+
+    label $w.headcolor -text "Heading Color:"
+    button $w.bheadcolor -background $Option(LabelColor) -command [list PickColor LabelColor $w.bheadcolor] -text ...
+    label $w.wincolor -text "  Window color:"
+    button $w.bwincolor -background $Option(WinBackground) -command [list PickColor WinBackground $w.bwincolor] -text ...
+    grid $w.headcolor $w.bheadcolor $w.wincolor $w.bwincolor -in $w.colors1
+    grid $w.tbgcolor $w.tbbgcolor $w.gridcolor $w.gridbcolor -in $w.colors1
+    
+    grid columnconfigure $w.colors1 0 -weight 1
+    grid columnconfigure $w.colors1 2 -weight 1
+    frame $w.sep1 -bd 1 -relief sunken
+    frame $w.sep2 -bd 1 -relief sunken
+
+    checkbutton $w.feed \
+	    -text "Feed popped-up reminder to command's standard input" \
+	    -variable tmpOpt(FeedReminder) -anchor w -justify left
+
+    frame $w.ancFrame
+    label $w.ancLabel -text "Anchor day numbers to:"
+    radiobutton $w.ancLeft \
+	    -text "Left" \
+	    -variable tmpOpt(DayAnchor) -value "w" -anchor w -justify left
+    radiobutton $w.ancCenter \
+	    -text "Center" \
+	    -variable tmpOpt(DayAnchor) -value "center" -anchor w -justify left
+    radiobutton $w.ancRight \
+	    -text "Right" \
+	    -variable tmpOpt(DayAnchor) -value "e" -anchor w -justify left
+    pack $w.ancLabel $w.ancLeft $w.ancCenter $w.ancRight -in $w.ancFrame -side left
+
+    pack $w.startIconified -in $w.f -side top -expand 0 -fill x
+    pack $w.showTodays -in $w.f -side top -expand 0 -fill x
+    pack $w.confirmQuit -in $w.f -side top -expand 0 -fill x
+    pack $w.bringDown -in $w.f -side top -expand 0 -fill x
+    pack $w.sysNotify -in $w.f -side top -expand 0 -fill x
+    pack $w.ring -in $w.f -side top -expand 0 -fill x
+    pack $w.deic -in $w.f -side top -expand 0 -fill x
+    pack $w.ancFrame -in $w.f -side top -expand 0 -fill x
+    pack $w.sep1 -in $w.f -side top -expand 0 -fill x -ipady 1
+    pack $w.rf -in $w.f -side top -expand 0 -fill x
+    pack $w.feed -in $w.f -side top -expand 0 -fill x
+    pack $w.sep3 -in $w.f -side top -expand 0 -fill x -ipady 1
+    pack $w.eml -in $w.f -side top -expand 0 -fill x
+    pack $w.fsmtp -in $w.f -side top -expand 0 -fill x
+    pack $w.ef -in $w.f -side top -expand 0 -fill x
+    pack $w.eaf -in $w.f -side top -expand 0 -fill x
+    pack $w.fframe -in $w.f -side top -expand 0 -fill x
+    pack $w.colors1 -in $w.f -side top -expand 0 -fill x
+    pack $w.sep2 -in $w.f -side top -expand 0 -fill x -ipady 1
+
+    button $w.default -text "Light Theme" -command [list set_default_colors $w]
+    button $w.dark -text "Dark Theme" -command [list set_dark_colors $w]
+    button $w.save -text "Save Options" -command "SaveOptions $w; destroy $w"
+    button $w.cancel -text "Cancel" -command "CancelOptions; destroy $w"
+    wm protocol $w WM_DELETE_WINDOW "CancelOptions; destroy $w"
+    pack $w.default $w.dark $w.save $w.cancel -in $w.b -side left -expand 0 -fill x
+    bind $w <Destroy> {catch { tk fontchooser hide } }
+    bind $w <KeyPress-Escape> "$w.cancel flash; $w.cancel invoke"
+    bind $w <Control-KeyPress-w> "$w.cancel flash; $w.cancel invoke"
+    CenterWindow $w .
+}
+
+proc CancelOptions { } {
+    global Option
+    font configure CalboxFont {*}$Option(CalboxFont)
+    font configure HeadingFont {*}$Option(HeadingFont)
+    font configure BoldFont {*}$Option(HeadingFont) -weight bold
+}
+
+#***********************************************************************
+# %PROCEDURE: ApplyOptions
+# %ARGUMENTS:
+#  w -- edit options window path
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Applies options set in the edit options box.
+#***********************************************************************
+proc ApplyOptions { w } {
+    global Option tmpOpt
+
+    set tmpOpt(RunCmd) [$w.cmd get]
+    set tmpOpt(Editor) [$w.editor get]
+    set tmpOpt(ExtraRemindArgs) [$w.extraargs get]
+    set tmpOpt(MailAddr) [$w.email_address get]
+    set tmpOpt(SMTPServer) [$w.smtp get]
+
+    set need_restart 0
+    if {"$tmpOpt(ExtraRemindArgs)" != "$Option(ExtraRemindArgs)"} {
+	set need_restart 1
+    }
+    # Copy working copy to real option set
+    foreach name [array names tmpOpt] {
+	set Option($name) $tmpOpt($name)
+    }
+    if {$need_restart != 0} {
+	FillCalWindow
+	StopBackgroundRemindDaemon
+	StartBackgroundRemindDaemon
+    }
+}
+
+#***********************************************************************
+# %PROCEDURE: SaveOptions
+# %ARGUMENTS:
+#  w -- edit options window path
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Saves options in specified config file
+#***********************************************************************
+proc SaveOptions { w } {
+    global Option OptDescr
+    ApplyOptions $w
+    WriteOptionsToFile
+    FillCalWindow
+    .h.title configure -background $Option(WinBackground) -foreground $Option(LabelColor)
+    for {set i 0} {$i < 7} {incr i} {
+        .cal.day$i configure  -foreground $Option(LabelColor) -background $Option(WinBackground)
+    }
+    for {set i 0} {$i < 6} {incr i} {
+	set n [expr $i*7]
+	for {set j 0} {$j < 7} {incr j} {
+	    set f [expr $n+$j]
+            .cal.l$f configure -anchor $Option(DayAnchor)
+        }
+    }
+    .b.status configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.nqueued configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b configure -background $Option(WinBackground)
+    .b.prev configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.this configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.next configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.view configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.view.menu configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.goto configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.print configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.queue configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.quit configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.help configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    .b.options configure -foreground $Option(LabelColor) -background $Option(WinBackground)
+    . configure -background $Option(LineColor)
+    .h configure -background $Option(LineColor)
+    .cal configure -background $Option(LineColor)
+    .b configure -background $Option(LineColor)
+}
+
+proc WriteOptionsToFile {} {
+    global ConfigFile
+    global Option OptDescr
+    set problem [catch {set f [open "$ConfigFile.tmp" "w"]} err]
+    if {$problem} {
+	show_error "Can't write $ConfigFile.tmp: $err"
+	return
+    }
+
+    # Make sure View option is sane
+    if { "$Option(View)" != "Month" &&
+         "$Option(View)" != "Week-1" &&
+         "$Option(View)" != "Week-2" &&
+         "$Option(View)" != "Week-4" } {
+        set Option(View) "Month"
+    }
+
+    # We no longer support rem2ps
+    if { "$Option(PrintFormat)" == "ps1" } {
+        set Option(PrintFormat) ps
+    }
+
+    # Delete obsolete option
+    catch { unset Option(PrintEncoding) }
+
+    puts $f "# TkRemind option file -- created automatically"
+    puts $f "# [clock format [clock seconds]]"
+    puts $f "# Format of each line is 'key value' where 'key'"
+    puts $f "# specifies the option name, and 'value' is a"
+    puts $f "# *legal Tcl list element* specifying the option value."
+    foreach name [lsort [array names Option]] {
+	puts $f ""
+	puts $f "# $OptDescr($name)"
+	puts $f [list $name $Option($name)]
+    }
+    puts $f ""
+    close $f
+    file rename -force "$ConfigFile.tmp" $ConfigFile
+}
+
+#***********************************************************************
+# %PROCEDURE: LoadOptions
+# %ARGUMENTS:
+#  None
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Loads options from $ConfigFile
+#***********************************************************************
+proc LoadOptions {} {
+    global Option ConfigFile
+    global MondayFirst
+    set problem [catch {set f [open "$ConfigFile" "r"]}]
+    if {$problem} {
+	return
+    }
+    while {[gets $f line] >= 0} {
+	if {[string match "#*" $line]} {
+            continue
+        }
+        if {$line == ""} {
+            continue
+        }
+        foreach {key val} $line {}
+        if {![info exists Option($key)]} {
+            if { "$key" != "PrintEncoding" } {
+                puts stderr "Unknown option in $ConfigFile: $key"
+            }
+            continue
+        }
+        set Option($key) $val
+    }
+    close $f
+    if {[regexp -- {-m.*} $Option(ExtraRemindArgs)]} {
+	set MondayFirst 1
+    }
+    font configure CalboxFont {*}$Option(CalboxFont)
+    font configure HeadingFont {*}$Option(HeadingFont)
+    font configure BoldFont {*}$Option(HeadingFont) -weight bold
+
+    # Make sure View option is sane
+    if { "$Option(View)" != "Month" &&
+         "$Option(View)" != "Week-1" &&
+         "$Option(View)" != "Week-2" &&
+         "$Option(View)" != "Week-4" } {
+        set Option(View) "Month"
+    }
+
+    # We no longer support rem2ps
+    if { "$Option(PrintFormat)" == "ps1" } {
+        set Option(PrintFormat) ps
+    }
+
+    # Delete obsolete option
+    catch { unset Option(PrintEncoding) }
+}
+
+
+
+#***********************************************************************
+# %PROCEDURE: ConfigureCalWindowMonthly
+# %ARGUMENTS:
+#  month -- month name
+#  year -- the year
+#  firstDay -- first day in month
+#  numDays -- number of days in month
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Configures the calendar window for a month and year
+# %PRECONDITIONS:
+#  Any preconditions
+# %POSTCONDITIONS:
+#  Any postconditions
+# %SIDE EFFECTS:
+#  Any side effects
+#***********************************************************************
+proc ConfigureCalWindowMonthly { month year firstDay numDays } {
+    global Hostname
+    .h.title configure -text "$month $year"
+    if {[info exists Hostname]} {
+        wm title . "$month $year - TkRemind @VERSION@ on $Hostname"
+    } else {
+        wm title . "$month $year - TkRemind @VERSION@"
+    }
+    wm iconname . "$month $year"
+    ConfigureCalFrameMonthly .cal $firstDay $numDays
+}
+
+proc ConfigureCalWindowWeekly { day month year nweeks } {
+    global Hostname
+    .h.title configure -text "$day $month $year"
+    if {[info exists Hostname]} {
+        wm title . "$day $month $year - TkRemind @VERSION@ on $Hostname"
+    } else {
+        wm title . "$day $month $year - TkRemind @VERSION@"
+    }
+    wm iconname . "$day $month $year"
+    ConfigureCalFrameWeekly .cal $day $month $year $nweeks
+}
+
+proc FillCalWindow {} {
+    global Option
+    if { "$Option(View)" == "Month" } {
+        FillCalWindowMonthly
+    } else {
+        FillCalWindowWeekly [get_num_weeks]
+    }
+    UpdateNavigationHelp
+}
+
+proc get_num_weeks {} {
+    global Option
+    switch -glob -- $Option(View) {
+        Week-? {
+            return [string range $Option(View) 5 end]
+        }
+    }
+    return 0
+}
+
+#---------------------------------------------------------------------------
+# FillCalWindowWeekly -- Fill in the calendar for today
+#---------------------------------------------------------------------------
+proc FillCalWindowWeekly { nweeks } {
+    global DayNames CurYear CurMonth CurDay MonthNames CommandLine Option TagToObj SynToObj RemindErrors MondayFirst Hostname
+    global TodayYear TodayMonth TodayDay Option RemindErrors
+
+    array unset TagToObj
+    array unset SynToObj
+
+    Status "Firing off Remind..."
+    set_button_to_queue
+    set month [lindex $MonthNames $CurMonth]
+
+    set cmd [regsub %EXTRA% $CommandLine $Option(ExtraRemindArgs)]
+    set cmd [regsub %MONTH% $cmd $month]
+    set cmd [regsub %YEAR% $cmd $CurYear]
+    set cmd [regsub %DAY% $cmd $CurDay]
+    set cmd [regsub %WEEKS% $cmd "+$nweeks"]
+
+    set file [open $cmd r]
+
+    # Slurp in the entire JSON
+    if {[catch { set j [chan read $file] } err]} {
+	Status "Problem reading results from Remind: $err"
+	after 5000 DisplayTime
+	catch { close $file }
+	return 0
+    }
+    set problem [catch { close $file } errmsg]
+
+    if {[catch { set hash [::json::json2dict $j]}  err]} {
+	Status "Problem reading results from Remind: $err"
+	after 5000 DisplayTime
+	return 0
+    }
+
+    set FirstYr ""
+    set FirstMon ""
+    set LastYr ""
+    set LastMon ""
+
+    ConfigureCalWindowWeekly $CurDay $CurMonth $CurYear $nweeks
+    set today [format "%04d-%02d-%02d" $TodayYear [expr $TodayMonth + 1] $TodayDay]
+    set row 0
+    set i -1
+    foreach week $hash {
+        incr row
+        foreach dt [dict get $week dates] {
+            if { "$FirstYr" == "" } {
+                set FirstYr [dict get $dt year]
+                set FirstMon [dict get $dt month]
+            }
+            set LastYr [dict get $dt year]
+            set LastMon [dict get $dt month]
+            incr i
+            set date [dict get $dt date]
+            set_win_date .cal.t$i $i $date
+            if { $date == $today } {
+                .cal.l$i configure -background $Option(TodayColor)
+            }
+            set day [dict get $dt day]
+            .cal.l$i configure -text "$day"
+        }
+        foreach entry [dict get $week entries] {
+            AddReminderToCalendar $entry
+        }
+    }
+
+    # Update title
+    if {$FirstYr == $LastYr} {
+        if {$FirstMon == $LastMon} {
+            set title "$FirstMon $FirstYr"
+        } else {
+            set title "$FirstMon - $LastMon $FirstYr"
+        }
+    } else {
+        set title "$FirstMon $FirstYr - $LastMon $LastYr"
+    }
+    .h.title configure -text $title
+    wm iconname . $title
+    if {[info exists Hostname]} {
+        wm title . "$title - TkRemind @VERSION@ on $Hostname"
+    } else {
+        wm title . "$title - TkRemind @VERSION@"
+    }
+    if {$problem} {
+        set RemindErrors [unique_lines $errmsg]
+        set_button_to_errors
+    }
+    DisplayTime
+}
+
+#---------------------------------------------------------------------------
+# FillCalWindowMonthly -- Fill in the calendar for global CurMonth and CurYear.
+#---------------------------------------------------------------------------
+proc FillCalWindowMonthly {} {
+    global DayNames CurYear CurMonth CurDay MonthNames CommandLine Option TagToObj SynToObj RemindErrors MondayFirst
+
+    array unset TagToObj
+    array unset SynToObj
+
+    Status "Firing off Remind..."
+    set_button_to_queue
+    set month [lindex $MonthNames $CurMonth]
+
+    set cmd [regsub %EXTRA% $CommandLine $Option(ExtraRemindArgs)]
+    set cmd [regsub %MONTH% $cmd $month]
+    set cmd [regsub %YEAR% $cmd $CurYear]
+    set cmd [regsub %WEEKS% $cmd ""]
+    set cmd [regsub %DAY% $cmd ""]
+
+    set file [open $cmd r]
+
+    # Slurp in the entire JSON
+    if {[catch { set j [chan read $file] } err]} {
+	Status "Problem reading results from Remind: $err"
+	after 5000 DisplayTime
+	catch { close $file }
+	return 0
+    }
+    set problem [catch { close $file } errmsg]
+
+    if {[catch { set hash [::json::json2dict $j]}  err]} {
+	Status "Problem reading results from Remind: $err"
+	after 5000 DisplayTime
+	return 0
+    }
+
+    # We only want the first element
+    set hash [lindex $hash 0]
+
+    set monthName [dict get $hash monthname]
+    set year [dict get $hash year]
+    set DayNames [dict get $hash daynames]
+    set firstWkday [dict get $hash firstwkday]
+    set daysInMonth [dict get $hash daysinmonth]
+
+    ConfigureCalWindowMonthly $monthName $year $firstWkday $daysInMonth
+
+    # Update the day names in the calendar window
+    for {set i 0} {$i < 7} {incr i} {
+	if {$MondayFirst} {
+	    set index [expr ($i+1)%7]
+	} else {
+	    set index $i
+	}
+        .cal.day$i configure -text [lindex $DayNames $index]
+    }
+    set entries [dict get $hash entries]
+    foreach obj $entries {
+        AddReminderToCalendar $obj
+    }
+    if {$problem} {
+        set RemindErrors [unique_lines $errmsg]
+        set_button_to_errors
+    }
+    DisplayTime
+}
+
+proc AddReminderToCalendar { obj } {
+    global TagToObj SynToObj
+    set fntag "x"
+    if {[dict exists $obj filename]} {
+        set fname [dict get $obj filename]
+        # Don't make INCLUDECMD output editable
+        if {![string match "*|" $fname]} {
+            if {[dict exists $obj lineno_start]} {
+                set l [dict get $obj lineno_start]
+            } else {
+                set l [dict get $obj lineno]
+            }
+            set fntag [string cat "FILE_" $l "_" $fname]
+        }
+    }
+
+    set date [dict get $obj date]
+    regexp {^([0-9][0-9][0-9][0-9]).([0-9][0-9]).([0-9][0-9])} $date all year month day
+    set day [string trimleft $day 0]
+    if {[dict exists $obj passthru]} {
+        set type [dict get $obj passthru]
+    } else {
+        set type "*"
+    }
+    if {[dict exist $obj tags]} {
+        set tag [dict get $obj tags]
+    } else {
+        set tag "*"
+    }
+    if {[dict exists $obj calendar_body]} {
+        set stuff [dict get $obj calendar_body]
+    } elseif  {[dict exists $obj plain_body]} {
+        set stuff [dict get $obj plain_body]
+    } else {
+        set stuff [dict get $obj body]
+    }
+    set n [get_win_offset $date]
+    set extratags {}
+    switch -nocase -- $type {
+        "WEEK" {
+            set stuff [string trimleft $stuff]
+            set stuff [string trimright $stuff]
+            .cal.l$n configure -text "$day $stuff"
+            return
+        }
+        "SHADE" {
+            DoShadeSpecial $n [dict get $obj r] [dict get $obj g] [dict get $obj b]
+            return
+        }
+        "MOON" {
+            DoMoonSpecial $n $stuff $fntag $day
+            return
+        }
+        "COLOUR" -
+        "COLOR" {
+            set r [dict get $obj r]
+            set g [dict get $obj g]
+            set b [dict get $obj b]
+            if {$r > 255} {
+                set r 255
+            } elseif {$r < 0} {
+                set r 0
+            }
+            if {$g > 255} {
+                set g 255
+            } elseif {$g < 0} {
+                set g 0
+            }
+            if {$b > 255} {
+                set b 255
+            } elseif {$b < 0} {
+                set b 0
+            }
+            set color [format "%02X%02X%02X" $r $g $b]
+            lappend extratags "clr$color"
+            .cal.t$n configure -state normal
+            .cal.t$n tag configure "clr$color" -foreground "#$color"
+            .cal.t$n configure -state disabled -takefocus 0
+            set stuff $stuff
+            set type "COLOR"
+        }
+    }
+    if { $type != "*" && $type != "COLOR" && $type != "COLOUR"} {
+        return
+    }
+    .cal.t$n configure -state normal
+
+    # Canonicalize spaces and newlines
+    set stuff [regsub -all {[ \t]+} $stuff " "]
+    set stuff [regsub -all {[ \t]+\n} $stuff "\n"]
+    set stuff [regsub -all {\n[ \t]} $stuff "\n"]
+    set stuff [regsub -all {\n+} $stuff "\n"]
+
+    if {[regexp {__syn__([0-9a-f]+)} $tag syntag]} {
+        set SynToObj($syntag) $obj
+        lappend extratags $syntag
+        .cal.t$n tag bind $syntag <Enter> [list details_enter .cal.t$n]
+        .cal.t$n tag bind $syntag <Leave> [list details_leave .cal.t$n]
+    } else {
+        set syntag ""
+    }
+
+    if {[regexp {TKTAG([0-9]+)} $tag all tagno]} {
+        if {"$fntag" != "x"} {
+            .cal.t$n insert end [string trim $stuff] [concat REM TAGGED "TKTAG$tagno" "date_$date" $extratags $fntag]
+            .cal.t$n tag bind $fntag <ButtonPress-3> "FireEditor .cal.t$n"
+        } else {
+            .cal.t$n insert end [string trim $stuff] [concat REM TAGGED "TKTAG$tagno" "date_$date" $extratags]
+        }
+        set TagToObj($all) $obj
+    } else {
+        if {"$fntag" == "x" } {
+            .cal.t$n insert end [string trim $stuff] [concat REM $extratags]
+        } else {
+            .cal.t$n insert end [string trim $stuff] [concat REM $extratags $fntag]
+            .cal.t$n tag bind $fntag <Enter> [list EditableEnter .cal.t$n]
+            .cal.t$n tag bind $fntag <Leave> [list EditableLeave .cal.t$n]
+            .cal.t$n tag bind $fntag <ButtonPress-1> "FireEditor .cal.t$n"
+        }
+    }
+    .cal.t$n insert end "\n"
+    .cal.t$n configure -state disabled -takefocus 0
+}
+
+proc unique_lines { s } {
+    set l [split $s "\n"]
+    foreach line $l {
+        if {"$line" != ""} {
+            dict set d $line 1
+        }
+    }
+    return [join [dict keys $d] "\n"]
+}
+
+#---------------------------------------------------------------------------
+# MoveMonth -- move by +1 or -1 months
+# Arguments:
+#    delta -- +1 or -1 -- months to move.  In weekly view mode,
+#             we move by specified number of days instead
+#---------------------------------------------------------------------------
+proc MoveMonth {delta} {
+    global CurDay CurMonth CurYear Option
+    if {"$Option(View)" == "Month"} {
+        set CurMonth [expr $CurMonth + $delta]
+        if {$CurMonth < 0} {
+            set CurMonth 11
+            set CurYear [expr $CurYear-1]
+        }
+
+        if {$CurMonth > 11} {
+            set CurMonth 0
+            incr CurYear
+        }
+        set CurDay 1
+    } else {
+        set dt [format "%04d-%02d-%02d" $CurYear [expr $CurMonth+1] $CurDay]
+        set dt [clock scan $dt -format "%Y-%m-%d"]
+        # Move to noon to avoid Daylight Saving Time issues!
+        set dt [expr $dt + 7 * 24 * 60 * 60 * $delta + 43200]
+        set CurYear [clock format $dt -format %Y]
+        set CurMonth [expr [string trim [clock format $dt -format %N]] - 1]
+        set CurDay [string trim [clock format $dt -format %e] ]
+    }
+    FillCalWindow
+}
+
+#---------------------------------------------------------------------------
+# ThisMonth -- move to current month
+#---------------------------------------------------------------------------
+proc ThisMonth {} {
+    global CurDay CurMonth CurYear TodayMonth TodayYear TodayDay
+
+    # Do nothing if already there
+    if { $CurMonth == $TodayMonth && $CurYear == $TodayYear && $CurDay == $TodayDay } {
+	return 0
+    }
+    set CurMonth $TodayMonth
+    set CurYear $TodayYear
+    set CurDay $TodayDay
+    FillCalWindow
+}
+
+#---------------------------------------------------------------------------
+# Status -- set status string
+# Arguments:
+#   stuff -- what to set string to.
+#---------------------------------------------------------------------------
+proc Status { stuff } {
+    catch { .b.status configure -text $stuff }
+    update idletasks
+}
+
+#---------------------------------------------------------------------------
+# DoPrint -- print a calendar
+# Arguments:
+#   None
+#---------------------------------------------------------------------------
+proc DoPrint {} {
+    global InModalDialog
+    if { $InModalDialog } {
+        return 0
+    }
+    set InModalDialog 1
+    catch { DoPrintHelper } result options
+    set InModalDialog 0
+    return -options $options $result
+}
+
+proc DoPrintHelper {} {
+    global Rem2PDF HaveRem2PDF PSCmd Option PrintStatus RemindErrors
+    global CurDay CurMonth CurYear MonthNames
+
+    catch {destroy .p}
+
+    if {! $HaveRem2PDF} {
+        tk_messageBox -message "rem2pdf was not found, but is required to print calendars" -icon error -type ok
+        return
+    }
+
+    toplevel .p
+    bind .p <ButtonPress-1> [list raise .p]
+
+    wm title .p "TkRemind Print..."
+    wm iconname .p "Print..."
+    frame .p.f1 -relief sunken -bd 2
+    frame .p.f11
+    frame .p.f12
+    frame .p.f2 -relief sunken -bd 2
+    frame .p.f2a -relief sunken -bd 2
+    frame .p.f3 -relief sunken -bd 2
+    frame .p.f3a -relief sunken -bd 2
+    frame .p.f4
+
+    radiobutton .p.tofile -text "To file: " -variable Option(PrintDest) -value file
+    entry .p.filename
+    button .p.browse -text "Browse..." -command PrintFileBrowse
+    radiobutton .p.tocmd -text "To command: " -variable Option(PrintDest) -value command
+    entry .p.command
+    .p.command insert end "lpr"
+
+    frame .p.ff -relief sunken -bd 2
+    label .p.format -text "Output Format:"
+    radiobutton .p.pdf -text "PDF" -variable Option(PrintFormat) -value pdf
+    radiobutton .p.ps -text "PostScript" -variable Option(PrintFormat) -value ps
+
+    label .p.size -text "Paper Size:"
+    radiobutton .p.letter -text "Letter" -variable Option(PrintSize) -value letter
+    radiobutton .p.a4 -text "A4" -variable Option(PrintSize) -value a4
+
+    label .p.margin -text "Margins:"
+    radiobutton .p.24pt -text "24pt margins" -variable Option(PrintMargins) -value 24pt
+    radiobutton .p.36pt -text "36pt margins" -variable Option(PrintMargins) -value 36pt
+    radiobutton .p.48pt -text "48pt margins" -variable Option(PrintMargins) -value 48pt
+
+    label .p.orient -text "Orientation:"
+    radiobutton .p.landscape -text "Landscape" -variable Option(PrintOrient) -value landscape
+    radiobutton .p.portrait -text "Portrait" -variable Option(PrintOrient) -value portrait
+
+    checkbutton .p.fill -text "Fill page" -variable Option(PrintFill) -command PrintFillButtonPressed
+    checkbutton .p.avoid -text "Avoid over-full boxes" -variable Option(PrintAvoidOverfull) -command PrintAvoidOverfullButtonPressed
+    checkbutton .p.wrap -text "Use at most 5 rows" -variable Option(WrapCal)
+    checkbutton .p.right -text "Day numbers at top-right" -variable Option(PrintDaysRight)
+    checkbutton .p.calendars -text "Print small calendars" -variable Option(PrintSmallCalendars)
+
+    button .p.print -text "Print" -command {set PrintStatus print}
+    button .p.showcmd -text "Show Command" -command { set PrintStatus showcmd }
+    button .p.cancel -text "Cancel" -command {set PrintStatus cancel}
+
+    wm protocol .p WM_DELETE_WINDOW { .p.cancel flash; .p.cancel invoke }
+    pack .p.f1 .p.ff .p.f2 .p.f2a .p.f3 .p.f3a \
+        -side top -fill both -expand 1 -anchor w
+    pack .p.fill .p.avoid .p.wrap .p.right .p.calendars -in .p.f3a \
+        -side top -anchor w -fill none -expand 0
+    pack .p.f4 -side top -fill both -expand 1 -anchor w
+    pack .p.f11 .p.f12 -in .p.f1 -side top -fill none -expand 0 -anchor w
+    pack .p.tofile .p.filename .p.browse -in .p.f11 -side left -fill none -expand 0 -anchor w
+    pack .p.tocmd .p.command -in .p.f12 -side left -fill none -expand 0 -anchor w
+    pack .p.format .p.pdf .p.ps -in .p.ff -side top -fill none -expand 0 -anchor w
+    pack .p.size .p.letter .p.a4 -in .p.f2 -side top -fill none -expand 0 -anchor w
+    pack .p.margin .p.24pt .p.36pt .p.48pt -in .p.f2a -side top -anchor w -fill none -expand 0
+    pack .p.orient .p.landscape .p.portrait -in .p.f3 -side top -fill none -expand 0 -anchor w
+    pack .p.print .p.showcmd .p.cancel -in .p.f4 -side left -fill none -expand 0
+
+    bind .p <KeyPress-Escape> ".p.cancel flash; .p.cancel invoke"
+    bind .p <Control-KeyPress-w> ".p.cancel flash; .p.cancel invoke"
+    bind .p <KeyPress-Return> ".p.print flash; .p.print invoke"
+    set PrintStatus 2
+    CenterWindow .p .
+    tkwait visibility .p
+    set oldFocus [focus]
+    focus .p.filename
+    grab .p
+    tkwait variable PrintStatus
+    catch {focus $oldFocus}
+    set fname [.p.filename get]
+    set cmd [.p.command get]
+    destroy .p
+    if {$PrintStatus == "cancel"} {
+	return
+    }
+    WriteOptionsToFile
+    if {$Option(PrintDest) == "file"} {
+	if {$fname == ""} {
+	    show_error "No filename specified"
+	    return
+	}
+	if {[file isdirectory $fname]} {
+	    show_error "$fname is a directory"
+	    return
+	}
+	if {[file readable $fname]} {
+	    set ans [tk_messageBox -message "Overwrite?" -detail "Overwrite $fname?" -icon question -type yesno]
+	    if {$ans == no} {
+		return
+	    }
+	}
+        set fname [posix_escape $fname]
+	set fname "> $fname"
+    } else {
+	set fname "| $cmd"
+    }
+
+    set p $PSCmd
+    if {"$Option(View)" == "Month"} {
+        set p [regsub %WEEKS% $PSCmd ""]
+        set sd 1
+    } else {
+        set p [regsub %WEEKS% $PSCmd "+[get_num_weeks]"]
+        set sd $CurDay
+    }
+    if {$Option(PrintFormat) == "pdf"} {
+        set p [regsub %EXTRA% $p "-itkpdf=1 $Option(ExtraRemindArgs)"]
+        set cmd "$p $sd [lindex $MonthNames $CurMonth] $CurYear | $Rem2PDF --weeks-per-page=[get_num_weeks]"
+    } else {
+        set p [regsub %EXTRA% $p "-itkpdf=1 $Option(ExtraRemindArgs)"]
+        set cmd "$p $sd [lindex $MonthNames $CurMonth] $CurYear | $Rem2PDF --ps --weeks-per-page=[get_num_weeks]"
+    }
+    if {$Option(PrintSize) == "letter"} {
+        append cmd " --media=Letter"
+    } else {
+        append cmd " --media=A4"
+    }
+
+    if {$Option(PrintMargins) == "24pt"} {
+        append cmd " --margin-right=24 --margin-left=24 --margin-top=24 --margin-bottom=24"
+    } elseif {$Option(PrintMargins) == "36pt"} {
+        append cmd " --margin-right=36 --margin-left=36 --margin-top=36 --margin-bottom=36"
+    } else {
+        append cmd " --margin-right=48 --margin-left=48 --margin-top=48 --margin-bottom=48"
+    }
+
+    if {$Option(WrapCal)} {
+        append cmd " --wrap"
+    }
+    if {$Option(PrintOrient) == "landscape"} {
+	append cmd " -l"
+    }
+
+    if {$Option(PrintFill)} {
+	append cmd " -e"
+    }
+
+    if {$Option(PrintAvoidOverfull)} {
+        append cmd " --avoid-overfull"
+    }
+    if {!$Option(PrintDaysRight)} {
+        append cmd " -x"
+    }
+    if {$Option(PrintSmallCalendars)} {
+	append cmd " -c3"
+    } else {
+	append cmd " -c0"
+    }
+
+    append cmd " $fname"
+    if {$PrintStatus == "showcmd"} {
+        ShowPrintCommand $cmd
+    } else {
+        Status "Printing..."
+        if {[catch {exec /bin/sh "-c" $cmd} err]} {
+            set RemindErrors [unique_lines $err]
+            set_button_to_errors
+        }
+        DisplayTime
+    }
+}
+
+proc PrintFillButtonPressed {} {
+    global Option
+    if { ! $Option(PrintFill) && $Option(PrintAvoidOverfull) } {
+        set Option(PrintAvoidOverfull) 0
+    }
+}
+
+proc PrintAvoidOverfullButtonPressed {} {
+    global Option
+    if { ! $Option(PrintFill) && $Option(PrintAvoidOverfull) } {
+        set Option(PrintFill) 1
+    }
+}
+proc ShowPrintCommand { cmd } {
+    global Option
+    catch { destroy .pc }
+    toplevel .pc -background $Option(WinBackground)
+    frame .pc.f -padx 0 -pady 0 -highlightthickness 0 -relief flat -bd 0  -background $Option(BackgroundColor)
+    frame .pc.tf -padx 0 -pady 0 -highlightthickness 0 -relief flat -bd 0  -background $Option(BackgroundColor)
+    message .pc.m  -width 600 -foreground $Option(TextColor) -background $Option(BackgroundColor) -text "Below is the command that would be used to print a calendar.  Edit it as desired and click Run to run the command, or click Cancel to close this window."
+    text .pc.t -width 80 -height 5 -font TkFixedFont -foreground $Option(TextColor) -background $Option(BackgroundColor) -yscrollcommand ".pc.sb set" -wrap word -insertbackground $Option(TextColor)
+    .pc.t insert end $cmd
+    scrollbar .pc.sb -orient vertical -command ".pc.t yview"
+    button .pc.run -text "Run" -command "RunPrintCommand"  -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    button .pc.cancel -text "Cancel" -command "destroy .pc"  -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    pack .pc.m -side top -fill x -expand 0
+    pack .pc.tf -side top -fill both -expand 1
+    pack .pc.f -side top -fill x -expand 0
+    pack .pc.t -in .pc.tf -side left -expand 1 -fill both
+    pack .pc.sb -in .pc.tf -side left -expand 0 -fill y
+    pack .pc.run .pc.cancel -in .pc.f -side left -expand 0 -fill none
+    .pc.t configure -state normal
+    CenterWindow .pc .
+    wm deiconify .pc
+}
+
+proc RunPrintCommand {} {
+    global RemindErrors
+    set cmd [.pc.t get 1.0 end]
+    set cmd [string trim $cmd]
+    catch { destroy .pc }
+    set cmd [regsub -all "\n" $cmd " "]
+    if { "$cmd" != "" } {
+        Status "Printing..."
+        if {[catch {exec /bin/sh "-c" $cmd} err]} {
+            set RemindErrors [unique_lines $err]
+            set_button_to_errors
+        }
+        DisplayTime
+    }
+}
+
+#---------------------------------------------------------------------------
+# PrintFileBrowse -- browse for a filename for Print dialog
+# Arguments: none
+#---------------------------------------------------------------------------
+proc PrintFileBrowse {} {
+    global Option
+    if { $Option(PrintFormat) == "pdf" } {
+        set pattern "*.pdf"
+    } else {
+        set pattern "*.ps"
+    }
+
+    set ans [BrowseForFile .filebrowse "Print to file..." "Ok" 0 $pattern]
+    if {$ans != ""} {
+	.p.filename delete 0 end
+	.p.filename insert end $ans
+	.p.filename icursor end
+	.p.filename xview end
+    }
+    raise .p
+}
+
+#---------------------------------------------------------------------------
+# GotoDialog -- Do the "Goto..." dialog
+#---------------------------------------------------------------------------
+proc GotoDialog {} {
+    global CurDay CurMonth MonthNames CurYear
+    catch { destroy .g }
+
+    set month [lindex $MonthNames $CurMonth]
+    toplevel .g
+    wm title .g "Go To Date"
+    menubutton .g.mon -text "$month" -menu .g.mon.menu -relief raised
+    balloon_add_help .g.mon "Select a month"
+    menu .g.mon.menu -tearoff 0
+
+    foreach m $MonthNames {
+	.g.mon.menu add command -label $m -command ".g.mon configure -text $m"
+    }
+
+    frame .g.y
+    label .g.y.lab -text "Year: "
+    entry .g.y.e -width 4
+    balloon_add_help .g.y.e "Enter a year"
+    .g.y.e insert end $CurYear
+    bind .g.y.e <Return> ".g.b.go flash; .g.b.go invoke"
+    frame .g.b
+    button .g.b.go -text "Go" -command {DoGoto}
+    balloon_add_help .g.b.go "Go to specified month and year"
+    button .g.b.cancel -text "Cancel" -command { destroy .g }
+    pack .g.b.go .g.b.cancel -expand 1 -fill x -side left
+    pack .g.mon -fill x -expand 1
+
+    pack .g.y.lab -side left
+    pack .g.y.e -side left -fill x -expand 1
+    pack .g.y -expand 1 -fill x
+    pack .g.b -expand 1 -fill x
+    bind .g <KeyPress-Escape> ".g.b.cancel flash; .g.b.cancel invoke"
+    bind .g <Control-KeyPress-w> ".g.b.cancel flash; .g.b.cancel invoke"
+    CenterWindow .g .
+    set oldFocus [focus]
+    focus .g.y.e
+    catch {focus $oldFocus}
+}
+
+#---------------------------------------------------------------------------
+# DoGoto -- go to specified date
+#---------------------------------------------------------------------------
+proc DoGoto {} {
+    global CurDay CurYear CurMonth MonthNames
+    set year [.g.y.e get]
+    if { ! [regexp {^[0-9]+$} $year] } {
+        show_error {Illegal year specified (1990-5990)}
+        raise .g
+	return
+    }
+    if { $year < 1990 || $year > 5990 } {
+	show_error {Illegal year specified (1990-5990)}
+        raise .g
+	return
+    }
+    set month [lsearch -exact $MonthNames [.g.mon cget -text]]
+    set CurMonth $month
+    set CurYear $year
+    set CurDay 1
+    catch { destroy .g }
+    FillCalWindow
+}
+
+#---------------------------------------------------------------------------
+# Quit -- handle the Quit button
+#---------------------------------------------------------------------------
+proc Quit {} {
+    global Option
+    if { !$Option(ConfirmQuit) } {
+	destroy .
+	StopBackgroundRemindDaemon
+	exit 0
+    }
+    set ans [tk_messageBox -message "Really quit?" -icon question -type yesno]
+    if { $ans == "yes" } {
+	destroy .
+	StopBackgroundRemindDaemon
+	exit 0
+    }
+}
+
+#---------------------------------------------------------------------------
+# ShowSpecificDayReminders - show reminders for a specific day
+# Arguments:
+#    w - today's text window
+#---------------------------------------------------------------------------
+proc ShowSpecificDayReminders { w } {
+    ShowTodaysReminders 1 [get_win_prop $w date]
+}
+
+proc toggle_complete_through { w } {
+    global todobut
+        if {$todobut} {
+            $w.complete_through configure -state normal
+            $w.max_overdue configure -state normal
+        } else {
+            $w.complete_through configure -state disabled
+            $w.max_overdue configure -state disabled
+        }
+}
+
+proc complete_through_today { w } {
+    global DateOfEventBeingEdited
+    $w.complete_through delete 0 end
+    if {"$DateOfEventBeingEdited" != ""} {
+        $w.complete_through insert end $DateOfEventBeingEdited
+    } else {
+        $w.complete_through insert end [clock format [clock seconds] -format %Y-%m-%d]
+    }
+    return -code break
+}
+
+#---------------------------------------------------------------------------
+# CreateModifyDialog -- create dialog for adding a reminder
+# Arguments:
+#    w -- path of parent window
+#    i -- index of window
+#    args -- buttons to add to bottom frame.  First sets result to 1, next
+#            to 2, and so on.  FIRST BUTTON MUST BE "Cancel"
+#---------------------------------------------------------------------------
+proc CreateModifyDialog {w i args} {
+
+    bind $w <Destroy> {
+        global InModalDialog ModifyDialogResult
+        set InModalDialog 0
+        set ModifyDialogResult -2
+    }
+
+    wm protocol $w WM_DELETE_WINDOW { .mod.but1 flash; .mod.but1 invoke }
+
+    # Set up: Year, Month, Day, WeekdayName
+    global CurYear CurDay CurMonth EnglishDayNames MonthNames OptionType SkipType
+    global ModifyDialogResult TwentyFourHourMode DateOfEventBeingEdited
+
+    set OptionType 1
+    set SkipType 1
+
+    set DateOfEventBeingEdited [get_win_prop .cal.t$i date]
+    scan $DateOfEventBeingEdited "%d-%d-%d" year month day
+    set month [lindex $MonthNames [expr $month-1]]
+    set wkday [lindex $EnglishDayNames [clock format [clock scan $DateOfEventBeingEdited] -format %w]]
+
+    frame $w.o -bd 4 -relief ridge
+    frame $w.o1 -bd 4
+    frame $w.o2 -bd 4
+    frame $w.o3 -bd 4
+    frame $w.exp -bd 4
+    frame $w.adv -bd 4
+    frame $w.weekend -bd 4
+    frame $w.durationbox -bd 4
+    frame $w.todobox
+    frame $w.time -bd 4
+    frame $w.hol -bd 4
+    frame $w.msg
+    frame $w.buttons
+    pack $w.o1 $w.o2 $w.o3  -side top -anchor w -in $w.o
+    pack $w.o $w.exp $w.adv $w.weekend $w.time $w.durationbox $w.todobox $w.hol $w.msg -side top -anchor w -pady 4 -expand 0 -fill both
+    pack $w.msg -side top -anchor w -pady 4 -padx 4 -expand true -fill both
+    pack $w.buttons -side top -anchor w -pady 4 -expand 0 -fill x
+
+    # TYPE 1 REMINDER
+    radiobutton $w.type1 -variable OptionType -value 1
+    menubutton $w.day1 -text $day -relief raised -menu $w.day1.menu
+    balloon_add_help $w.day1 "Select a day"
+    CreateDayMenu $w.day1
+    menubutton $w.mon1 -text $month -relief raised -menu $w.mon1.menu
+    balloon_add_help $w.mon1 "Select a month"
+    CreateMonthMenu $w.mon1
+    menubutton $w.year1 -text $year -relief raised -menu $w.year1.menu
+    balloon_add_help $w.year1 "Select a year"
+    CreateYearMenu $w.year1
+    checkbutton $w.repbut -text "and repeating every"
+    balloon_add_help $w.repbut "Select to enable a recurring reminder"
+    $w.repbut deselect
+    menubutton $w.repdays -text 1 -relief raised -menu $w.repdays.menu
+    balloon_add_help $w.repdays "Select the repeat interval in days"
+    CreateDayMenu $w.repdays 1 28 0
+    label $w.label1a -text "day(s) thereafter"
+    pack $w.type1 $w.day1 $w.mon1 $w.year1 $w.repbut $w.repbut $w.repdays $w.label1a -side left -anchor w -in $w.o1
+
+    # TYPE 2 REMINDER
+    radiobutton $w.type2 -variable OptionType -value 2
+    label $w.label2a -text First
+    menubutton $w.wkday2 -text $wkday -relief raised -menu $w.wkday2.menu
+    balloon_add_help $w.wkday2 "Select a day of the week"
+    CreateWeekdayMenu $w.wkday2
+    label $w.label2b -text "on or after"
+    menubutton $w.day2 -text $day -relief raised -menu $w.day2.menu
+    balloon_add_help $w.day2 "Select a day"
+    CreateDayMenu $w.day2 1 31 0
+    menubutton $w.mon2 -text $month -relief raised -menu $w.mon2.menu
+    balloon_add_help $w.mon2 "Select a month"
+    CreateMonthMenu $w.mon2
+    menubutton $w.year2 -text $year -relief raised -menu $w.year2.menu
+    balloon_add_help $w.year2 "Select a year"
+    CreateYearMenu $w.year2
+    pack $w.type2 $w.label2a $w.wkday2 $w.label2b $w.day2 $w.mon2 $w.year2 -side left -anchor w -in $w.o2
+
+    # TYPE 3 REMINDER
+    if { $day <= 7 } {
+	set which "First"
+    } elseif {$day <= 14} {
+	set which "Second"
+    } elseif {$day <= 21} {
+	set which "Third"
+    } elseif {$day <= 28} {
+	set which "Fourth"
+    } else {
+	set which "Last"
+    }
+    radiobutton $w.type3 -variable OptionType -value 3
+    menubutton $w.ordinal -text $which -relief raised -menu $w.ordinal.menu
+    balloon_add_help $w.ordinal "Select the first, second, etc. weekday in a month"
+    menu $w.ordinal.menu -tearoff 0
+    $w.ordinal.menu add command -label "First" -command "$w.ordinal configure -text First"
+    $w.ordinal.menu add command -label "Second" -command "$w.ordinal configure -text Second"
+    $w.ordinal.menu add command -label "Third" -command "$w.ordinal configure -text Third"
+    $w.ordinal.menu add command -label "Fourth" -command "$w.ordinal configure -text Fourth"
+    $w.ordinal.menu add command -label "Last" -command "$w.ordinal configure -text Last"
+    $w.ordinal.menu add command -label "Every" -command "$w.ordinal configure -text Every"
+    menubutton $w.wkday3 -text $wkday -relief raised -menu $w.wkday3.menu
+    balloon_add_help $w.wkday3 "Select a day of the week"
+    CreateWeekdayMenu $w.wkday3
+    label $w.label3 -text "in"
+    menubutton $w.mon3 -text $month -relief raised -menu $w.mon3.menu
+    balloon_add_help $w.mon3 "Select a month"
+    CreateMonthMenu $w.mon3
+    menubutton $w.year3 -text $year -relief raised -menu $w.year3.menu
+    balloon_add_help $w.year3 "Select a year"
+    CreateYearMenu $w.year3
+    pack $w.type3 $w.ordinal $w.wkday3 $w.label3 $w.mon3 $w.year3 -side left -anchor w -in $w.o3
+
+    # EXPIRY DATE
+    checkbutton $w.expbut -text "Expire after"
+    balloon_add_help $w.expbut "Select to enable an expiry date"
+    $w.expbut deselect
+    menubutton $w.expday -text $day -relief raised -menu $w.expday.menu
+    balloon_add_help $w.expday "Select expiry day"
+    CreateDayMenu $w.expday 1 31 0
+    menubutton $w.expmon -text $month -relief raised -menu $w.expmon.menu
+    balloon_add_help $w.expmon "Select expiry month"
+    CreateMonthMenu $w.expmon 0
+    menubutton $w.expyear -text $year -relief raised -menu $w.expyear.menu
+    balloon_add_help $w.expyear "Select expiry year"
+    CreateYearMenu $w.expyear 0
+
+    pack $w.expbut $w.expday $w.expmon $w.expyear -side left -anchor w -in $w.exp
+
+    # ADVANCE NOTICE
+    checkbutton $w.advbut -text "Issue"
+    balloon_add_help $w.advbut "Select to enable advance notification"
+    $w.advbut deselect
+    menubutton $w.advdays -text 3 -menu $w.advdays.menu -relief raised
+    balloon_add_help $w.advdays "Select number of days of advance warning"
+    CreateDayMenu $w.advdays 1 10 0
+    label $w.advlab -text "day(s) in advance"
+    checkbutton $w.advcount -text "not counting holidays/weekend"
+    balloon_add_help $w.advcount "Select to avoid counting holidays/weekend as in advance warning days"
+    $w.advcount select
+    pack $w.advbut $w.advdays $w.advlab $w.advcount -side left -anchor w -in $w.adv
+
+    # WEEKEND
+    label $w.weeklab -text "Weekend is: "
+    pack $w.weeklab -side left -anchor w -in $w.weekend
+    foreach d $EnglishDayNames {
+	checkbutton $w.d$d -text $d
+	balloon_add_help $w.d$d "Select to include $d in the definition of \"Weekend\""
+	$w.d$d deselect
+	pack $w.d$d -side left -anchor w -in $w.weekend
+    }
+    $w.dSaturday select
+    $w.dSunday select
+
+    # TIMED REMINDER
+    checkbutton $w.timebut -text "Timed reminder at"
+    balloon_add_help $w.timebut "Select if this event starts at a specific time"
+    $w.timebut deselect
+    menubutton $w.timehour -text "12" -menu $w.timehour.menu -relief raised
+    balloon_add_help $w.timehour "Select the starting time's hour"
+    if {$TwentyFourHourMode} {
+	CreateDayMenu $w.timehour 0 23 0
+    } else {
+	CreateDayMenu $w.timehour 1 12 0
+    }
+    menubutton $w.timemin -text "00" -menu $w.timemin.menu -relief raised
+    balloon_add_help $w.timemin "Select the starting time's minute"
+    menu $w.timemin.menu -tearoff 0
+    foreach i {00 05 10 15 20 25 30 35 40 45 50 55} {
+	$w.timemin.menu add command -label $i \
+		-command "$w.timemin configure -text $i"
+    }
+
+    if {!$TwentyFourHourMode} {
+	menubutton $w.ampm -text "PM" -menu $w.ampm.menu -relief raised
+	balloon_add_help $w.ampm "Select whether the time is AM or PM"
+	menu $w.ampm.menu -tearoff 0
+	$w.ampm.menu add command -label "AM" -command "$w.ampm configure -text {AM}"
+	$w.ampm.menu add command -label "PM" -command "$w.ampm configure -text {PM}"
+    }
+
+    checkbutton $w.timeadvbut -text "with"
+    balloon_add_help $w.timeadvbut "Select to be given advance warning prior to the start time"
+    $w.timeadvbut deselect
+    menubutton $w.timeadv -text "15" -menu $w.timeadv.menu -relief raised
+    balloon_add_help $w.timeadv "Select the number of minutes of advance warning"
+    menu $w.timeadv.menu -tearoff 0
+    foreach i {5 10 15 30 45 60} {
+	$w.timeadv.menu add command -label $i -command "$w.timeadv configure -text $i"
+    }
+    label $w.timelab1 -text "minutes advance notice"
+
+    checkbutton $w.timerepbut -text "repeated every"
+    balloon_add_help $w.timerepbut "Select to repeat the advance notice"
+    $w.timerepbut deselect
+    menubutton $w.timerep -text "5" -menu $w.timerep.menu -relief raised
+    balloon_add_help $w.timerep "Select how often to repeat the advance notice"
+    menu $w.timerep.menu -tearoff 0
+    foreach i {3 5 10 15 30} {
+	$w.timerep.menu add command -label $i -command "$w.timerep configure -text $i"
+    }
+    label $w.timelab2 -text "minutes"
+    if {$TwentyFourHourMode} {
+	pack $w.timebut $w.timehour $w.timemin $w.timeadvbut $w.timeadv $w.timelab1 $w.timerepbut $w.timerep $w.timelab2 -side left -anchor w -in $w.time
+    } else {
+	pack $w.timebut $w.timehour $w.timemin $w.ampm $w.timeadvbut $w.timeadv $w.timelab1 $w.timerepbut $w.timerep $w.timelab2 -side left -anchor w -in $w.time
+    }
+
+    # DURATION
+    checkbutton $w.durationbut -text "Duration"
+    balloon_add_help $w.durationbut "Select if this event has a specific duration"
+    $w.durationbut deselect
+    menubutton $w.durationh -text "1" -menu $w.durationh.menu -relief raised
+    balloon_add_help $w.durationh "Select how many hours the event lasts"
+    menu $w.durationh.menu -tearoff 0
+    foreach i {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24} {
+	$w.durationh.menu add command -label $i -command "$w.durationh configure -text $i"
+    }
+    label $w.durationcolon -text ":"
+    menubutton $w.durationm -text "00" -menu $w.durationm.menu -relief raised
+    balloon_add_help $w.durationm "Select how many minutes the event lasts (in addition to the hours)"
+    menu $w.durationm.menu -tearoff 0
+    foreach i {00 15 30 45} {
+	$w.durationm.menu add command -label $i -command "$w.durationm configure -text $i"
+    }
+    pack $w.durationbut $w.durationh $w.durationcolon $w.durationm -side left -anchor w -in $w.durationbox
+
+    # TODO?
+    checkbutton $w.todobut -text "This is a TODO " -command [list toggle_complete_through $w]
+
+    balloon_add_help $w.todobut "Select if this is a TODO-type reminder"
+    $w.todobut deselect
+    label $w.lcomplete -text "Complete through: "
+    entry $w.complete_through -width 20
+    bind $w.complete_through <KeyPress-slash> [list complete_through_today $w]
+    balloon_add_help $w.complete_through "Enter the date of completed TODO in the form YYYY-MM-DD"
+    label $w.loverdue -text "Max overdue days: "
+    entry $w.max_overdue -width 6
+    balloon_add_help $w.max_overdue "Enter the maximum number of days Remind should nag you about an overdue TODO"
+    pack $w.todobut $w.lcomplete $w.complete_through $w.loverdue $w.max_overdue -side left -anchor w -in $w.todobox
+
+    # SKIP TYPE
+    label $w.labhol -text "On holidays or weekends:"
+    radiobutton $w.issue -variable SkipType -value 1 -text "Issue reminder as usual"
+    radiobutton $w.skip -variable SkipType -value 2 -text "Skip reminder"
+    radiobutton $w.before -variable SkipType -value 3 -text "Move reminder before holiday or weekend"
+    radiobutton $w.after -variable SkipType -value 4 -text "Move reminder after holiday or weekend"
+    pack $w.labhol $w.issue $w.skip $w.before $w.after -side top -anchor w -in $w.hol
+
+    # TEXT ENTRY
+    label $w.msglab -text "Summary: "
+    entry $w.entry
+    balloon_add_help $w.entry "Enter the text of the reminder (required)"
+    grid $w.msglab -row 0 -column 0 -in $w.msg -sticky e
+    grid $w.entry -row 0 -column 1 -in $w.msg -sticky nsew
+
+    # LOCATION, DESCRIPTION and URL
+    label $w.loclab -text "Location: "
+    entry $w.location
+    balloon_add_help $w.location "Enter the location, if any"
+    grid $w.loclab -row 1 -column 0 -in $w.msg -sticky e
+    grid $w.location -row 1 -column 1 -in $w.msg -sticky nsew
+
+    label $w.urllab -text "URL: "
+    entry $w.url
+    balloon_add_help $w.url "Enter the URL, if any"
+    grid $w.urllab -row 2 -column 0 -in $w.msg -sticky e
+    grid $w.url -row 2 -column 1 -in $w.msg -sticky nsew
+
+    label $w.desclab -text "Description: "
+    text $w.description -width 80 -height 5
+    balloon_add_help $w.description "Enter a detailed description, if any"
+    grid $w.desclab -row 3 -column 0 -in $w.msg -sticky e
+    grid $w.description -row 3 -column 1 -in $w.msg -sticky nsew
+
+    grid columnconfigure $w.msg 0 -weight 0
+    grid columnconfigure $w.msg 1 -weight 1
+    grid rowconfigure $w.msg 0 -weight 0
+    grid rowconfigure $w.msg 1 -weight 0
+    grid rowconfigure $w.msg 2 -weight 0
+    grid rowconfigure $w.msg 3 -weight 1
+    # BUTTONS
+    set nbut 0
+    foreach but $args {
+	incr nbut
+	button $w.but$nbut -text $but -command "set ModifyDialogResult $nbut"
+	pack $w.but$nbut -side left -anchor w -in $w.buttons -expand 1 -fill x
+    }
+
+    bind $w <KeyPress-Escape> "$w.but1 flash; $w.but1 invoke"
+    bind $w <Control-KeyPress-w> "$w.but1 flash; $w.but1 invoke"
+    if {$nbut >= 2} {
+	bind $w.entry <KeyPress-Return> "$w.but2 flash; $w.but2 invoke"
+    }
+    set ModifyDialogResult 0
+
+    # Center the window on the root
+    CenterWindow $w .
+}
+
+#***********************************************************************
+# %PROCEDURE: OptionsToRemindDialog
+# %ARGUMENTS:
+#  w -- Remind dialog window
+#  opts -- option list set by ReadTaggedOptions
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Sets parameters in the dialog box according to saved options.
+#***********************************************************************
+proc OptionsToRemindDialog { w opts } {
+    global OptionType SkipType repbut expbut advbut advcount
+    global timebut timeadvbut timerepbut TwentyFourHourMode durationbut todobut
+    global dSaturday dSunday dMonday dTuesday dWednesday dThursday dFriday DateOfEventBeingEdited
+    set hour ""
+    set ampm ""
+    $w.complete_through configure -state normal
+    $w.max_overdue configure -state normal
+    foreach {flag value} $opts {
+	switch -glob -- $flag {
+	    "-text-*" {
+		set win [string range $flag 6 end]
+		catch { $w.$win configure -text $value }
+		if {"$flag" == "-text-ampm"} {
+		    set ampm $value
+		} elseif {"$flag" == "-text-timehour"} {
+		    set hour $value
+		}
+	    }
+            "-txtentry-*" {
+		set win [string range $flag 10 end]
+		$w.$win delete 1.0 end
+		$w.$win insert end $value
+            }
+	    "-global-*" {
+		set win [string range $flag 8 end]
+		set $win $value
+	    }
+	    "-entry-*" {
+		set win [string range $flag 7 end]
+		$w.$win delete 0 end
+		$w.$win insert end $value
+	    }
+	}
+    }
+    if {"$hour" != ""} {
+	if {$TwentyFourHourMode} {
+	    if {"$ampm" != ""} {
+		if {"$ampm" == "PM" && $hour < 12} {
+		    incr hour 12
+		    $w.timehour configure -text $hour
+		}
+	    }
+	} else {
+	    if {$hour > 12} {
+		incr hour -12
+		$w.timehour configure -text $hour
+		$w.ampm configure -text "PM"
+	    } else {
+		if {"$ampm" == ""} {
+		    $w.ampm configure -text "AM"
+		}
+	    }
+	}
+    }
+    toggle_complete_through $w
+}
+
+#---------------------------------------------------------------------------
+# CreateMonthMenu -- create a menu with all the months of the year
+# Arguments:
+#    w -- menu button -- becomes parent of menu
+#    every -- if true, include an "every month" entry
+#---------------------------------------------------------------------------
+proc CreateMonthMenu {w {every 1}} {
+    global MonthNames
+    menu $w.menu -tearoff 0
+
+    if {$every} {
+	$w.menu add command -label "every month" -command "$w configure -text {every month}"
+    }
+
+    foreach month $MonthNames {
+	$w.menu add command -label $month -command "$w configure -text $month"
+    }
+}
+
+#---------------------------------------------------------------------------
+# CreateWeekdayMenu -- create a menu with all the weekdays
+# Arguments:
+#    w -- menu button -- becomes parent of menu
+#---------------------------------------------------------------------------
+proc CreateWeekdayMenu {w} {
+    global EnglishDayNames
+    menu $w.menu -tearoff 0
+
+    foreach d $EnglishDayNames {
+	$w.menu add command -label $d -command "$w configure -text $d"
+    }
+    $w.menu add command -label "weekday" -command "$w configure -text weekday"
+}
+
+#---------------------------------------------------------------------------
+# CreateDayMenu -- create a menu with entries 1-31 and possibly "every day"
+# Arguments:
+#    w -- menu button -- becomes parent of menu
+#    min -- minimum day to start from.
+#    max -- maximum day to go up to
+#    every -- if true, include an "every day" entry
+#---------------------------------------------------------------------------
+proc CreateDayMenu {w {min 1} {max 31} {every 1}} {
+    menu $w.menu -tearoff 0
+    if {$every} {
+	$w.menu add command -label "every day" -command "$w configure -text {every day}"
+    }
+    set d $min
+    while { $d <= $max } {
+	$w.menu add command -label $d -command "$w configure -text $d"
+	incr d
+    }
+}
+
+#---------------------------------------------------------------------------
+# CreateYearMenu -- create a menu with entries from this year to this year+10
+#                   and possibly "every year"
+# Arguments:
+#    w -- menu button -- becomes parent of menu
+#    every -- if true, include an "every year" entry
+#---------------------------------------------------------------------------
+proc CreateYearMenu {w {every 1}} {
+    menu $w.menu -tearoff 0
+    if {$every} {
+	$w.menu add command -label "every year" -command "$w configure -text {every year}"
+    }
+    global CurYear
+    set d $CurYear
+    while { $d < [expr $CurYear + 11] } {
+	$w.menu add command -label $d -command "$w configure -text $d"
+	incr d
+    }
+}
+
+#---------------------------------------------------------------------------
+# ModifyDay -- bring up dialog for adding reminder.
+# Arguments:
+#    i -- index of calendar window to modify
+#---------------------------------------------------------------------------
+proc ModifyDay { i } {
+    global InModalDialog
+    if { $InModalDialog } {
+        return
+    }
+    set InModalDialog 1
+    catch { ModifyDayHelper $i } result options
+    set InModalDialog 0
+    return -options $options $result
+}
+
+proc ModifyDayHelper {i} {
+    global ModifyDialogResult AppendFile HighestTagSoFar
+    catch {destroy .mod}
+    toplevel .mod
+    CreateModifyDialog .mod $i "Cancel" "Add to reminder file" "Preview reminder"
+    wm title .mod "TkRemind Add Reminder..."
+    wm iconname .mod "Add Reminder"
+    tkwait visibility .mod
+    set oldFocus [focus]
+    toggle_complete_through .mod
+    bind .mod <ButtonPress-1> [list raise .mod]
+    while {1} {
+	catch {
+            grab .mod
+            raise .mod
+            focus .mod.entry
+        }
+	set ModifyDialogResult -1
+	tkwait variable ModifyDialogResult
+	if {$ModifyDialogResult == 1 || $ModifyDialogResult == -2 || ![winfo exists .mod]} {
+	    catch {focus $oldFocus}
+	    catch { destroy .mod }
+	    return 0
+	}
+        set edited 0
+	set problem [catch {set rem [CreateReminder .mod]} err]
+	if {$problem} {
+            show_error $err
+            raise .mod
+	} else {
+            set rem [string trim $rem]
+	    if {$ModifyDialogResult == 3} {
+		set newrem [EditReminder $rem Cancel "Add reminder"]
+                if {$ModifyDialogResult == 1 || $ModifyDialogResult == -2} {
+		    continue
+		}
+                set ModifyDialogResult 2
+                if {"$newrem" != "$rem"} {
+                    set edited 1
+                    set rem $newrem
+                }
+	    }
+	    catch {focus $oldFocus}
+	    destroy .mod
+	    Status "Writing reminder..."
+	    set f [open $AppendFile a]
+	    incr HighestTagSoFar
+
+	    WriteReminder $f TKTAG$HighestTagSoFar $rem $edited
+	    close $f
+
+            ScheduleUpdateForChanges
+	    return 0
+	}
+    }
+}
+
+#---------------------------------------------------------------------------
+# CenterWindow -- center a window on the screen or over a parent.
+# Arguments:
+#    w -- window to center
+#    parent -- window over which to center.  Defaults to screen if not supplied.
+#---------------------------------------------------------------------------
+proc CenterWindow {w {parent {}}} {
+    wm withdraw $w
+    update idletasks
+    if {"$parent" == ""} {
+	set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
+		   - [winfo vrootx [winfo parent $w]]]
+	set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
+		   - [winfo vrooty [winfo parent $w]]]
+    } else {
+	set x [expr [winfo rootx $parent] + [winfo width $parent]/2 - [winfo reqwidth $w]/2]
+	set y [expr [winfo rooty $parent] + [winfo height $parent]/2 - [winfo reqheight $w]/2]
+    }
+    wm geom $w +$x+$y
+    wm deiconify $w
+}
+
+#---------------------------------------------------------------------------
+# RemQuotedString - return a quoted string with difficult characters escaped
+#---------------------------------------------------------------------------
+proc RemQuotedString { str } {
+    set str [string map {"\n" "\\n" "\"" "\\\"" "[" "[\"[\"]"} $str]
+    return "\"$str\""
+}
+#---------------------------------------------------------------------------
+# CreateReminder -- create the reminder
+# Arguments:
+#    w -- the window containing the add reminder dialog box.
+# Returns:
+#    The reminder as a string.
+#---------------------------------------------------------------------------
+proc CreateReminder {w} {
+    global DidOmit TwentyFourHourMode
+
+    set body [string trim [$w.entry get]]
+
+    if {"$body" == ""} {
+	error "Summary is required"
+    }
+
+    set DidOmit 0
+    set needOmit 0
+    # Delegate the first part to CreateReminder1, CreateReminder2, or
+    # CreateReminder3
+    global OptionType SkipType repbut expbut advbut advcount
+    global timebut timeadvbut timerepbut durationbut todobut
+
+    set rem [CreateReminder$OptionType $w]
+
+    # Do the "until" part
+    if {$expbut} {
+	append rem " UNTIL "
+	append rem [consolidate [$w.expyear cget -text] [$w.expmon cget -text] [$w.expday cget -text]]
+    }
+
+    # Advance warning
+    if {$advbut} {
+	append rem " +"
+	if {!$advcount} {
+	    append rem "+"
+	} else {
+	    set needOmit 1
+	}
+	append rem [$w.advdays cget -text]
+    }
+
+    # Timed reminder
+    if {$timebut} {
+	set hour [$w.timehour cget -text]
+	set min [$w.timemin cget -text]
+	if {!$TwentyFourHourMode} {
+	    if {[$w.ampm cget -text] == "PM"} {
+		if {$hour < 12} {
+		    incr hour 12
+		}
+	    } else {
+		if {$hour == 12} {
+		    set hour 0
+		}
+	    }
+	}
+	append rem " AT $hour:$min"
+	if {$timeadvbut} {
+	    append rem " +[$w.timeadv cget -text]"
+	}
+	if {$timerepbut} {
+	    append rem " *[$w.timerep cget -text]"
+	}
+	if {$durationbut} {
+	    append rem " DURATION [$w.durationh cget -text]:[$w.durationm cget -text]"
+	}
+    }
+
+    if {$todobut} {
+        append rem " TODO"
+        set ct [string trim [$w.complete_through get]]
+        if {"$ct" != ""} {
+            append rem " COMPLETE-THROUGH $ct"
+        }
+        set mo [string trim [$w.max_overdue get]]
+        if {"$mo" != ""} {
+            append rem " MAX-OVERDUE $mo"
+        }
+    }
+    global SkipType
+    if {$SkipType == 2} {
+	append rem " SKIP"
+	set needOmit 1
+    } elseif {$SkipType == 3} {
+	append rem " BEFORE"
+	set needOmit 1
+    } elseif {$SkipType == 4} {
+	append rem " AFTER"
+	set needOmit 1
+    }
+
+    if {$needOmit && !$DidOmit} {
+	append rem " OMIT [GetWeekend $w 1]"
+    }
+
+    set location [string trim [$w.location get]]
+    if {$location != ""} {
+        set location "Location: $location"
+        append rem " INFO [RemQuotedString $location]"
+    }
+    set description [string trim [$w.description get 1.0 end]]
+    if {$description != ""} {
+        set description "Description: $description"
+        append rem " INFO [RemQuotedString $description]"
+    }
+    set url [string trim [$w.url get]]
+    if {$url != ""} {
+        set url "Url: $url"
+        append rem " INFO [RemQuotedString $url]"
+    }
+    # Check it out!
+    global Remind
+    set f [open "|$Remind -arq -e - 2>@1" r+]
+    puts $f "BANNER %"
+    puts $f "$rem MSG %"
+    puts $f "MSG %_%_%_%_"
+    puts $f "FLUSH"
+    flush $f
+    set err {}
+    catch {set err [gets $f]}
+    catch {close $f}
+    if {"$err" != ""} {
+	# Clean up the message a bit
+	regsub -- {^-stdin-\([0-9]*\): } $err {} err
+	error "Error from Remind: $err"
+    }
+    append rem " MSG " [string map -nocase {"\n" " "} $body]
+    return $rem
+}
+
+# We used to return YYYY-MM-DD, but reverted to
+# day monthname year because this lets Remind produce
+# much better error messages.
+proc consolidate {y m d} {
+    global MonthNames
+    if {![regexp {^[0-9]+$} $m]} {
+	set m [lsearch -exact $MonthNames $m]
+	incr m
+    }
+    set mname [lindex $MonthNames [expr $m-1]]
+    return "$d $mname $y"
+}
+
+#---------------------------------------------------------------------------
+# CreateReminder1 -- Create the first part of a type-1 reminder
+# Arguments:
+#    w -- add reminder dialog window
+# Returns: first part of reminder
+#---------------------------------------------------------------------------
+proc CreateReminder1 {w} {
+
+    global repbut
+
+    set rem "REM"
+    set gotDay 0
+    set gotMon 0
+    set gotYear 0
+    set d [$w.day1 cget -text]
+    set m [$w.mon1 cget -text]
+    set y [$w.year1 cget -text]
+    if {"$d" != "every day" && "$m" != "every month" && $y != "every year"} {
+	set gotDay 1
+	set gotMon 1
+	set gotYear 1
+	append rem " "
+	append rem [consolidate $y $m $d]
+    } else {
+	if {"$d" != "every day"} {
+	    append rem " $d"
+	    set gotDay 1
+	}
+	if {"$m" != "every month"} {
+	    append rem " $m"
+	    set gotMon 1
+	}
+	if {"$y" != "every year"} {
+	    append rem " $y"
+	    set gotYear 1
+	}
+    }
+
+    # Check for repetition
+    if {$repbut} {
+	if {!$gotDay || !$gotMon || !$gotYear} {
+	    error "All components of a date must be specified if you wish to use the repeat feature."
+	}
+	append rem " *[$w.repdays cget -text]"
+    }
+
+    return $rem
+}
+
+#---------------------------------------------------------------------------
+# CreateReminder2 -- Create the first part of a type-2 reminder
+# Arguments:
+#    w -- add reminder dialog window
+# Returns: first part of reminder
+#---------------------------------------------------------------------------
+proc CreateReminder2 {w} {
+    set wkday [$w.wkday2 cget -text]
+    if {"$wkday" == "weekday"} {
+	set wkday [GetWeekend $w 0]
+    }
+    set day [$w.day2 cget -text]
+    set mon [$w.mon2 cget -text]
+    set year [$w.year2 cget -text]
+    if {$mon != "every month" && $year != "every year"} {
+	set rem "REM $wkday "
+	append rem [consolidate $year $mon $day]
+    } else {
+	set rem "REM $wkday $day"
+	if {$mon != "every month"} {
+	    append rem " $mon"
+	}
+	if {$year != "every year"} {
+	    append rem " $year"
+	}
+    }
+    return $rem
+}
+
+#---------------------------------------------------------------------------
+# CreateReminder3 -- Create the first part of a type-3 reminder
+# Arguments:
+#    w -- add reminder dialog window
+# Returns: first part of reminder
+#---------------------------------------------------------------------------
+proc CreateReminder3 {w} {
+    global MonthNames DidOmit
+    set which [$w.ordinal cget -text]
+    set day [$w.wkday3 cget -text]
+    set mon [$w.mon3 cget -text]
+    set year [$w.year3 cget -text]
+    set rem "REM"
+    if {$which != "Last"} {
+	if {$which == "First"} {
+	    append rem " 1"
+	} elseif {$which == "Second"} {
+	    append rem " 8"
+	} elseif {$which == "Third"} {
+	    append rem " 15"
+	} elseif {$which == "Fourth"} {
+	    append rem " 22"
+	}
+	if {$day != "weekday"} {
+	    append rem " $day"
+	} else {
+	    append rem " [GetWeekend $w 0]"
+	}
+	if {$mon != "every month"} {
+	    append rem " $mon"
+	}
+	if {$year != "every year"} {
+	    append rem " $year"
+	}
+    } else {
+	if {$day != "weekday"} {
+	    append rem " $day 1 --7"
+	} else {
+	    append rem " 1 -1 OMIT [GetWeekend $w 1]"
+	    set DidOmit 1
+	}
+	if {$mon != "every month"} {
+	    set i [lsearch -exact $MonthNames $mon]
+	    if {$i == 11} {
+		set i 0
+	    } else {
+		incr i
+	    }
+	    append rem " [lindex $MonthNames $i]"
+	}
+	if {$year != "every year"} {
+	    if {$mon == "December"} {
+		incr year
+	    }
+	    append rem " $year"
+	}
+    }
+    return $rem
+}
+
+#---------------------------------------------------------------------------
+# GetWeekend -- returns a list of weekdays or weekend days
+# Arguments:
+#    w -- add reminder dialog window
+#    wkend -- if 1, we want weekend.  If 0, we want weekdays.
+# Returns:
+#    list of weekdays or weekend-days
+#---------------------------------------------------------------------------
+proc GetWeekend {w wkend} {
+    global dSaturday dSunday dMonday dTuesday dWednesday dThursday dFriday
+    global EnglishDayNames
+    set ret {}
+    foreach d $EnglishDayNames {
+	set v [set d$d]
+	if {$v == $wkend} {
+	    lappend ret $d
+	}
+    }
+    return $ret
+}
+
+#---------------------------------------------------------------------------
+# EditReminder -- allow user to edit what gets put in reminder file
+# Arguments:
+#    rem -- current reminder
+#    args -- buttons to add to bottom
+# Returns:
+#    edited version of rem
+#---------------------------------------------------------------------------
+proc EditReminder {rem args} {
+    catch {destroy .edit}
+    global ModifyDialogResult
+    toplevel .edit
+    wm title .edit "TkRemind Preview reminder"
+    wm iconname .edit "Preview reminder"
+    text .edit.t -width 80 -height 5 -relief sunken
+    .edit.t insert end $rem
+    frame .edit.f
+    bind .edit <Destroy> {
+        global ModifyDialogResult
+        set ModifyDialogResult -2
+    }
+    set n 0
+    foreach but $args {
+	incr n
+	button .edit.but$n -text $but -command "set ModifyDialogResult $n"
+	pack .edit.but$n -in .edit.f -side left -fill x -expand 1
+    }
+    pack .edit.t -side top -fill both -expand 1
+    pack .edit.f -side top -fill x -expand 1
+    bind .edit <KeyPress-Escape> ".edit.but1 flash; .edit.but1 invoke"
+    bind .edit <Control-KeyPress-w> ".edit.but1 flash; .edit.but1 invoke"
+    wm protocol .edit WM_DELETE_WINDOW { .edit.but1 flash; .edit.but1 invoke }
+    set ModifyDialogResult 0
+    CenterWindow .edit .
+    bind .edit <ButtonPress-1> {
+        catch { raise .mod }
+        raise .edit
+    }
+    tkwait visibility .edit
+    set oldFocus [focus]
+    focus .edit.t
+    grab .edit
+    tkwait variable ModifyDialogResult
+    catch {focus $oldFocus}
+    if {$ModifyDialogResult == -2 || ![winfo exists .edit]} {
+        catch {destroy .edit}
+        return ""
+    }
+    set rem [.edit.t get 1.0 end]
+    catch {
+        bind .edit <Destroy> ""
+        destroy .edit
+    }
+    set rem [string trim $rem]
+    return $rem
+}
+
+#---------------------------------------------------------------------------
+# SetWinAttr -- sets an attribute for a window
+# Arguments:
+#    w -- window name
+#    attr -- attribute name
+#    val -- value to set it to
+# Returns:
+#    $val
+#---------------------------------------------------------------------------
+proc SetWinAttr {w attr val} {
+    global attrPriv
+    set attrPriv($w-$attr) $val
+}
+
+#---------------------------------------------------------------------------
+# GetWinAttr -- gets an attribute for a window
+# Arguments:
+#    w -- window name
+#    attr -- attribute name
+# Returns:
+#    Value of attribute
+#---------------------------------------------------------------------------
+proc GetWinAttr {w attr} {
+    global attrPriv
+    return $attrPriv($w-$attr)
+}
+
+#---------------------------------------------------------------------------
+# WaitWinAttr -- wait for a window attribute to change
+# Arguments:
+#    w -- window name
+#    attr -- attribute name
+# Returns:
+#    Value of attribute
+#---------------------------------------------------------------------------
+proc WaitWinAttr {w attr} {
+    global attrPriv
+    tkwait variable attrPriv($w-$attr)
+    return $attrPriv($w-$attr)
+}
+
+#---------------------------------------------------------------------------
+# BrowseForFile -- creates and operates a file browser dialog.
+# Arguments:
+#    w -- dialog window.
+#    title -- dialog title
+#    oktext -- text for "OK" button
+#    showdots -- if non-zero, shows "dot" files as well.
+# Returns:
+#    complete path of filename chosen, or "" if Cancel pressed.
+#---------------------------------------------------------------------------
+proc BrowseForFile {w title {oktext "OK"} {showdots 0} {filter "*"}} {
+    catch {destroy $w}
+    toplevel $w
+    wm title $w $title
+
+    # Global array to hold window attributes
+    global a${w}
+
+    SetWinAttr $w status busy
+    SetWinAttr $w showdots $showdots
+
+    frame $w.fileframe
+    frame $w.butframe
+    label $w.cwd -text [pwd]
+    entry $w.entry
+    label $w.masklab -text "Match: "
+    listbox $w.list -yscrollcommand "$w.scroll set"
+    scrollbar $w.scroll -command "$w.list yview"
+    button $w.ok -text $oktext -command "BrowseForFileOK $w"
+    button $w.cancel -text "Cancel" -command "BrowseForFileCancel $w"
+    entry $w.filter -width 7
+    $w.filter insert end $filter
+
+    pack $w.cwd $w.entry -side top -expand 0 -fill x
+    pack $w.fileframe -side top -expand 1 -fill both
+    pack $w.butframe -side top -expand 0 -fill x
+    pack $w.list -in $w.fileframe -side left -expand 1 -fill both
+    pack $w.scroll -in $w.fileframe -side left -expand 0 -fill y
+    pack $w.ok -in $w.butframe -side left -expand 1 -fill x
+    pack $w.cancel -in $w.butframe -side left -expand 1 -fill x
+    pack $w.masklab -in $w.butframe -side left -expand 0
+    pack $w.filter -in $w.butframe -side left -expand 1 -fill x
+
+    # Fill in the box and wait for status to change
+    BrowseForFileRead $w [pwd]
+
+    bind $w <ButtonPress-1> "catch { raise .p } ; raise $w"
+    bind $w <KeyPress-Escape> "$w.cancel flash; $w.cancel invoke"
+    bind $w <Control-KeyPress-w> "$w.cancel flash; $w.cancel invoke"
+    bind $w.list <Button-1> "$w.entry delete 0 end; $w.entry insert 0 \[selection get\]"
+    bind $w.list <Double-Button-1> "$w.ok flash; $w.ok invoke"
+    bind $w.list <Return> "$w.entry delete 0 end; $w.entry insert 0 \[selection get\]; $w.ok flash; $w.ok invoke"
+    bind $w.entry <Return> "$w.ok flash; $w.ok invoke"
+    bind $w.filter <Return> "BrowseForFileRead $w"
+    bind $w.entry <KeyPress> "CompleteFile $w"
+    bind $w.entry <KeyPress-space> "ExpandFile $w"
+    bindtags $w.entry "Entry $w.entry $w all"
+
+    wm protocol $w WM_DELETE_WINDOW "$w.cancel flash; $w.cancel invoke"
+    bindtags $w.list "Listbox $w.list $w all"
+    CenterWindow $w .
+    set oldFocus [focus]
+    tkwait visibility $w
+    focus $w.entry
+    set oldGrab [grab current $w]
+    grab set $w
+    WaitWinAttr $w status
+    catch {focus $oldFocus}
+    catch {grab set $oldGrab}
+    set ans [GetWinAttr $w status]
+    destroy $w
+    return $ans
+}
+
+proc CompleteFile {w} {
+    set index [lsearch [$w.list get 0 end] [$w.entry get]* ]
+    if {$index > -1} {
+	$w.list see $index
+	$w.list selection clear 0 end
+	$w.list selection set $index
+    }
+}
+
+proc ExpandFile {w} {
+    set stuff [$w.list curselection]
+    if {[string compare $stuff ""]} {
+	$w.entry delete 0 end
+	$w.entry insert end [$w.list get $stuff]
+    }
+}
+
+proc BrowseForFileCancel {w} {
+    SetWinAttr $w status {}
+}
+
+proc BrowseForFileOK {w} {
+    set fname [$w.entry get]
+    if {[string compare $fname ""]} {
+	# If it starts with a slash, handle it specially.
+	if {[string match "/*" $fname]} {
+	    if {[file isdirectory $fname]} {
+		BrowseForFileRead $w $fname
+		return
+	    } else {
+		SetWinAttr $w status $fname
+		return
+	    }
+	}
+	if {[string match */ $fname]} {
+	    set fname [string trimright $fname /]
+	}
+	if {[$w.cwd cget -text] == "/"} {
+	    set fname "/$fname"
+	} else {
+	    set fname "[$w.cwd cget -text]/$fname"
+	}
+	# If it's a directory, change directories
+	if {[file isdirectory $fname]} {
+	    BrowseForFileRead $w $fname
+	} else {
+	    SetWinAttr $w status $fname
+	}
+    }
+}
+
+#---------------------------------------------------------------------------
+# BrowseForFileRead -- read the current directory into the file browser
+# Arguments:
+#    w -- window name
+#    dir -- directory
+# Returns:
+#    nothing
+#---------------------------------------------------------------------------
+proc BrowseForFileRead {w {dir ""}} {
+    # Save working dir
+    set cwd [pwd]
+    if {$dir == ""} {
+	set dir [$w.cwd cget -text]
+    }
+    if {[catch {cd $dir} err]} {
+	show_error "$err"
+        raise $w
+	return
+    }
+    $w.cwd configure -text [pwd]
+    if {[GetWinAttr $w showdots]} {
+	set flist [glob -nocomplain .* *]
+    } else {
+	set flist [glob -nocomplain *]
+    }
+    set flist [lsort $flist]
+    set filter [$w.filter get]
+    if {$filter == ""} {
+	set filter "*"
+    }
+    $w.list delete 0 end
+    foreach item $flist {
+	if {$item != "." && $item != ".."} {
+	    if {[file isdirectory $item]} {
+		$w.list insert end "$item/"
+	    } else {
+		if {[string match $filter $item]} {
+		    $w.list insert end $item
+		}
+	    }
+	}
+    }
+    if {[pwd] != "/"} {
+	$w.list insert 0 "../"
+    }
+    cd $cwd
+    $w.entry delete 0 end
+}
+#---------------------------------------------------------------------------
+# StartBackgroundRemindDaemon
+# Arguments:
+#    none
+# Returns:
+#    nothing
+# Description:
+#    Starts a background Remind daemon to handle timed reminders
+#---------------------------------------------------------------------------
+proc StartBackgroundRemindDaemon {} {
+    global Remind DaemonFile ReminderFile Option TwentyFourHourMode
+    set fname [posix_escape $ReminderFile]
+    if {$TwentyFourHourMode} {
+        set problem [catch { set DaemonFile [open "|/bin/sh -c \"$Remind -b1 -zj -y -itkremind=1 $Option(ExtraRemindArgs) $fname\"" "r+"] } err]
+    } else {
+        set problem [catch { set DaemonFile [open "|/bin/sh -c \"$Remind -zj -y -itkremind=1 $Option(ExtraRemindArgs) $fname\"" "r+"] } err]
+    }
+    if {$problem} {
+	show_error "Can't start Remind daemon in background: $err"
+    } else {
+	fileevent $DaemonFile readable "DaemonReadable $DaemonFile"
+	puts $DaemonFile "STATUS"
+        DoTranslate
+        ScheduleUpdateForChanges
+    }
+}
+
+#---------------------------------------------------------------------------
+# StopBackgroundRemindDaemon
+# Arguments:
+#    none
+# Returns:
+#    nothing
+# Description:
+#    Stops the background Remind daemon
+#---------------------------------------------------------------------------
+proc StopBackgroundRemindDaemon {} {
+    global DaemonFile
+    catch {
+	puts $DaemonFile "EXIT"
+	flush $DaemonFile
+	close $DaemonFile
+    }
+}
+
+#---------------------------------------------------------------------------
+# RestartBackgroundRemindDaemon
+# Arguments:
+#    none
+# Returns:
+#    nothing
+# Description:
+#    Restarts the background Remind daemon
+#---------------------------------------------------------------------------
+proc RestartBackgroundRemindDaemon {} {
+    global DaemonFile ReminderFile
+
+    catch {
+	puts $DaemonFile "REREAD"
+	flush $DaemonFile
+    }
+}
+
+#---------------------------------------------------------------------------
+# ShowQueue
+# Arguments:
+#    queue - the queue
+# Returns:
+#    nothing
+# Description:
+#    Dumps the debugging queue listing
+#---------------------------------------------------------------------------
+proc ShowQueue { queue } {
+    global Option
+    set w .queuedbg
+    catch { destroy $w }
+    toplevel $w -background $Option(WinBackground)
+    wm title $w "Queue (Debugging Output)"
+    wm iconname $w "Queue Dbg"
+    text $w.t -fg black -bg white -width 80 -height 30 -wrap word -yscrollcommand "$w.sb set" -foreground $Option(TextColor) -background $Option(BackgroundColor) -font CalBoxFont
+    scrollbar $w.sb -orient vertical -command "$w.text yview"
+    button $w.ok -text "OK" -command "destroy $w" -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    grid $w.t -row 0 -column 0 -sticky nsew
+    grid $w.sb -row 0 -column 1 -sticky ns
+    grid $w.ok -row 1 -column 0 -sticky w
+    grid columnconfigure $w 0 -weight 1
+    grid columnconfigure $w 1 -weight 0
+    grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 0
+    CenterWindow $w .
+    bind $w <KeyPress-Escape> "$w.ok flash; $w.ok invoke"
+    bind $w <Control-KeyPress-w> "$w.ok flash; $w.ok invoke"
+    set obj [lsort -command sort_q $queue]
+    set did 0
+    $w.t tag configure grey -background "#DDDDDD" -selectbackground "#999999"
+    foreach q $obj {
+        if { $did > 0 } {
+            $w.t insert end "\n"
+        }
+        set fntag ""
+        catch {
+            set fname [dict get $q filename]
+            if {[dict exists $q lineno_start]} {
+                set lineno [dict get $q lineno_start]
+            } else {
+                set lineno [dict get $q lineno]
+            }
+            set fntag [string cat "FILE_" $lineno "_" $fname]
+        }
+        if { "$fntag" != "" } {
+            $w.t tag bind $fntag <Enter> [list $w.t tag configure $fntag -underline 1]
+            $w.t tag bind $fntag <Leave> [list $w.t tag configure $fntag -underline 0]
+            $w.t tag bind $fntag <ButtonPress-1> [list FireEditor $w.t $fntag]
+            $w.t tag bind $fntag <ButtonPress-3> [list FireEditor $w.t $fntag]
+        }
+        foreach key [list time nexttime body] {
+            set r [dict get $q $key]
+            $w.t insert end "$key=$r" [list $fntag]
+            if {"$key" != "body"} {
+                $w.t insert end "; " [list $fntag]
+            }
+        }
+        $w.t insert end "\n"
+        set did 1
+    }
+    if { $did == 0 } {
+        $w.t tag configure bold -font BoldFont
+        $w.t insert end "(Queue is empty)\n" bold
+    } else {
+        $w.t insert end "\n\nClick on a queue item to open an editor on the corresponding REM command.\n"
+    }
+    $w.t configure -state disabled
+}
+
+proc sort_q { a b } {
+    set a_ttime [dict get $a nexttime]
+    set b_ttime [dict get $b nexttime]
+    if {$a_ttime < $b_ttime} {
+        return -1
+    }
+    if {$a_ttime > $b_ttime} {
+        return 1
+    }
+    return 0
+}
+
+#---------------------------------------------------------------------------
+# AddTranslation
+# Arguments:
+#    obj - a dictionary of the form old:new
+# Returns:
+#    nothing
+# Description:
+#    Updates the Translations dict object
+#---------------------------------------------------------------------------
+proc AddTranslation { obj } {
+    global Translations
+    set Translations [dict merge $Translations $obj]
+    ScheduleUpdateForChanges
+}
+
+proc t { str } {
+    global Translations
+    set trans ""
+    catch {
+        set trans [dict get $Translations $str]
+    }
+    if {"$trans" == ""} {
+        return $str
+    }
+    return $trans
+}
+
+#---------------------------------------------------------------------------
+# DaemonReadable
+# Arguments:
+#    file -- file channel that is readable
+# Returns:
+#    nothing
+# Description:
+#    Reads data from the Remind daemon and handles it appropriately
+#---------------------------------------------------------------------------
+proc DaemonReadable { file } {
+    global Ignore
+    set line ""
+    catch { set num [gets $file line] }
+    if {$num < 0} {
+	catch { close $file }
+	return
+    }
+    if {[catch {set obj [::json::json2dict $line]}]} {
+        return
+    }
+    if {![dict exists $obj response]} {
+        return
+    }
+    set response [dict get $obj response]
+    switch -- $response {
+        "translate" {
+            AddTranslation [dict get $obj translation]
+        }
+        "queued" {
+            set n [dict get $obj nqueued]
+	    if {$n == 1} {
+		.b.nqueued configure -text "1 reminder queued"
+	    } else {
+		.b.nqueued configure -text "$n reminders queued"
+	    }
+        }
+        "reminder" {
+            set time [dict get $obj ttime]
+            set now [dict get $obj now]
+            set tag "*"
+            if {[dict exists $obj tags]} {
+                set tag [dict get $obj tags]
+            }
+            set body [dict get $obj body]
+            if {[dict exists $obj info]} {
+                set info [dict get $obj info]
+            } else {
+                set info [dict create]
+            }
+            set qid "*"
+            if {[dict exists $obj qid]} {
+                set qid [dict get $obj qid]
+            }
+            IssueBackgroundReminder $body $time $now $tag $qid $info
+        }
+        "queue" {
+            set queue [dict get $obj queue]
+            ShowQueue $queue
+        }
+        "newdate" {
+	    # Date has rolled over -- clear "ignore" list
+            catch { unset Ignore }
+	    Initialize
+	    FillCalWindow
+	    ShowTodaysReminders 0 ""
+        }
+        "reread" {
+            if {[dict exists $obj command]} {
+                set cmd [dict get $obj command]
+                if {"$cmd" == "inotify"} {
+                    # Update our translations if file has changed
+                    DoTranslate
+                    ScheduleUpdateForChanges
+                }
+            }
+            puts $file "STATUS"
+            flush $file
+        }
+        default {
+            puts stderr "Unknown message from daemon: $line\n"
+        }
+    }
+}
+
+#---------------------------------------------------------------------------
+# IssueBackgroundReminder
+# Arguments:
+#    body -- body of reminder
+#    time -- time of reminder
+#    now -- current time according to Remind daemon
+#    tag -- tag for reminder, or "*" if no tag
+#    qid -- Queue-ID for reminder, or "*" if no qid
+# Returns:
+#    nothing
+# Description:
+#    Reads a background reminder from daemon and pops up window.
+#---------------------------------------------------------------------------
+proc IssueBackgroundReminder { body time now tag qid info } {
+    global BgCounter Option Ignore DaemonFile HAVE_SYSNOTIFY NOTIFY_SEND_PATH
+    if {$Option(Deiconify)} {
+	wm deiconify .
+    }
+
+    # Do nothing if it's blank -- was probably a RUN-type reminder.
+    if {$body == ""} {
+	return
+    }
+
+    # If we're ignoring it because of tag, ignore and delete
+    set syntag [extract_syntag $tag]
+    if {$syntag != "*"} {
+        if {[info exists Ignore($syntag)]} {
+            if {$qid != "*"} {
+                puts $DaemonFile "DEL $qid"
+                flush $DaemonFile
+            }
+            return
+        }
+    }
+
+    incr BgCounter
+    set w .bg$BgCounter
+    toplevel $w -background $Option(WinBackground)
+    wm iconname $w "Reminder"
+    wm title $w "Timed reminder ($time)"
+    label $w.l -text "Reminder for $time issued at $now" -foreground $Option(LabelColor) -background $Option(WinBackground)
+    message $w.msg -aspect 2000 -text $body -justify left -anchor w -font {-weight bold} -relief groove -bd 2 -foreground $Option(TextColor) -background $Option(WinBackground)
+    frame $w.b -background $Option(WinBackground)
+
+    # Automatically shut down window after a minute if option says so
+    set after_token [after 60000 [list ClosePopup $w "" $Option(MailAddr) $Option(AutoClose) "" $tag $body $time $qid]]
+
+    wm protocol $w WM_DELETE_WINDOW [list ClosePopup $w $after_token "" 1 "" $tag $body $time $qid]
+    button $w.ok -text "OK" -foreground $Option(LabelColor) -background $Option(WinBackground) -command [list ClosePopup $w $after_token "" 1 "" $tag $body $time $qid]
+    set tktag [extract_tktag $tag]
+    if {$tktag != "*"} {
+	button $w.kill -text "Delete this reminder completely" -foreground $Option(LabelColor) -background $Option(WinBackground) -command [list ClosePopup $w $after_token "" 1 "kill" $tag $body $time $qid]
+    }
+    if {$qid != "*"} {
+	button $w.nomore -text "Don't remind me again today" -foreground $Option(LabelColor) -background $Option(WinBackground) -command [list ClosePopup $w $after_token "" 1 "ignore" $tag $body $time $qid]
+    }
+    pack $w.l -side top
+    pack $w.msg -side top -expand 1 -fill both -anchor w
+    frame $w.f -background $Option(WinBackground)
+    pack $w.f -side top -expand 1 -fill both
+    set row 0
+    if {[dict exists $info location]} {
+        label $w.f.l1 -text "Location: "  -foreground $Option(LabelColor) -background $Option(WinBackground) -padx 1 -pady 1 -highlightthickness 0 -relief flat -bd 0 -font {-weight bold}
+        message $w.f.l2 -text [dict get $info location] -foreground $Option(TextColor) -background $Option(WinBackground) -justify left -anchor w -aspect 2000 -padx 1 -pady 1 -highlightthickness 0 -relief flat -bd 0 -font {-weight normal}
+        grid $w.f.l1 -row $row -column 0 -sticky nw
+        grid $w.f.l2 -row $row -column 1 -sticky new
+        incr row
+    }
+    if {[dict exists $info description]} {
+        label $w.f.m1 -text "Description: " -foreground $Option(LabelColor) -background $Option(WinBackground) -padx 1 -pady 1 -highlightthickness 0 -relief flat -bd 0 -font {-weight bold}
+        message $w.f.m2 -text [dict get $info description] -foreground $Option(TextColor) -background $Option(WinBackground) -justify left -anchor w -aspect 2000 -padx 1 -pady 1 -highlightthickness 0 -relief flat -bd 0 -font {-weight normal}
+        grid $w.f.m1 -row $row -column 0 -sticky nw
+        grid $w.f.m2 -row $row -column 1 -sticky new
+        incr row
+    }
+    if {[dict exists $info url]} {
+        set url [dict get $info url]
+        message $w.f.u -text $url -foreground $Option(TextColor) -background $Option(WinBackground)  -justify left -anchor w -aspect 2000 -padx 1 -pady 1 -highlightthickness 0 -relief flat -bd 0 -font {-weight normal -underline 0}
+        grid $w.f.u -row $row -column 0 -columnspan 2 -sticky new
+        bind $w.f.u <Button-1> [list exec xdg-open "$url"]
+        bind $w.f.u <Button-2> [list exec xdg-open "$url"]
+        bind $w.f.u <Button-3> [list exec xdg-open "$url"]
+        bind $w.f.u <Enter> [list $w.f.u configure -font {-weight normal -underline 1}]
+        bind $w.f.u <Leave> [list $w.f.u configure -font {-weight normal -underline 0}]
+        balloon_add_help $w.f.u "Click to open $url"
+        incr row
+    }
+    pack $w.b -side top
+    pack $w.ok -in $w.b -side left
+    if {$qid != "*"} {
+	pack $w.nomore -in $w.b -side left
+    }
+    if {$tktag != "*"} {
+	pack $w.kill -in $w.b -side left
+    }
+
+    CenterWindow $w .
+
+    update
+    if {$Option(RingBell)} {
+	bell
+    }
+    if {$Option(SysNotify)} {
+        if {$HAVE_SYSNOTIFY} {
+            tk sysnotify "Reminder for $time" $body
+        } elseif {"$NOTIFY_SEND_PATH" != "" } {
+            catch {
+                exec $NOTIFY_SEND_PATH -a tkremind -i dialog-information "Reminder for $time" "$body"
+            }
+        }
+    }
+    if {$Option(RunCmd) != ""} {
+	if {$Option(FeedReminder)} {
+	    FeedReminderToCommand $Option(RunCmd) "$time: $body"
+	} else {
+	    exec "/bin/sh" "-c" $Option(RunCmd) "&"
+	}
+    }
+}
+
+#***********************************************************************
+# %PROCEDURE: FeedReminderToCommand
+# %ARGUMENTS:
+#  cmd -- command to execute
+#  msg -- what to feed it
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Feeds "$msg" to a command.
+#***********************************************************************
+proc FeedReminderToCommand { cmd msg } {
+    catch {
+	set f [open "|$cmd" "w"]
+	fconfigure $f -blocking 0
+	fileevent $f writable [list CommandWritable $f $msg]
+    }
+}
+
+#***********************************************************************
+# %PROCEDURE: CommandWritable
+# %ARGUMENTS:
+#  f -- file which is writable
+#  msg -- message to write
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Writes $msg to $f; closes $f.
+#***********************************************************************
+proc CommandWritable { f msg } {
+    puts $f $msg
+    flush $f
+    close $f
+}
+
+
+proc main {} {
+    global ConfigFile
+
+    font create CalboxFont {*}[font actual TkFixedFont]
+    font create HeadingFont {*}[font actual TkDefaultFont]
+    font create BoldFont {*}[font actual TkDefaultFont] -weight bold
+
+    global AppendFile HighestTagSoFar DayNames
+    catch { SetFonts }
+    Initialize
+    catch {
+	puts "\nTkRemind Copyright (C) 1996-2026 Dianne Skoll"
+    }
+
+    # If no $ConfigFile file, create an empty one
+    if {![file exists $ConfigFile]} {
+	catch {
+	    set f [open $ConfigFile "w"]
+	    close $f
+	}
+    }
+    FindConfigFile
+    LoadOptions
+    ShowTodaysReminders 0 ""
+    ScanForTags $AppendFile
+    CreateCalWindow $DayNames
+    FillCalWindow
+    StartBackgroundRemindDaemon
+    DisplayTimeContinuously
+}
+
+#***********************************************************************
+# %PROCEDURE: ScanForTags
+# %ARGUMENTS:
+#  fname -- name of file to scan
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Scans the file for all tags of the form "TKTAGnnnn" and builds
+#  the tag array.  Also adjusts HighestTagSoFar
+#***********************************************************************
+proc ScanForTags { fname } {
+    global HighestTagSoFar
+    if {[catch { set f [open $fname "r"]}]} {
+	return
+    }
+    while {[gets $f line] >= 0} {
+	switch -regexp -- $line {
+	    {^REM TAG TKTAG[0-9]+} {
+		regexp {^REM TAG TKTAG([0-9]+)} $line dummy tagno
+		if {$tagno > $HighestTagSoFar} {
+		    set HighestTagSoFar $tagno
+		}
+	    }
+	}
+    }
+    close $f
+}
+
+#***********************************************************************
+# %PROCEDURE: ReadTaggedOptions
+# %ARGUMENTS:
+#  tag -- tag to match
+#  date -- today's date
+# %RETURNS:
+#  A list of options for the dialog box for the tagged reminder
+# %DESCRIPTION:
+#  Converts the JSON dictionary to a list of options for dialog box
+#***********************************************************************
+proc ReadTaggedOptions { tag date } {
+    global TagToObj MonthNames EnglishDayNames TwentyFourHourMode
+    if {![info exists TagToObj($tag)]} {
+	return ""
+    }
+    set obj $TagToObj($tag)
+    set ans ""
+    regexp {^([0-9][0-9][0-9][0-9]).([0-9][0-9]).([0-9][0-9])} $date all y m d
+    set m [string trimleft $m 0]
+    set d [string trimleft $d 0]
+    set y [string trimleft $y 0]
+    if {![dict exists $obj skip]} {
+	lappend ans -global-SkipType 1
+    } else {
+	set s [dict get $obj skip]
+	if {"$s" == "SKIP"} {
+	    lappend ans -global-SkipType 2
+	} elseif {"$s" == "BEFORE"} {
+	    lappend ans -global-SkipType 3
+	} elseif {"$s" == "AFTER"} {
+	    lappend ans -global-SkipType 4
+	} else {
+	    lappend ans -global-SkipType 1
+	}
+    }
+
+    if {[dict exists $obj date]} {
+        lappend ans -global-DateOfEventBeingEdited $date
+    }
+    if {[dict exists $obj d]} {
+	lappend ans -text-day1 [dict get $obj d]
+	lappend ans -text-day2 [dict get $obj d]
+    } else {
+	lappend ans -text-day1 {every day}
+	lappend ans -text-day2 $d
+    }
+    if {[dict exists $obj m]} {
+        set m [dict get $obj m]
+        set mm [string trimleft $m 0]
+	lappend ans -text-mon1 [lindex $MonthNames [expr $mm -1]]
+	lappend ans -text-mon2 [lindex $MonthNames [expr $mm -1]]
+	lappend ans -text-mon3 [lindex $MonthNames [expr $mm -1]]
+    } else {
+	lappend ans -text-mon1 {every month}
+	lappend ans -text-mon2 {every month}
+	lappend ans -text-mon3 {every month}
+    }
+    if {[dict exists $obj y]} {
+	lappend ans -text-year1 [dict get $obj y]
+	lappend ans -text-year2 [dict get $obj y]
+	lappend ans -text-year3 [dict get $obj y]
+    } else {
+	lappend ans -text-year1 {every year}
+	lappend ans -text-year2 {every year}
+	lappend ans -text-year3 {every year}
+    }
+
+    set wd {}
+    if {[dict exists $obj wd]} {
+	set wd [dict get $obj wd]
+	if {[llength $wd] == 1} {
+	    lappend ans -text-wkday2 [lindex $wd 0]
+	    lappend ans -text-wkday3 [lindex $wd 0]
+	} elseif {"$wd" == "Monday Tuesday Wednesday Thursday Friday"} {
+	    lappend ans -text-wkday2 weekday
+	    lappend ans -text-wkday3 weekday
+	}
+    } else {
+	lappend ans -text-wkday2 [get_weekday $date]
+	lappend ans -text-wkday3 [get_weekday $date]
+    }
+
+    if {[llength $wd] > 0} {
+	if {[dict exists $obj d]} {
+	    set day [dict get $obj d]
+	    if {$day < 8} {
+		if {[dict exists $obj back]} {
+		    lappend ans -text-ordinal Last
+		    # Adjust month down and possibly year?
+		    if {[dict exists $obj m]} {
+                        set mm [string trimleft [dict get $obj m] 0]
+			set idx [expr $mm -1]
+			if {$idx <= 0} {
+			    set idx 12
+			}
+			lappend ans -text-mon1 [lindex $MonthNames [expr $idx -1]]
+			lappend ans -text-mon2 [lindex $MonthNames [expr $idx -1]]
+			lappend ans -text-mon3 [lindex $MonthNames [expr $idx -1]]
+			if {[dict exists $obj y]} {
+			    set year [dict get $obj y]
+			    if {$idx == 12} {
+				lappend ans -text-year1 [expr $year - 1]
+				lappend ans -text-year2 [expr $year - 1]
+				lappend ans -text-year3 [expr $year - 1]
+			    }
+			}
+		    }
+		} else {
+		    lappend ans -text-ordinal First
+		}
+	    } elseif {$day < 15} {
+		lappend ans -text-ordinal Second
+	    } elseif {$day < 22} {
+		lappend ans -text-ordinal Third
+	    } else  {
+		lappend ans -text-ordinal Fourth
+	    }
+	} else {
+	    lappend ans -text-ordinal Every
+	}
+    } else {
+	if {$d < 8} {
+	    lappend ans -text-ordinal First
+	} elseif {$d < 15} {
+	    lappend ans -text-ordinal Second
+	} elseif {$d < 22} {
+	    lappend ans -text-ordinal Third
+	} elseif {$d < 29} {
+	    lappend ans -text-ordinal Fourth
+	} else {
+	    lappend ans -text-ordinal Last
+	}
+    }
+
+    if {[dict exists $obj until]} {
+	set u [dict get $obj until]
+	regexp {^([0-9][0-9][0-9][0-9]).([0-9][0-9]).([0-9][0-9])} $u all yu mu du
+        # Trim leading zeros, or Tcl complains
+        set mu [string trimleft $mu 0]
+	lappend ans -global-expbut 1
+	lappend ans -text-expday $du
+	lappend ans -text-expmon [lindex $MonthNames [expr $mu-1]]
+	lappend ans -text-expyear $yu
+
+    } else {
+        set mm [string trimleft $m 0]
+	lappend ans -global-expbut 0
+	lappend ans -text-expday $d
+	lappend ans -text-expmon [lindex $MonthNames [expr $mm-1]]
+	lappend ans -text-expyear $y
+    }
+
+    if {[dict exists $obj delta]} {
+	set delta [dict get $obj delta]
+	if {$delta == 0} {
+	    lappend ans -global-advbut 0
+	    lappend ans -text-advdays 3
+	    lappend ans -global-advcount 1
+	} elseif {$delta < 0} {
+	    set delta [expr abs($delta)]
+	    lappend ans -global-advbut 1
+	    lappend ans -text-advdays $delta
+	    lappend ans -global-advcount 0
+	} else {
+	    lappend ans -global-advbut 1
+	    lappend ans -text-advdays $delta
+	    lappend ans -global-advcount 1
+	}
+    } else {
+	lappend ans -global-advbut 0
+	lappend ans -text-advdays 3
+	lappend ans -global-advcount 1
+    }
+
+    if {[dict exists $obj localomit]} {
+	set lo [dict get $obj localomit]
+	foreach w $EnglishDayNames {
+	    if {[lsearch -exact $lo $w] >= 0} {
+		lappend ans "-global-d$w" 1
+	    } else {
+		lappend ans "-global-d$w" 0
+	    }
+	}
+    } else {
+	lappend ans -global-dSunday 1
+	lappend ans -global-dMonday 0
+	lappend ans -global-dTuesday 0
+	lappend ans -global-dWednesday 0
+	lappend ans -global-dThursday 0
+	lappend ans -global-dFriday 0
+	lappend ans -global-dSaturday 1
+    }
+    if {[dict exists $obj rep]} {
+	lappend ans -global-repbut 1
+	lappend ans -text-repdays [dict get $obj rep]
+    } else {
+	lappend ans -global-repbut 0
+	lappend ans -text-repdays 1
+    }
+
+    if {[dict exists $obj time]} {
+	set t [dict get $obj time]
+	lappend ans -global-timebut 1
+	set hour [expr $t / 60]
+	set minute [format %02d [expr $t % 60]]
+	if {$hour == 0 && !$TwentyFourHourMode} {
+	    lappend ans -text-timehour 12
+	    lappend ans -text-ampm AM
+	} else {
+	    if {$TwentyFourHourMode} {
+		lappend ans -text-timehour $hour
+	    } else {
+		if {$hour >= 12} {
+		    incr $hour -12
+		    lappend ans -text-timehour $hour
+		    lappend ans -text-ampm PM
+		} else {
+		    lappend ans -text-timehour $hour
+		    lappend ans -text-ampm AM
+		}
+	    }
+	}
+	lappend ans -text-timemin $minute
+	if {[dict exists $obj tdelta]} {
+	    lappend ans -global-timeadvbut 1
+	    lappend ans -text-timeadv [dict get $obj tdelta]
+	} else {
+	    lappend ans -global-timeadvbut 0
+	    lappend ans -text-timeadv 15
+	}
+	if {[dict exists $obj trep]} {
+	    lappend ans -global-timerepbut 1
+	    lappend ans -text-timerep [dict get $obj trep]
+	} else {
+	    lappend ans -global-timerepbut 0
+	    lappend ans -text-timerep 5
+	}
+	if {[dict exists $obj duration]} {
+	    lappend ans -global-durationbut 1
+	    set dur [dict get $obj duration]
+	    lappend ans -text-durationh [expr $dur / 60]
+	    lappend ans -text-durationm [format %02d [expr $dur % 60]]
+	} else {
+	    lappend ans -global-durationbut 0
+	    lappend ans -text-durationh 1
+	    lappend ans -text-durationm 00
+	}
+    } else {
+	lappend ans -global-timebut 0
+	lappend ans -text-timehour 12
+	lappend ans -text-timemin 00
+	lappend ans -text-timeadv 15
+	lappend ans -global-timerepbut 0
+	lappend ans -text-timerep 5
+	lappend ans -global-durationbut 0
+	lappend ans -text-durationh 1
+	lappend ans -text-durationm 00
+    }
+    if {[dict exists $obj rawbody]} {
+	lappend ans -entry-entry [dict get $obj rawbody]
+    } else {
+	lappend ans -entry-entry [dict get $obj body]
+    }
+
+    # Is this a TODO?
+    if {[dict exists $obj is_todo]} {
+        lappend ans -global-todobut [dict get $obj is_todo]
+    } else {
+        lappend ans -global-todobut 0
+    }
+    if {[dict exists $obj complete_through]} {
+        lappend ans -entry-complete_through [dict get $obj complete_through]
+    } else {
+        lappend ans -entry-complete_through ""
+    }
+
+    if {[dict exists $obj max_overdue]} {
+        lappend ans -entry-max_overdue [dict get $obj max_overdue]
+    } else {
+        lappend ans -entry-max_overdue ""
+    }
+
+    # Figure out the reminder type
+    if {[dict exists $obj rep]} {
+	# Repeat must be type 1
+	lappend ans -global-OptionType 1
+	lappend ans -text-day2 $d
+	lappend ans -text-mon2 [lindex $MonthNames [expr $m - 1]]
+	lappend ans -text-mon3 [lindex $MonthNames [expr $m - 1]]
+	lappend ans -text-year2 $y
+	lappend ans -text-year3 $y
+    } elseif {![dict exists $obj wd]} {
+	# No weekdays - must be type 1
+	lappend ans -global-OptionType 1
+	lappend ans -text-day2 $d
+	lappend ans -text-mon2 [lindex $MonthNames [expr $m - 1]]
+	lappend ans -text-mon3 [lindex $MonthNames [expr $m - 1]]
+	lappend ans -text-year2 $y
+	lappend ans -text-year3 $y
+    } elseif {![dict exists $obj d]} {
+	# No day... must be "every wkday in ..."
+	lappend ans -global-OptionType 3
+	lappend ans -text-day1 $d
+	lappend ans -text-mon1 [lindex $MonthNames [expr $m - 1]]
+	lappend ans -text-year1 $y
+	lappend ans -text-day2 $d
+	lappend ans -text-mon2 [lindex $MonthNames [expr $m - 1]]
+	lappend ans -text-year2 $y
+    } else {
+	set day [dict get $obj d]
+	# Take a guess based on day
+	if {$day == 1 || $day == 8 || $day == 15 || $day == 22} {
+	    lappend ans -global-OptionType 3
+	    lappend ans -text-day1 $d
+	    lappend ans -text-mon1 [lindex $MonthNames [expr $m - 1]]
+	    lappend ans -text-year1 $y
+	    lappend ans -text-day2 $d
+	    lappend ans -text-mon2 [lindex $MonthNames [expr $m - 1]]
+	    lappend ans -text-year2 $y
+	} else {
+	    lappend ans -global-OptionType 2
+	    lappend ans -text-day1 $d
+	    lappend ans -text-mon1 [lindex $MonthNames [expr $m - 1]]
+	    lappend ans -text-year1 $y
+	    lappend ans -text-mon3 [lindex $MonthNames [expr $m - 1]]
+	    lappend ans -text-year3 $y
+	}
+    }
+
+    if {[dict exists $obj info]} {
+        set info [dict get $obj info]
+        if {[dict exists $info location]} {
+            lappend ans -entry-location [dict get $info location]
+        }
+        if {[dict exists $info url]} {
+            lappend ans -entry-url [dict get $info url]
+        }
+        if {[dict exists $info description]} {
+            lappend ans -txtentry-description [dict get $info description]
+        }
+    }
+    return $ans
+}
+
+# Make a string safe for passing to shell.
+proc posix_escape { str } {
+    return [string cat "'" [string map [list {'} {'\''}] $str] "'"]
+}
+
+proc FireEditor { w {fntag ""}} {
+    global Option
+    global EditorPid
+    if {"$fntag" == ""} {
+        set tags [$w tag names current]
+        set index [lsearch -glob $tags "FILE_*"]
+        if {$index < 0} {
+            return
+        }
+        set fntag [lindex $tags $index]
+    }
+    if {![regexp {^FILE_([0-9]+)_(.*)} $fntag all line file]} {
+        return
+    }
+    set editor $Option(Editor)
+    regsub -all "%s" $editor [posix_escape $file] editor
+    regsub -all "%d" $editor $line editor
+
+    # Don't fire up a second editor if first is running
+    if {$EditorPid >= 0} {
+	if {![catch {exec kill -0 $EditorPid}]} {
+	    Status "Editor already active!"
+	    after 2500 DisplayTime
+	    bell
+	    return
+	}
+    }
+    Status "Firing up editor..."
+    after 1500 DisplayTime
+    set EditorPid [exec sh -c $editor &]
+}
+
+#***********************************************************************
+# %PROCEDURE: GetCurrentReminder
+# %ARGUMENTS:
+#  w -- text window
+# %RETURNS:
+#  The tag (TKTAGnnnn) for current editable reminder, or "" if no
+#  current editable reminder.
+#***********************************************************************
+proc GetCurrentReminder { w } {
+    set tags [$w tag names current]
+    set index [lsearch -glob $tags "TKTAG*"]
+    if {$index < 0} {
+	return ""
+    }
+    set tag [lindex $tags $index]
+    return $tag
+}
+
+#***********************************************************************
+# %PROCEDURE: TaggedEnter
+# %ARGUMENTS:
+#  w -- text window
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Highlights an "editable" reminder as mouse moves into it
+#***********************************************************************
+proc TaggedEnter { w } {
+    set tag [GetCurrentReminder $w]
+    if {$tag != ""} {
+	$w tag configure $tag -foreground #FF0000
+    }
+}
+
+#***********************************************************************
+# %PROCEDURE: TaggedLeave
+# %ARGUMENTS:
+#  w -- text window
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Removes highlight from an "editable" reminder as mouse leaves it
+#***********************************************************************
+proc TaggedLeave { w } {
+    global Option
+    set tag [GetCurrentReminder $w]
+    if {$tag != ""} {
+	set tags [$w tag names current]
+	set index [lsearch -glob $tags "clr*"]
+	if {$index < 0} {
+	    set fg $Option(TextColor)
+	} else {
+	    set fg [string range [lindex $tags $index] 3 end]
+	    set fg "#$fg"
+	}
+	$w tag configure $tag -foreground $fg
+    }
+}
+
+proc EditableEnter { w } {
+    set tags [$w tag names current]
+    set index [lsearch -glob $tags "FILE_*"]
+    if {$index < 0} {
+	return
+    }
+    set tag [lindex $tags $index]
+
+    set c ""
+    set index [lsearch -glob $tags "clr*"]
+    if {$index >= 0} {
+        set ctag [lindex $tags $index]
+        set c [$w tag cget $ctag -foreground]
+    }
+    if {"$c" != ""} {
+        $w tag configure $tag -underline 1
+        # underlinefg not supported on older versions of Tk
+        catch { $w tag configure $tag -underlinefg $c }
+    } else {
+        $w tag configure $tag -underline 1
+    }
+}
+proc EditableLeave { w } {
+    set tags [$w tag names current]
+    set index [lsearch -glob $tags "FILE_*"]
+    if {$index < 0} {
+	return
+    }
+    set tag [lindex $tags $index]
+    $w tag configure $tag -underline 0
+}
+
+proc OpenUrl { w } {
+    global SynToObj Balloon
+    set tags [$w tag names current]
+    set index [lsearch -glob $tags "__syn__*"]
+    if {$index < 0} {
+        return
+    }
+    set syntag [lindex $tags $index]
+    if {![info exists SynToObj($syntag)]} {
+        return
+    }
+    set obj $SynToObj($syntag)
+    if {![dict exists $obj info]} {
+        return
+    }
+    set info [dict get $obj info]
+    if {![dict exists $info url]} {
+        return
+    }
+    set url [dict get $info url]
+    exec xdg-open "$url"
+}
+
+proc details_enter { w } {
+    global SynToObj Balloon
+    set tags [$w tag names current]
+    set index [lsearch -glob $tags "__syn__*"]
+    if {$index < 0} {
+        return
+    }
+    set syntag [lindex $tags $index]
+    if {![info exists SynToObj($syntag)]} {
+        return
+    }
+    set obj $SynToObj($syntag)
+    set lines {}
+    if {![dict exists $obj info]} {
+        return
+    }
+    set info [dict get $obj info]
+    set llen 0
+    if {[dict exists $info location]} {
+        lappend lines [list "Location:" [dict get $info location]]
+    }
+    if {[dict exists $info description]} {
+        lappend lines [list "Description:" [dict get $info description]]
+    }
+    if {[dict exists $info url]} {
+        lappend lines [list "URL:" "Middle-click to open [dict get $info url]"]
+    }
+    if {[llength $lines] < 1} {
+        return
+    }
+    balloon_cancel_timer
+
+    set Balloon(HelpId) [after $Balloon(HelpTime) [list details_popup $lines]]
+}
+
+proc details_leave { w } {
+    balloon_cancel_timer
+    catch { destroy .balloonhelp }
+}
+
+proc details_popup { pairs } {
+    global Balloon
+    set maxwid 80
+    set h .balloonhelp
+    catch { destroy $h }
+    set c 0
+    toplevel $h -bg #000000
+    frame $h.l -padx 0 -pady 0 -highlightthickness 0 -relief flat -bd 0 -bg #FFFFC0
+    pack $h.l -side top -padx 1 -pady 1 -ipadx 2 -ipady 1
+    foreach pair $pairs {
+        label $h.lab$c -text "[lindex $pair 0] " -padx 1 -pady 1 -highlightthickness 0 -relief flat -bd 0 -bg #FFFFC0 -font {-weight bold}
+        message $h.m$c -text "[lindex $pair 1] " -justify left -anchor w -aspect 2000 -padx 1 -pady 1 -highlightthickness 0 -relief flat -bd 0 -bg #FFFFC0 -font {-weight normal}
+        grid $h.lab$c -in $h.l -row $c -column 0 -sticky nw
+        grid $h.m$c -in $h.l -row $c -column 1 -sticky new
+        incr c
+    }
+
+    wm overrideredirect $h 1
+    set geom [balloon_calculate_geometry $h]
+    wm geometry $h $geom
+    set Balloon(HelpId) [after 10000 "catch { destroy $h }"]
+    set Balloon(MustLeave) 1
+}
+
+#***********************************************************************
+# %PROCEDURE: EditTaggedReminder
+# %ARGUMENTS:
+#  w -- text window
+#  i -- index of text window
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Opens a dialog box to edit the current editable reminder
+#***********************************************************************
+proc EditTaggedReminder { w i } {
+    global InModalDialog
+    if { $InModalDialog } {
+        return
+    }
+    set InModalDialog 1
+    catch { EditTaggedReminderHelper $w $i } result options
+    set InModalDialog 0
+    return -options $options $result
+}
+
+proc EditTaggedReminderHelper { w i } {
+    global ModifyDialogResult
+    set tag [GetCurrentReminder $w]
+    if {$tag == ""} {
+	return
+    }
+
+    # Get the date
+    set index [lsearch -glob [$w tag names current] "date_*"]
+    if {$index < 0} {
+	return
+    }
+
+    set date [string range [lindex [$w tag names current] $index] 5 end]
+    # Read in options
+    set opts [ReadTaggedOptions $tag $date]
+    if {$opts == ""} {
+	return
+    }
+
+    catch {destroy .mod}
+    toplevel .mod
+    CreateModifyDialog .mod $i "Cancel" "Replace reminder" "Delete reminder" "Preview reminder"
+    wm title .mod "TkRemind Edit Reminder..."
+    wm iconname .mod "Edit Reminder"
+    OptionsToRemindDialog .mod $opts
+    toggle_complete_through .mod
+    tkwait visibility .mod
+    set oldFocus [focus]
+    bind .mod <ButtonPress-1> [list raise .mod]
+    while {1} {
+	catch {
+            grab .mod
+            raise .mod
+            focus .mod.entry
+        }
+	set ModifyDialogResult -1
+	tkwait variable ModifyDialogResult
+	if {$ModifyDialogResult == 1 || $ModifyDialogResult == -2 || ![winfo exists .mod]} {
+	    catch {focus $oldFocus}
+	    catch { destroy .mod }
+	    return 0
+	}
+	set problem [catch {set rem [CreateReminder .mod]} err]
+	if {$problem} {
+	    show_error "$err"
+	    continue
+	}
+        set rem [string trim $rem]
+        set edited 0
+	if {$ModifyDialogResult == 4} {
+	    set newrem [EditReminder $rem "Cancel" "Replace reminder"]
+	    if {$ModifyDialogResult == 1 || $ModifyDialogResult == -2} {
+		continue
+	    }
+            set ModifyDialogResult 2
+            if {"$newrem" != "$rem"} {
+                set rem $newrem
+                set edited 1
+            }
+	}
+	catch {focus $oldFocus}
+	set problem [catch {
+	    if {$ModifyDialogResult == 2} {
+		ReplaceTaggedReminder $tag $rem $edited
+	    } else {
+		DeleteTaggedReminder $tag
+	    }
+	} err]
+	catch { destroy .mod }
+	if {$problem} {
+	    show_error $err
+	    return 1
+	}
+
+        ScheduleUpdateForChanges
+	return 0
+    }
+}
+
+
+#***********************************************************************
+# %PROCEDURE: UpdateForChanges
+#  Updates the calendar window and restarts background daemon because
+#  something has changed.
+# %ARGUMENTS:
+#  None
+# %RETURNS:
+#  Nothing
+#***********************************************************************
+proc UpdateForChanges {} {
+    global TimerUpdateForChanges
+    catch { after cancel $TimerUpdateForChanges }
+    FillCalWindow
+    RestartBackgroundRemindDaemon
+}
+
+# Schedule an update for 250ms in the future.
+# That way, if we get a rapid succession of
+# change notifications, we (probably) only
+# end up doing one call to UpdateForChanges
+proc ScheduleUpdateForChanges {} {
+    global TimerUpdateForChanges
+    catch { after cancel $TimerUpdateForChanges }
+    set TimerUpdateForChanges [after 250 UpdateForChanges]
+}
+
+#***********************************************************************
+# %PROCEDURE: UniqueFileName
+# %ARGUMENTS:
+#  stem -- base name of file
+# %RETURNS:
+#  A filename of the form "stem.xxx" which does not exist
+#***********************************************************************
+proc UniqueFileName { stem } {
+    set n 1
+    while {[file exists $stem.$n]} {
+	incr n
+    }
+    return $stem.$n
+}
+
+
+#***********************************************************************
+# %PROCEDURE: DeleteTaggedReminder
+# %ARGUMENTS:
+#  tag -- tag of reminder to delete
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Deletes tagged reminder from reminder file
+#***********************************************************************
+proc DeleteTaggedReminder { tag } {
+    global AppendFile
+    global HighestTagSoFar Ignore
+
+    set tmpfile [UniqueFileName $AppendFile]
+    set out [open $tmpfile "w"]
+    write_warning_headers $out
+    set in [open $AppendFile "r"]
+
+    set found 0
+
+    set tktag [extract_tktag $tag]
+    set syntag [extract_syntag $tag]
+    set h 0
+    while {[gets $in line] >= 0} {
+	if {[is_warning_header $line]} {
+	    continue
+	}
+	if {[string match "REM TAG $tktag *" $line]} {
+	    set found 1
+	    continue
+	}
+	# Delete the old comment lines
+	if {[string match "# TKTAG*" $line]} {
+	    continue
+	}
+	if {[string match "# -global-OptionType *" $line]} {
+	    continue
+	}
+	if {[string match "# TKEND" $line]} {
+	    continue
+	}
+
+        if {[regexp {^REM TAG TKTAG([0-9]+)} $line all tagno]} {
+            if {$tagno > $h} {
+                set h $tagno
+            }
+        }
+        puts $out $line
+    }
+
+    if {! $found } {
+	close $in
+	close $out
+	file delete $tmpfile
+	error "Did not find reminder with tag $tag"
+    }
+
+    if {$syntag != "*"} {
+        catch { unset Ignore($syntag) }
+    }
+
+    close $in
+    close $out
+    set HighestTagSoFar $h
+    file rename -force -- $tmpfile $AppendFile
+}
+
+#***********************************************************************
+# %PROCEDURE: ReplaceTaggedReminder
+# %ARGUMENTS:
+#  tag -- tag of reminder to replace
+#  rem -- text to replace it with
+#  edited -- true if reminder has been hand-edited
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Replaces a tagged reminder in the reminder file
+#***********************************************************************
+proc ReplaceTaggedReminder { tag rem edited } {
+    global AppendFile
+
+    set tmpfile [UniqueFileName $AppendFile]
+    set out [open $tmpfile "w"]
+    write_warning_headers $out
+    set in [open $AppendFile "r"]
+
+    set found 0
+
+    while {[gets $in line] >= 0} {
+	if {[is_warning_header $line]} {
+	    continue
+	}
+	if {[string match "REM TAG $tag *" $line]} {
+	    # Write the new reminder
+	    WriteReminder $out $tag $rem $edited
+	    set found 1
+	} else {
+	    # Delete the old comment lines
+	    if {[string match "# TKTAG*" $line]} {
+		continue
+	    }
+	    if {[string match "# -global-OptionType *" $line]} {
+		continue
+	    }
+	    if {[string match "# TKEND" $line]} {
+		continue
+	    }
+	    puts $out $line
+	}
+    }
+
+    if {! $found} {
+	close $in
+	close $out
+	file delete $tmpfile
+	error "Did not find reminder with tag $tag"
+    }
+
+    close $in
+    close $out
+    file rename -force -- $tmpfile $AppendFile
+}
+
+#***********************************************************************
+# %PROCEDURE: WriteReminder
+# %ARGUMENTS:
+#  out -- file to write to
+#  tag -- reminder tag
+#  rem -- reminder body
+#  edited -- true if reminder has been hand-edited
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Writes a reminder to a file
+#***********************************************************************
+proc WriteReminder { out tag rem edited } {
+    if {!$edited && ([string range $rem 0 3] == "REM ")} {
+	puts $out "REM TAG $tag [string range $rem 4 end]"
+    } else {
+	puts $out $rem
+    }
+}
+
+#***********************************************************************
+# %PROCEDURE: DoShadeSpecial
+# %ARGUMENTS:
+#  n -- calendar box to shade
+#  r, g, b -- colour components
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Handles the "SHADE" special -- shades a box.
+#***********************************************************************
+proc DoShadeSpecial { n r g b } {
+    if {$r < 0 || $r > 255 || $g < 0 || $g > 255 || $b < 0 || $b > 255} {
+	return
+    }
+    set bg [format "#%02x%02x%02x" $r $g $b]
+    .cal.t$n configure -background $bg
+}
+
+#***********************************************************************
+# %PROCEDURE: DoMoonSpecial
+# %ARGUMENTS:
+#  n -- calendar box for moon
+#  stuff -- Remind command line
+#  fntag - filename tag, if any
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Handles the "MOON" special -- draws a moon symbol
+#***********************************************************************
+proc DoMoonSpecial { n stuff fntag day } {
+    set msg ""
+    # Yes, this is gross, but the odds of ctrl-A appearing
+    # in the text associated with a MOON are small.
+    set num [scan $stuff {%d %d %d %[^]} phase junk1 junk2 msg]
+    if {$num < 1} {
+	return
+    }
+    if {$phase < 0 || $phase > 3} {
+	return
+    }
+
+    switch -exact -- $phase {
+        0 { set win .moon_new }
+        1 { set win .moon_first }
+        2 { set win .moon_full }
+        3 { set win .moon_last }
+    }
+
+    # We need two sets of moon phase windows.  There can be
+    # two of a given phase in the same month, but Tk does
+    # not allow the same embedded window in two separate
+    # text boxes.  So we use this hack to make sure
+    # we use a different window if the same moon phase
+    # happens twice in a month.
+    if {$day > 16} {
+        append win "2"
+    }
+
+    .cal.t$n configure -state normal
+    .cal.t$n window create 1.0 -window $win
+
+    if {$msg != ""} {
+        if {"$fntag" == "x"} {
+            .cal.t$n insert 1.1 " $msg\n"
+        } else {
+            .cal.t$n insert 1.1 " $msg\n" [list REM $fntag]
+            .cal.t$n tag bind $fntag <Enter> "EditableEnter .cal.t$n"
+            .cal.t$n tag bind $fntag <Leave> "EditableLeave .cal.t$n"
+            .cal.t$n tag bind $fntag <ButtonPress-1> "FireEditor .cal.t$n $fntag"
+            bind $win <ButtonPress-1> "FireEditor .cal.t$n $fntag"
+            bind $win <ButtonPress-3> "FireEditor .cal.t$n $fntag"
+        }
+    } else {
+        if {"$fntag" == "x"} {
+            .cal.t$n insert 1.1 "\n"
+        } else {
+            .cal.t$n insert 1.1 "\n" [list REM $fntag]
+            .cal.t$n tag bind $fntag <Enter> "EditableEnter .cal.t$n"
+            .cal.t$n tag bind $fntag <Leave> "EditableLeave .cal.t$n"
+            .cal.t$n tag bind $fntag <ButtonPress-1> "FireEditor .cal.t$n $fntag"
+        }
+    }
+    .cal.t$n configure -state disabled -takefocus 0
+}
+#***********************************************************************
+# %PROCEDURE: DisplayTime
+# %ARGUMENTS:
+#  None
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Displays current date and time in status window
+#***********************************************************************
+proc DisplayTime {} {
+    global TwentyFourHourMode DaemonFile
+    if {$TwentyFourHourMode} {
+	set msg [clock format [clock seconds] -format "%e %b %Y %H:%M"]
+    } else {
+	set msg [clock format [clock seconds] -format "%e %b %Y %I:%M%p"]
+    }
+    Status $msg
+}
+
+#***********************************************************************
+# %PROCEDURE: CreateMoonWindows
+# %ARGUMENTS:
+#  None
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Creates the moon windows .moon_new, .moon_first, .moon_full and
+#  .moon_last
+#***********************************************************************
+proc CreateMoonWindows {} {
+    global Option
+    catch { destroy .moon_new   }
+    catch { destroy .moon_first }
+    catch { destroy .moon_full  }
+    catch { destroy .moon_last  }
+
+    catch { destroy .moon_new2  }
+    catch { destroy .moon_first2}
+    catch { destroy .moon_full2 }
+    catch { destroy .moon_last2 }
+
+    set extra 1
+    set wid [font metrics CalboxFont -ascent]
+    set orig_wid $wid
+    incr wid $extra
+    incr wid $extra
+    incr wid $extra
+    incr wid $extra
+    incr orig_wid $extra
+    incr orig_wid $extra
+
+    set w [expr $extra+$orig_wid]
+
+    foreach win {.moon_new .moon_new2 } {
+        canvas $win -background $Option(BackgroundColor) -width $wid -height $wid -borderwidth 0 -highlightthickness 0
+        $win create oval $extra $extra $w $w -outline $Option(TextColor) -width 1
+        balloon_add_help $win [t "New Moon"]
+    }
+
+    foreach win {.moon_first .moon_first2 } {
+        canvas $win -background $Option(BackgroundColor) -width $wid -height $wid -borderwidth 0 -highlightthickness 0
+        $win create oval $extra $extra $w $w -outline $Option(TextColor) -width 1
+        $win create arc $extra $extra $w $w -outline $Option(TextColor) -fill $Option(TextColor) -start 90 -extent 180 -outline {}
+        balloon_add_help $win [t "First Quarter"]
+    }
+
+    foreach win {.moon_full .moon_full2 } {
+        canvas $win -background $Option(BackgroundColor) -width $wid -height $wid -borderwidth 0 -highlightthickness 0
+        $win create oval $extra $extra $w $w -outline $Option(TextColor) -fill $Option(TextColor) -width 1
+        balloon_add_help $win [t "Full Moon"]
+    }
+
+    foreach win {.moon_last .moon_last2 } {
+        canvas $win -background $Option(BackgroundColor) -width $wid -height $wid -borderwidth 0 -highlightthickness 0
+        $win create oval $extra $extra $w $w -outline $Option(TextColor) -width 1
+        $win create arc $extra $extra $w $w -outline $Option(TextColor) -fill $Option(TextColor) -start 270 -extent 180 -outline {}
+        balloon_add_help $win  [t "Last Quarter"]
+    }
+}
+
+#***********************************************************************
+# %PROCEDURE: DisplayTimeContinuously
+# %ARGUMENTS:
+#  None
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Continuously displays current date and time in status window,
+#  updating once a minute
+#***********************************************************************
+proc DisplayTimeContinuously {} {
+    DisplayTime
+
+    # Reap any zombies
+    catch { exec true }
+
+    set secs [clock format [clock seconds] -format "%S"]
+    # Doh -- don't interpret as an octal number if leading zero
+    scan $secs "%d" decSecs
+    set decSecs [expr 60 - $decSecs]
+    after [expr $decSecs * 1000] DisplayTimeContinuously
+}
+
+
+proc daily_rem_enter { lines } {
+    global Balloon
+    balloon_cancel_timer
+    set Balloon(HelpId) [after $Balloon(HelpTime) [list details_popup $lines]]
+}
+
+proc MakeTodaysRemindersWindow { w date } {
+    global Option
+    if {[winfo exists $w]} {
+	foreach t [$w.text tag names] {
+	    $w.text tag delete $t
+	}
+        if {"$date" == ""} {
+            set wtitle "Today's Reminders"
+        } else {
+            set wtitle "Reminders for $date"
+        }
+        raise $w
+        return
+    }
+
+    catch { destroy $w }
+    toplevel $w -background $Option(WinBackground)
+    if {"$date" == ""} {
+        set wtitle "Today's Reminders"
+    } else {
+        set wtitle "Reminders for $date"
+    }
+    wm iconname $w "Reminders"
+    frame $w.buttons -background $Option(LineColor)
+    text $w.text -width 80 -height 20 -wrap word -yscrollcommand "$w.sb set" -foreground $Option(TextColor) -background $Option(BackgroundColor) -font CalboxFont -spacing1 3
+    scrollbar $w.sb -orient vertical -command "$w.text yview"
+    button $w.ok -text "OK" -command "destroy $w" -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    button $w.next -text "\u2b9e" -command [list MoveTodaysReminders $w 1] -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help $w.next "Move forward one day"
+    button $w.prev -text "\u2b9c" -command [list MoveTodaysReminders $w -1] -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    button $w.today -text "Today" -command { ShowTodaysReminders 1 [clock format [clock seconds] -format "%Y-%m-%d"] } -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    balloon_add_help $w.today "Move to today"
+    balloon_add_help $w.prev "Move backward one day"
+    balloon_add_help $w.ok "Dismiss this window"
+    grid $w.text -row 0 -column 0 -sticky nsew
+    grid $w.sb -row 0 -column 1 -sticky ns
+    pack $w.ok $w.prev $w.today $w.next -in $w.buttons -side left -expand 0 -fill none
+    grid $w.buttons -row 1 -column 0 -sticky w
+    grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 0
+    grid columnconfigure $w 0 -weight 1
+    grid columnconfigure $w 1 -weight 0
+    bind $w <KeyPress-Left> "$w.prev flash; $w.prev invoke"
+    bind $w <KeyPress-Right> "$w.next flash; $w.next invoke"
+    bind $w <KeyPress-Prior> "$w.prev flash; $w.prev invoke"
+    bind $w <KeyPress-Next> "$w.next flash; $w.next invoke"
+    bind $w <KeyPress-Home> "$w.today flash; $w.today invoke"
+    bind $w <KeyPress-Escape> "$w.ok flash; $w.ok invoke"
+    bind $w <Control-KeyPress-w> "$w.ok flash; $w.ok invoke"
+    catch { bind $w <KeyPress-KP_Prior> "$w.prev flash; $w.prev invoke" }
+    catch { bind $w <KeyPress-KP_Next> "$w.next flash; $w.next invoke" }
+    catch { bind $w <KeyPress-KP_Left> "$w.prev flash; $w.prev invoke" }
+    catch { bind $w <KeyPress-KP_Right> "$w.next flash; $w.next invoke" }
+    catch { bind $w <KeyPress-KP_Home> "$w.today flash; $w.today invoke" }
+    CenterWindow $w .
+}
+
+#***********************************************************************
+# %PROCEDURE: ShowTodaysReminders
+# %ARGUMENTS:
+#  force -- if true, show today's reminders even if option is disabled.
+#  date -- if non-blank, show reminders for specified date rather than today.
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Shows all of today's non-timed reminders in a window
+#***********************************************************************
+proc ShowTodaysReminders { force date } {
+    global Option
+    global Remind
+    global ReminderFile
+    global TwentyFourHourMode
+    if {!$force && !$Option(ShowTodaysReminders)} {
+	return
+    }
+
+    set w .today
+    MakeTodaysRemindersWindow $w $date
+    $w.text configure -state normal
+    $w.text delete 1.0 end
+
+    # Grab the reminders
+    set stuff ""
+    set cmdline "|$Remind -itkremind=1 --json -q -r "
+    if {$TwentyFourHourMode} {
+        append cmdline "-b1 "
+    }
+    append cmdline $Option(ExtraRemindArgs)
+    append cmdline " $ReminderFile"
+    if { "$date" == "" } {
+        set date [clock format [clock seconds] -format "%Y-%m-%d" -locale C]
+    }
+    append cmdline " $date"
+
+    set_win_prop $w date $date
+
+    append cmdline " 2>/dev/null"
+    set f [open $cmdline r]
+    while {[gets $f line] >= 0} {
+	append stuff "$line\n"
+    }
+    if {[catch { close $f } err]} {
+	$w.text insert end "Error running Remind\n\n"
+	$w.text insert end $stuff
+	$w.text insert end "\n"
+	$w.text insert end $err
+        $w.text configure -state disabled
+        return
+    }
+
+    if {[catch {set arr [::json::json2dict $stuff]} err]} {
+	$w.text insert end "Error converting JSON\n\n"
+	$w.text insert end $err
+        $w.text configure -state disabled
+        return
+    }
+
+    # If first element is banner, set window title
+    set first [lindex $arr 0]
+    $w.text tag configure bold -font BoldFont
+    if {"[lindex $first 0]" == "banner"} {
+        set banner [lindex $first 1]
+        # Trim trailing colon
+        set wtitle [string trimright $banner ":"]
+        set arr [lreplace $arr 0 0]
+        $w.text insert end "$banner" bold
+        $w.text insert end "\n\n"
+    }
+
+    # At this point, we can set the window title
+    wm title $w $wtitle
+
+    # If first element is no reminders, FINE.
+    set first [lindex $arr 0]
+    if {"[lindex $first 0]" == "noreminders"} {
+        $w.text insert end [lindex $first 1] bold
+        $w.text insert end "\n"
+        $w.text configure -state disabled
+        return
+    }
+
+    set arr [lsort -command compare_reminders $arr]
+    set old_date {}
+    set did_a_date 0
+    set t_index 0
+    foreach thing $arr {
+        incr t_index
+        set mydate [dict get $thing date]
+        if {"$mydate" != "$old_date"} {
+            if {"$old_date" != ""} {
+                $w.text insert end "\n"
+            }
+            if {$did_a_date || "$mydate" != "$date"} {
+                $w.text insert end "> $mydate\n" bold
+                set did_a_date 1
+            }
+        }
+        set old_date $mydate
+        set tags [list "l_$t_index"]
+        if {[dict exists $thing r] && [dict exists $thing g] && [dict exists $thing g]} {
+            set r [dict get $thing r]
+            set g [dict get $thing g]
+            set b [dict get $thing b]
+            if {$r > 255} {
+                set r 255
+            } elseif {$r < 0} {
+                set r 0
+            }
+            if {$g > 255} {
+                set g 255
+            } elseif {$g < 0} {
+                set g 0
+            }
+            if {$b > 255} {
+                set b 255
+            } elseif {$b < 0} {
+                set b 0
+            }
+            set color [format "%02X%02X%02X" $r $g $b]
+            lappend tags "clr$color"
+            $w.text tag configure "clr$color" -foreground "#$color"
+        }
+
+        set help_lines {}
+        if {[dict exists $thing info]} {
+            set info [dict get $thing info]
+            if {[dict exists $info location]} {
+                lappend help_lines [list "Location:" [dict get $info location]]
+            }
+            if {[dict exists $info description]} {
+                lappend help_lines [list "Description:" [dict get $info description]]
+            }
+            if {[dict exists $info url]} {
+                lappend help_lines [list "URL:" "Middle-click to open [dict get $info url]"]
+                $w.text tag bind "l_$t_index" <ButtonPress-2> [list exec xdg-open [dict get $info url]]
+            }
+        }
+        if {[llength $help_lines] >= 1} {
+            $w.text tag bind "l_$t_index" <Enter> +[list daily_rem_enter $help_lines]
+            $w.text tag bind "l_$t_index" <Leave> +[list details_leave $w]
+        }
+	if {[dict exists $thing filename]} {
+            set fname [dict get $thing filename]
+            # Don't make INCLUDECMD output editable
+            if {![string match "*|" $fname]} {
+                if {[dict exists $thing lineno_start]} {
+                    set l [dict get $thing lineno_start]
+                } else {
+                    set l [dict get $thing lineno]
+                }
+                set fntag [string cat "FILE_" $l "_" $fname]
+                $w.text tag bind "l_$t_index" <Enter> +[list $w.text tag configure "l_$t_index" -underline 1]
+                $w.text tag bind "l_$t_index" <Leave> +[list $w.text tag configure "l_$t_index" -underline 0]
+                $w.text tag bind "l_$t_index" <ButtonPress-1> [list FireEditor $w.text $fntag]
+                $w.text tag bind "l_$t_index" <ButtonPress-3> [list FireEditor $w.text $fntag]
+            }
+	}
+        $w.text insert end [dict get $thing body] $tags
+        $w.text insert end "\n"
+    }
+    $w.text configure -state disabled
+}
+
+proc MoveTodaysReminders { w amt } {
+    set date [get_win_prop $w date]
+    set dt [clock scan $date -format "%Y-%m-%d"]
+    # We move to noon to avoid dayligh saving time issues!
+    incr dt [expr 86400 * $amt + 43200]
+    set date [clock format $dt -format "%Y-%m-%d"]
+    ShowTodaysReminders 1 $date
+}
+
+proc compare_reminders { a b } {
+    set a_date [dict get $a date]
+    set b_date [dict get $b date]
+    if {"$a_date" < "$b_date"} {
+        return -1
+    }
+    if {"$a_date" > "$b_date"} {
+        return 1
+    }
+
+    if {[dict exists $a time]} {
+        set a_time [dict get $a time]
+    } else {
+        set a_time 1441
+    }
+    if {[dict exists $b time]} {
+        set b_time [dict get $b time]
+    } else {
+        set b_time 1441
+    }
+    if {$a_time < $b_time} {
+        return -1
+    }
+    if {$a_time > $b_time} {
+        return 1
+    }
+    set a_prio [dict get $a priority]
+    set b_prio [dict get $b priority]
+    if {$a_prio < $b_prio} {
+        return -1
+    }
+    if {$a_prio > $b_prio} {
+        return 1
+    }
+    return 0
+}
+
+#***********************************************************************
+# %PROCEDURE: InteractiveDeleteReminder
+# %ARGUMENTS:
+#  tag -- tag of reminder to delete
+# %RETURNS:
+#  Nothing
+# %DESCRIPTION:
+#  Prompts for confirmation; then deletes reminder
+#***********************************************************************
+proc InteractiveDeleteReminder { tag } {
+    set ans [tk_messageBox -message "Really Delete" -detail "Really delete reminder?" -icon question -type yesno]
+    if {$ans == yes} {
+	DeleteTaggedReminder $tag
+        ScheduleUpdateForChanges
+    }
+}
+
+proc SendMail { recipient subject body } {
+    global Option
+
+    if {"$Option(MailAddr)" == ""} {
+	return
+    }
+    if {[catch {set token [mime::initialize -canonical text/plain -string $body]
+	mime::setheader $token Subject $subject
+	mime::setheader $token From "Reminder Service <>"
+	mime::setheader $token To "<$recipient>"
+	mime::setheader $token Auto-Submitted "auto-generated"
+	smtp::sendmessage $token -originator "" -servers $Option(SMTPServer) -recipients $Option(MailAddr)} err]} {
+	puts stderr "ERROR sending mail: $err"
+    }
+}
+
+proc ClosePopup { w after_token mail_addr close_win ignore_or_kill tag reminder rem_time qid } {
+    global DaemonFile Ignore
+    if {"$after_token" != ""} {
+	catch { after cancel $after_token }
+    }
+
+    if {$close_win} {
+	catch { destroy $w }
+    }
+
+    if {"$mail_addr" != ""} {
+	SendMail $mail_addr "Reminder for $rem_time" "Hello,\n\nThe following reminder is scheduled for $rem_time:\n\n$reminder\nRegards,\n\nTkRemind\n"
+    }
+    if {"$ignore_or_kill" == "ignore"} {
+        if {$qid != "*"} {
+            set syntag [extract_syntag $tag]
+            if {$syntag != "*"} {
+                set Ignore($syntag) 1
+            }
+            puts $DaemonFile "DEL $qid"
+            flush $DaemonFile
+        }
+    }
+    if {"$ignore_or_kill" == "kill"} {
+        set tktag [extract_tktag $tag]
+        if {$tktag != "*"} {
+            InteractiveDeleteReminder $tag
+        }
+    }
+}
+
+# Adjust font defaults for screen size
+proc SetFonts {} {
+    global SetFontsWorked
+    set h [winfo screenheight .]
+    if {$h <= 480} {
+	# Small screen (maybe eeepc?)
+	font configure TkDefaultFont -size 6
+	font configure TkFixedFont -size 6
+    }
+    set SetFontsWorked 1
+}
+
+### Balloon help
+set Balloon(HelpTime) 400
+set Balloon(StayTime) 3500
+set Balloon(Font) fixed
+set Balloon(MustLeave) 0
+
+proc balloon_reset_timer { w } {
+    balloon_destroy_help_window
+    balloon_cancel_timer
+    balloon_schedule_help $w
+}
+
+proc balloon_destroy_help_window {} {
+    catch { destroy .balloonhelp }
+}
+
+proc balloon_cancel_timer {} {
+    global Balloon
+    catch { after cancel $Balloon(HelpId) }
+}
+
+proc balloon_schedule_help { w } {
+    global Balloon
+    if { $Balloon(MustLeave) } {
+	return
+    }
+    set Balloon(HelpId) [ after $Balloon(HelpTime) "balloon_popup_help $w" ]
+}
+
+proc balloon_popup_help { w } {
+    global Balloon
+    if {![info exists Balloon(helptext$w)]} {
+	return
+    }
+
+    if {[string compare [winfo containing [winfo pointerx .] [winfo pointery .]] $w]} {
+	return
+    }
+    set h .balloonhelp
+    catch { destroy $h }
+    toplevel $h -bg #000000
+    label $h.l -text $Balloon(helptext$w) -wraplength 200 -justify left -bg #FFFFC0 -bd 0
+    pack $h.l -padx 1 -pady 1 -ipadx 2 -ipady 1
+    wm overrideredirect $h 1
+    set geom [balloon_calculate_geometry $h]
+    wm geometry $h $geom
+    set Balloon(HelpId) [after $Balloon(StayTime) "catch { destroy $h }"]
+    set Balloon(MustLeave) 1
+}
+
+bind Balloon <Leave> {
+    set Balloon(MustLeave) 0
+    balloon_destroy_help_window
+    balloon_cancel_timer
+}
+
+bind Balloon <Enter> {
+    set Balloon(MustLeave) 0
+    balloon_reset_timer %W
+}
+
+bind Balloon <Any-Motion> "balloon_reset_timer %W"
+bind Balloon <Any-ButtonPress> {
+    set Balloon(MustLeave) 1
+    balloon_reset_timer %W
+}
+
+bind Balloon <Destroy> {
+    balloon_destroy_help_window
+    balloon_cancel_timer
+    catch { unset Balloon(helptext%W) }
+}
+
+proc balloon_set_help { w txt } {
+    global Balloon
+    if {"$txt" == ""} {
+	catch { unset Balloon(helptext$w) }
+	return
+    }
+    set Balloon(helptext$w) $txt
+}
+
+proc balloon_add_help { w txt } {
+    balloon_set_help $w $txt
+    add_bindtag $w Balloon
+}
+
+proc balloon_calculate_geometry { w } {
+    set x [winfo pointerx $w]
+    set y [winfo pointery $w]
+    set mx [winfo screenwidth $w]
+    set my [winfo screenheight $w]
+    # Adjust for padding
+    set wid [expr [winfo reqwidth $w.l] + 6]
+    set h [expr [winfo reqheight $w.l] + 4]
+
+    # Try above-right of pointer
+    set tx [expr $x+3]
+    set ty [expr $y-3-$h]
+    if {$ty >= 0 && ($tx+$wid) <= $mx} {
+	return "+$tx+$ty"
+    }
+
+    # Try above-left of pointer
+    set tx [expr $x-3-$wid]
+    set ty [expr $y-3-$h]
+    if {$ty >= 0 && $tx >= 0} {
+	return "+$tx+$ty"
+    }
+
+    # Try below-right of pointer
+    set tx [expr $x+3]
+    set ty [expr $y+3]
+    if {$ty+$h <= $my && ($tx+$wid) <= $mx} {
+	return "+$tx+$ty"
+    }
+
+    # Darn... must be below-left
+    set tx [expr $x-3-$wid]
+    set ty [expr $y+3]
+    return "+$tx+$ty"
+}
+
+bind . <<TkFontchooserVisibility>> [list fontchooservisibility]
+
+proc fontchooservisibility {} {
+    if {[tk fontchooser configure -visible]} {
+        return
+    }
+    catch { raise .opt }
+}
+
+proc ChooseCalboxFont {} {
+    tk fontchooser show
+    tk fontchooser configure -font [font actual CalboxFont]
+    tk fontchooser configure -command SetCalboxFont
+}
+
+proc SetCalboxFont {font} {
+    global tmpOpt
+    font configure CalboxFont {*}[font actual $font]
+    set tmpOpt(CalboxFont) [font actual $font]
+    raise .opt
+}
+
+proc ChooseHeadingFont {} {
+    tk fontchooser show
+    tk fontchooser configure -font [font actual HeadingFont]
+    tk fontchooser configure -command SetHeadingFont
+}
+
+proc SetHeadingFont {font} {
+    global tmpOpt
+    font configure HeadingFont {*}[font actual $font]
+    font configure BoldFont {*}$Option(HeadingFont) -weight bold
+    set tmpOpt(HeadingFont) [font actual $font]
+    raise .opt
+}
+
+proc PickColor {index button} {
+    global tmpOpt
+    set x [tk_chooseColor -initialcolor $tmpOpt($index)]
+    if {"$x" != ""} {
+        set tmpOpt($index) $x
+        $button configure -background $x
+    }
+    raise .opt
+}
+
+proc FindConfigFile {} {
+    global ConfigFile
+
+    # If it was set on the command line, use that
+    if {"$ConfigFile" != ""} {
+        return
+    }
+
+    set confighome ""
+    if {[info exists env(XDG_CONFIG_HOME)]} {
+        set confighome $env(XDG_CONFIG_HOME)
+    }
+    if {"$confighome" == ""} {
+        set confighome [home "/.config"]
+    }
+
+    # If $confighome does not exist, attempt to
+    # create it
+    if {![file exists $confighome]} {
+        catch { file mkdir $confighome }
+    }
+
+    if {[file isdirectory $confighome]} {
+        # Migrate .tkremindrc to $confighome/tkremindrc
+        if {[file exists [home "/.tkremindrc"]]} {
+            if {![file exists "$confighome/tkreminderc"]} {
+                catch { puts "Migrating ~/.tkremindrc to $confighome/tkremindrc" }
+                if {[catch { file copy [home "/.tkremindrc"] "$confighome/tkremindrc"}]} {
+                    catch { puts "FAILED!\n" }
+                    set ConfigFile [home "/.tkremindrc"]
+                    return
+                }
+                catch { file delete [home "/.tkremindrc"] }
+            }
+            set ConfigFile "$confighome/tkremindrc"
+            return
+        }
+        set ConfigFile "$confighome/tkremindrc"
+        return
+    }
+    set ConfigFile [home "/.tkremindrc"]
+}
+
+proc set_default_colors { w } {
+    global tmpOpt
+    set tmpOpt(BackgroundColor) "#d9d9d9"
+    set tmpOpt(LabelColor) "#000000"
+    set tmpOpt(LineColor) "#000000"
+    set tmpOpt(TextColor) "#000000"
+    set tmpOpt(TodayColor) "#00C0C0"
+    set tmpOpt(WinBackground) "#d9d9d9"
+    update_color_buttons $w
+}
+
+proc set_dark_colors { w } {
+    global tmpOpt
+    set tmpOpt(BackgroundColor) "#000000"
+    set tmpOpt(LabelColor) "#00ffff"
+    set tmpOpt(LineColor) "#0080fc"
+    set tmpOpt(TextColor) "#ffffff"
+    set tmpOpt(TodayColor) "#b000b6"
+    set tmpOpt(WinBackground) "#000000"
+    update_color_buttons $w
+}
+
+proc update_color_buttons { w } {
+    global tmpOpt
+    $w.bbgcolor configure -background $tmpOpt(BackgroundColor)
+    $w.bheadcolor configure -background $tmpOpt(LabelColor)
+    $w.gridbcolor configure -background $tmpOpt(LineColor)
+    $w.btextcolor configure -background $tmpOpt(TextColor)
+    $w.tbbgcolor configure -background $tmpOpt(TodayColor)
+    $w.bwincolor configure -background $tmpOpt(WinBackground)
+}
+
+proc set_button_to_queue {} {
+    global Option
+    balloon_set_help .b.queue "See the queue of pending reminders (debugging purposes only)"
+    .b.queue configure -text {Queue...} -command {DoQueue} -foreground $Option(LabelColor) -background $Option(WinBackground)
+}
+proc set_button_to_errors {} {
+    balloon_set_help .b.queue "See the list of errors from the most recent operation"
+    .b.queue configure -text {Errors...} -command {ShowErrors} -bg #FF5555 -fg black
+}
+
+proc ShowManPage { cmd jump destroy } {
+    global Option env
+    set w ".man"
+    if { $destroy != 0 } {
+        catch { destroy $w }
+        set l [luminance $Option(WinBackground)]
+        if {$l < 20000} {
+            set link_color "#8888FF"
+        } else {
+            set link_color "#0000DD"
+        }
+
+        toplevel $w -background  $Option(WinBackground)
+        text $w.t -width 84 -height 30 -wrap none -yscrollcommand "$w.sb set" -foreground $Option(TextColor) -background $Option(BackgroundColor) -font CalBoxFont
+        $w.t tag configure bold -font {-weight bold}
+        $w.t tag configure italic -font {-slant italic}
+        $w.t tag configure underline -underline 1
+        catch {
+            $w.t tag configure underline -underlinefg $link_color
+        }
+        scrollbar $w.sb -orient vertical -command "$w.t yview"
+        button $w.ok -text OK -command [list destroy $w] -foreground $Option(LabelColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+        grid $w.t -row 0 -column 0 -sticky nsew
+        grid $w.sb -row 0 -column 1 -sticky ns
+        grid $w.ok -row 1 -column 0 -stick w
+        grid columnconfigure $w 0 -weight 1
+        grid columnconfigure $w 1 -weight 0
+        grid rowconfigure $w 0 -weight 1
+        grid rowconfigure $w 1 -weight 0
+
+        $w.t tag configure man -foreground $link_color
+        $w.t tag configure url -foreground $link_color
+        # Not supported on old Tk versions
+        catch {
+            $w.t tag configure man -underlinefg $link_color
+            $w.t tag configure url -underlinefg $link_color
+        }
+        $w.t tag bind man <ButtonPress-1> [list NavigateToManPage $w.t]
+        $w.t tag bind man <Enter> [list ManEnter $w.t]
+        $w.t tag bind man <Leave> [list ManLeave $w.t]
+        $w.t tag bind man <Motion> [list ManMove $w.t]
+        $w.t tag bind url <ButtonPress-1> [list ManURL $w.t]
+        $w.t tag bind url <Enter> [list URLEnter $w.t]
+        $w.t tag bind url <Leave> [list URLLeave $w.t]
+        $w.t tag bind url <Motion> [list URLMove $w.t]
+        bind $w <KeyPress-Escape> "$w.ok flash; $w.ok invoke"
+        bind $w <Control-KeyPress-w> "$w.ok flash; $w.ok invoke"
+    } else {
+        $w.t configure -state normal
+        $w.t delete 1.0 end
+
+    }
+    set env(COLUMNS) 80
+    set env(MANWIDTH) 80
+    set env(MAN_KEEP_FORMATTING) 1
+    set taglist {}
+    set seealso 0
+    if {[catch {
+        set fp [open "|man $cmd" "r+"]
+        while {[gets $fp line] >= 0} {
+            # Some systems render bold as "X bs X" and underline as "_ bs X"
+            # Convert them to our bold and italic indicators
+            set line [regsub -all {((_\b.)+)} $line "\033\[3m\\0\033\[23m" ]
+            set line [regsub -all {(_\b)}  $line "" ]
+            set line [regsub -all {((.\b.)+)} $line "\033\[1m\\0\033\[22m" ]
+            set line [regsub -all {(.\b)}  $line "" ]
+            if {$jump != 0} {
+                if {[regexp -- {THE.*CALENDAR.*WINDOW} $line]} {
+                    $w.t yview moveto 1
+                }
+            }
+            if {[regexp -- {SEE.*ALSO} $line]} {
+                set seealso 1
+            } else {
+                if {$seealso != 0} {
+                    set seealso 0
+                    lappend taglist man
+                } else {
+                    set idx [lsearch -exact $taglist "man"]
+                    set taglist [lreplace $taglist $idx $idx]
+                }
+            }
+            set old_taglist $taglist
+
+            $w.t insert end "  ";
+            set indexes [regexp -indices -inline -all -- {\e\[[0-9]+m} $line]
+            if {[llength $indexes] > 0} {
+                set out 0
+                foreach i $indexes {
+                    set first [lindex $i 0]
+                    set last [lindex $i 1]
+                    set esc_seq [string range $line [expr $first+2] [expr $last-1]]
+                    switch -- $esc_seq {
+                        "0" {
+                            set idx [lsearch -exact $taglist "bold"]
+                            set taglist [lreplace $taglist $idx $idx]
+                            set idx [lsearch -exact $taglist "italic"]
+                            set taglist [lreplace $taglist $idx $idx]
+                        }
+                        "1" {
+                            lappend taglist "bold"
+                        }
+                        "3" {
+                            lappend taglist "italic"
+                        }
+                        "22" {
+                            set idx [lsearch -exact $taglist "bold"]
+                            set taglist [lreplace $taglist $idx $idx]
+                        }
+                        "23" {
+                            set idx [lsearch -exact $taglist "italic"]
+                            set taglist [lreplace $taglist $idx $idx]
+                        }
+                    }
+                    if { $first > $out } {
+                        ManAddLine $w.t [string range $line $out [expr $first-1]] $old_taglist
+                    }
+                    set old_taglist $taglist
+                    set out [expr $last+1]
+                }
+                if {$out < [string length $line]} {
+                    ManAddLine $w.t [string range $line $out end] $taglist
+                }
+            } else {
+                ManAddLine $w.t $line $taglist
+            }
+            $w.t insert end "\n";
+        }
+        close $fp
+    } err]} {
+        $w.t insert end "Could not display TkRemind manual page: $err"
+    }
+    $w.t configure -state disabled
+    if { $destroy } {
+        CenterWindow $w .
+        raise $w
+    }
+    wm title $w "$cmd Manual Page"
+    focus $w.t
+}
+
+proc ManAddLine { t text tags } {
+    if {[lsearch -exact $tags man] >= 0} {
+        $t insert end $text $tags
+        return
+    }
+    if {[regexp -nocase -- {(.*)(https?://[-.a-z0-9_/]+)(.*)} $text m first url last]} {
+        set t2 tags
+        lappend t2 url
+        $t insert end $first $tags
+        $t insert end $url $t2
+        $t insert end $last $tags
+        return
+    }
+    $t insert end $text $tags
+}
+
+proc URLEnter { t } {
+    catch {
+        $t configure -cursor arrow
+        set r [$t tag prevrange url current]
+        $t tag add underline [lindex $r 0] [lindex $r 1]
+    }
+}
+proc URLLeave { t } {
+    $t configure -cursor xterm
+    $t tag remove underline 1.0 end
+}
+
+proc URLMove { t } {
+    URLLeave $t
+    URLEnter $t
+}
+
+proc ManURL { t } {
+    catch {
+        set r [$t tag prevrange url current]
+        set url [$t get [lindex $r 0] [lindex $r 1]]
+        exec xdg-open "$url?tkr=1"
+    }
+}
+
+proc ManEnter { t } {
+    $t configure -cursor arrow
+    $t tag add underline [list current wordstart] [list current wordend]
+}
+proc ManLeave { t } {
+    $t configure -cursor xterm
+    $t tag remove underline 1.0 end
+}
+
+proc ManMove { t } {
+    ManLeave $t
+    ManEnter $t
+}
+
+proc NavigateToManPage { t } {
+    set text [$t get [list current wordstart] [list current wordend]]
+    if {[regexp -nocase -- {[a-z0-9_]+} $text man]} {
+        ShowManPage $man 0 0
+    }
+}
+proc ShowErrors {} {
+    global RemindErrors Option
+    set w ".errors"
+    catch { destroy $w }
+    toplevel $w -background $Option(WinBackground)
+    text $w.t -width 80 -height 30 -wrap word -yscrollcommand "$w.sb set" -foreground $Option(TextColor) -background $Option(BackgroundColor) -font [font actual TkFixedFont]
+    scrollbar $w.sb -orient vertical -command "$w.t yview"
+    button $w.ok -text OK -command DoneShowingErrors -foreground $Option(TextColor) -background $Option(BackgroundColor) -highlightthickness 1 -highlightcolor $Option(LineColor) -highlightbackground $Option(WinBackground)
+    grid $w.t -row 0 -column 0 -sticky nsew
+    grid $w.sb -row 0 -column 1 -sticky ns
+    grid $w.ok -row 1 -column 0 -stick w
+    grid columnconfigure $w 0 -weight 1
+    grid columnconfigure $w 1 -weight 0
+    grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 0
+    set l [split $RemindErrors "\n"]
+    set i 0
+    foreach line $l {
+        if {[regexp {^(.*)\(([0-9]+)} $line dummy fname lineno]} {
+            incr i
+            set fntag [string cat "FILE_" $lineno "_" $fname]
+            $w.t insert end $line [list ERR "ERR$i" $fntag]
+            $w.t tag bind "ERR$i" <ButtonPress-1> [list FireEditor $w.t $fntag]
+            $w.t tag bind "ERR$i" <ButtonPress-3> [list FireEditor $w.t $fntag]
+            $w.t tag bind "ERR$i" <Enter> "$w.t tag configure ERR$i -underline 1"
+            $w.t tag bind "ERR$i" <Leave> "$w.t tag configure ERR$i -underline 0"
+        } else {
+            $w.t insert end $line
+        }
+        $w.t insert end "\n"
+    }
+    if {$i > 0} {
+        $w.t insert end "\nIf an error message is underlined when you hover over it, click button-1 to edit the offending file at the line number of the error.\n"
+    }
+    bind $w <KeyPress-Escape> "$w.ok flash; $w.ok invoke"
+    bind $w <Control-KeyPress-w> "$w.ok flash; $w.ok invoke"
+    $w.t configure -state disabled
+    CenterWindow $w .
+}
+
+proc DoneShowingErrors {} {
+    global RemindErrors
+    set RemindErrors {}
+    set_button_to_queue
+    destroy .errors
+}
+
+proc luminance { color } {
+    set rgb [winfo rgb . $color]
+    return 0.299 * [lindex $rgb 0] + 0.587 * [lindex $rgb 1] + 0.114 * [lindex $rgb 2]
+}
+
+# Code for storing/retrieving window properties.
+# These are like window-scoped global variables;
+# they are deleted when a window is destroyed
+proc add_bindtag { w tag } {
+    set existing [bindtags $w]
+    if {[lsearch -exact $existing $tag] > -1} {
+        return
+    }
+    bindtags $w "$tag [bindtags $w]"
+}
+
+bind Property <Destroy> {
+    global WinProps
+    set WinProps [dict remove $WinProps %W]
+}
+
+proc set_win_prop { w prop val } {
+    global WinProps
+    add_bindtag $w Property
+    dict set WinProps $w $prop $val
+    return $val
+}
+
+proc get_win_prop { w prop } {
+    global WinProps
+    dict get $WinProps $w $prop
+}
+
+proc set_win_date { w offset date } {
+    global DateToWinOffset
+    set_win_prop $w date $date
+    dict set DateToWinOffset $date $offset
+}
+
+proc init_win_dates { } {
+    global DateToWinOffset
+    set DateToWinOffset [dict create]
+}
+
+proc get_win_offset { date } {
+    global DateToWinOffset
+    dict get $DateToWinOffset $date
+}
+
+main

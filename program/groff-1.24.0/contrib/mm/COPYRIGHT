@@ -1,0 +1,32 @@
+Copyright 1991-2018 Free Software Foundation, Inc.
+          2021-2025 G. Branden Robinson
+
+mm for groff is written by Jörgen Hägg <jh@axis.com>
+based on groff ms by James Clark <jjc@jclark.com>
+and further developed by Werner Lemberg <wl@gnu.org>
+and G. Branden Robinson <g.branden.robinson@gmail.com>.
+
+This file is part of mm for groff.
+
+mm is distributed with groff, the GNU roff typesetting system.
+
+groff is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+groff is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+##### Editor settings
+Local Variables:
+fill-column: 72
+mode: text
+End:
+vim: set textwidth=72:

@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Leaders (The GNU troff Manual)</title>
+
+<meta name="description" content="Leaders (The GNU troff Manual)">
+<meta name="keywords" content="Leaders (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Tabs-and-Fields.html" rel="up" title="Tabs and Fields">
+<link href="Fields.html" rel="next" title="Fields">
+<link href="Tabs-and-Fields.html" rel="prev" title="Tabs and Fields">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Leaders"></span><div class="header">
+<p>
+Next: <a href="Fields.html" accesskey="n" rel="next">Fields</a>, Up: <a href="Tabs-and-Fields.html" accesskey="u" rel="up">Tabs and Fields</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Leaders-1"></span><h4 class="subsection">5.12.1 Leaders</h4>
+<span id="index-leaders"></span>
+
+<p>Sometimes it is desirable to fill a tab stop with a given glyph,
+but also use tab stops normally on the same output line.  An example is
+a table of contents entry that uses dots to bridge the entry name with
+its page number, which is itself aligned between tab stops.  The
+<code>roff</code> language provides <em>leaders</em> for this
+purpose.<a id="DOCF103" href="groff.html_fot.html#FOOT103"><sup>103</sup></a>
+</p>
+<span id="index-leader-character-1"></span>
+<p>A leader character (code&nbsp;point&nbsp;1<!-- /@w -->, also known as <acronym>SOH</acronym> or
+&ldquo;start of heading&rdquo;), behaves similarly to a tab character: it moves
+to the next tab stop.  The difference is that for this movement, the
+default fill character is a period &lsquo;<samp>.</samp>&rsquo;.
+</p>
+<dl>
+<dt id="index-_005ca-1">Escape&nbsp;sequence: <strong><tt>\a</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005ca"></span>
+<span id="index-leader-character_002c-non_002dinterpreted-_0028_005ca_0029"></span>
+<span id="index-character_002c-leader_002c-non_002dinterpreted-_0028_005ca_0029"></span>
+<span id="index-_005ca_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-_005ca"></span>
+<span id="index-mode_002c-copy_002c-and-_005ca"></span>
+<p>Interpolate a leader in copy mode; see <a href="Copy-Mode.html">Copy Mode</a>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002elc">Request: <strong><tt>.lc</tt></strong> <em>[<span class="roman"><i>c</i></span>]</em></dt>
+<dd><span id="index-lc"></span>
+<span id="index-leader-repetition-character-_0028lc_0029"></span>
+<span id="index-character_002c-leader-repetition-_0028lc_0029"></span>
+<span id="index-glyph_002c-leader-repetition-_0028lc_0029"></span>
+<p>Set the leader repetition character to the ordinary or special character
+<var>c</var>.  Recall <a href="Tabs-and-Leaders.html">Tabs and Leaders</a>: when encountering a leader
+character in the input, the formatter writes as many dots &lsquo;<samp>.</samp>&rsquo; as
+are necessary until
+reaching the next tab stop; this is the <em>leader definition
+character</em>.  Omitting <var>c</var> unsets the leader
+character.  With no argument, GNU <code>troff</code> treats leaders the same
+as tabs.  The leader repetition character is associated with the
+environment (see <a href="Environments.html">Environments</a>).  Only a single <var>c</var> is
+recognized; any excess is ignored.
+</p></dd></dl>
+
+<span id="index-table-of-contents-1"></span>
+<span id="index-contents_002c-table-of-1"></span>
+<p>A table of contents, for example, may define tab stops after a section
+number, a title, and a gap to be filled with leader dots.  The page
+number follows the leader, after a right-aligned final tab stop wide
+enough to house the largest page number occurring in the document.
+</p>
+<div class="example">
+<pre class="example">.ds entry1 19.\tThe Prophet\a\t98
+.ds entry2 20.\tAll Astir\a\t101
+.ta .5i 4.5i +.5iR
+.nf
+\*[entry1]
+\*[entry2]
+    &rArr; 19.  The Prophet.............................   98
+    &rArr; 20.  All Astir...............................  101
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Fields.html" accesskey="n" rel="next">Fields</a>, Up: <a href="Tabs-and-Fields.html" accesskey="u" rel="up">Tabs and Fields</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

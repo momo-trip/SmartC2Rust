@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Requests and Macros (The GNU troff Manual)</title>
+
+<meta name="description" content="Requests and Macros (The GNU troff Manual)">
+<meta name="keywords" content="Requests and Macros (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Text.html" rel="up" title="Text">
+<link href="Macro-Packages.html" rel="next" title="Macro Packages">
+<link href="Tabs-and-Leaders.html" rel="prev" title="Tabs and Leaders">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Requests-and-Macros"></span><div class="header">
+<p>
+Next: <a href="Macro-Packages.html" accesskey="n" rel="next">Macro Packages</a>, Previous: <a href="Tabs-and-Leaders.html" accesskey="p" rel="prev">Tabs and Leaders</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Requests"></span><span id="Requests-and-Macros-1"></span><h4 class="subsection">5.1.7 Requests and Macros</h4>
+
+<p>We have now encountered almost all of the syntax there is in the
+<code>roff</code>
+language,
+with an exception already noted in passing.<a id="DOCF28" href="groff.html_fot.html#FOOT28"><sup>28</sup></a>
+<span id="index-request"></span>
+<span id="index-control-character-_0028_002e_0029"></span>
+<span id="index-character_002c-control-_0028_002e_0029"></span>
+<span id="index-no_002dbreak-control-character-_0028_0027_0029"></span>
+<span id="index-character_002c-no_002dbreak-control-_0028_0027_0029"></span>
+<span id="index-control-character_002c-no_002dbreak-_0028_0027_0029"></span>
+A <em>request</em> is an instruction to the formatter that occurs after a
+<em>control character</em>, which is recognized at the beginning of an
+input line.  The regular control character is a dot (<code>.</code>).  Its
+counterpart, the <em>no-break control character</em>, a neutral apostrophe
+(<code>'</code>), suppresses the break that is implied by some requests.
+These characters were chosen because it is uncommon for lines of text in
+natural languages to begin with them.
+<span id="index-dummy-character-_0028_005c_0026_0029_002c-as-control-character-suppressor"></span>
+<span id="index-character_002c-dummy-_0028_005c_0026_0029_002c-as-control-character-suppressor"></span>
+If you require a formatted period or apostrophe
+(closing single quotation mark)
+where the formatter expects a control character,
+prefix the dot or neutral apostrophe
+with the dummy character escape sequence,
+&lsquo;<samp>\&amp;</samp>&rsquo;.
+</p>
+<span id="index-control-line"></span>
+<p>An input line beginning with a control character is called a
+<span id="text-lines"></span><em>control line</em>.
+<span id="index-text-line"></span>
+Every line of input that is not a control line is a
+<em>text line</em>.<a id="DOCF29" href="groff.html_fot.html#FOOT29"><sup>29</sup></a>
+</p>
+<span id="index-argument"></span>
+<p>Requests often take
+<em>arguments</em>,
+words
+(separated from the request name and each other by spaces)
+that specify details of the action you expect the formatter to perform.
+If a request is meaningless without arguments,
+it is typically ignored.
+</p>
+<p>Requests and escape sequences comprise the control language
+of the formatter.
+Of key importance are the requests that define macros.
+Macros are invoked like requests,
+enabling the request repertoire
+to be extended or overridden.<a id="DOCF30" href="groff.html_fot.html#FOOT30"><sup>30</sup></a>
+</p>
+<span id="Macros"></span><span id="index-macro"></span>
+<span id="index-calling-macros-_0028introduction_0029"></span>
+<span id="index-interpolation"></span>
+<p>A
+<em>macro</em>
+can be thought of as an abbreviation you can define
+for a collection of control and text lines.
+When a document
+<em>calls</em>
+a macro
+by placing its name after a control character,
+the formatter replaces the control line with the macro&rsquo;s definition.
+The process of textual replacement is known as
+<em>interpolation</em>.<a id="DOCF31" href="groff.html_fot.html#FOOT31"><sup>31</sup></a>
+Interpolations are handled as soon as they are recognized,
+and once performed,
+the formatter scans the replacement for further requests,
+macro calls,
+and escape sequences.
+</p>
+<p>In
+<code>roff</code>
+systems,
+the
+<code>de</code>
+request defines a macro.<a id="DOCF32" href="groff.html_fot.html#FOOT32"><sup>32</sup></a>
+</p>
+<div class="example">
+<pre class="example">.de DATE
+2020-11-14
+..
+</pre></div>
+
+<p>The foregoing input produces no output by itself;
+all we have done is store information in a macro named
+&lsquo;<samp>DATE</samp>&rsquo;.
+Observe the pair of dots that ends the macro definition.
+This is a default;
+you can specify your own terminator for the macro definition
+as the second argument to the
+<code>de</code>
+request.
+</p>
+<div class="example">
+<pre class="example">.de NAME ENDNAME
+Heywood Jabuzzoff
+.ENDNAME
+</pre></div>
+
+<p>In fact,
+the ending mark
+is itself the name of a macro to be called,
+or a request to be invoked,
+if it is defined at the time its control line is read.
+</p>
+<div class="example">
+<pre class="example">.de END
+Big Rip
+..
+.de START END
+Big Bang
+.END
+.START
+    &rArr; Big Rip Big Bang
+</pre></div>
+
+<p>In the foregoing example, &ldquo;Big Rip&rdquo; printed before &ldquo;Big Bang&rdquo;
+because its macro was <em>called</em> first.  Consider what would happen
+if we dropped <code>END</code> from the &lsquo;<samp>.de START</samp>&rsquo; line and added
+<code>..</code> after <code>.END</code>.  Would the order change?
+</p>
+<p>Let us consider a more elaborate example.
+</p>
+<div class="example">
+<pre class="example">.de DATE
+2020-10-05
+..
+.
+.de BOSS
+D.\&amp; Kruger,
+J.\&amp; Peterman
+..
+.
+.de NOTICE
+Approved:
+.DATE
+by
+.BOSS
+..
+.
+Insert tedious regulatory compliance paragraph here.
+
+.NOTICE
+
+Insert tedious liability disclaimer paragraph here.
+
+.NOTICE
+    &rArr; Insert tedious regulatory compliance paragraph here.
+    &rArr;
+    &rArr; Approved: 2020-10-05 by D. Kruger, J. Peterman
+    &rArr;
+    &rArr; Insert tedious liability disclaimer paragraph here.
+    &rArr;
+    &rArr; Approved: 2020-10-05 by D. Kruger, J. Peterman
+</pre></div>
+
+<p>The above document started with a series of control lines.  Three macros
+were defined, with a <code>de</code> request declaring each macro&rsquo;s name, and
+the &ldquo;body&rdquo; of the macro starting on the next line and continuing until
+a line with two dots &lsquo;<samp><code>..</code></samp>&rsquo; marked its end.  The text proper
+began only after the macros were defined; this is a common pattern.
+Only the <code>NOTICE</code> macro was called &ldquo;directly&rdquo; by the document;
+<code>DATE</code> and <code>BOSS</code> were called only by <code>NOTICE</code> itself.
+Escape sequences were used in <code>BOSS</code>, two levels of macro
+interpolation deep.
+</p>
+<p>The advantage in typing and maintenance economy may not be obvious from
+such a short example, but imagine a much longer document with dozens of
+such paragraphs, each requiring a notice of managerial approval.
+Consider what must happen if you are in charge of generating a new
+version of such a document with a different date, for a different boss.
+With well-chosen macros, you only have to change each datum in one
+place.
+</p>
+<p>In practice, we would probably use strings (see <a href="Strings.html">Strings</a>) instead of
+macros for such simple interpolations; what is important here is to
+glimpse the potential of macros and the power of recursive
+interpolation.
+</p>
+<p>We could have defined our
+<code>DATE</code>
+and
+<code>BOSS</code>
+macros in the opposite order;
+perhaps less obviously,
+we could also have defined them
+<em>after</em>
+<code>NOTICE</code>.
+Such &ldquo;forward references&rdquo; are well-defined
+because the body of a macro definition is,
+for the most part,
+stored rather than interpreted
+(see <a href="Copy-Mode.html">Copy Mode</a>).
+While a macro is being defined
+(or appended to),
+requests are not interpreted and macros not interpolated;
+some commonly used escape sequences
+<em>are</em>
+however interpreted.
+<code>roff</code> systems also support recursive macro calls, as long as you
+have a way to break the recursion (see <a href="Conditionals-and-Loops.html">Conditionals and Loops</a>).
+Maintainable <code>roff</code> documents tend to arrange macro definitions to
+minimize forward references.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Macro-Packages.html" accesskey="n" rel="next">Macro Packages</a>, Previous: <a href="Tabs-and-Leaders.html" accesskey="p" rel="prev">Tabs and Leaders</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

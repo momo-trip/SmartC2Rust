@@ -1,0 +1,59 @@
+# Copyright 2014-2020 Free Software Foundation, Inc.
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+prefixexecbin_PROGRAMS += tbl
+tbl_LDADD = libgroff.a $(LIBM) lib/libgnu.a
+tbl_SOURCES = \
+  src/preproc/tbl/main.cpp \
+  src/preproc/tbl/table.cpp \
+  src/preproc/tbl/table.h
+PREFIXMAN1 += src/preproc/tbl/tbl.1
+EXTRA_DIST += src/preproc/tbl/tbl.1.man
+
+tbl_TESTS = \
+  src/preproc/tbl/tests/align-staggered-text-blocks-correctly.sh \
+  src/preproc/tbl/tests/boxed-TH-tables-work-on-utf8-device.sh \
+  src/preproc/tbl/tests/boxes-and-vertical-rules.sh \
+  src/preproc/tbl/tests/check-horizontal-line-length.sh \
+  src/preproc/tbl/tests/check-line-intersections.sh \
+  src/preproc/tbl/tests/check-vertical-line-length.sh \
+  src/preproc/tbl/tests/cooperate-with-nm-request.sh \
+  src/preproc/tbl/tests/count-continued-input-lines.sh \
+  src/preproc/tbl/tests/do-not-overdraw-page-top-in-nroff-mode.sh \
+  src/preproc/tbl/tests/do-not-overlap-bottom-border-in-nroff.sh \
+  src/preproc/tbl/tests/do-not-segv-on-invalid-vertical-span-entry.sh \
+  src/preproc/tbl/tests/do-not-segv-when-backslash-R-in-text-block.sh \
+  src/preproc/tbl/tests/emit-accurate-lf-requests.sh \
+  src/preproc/tbl/tests/expand-region-option-works.sh \
+  src/preproc/tbl/tests/format-time-diagnostics-work.sh \
+  src/preproc/tbl/tests/horizontal-rules-not-drawn-too-long.sh \
+  src/preproc/tbl/tests/passes-through-input-with-eighth-bit-set.sh \
+  src/preproc/tbl/tests/repeated-character-entry-works.sh \
+  src/preproc/tbl/tests/save-and-restore-hyphenation-parameters.sh \
+  src/preproc/tbl/tests/save-and-restore-inter-sentence-space.sh \
+  src/preproc/tbl/tests/save-and-restore-line-numbering.sh \
+  src/preproc/tbl/tests/save-and-restore-tab-stops.sh \
+  src/preproc/tbl/tests/warn-on-long-boxed-unkept-table.sh \
+  src/preproc/tbl/tests/x-column-modifier-works.sh
+TESTS += $(tbl_TESTS)
+EXTRA_DIST += $(tbl_TESTS)
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Brazil
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+#
+# Note: This file consists only of the country-wide
+# holidays for Brazil.
+#
+# For region-specific holidays, you need to include
+# one of the regional *.rem files in the directory
+# [$SysInclude]/holidays/br/
+
+OMIT 1 January MSG %"Confraternização Universal%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Sexta-feira Santa%" %! %b.
+OMIT 21 April MSG %"Tiradentes%" %! %b.
+OMIT 1 May MSG %"Dia do Trabalhador%" %! %b.
+OMIT 7 September MSG %"Independência do Brasil%" %! %b.
+OMIT 12 October MSG %"Nossa Senhora Aparecida%" %! %b.
+OMIT 2 November MSG %"Finados%" %! %b.
+OMIT 15 November MSG %"Proclamação da República%" %! %b.
+OMIT 20 November MSG %"Dia Nacional de Zumbi e da Consciência Negra%" %! %b.
+OMIT 25 December MSG %"Natal%" %! %b.
+
+# Optional holidays
+REM [easterdate($Uy)-48] MSG %"Carnaval%" %! %b.
+REM [easterdate($Uy)-47] MSG %"Carnaval%" %! %b.
+REM [easterdate($Uy)-46] MSG %"Início da Quaresma%" %! %b.
+REM [easterdate($Uy)+60] MSG %"Corpus Christi%" %! %b.
+REM 28 October MSG %"Dia do Servidor Público%" %! %b.
+REM 24 December MSG %"Véspera de Natal%" %! %b.
+REM 31 December MSG %"Véspera de Ano-Novo%" %! %b.

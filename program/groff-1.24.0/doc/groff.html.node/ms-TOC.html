@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ms TOC (The GNU troff Manual)</title>
+
+<meta name="description" content="ms TOC (The GNU troff Manual)">
+<meta name="keywords" content="ms TOC (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms-Page-Layout.html" rel="up" title="ms Page Layout">
+<link href="Differences-from-AT_0026T-ms.html" rel="next" title="Differences from AT&amp;T ms">
+<link href="ms-Multiple-Columns.html" rel="prev" title="ms Multiple Columns">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="ms-TOC"></span><div class="header">
+<p>
+Previous: <a href="ms-Multiple-Columns.html" accesskey="p" rel="prev">ms Multiple Columns</a>, Up: <a href="ms-Page-Layout.html" accesskey="u" rel="up">ms Page Layout</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Creating-a-table-of-contents"></span><h4 class="subsubsection">4.6.6.5 Creating a table of contents</h4>
+<span id="index-ms-macros_002c-creating-table-of-contents"></span>
+<span id="index-table-of-contents_002c-creating-_005bms_005d"></span>
+
+<p>Because <code>roff</code> formatters process their input in a single pass,
+material on page 50, for example, cannot influence what appears on
+page&nbsp;1&mdash;this poses a challenge for a table of contents at its
+traditional location in front matter, if you wish to avoid manually
+maintaining it.  <samp>ms</samp> enables the collection of material to be
+presented in the table of contents as it appears, saving its page number
+along with it, and then emitting the collected contents on demand toward
+the end of the document.  The table of contents can then be resequenced
+to its desired location by physically rearranging the pages of a printed
+document, or as part of post-processing&mdash;with a <cite>sed<span class="roman">(1)</span></cite>
+script to reorder the pages in <code>troff</code>&rsquo;s output, with
+<cite>pdfjam<span class="roman">(1)</span></cite>, or with <cite>gropdf<span class="roman">(1)</span></cite>&rsquo;s
+<code>pdfswitchtopage</code> macro, for example.
+</p>
+<p>Define an entry to appear in the table of contents by bracketing its
+text between calls to the <code>XS</code> and <code>XE</code> macros.  A typical
+application is to call them immediately after <code>NH</code> or <code>SH</code> and
+repeat the heading text within them.  The <code>XA</code> macro, used within
+&lsquo;<samp>.XS</samp>&rsquo;/&lsquo;<samp>.XE</samp>&rsquo; pairs, supplements an entry&mdash;for instance, when
+it requires multiple output lines, whether because a heading is too long
+to fit or because style dictates that page numbers not be repeated.  You
+may wish to indent the text thus wrapped to correspond to its heading
+depth; this can be done in the entry text by prefixing it with tabs or
+horizontal motion escape sequences, or by providing a second argument to
+the <code>XA</code> macro.  <code>XS</code> and <code>XA</code> automatically associate
+the page number where they are called with the text following them, but
+they accept arguments to override this behavior.  At the end of the
+document, call <code>TC</code> or <code>PX</code> to emit the table of contents;
+<code>TC</code> resets the page number to &lsquo;<samp>i</samp>&rsquo; (Roman numeral one), and
+then calls <code>PX</code>.  All of these macros are Berkeley extensions.
+</p>
+<dl>
+<dt id="index-_002eXS">Macro: <strong><tt>.XS</tt></strong> <em>[<span class="roman"><i>page-number</i></span>]</em></dt>
+<dd><span id="index-XS-_005bms_005d"></span>
+</dd><dt id="index-_002eXA">Macro: <strong><tt>.XA</tt></strong> <em>[<span class="roman"><i>page-number</i></span> [<span class="roman"><i>indentation</i></span>]]</em></dt>
+<dd><span id="index-XA-_005bms_005d"></span>
+</dd><dt id="index-_002eXE">Macro: <strong><tt>.XE</tt></strong></dt>
+<dd><span id="index-XE-_005bms_005d"></span>
+<p>Begin, supplement, and end a table of contents entry.  Each entry is
+associated with <var>page-number</var> (otherwise the current page number); a
+<var>page-number</var> of &lsquo;<samp>no</samp>&rsquo; prevents a leader and page number from
+being emitted for that entry.  Use of <code>XA</code> within
+<code>XS</code>/<code>XE</code> is optional; it can be repeated.  If
+<var>indentation</var> is present, a supplemental entry is indented by that
+amount; ens are assumed if no unit is indicated.  Text on input lines
+between <code>XS</code> and <code>XE</code> is stored for later recall by <code>PX</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ePX">Macro: <strong><tt>.PX</tt></strong> <em>[<code>no</code>]</em></dt>
+<dd><span id="index-PX-_005bms_005d"></span>
+<p>Switch to single-column layout.  Unless <code>no</code> is specified, center
+and interpolate the <code>TOC</code> string in bold and two points larger than
+the body text.  Emit the table of contents entries.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eTC">Macro: <strong><tt>.TC</tt></strong> <em>[<code>no</code>]</em></dt>
+<dd><span id="index-TC-_005bms_005d"></span>
+<p>Set the page number to&nbsp;1, the page number format to lowercase Roman
+numerals, and call <code>PX</code> (with a <code>no</code> argument, if present).
+</p></dd></dl>
+
+<p>Here&rsquo;s an example of typical <samp>ms</samp> table of contents preparation.
+We employ horizontal escape sequences <code>\h</code> to indent the entries by
+sectioning depth.
+</p>
+<div class="example">
+<pre class="example">.NH 1
+Introduction
+.XS
+Introduction
+.XE
+<span class="roman">&hellip;</span>
+.NH 2
+Methodology
+.XS
+\h'2n'Methodology
+.XA
+\h'4n'Fassbinder's Approach
+\h'4n'Kahiu's Approach
+.XE
+<span class="roman">&hellip;</span>
+.NH 1
+Findings
+.XS
+Findings
+.XE
+<span class="roman">&hellip;</span>
+.TC
+</pre></div>
+
+<p>The remaining features in this subsubsection are GNU extensions.
+<code>groff</code> <samp>ms</samp> obviates the need to repeat heading text after
+<code>XS</code> calls.  Call <code>XN</code> and <code>XH</code> after <code>NH</code> and
+<code>SH</code>, respectively.
+</p>
+<dl>
+<dt id="index-_002eXN">Macro: <strong><tt>.XN</tt></strong> <em><span class="roman"><i>heading-text</i></span></em></dt>
+<dd><span id="index-XN-_005bms_005d"></span>
+</dd><dt id="index-_002eXH">Macro: <strong><tt>.XH</tt></strong> <em><span class="roman"><i>depth</i></span> <span class="roman"><i>heading-text</i></span></em></dt>
+<dd><span id="index-XH-_005bms_005d"></span>
+<p>Format <var>heading-text</var> and create a corresponding table of contents
+entry.  <code>XN</code> computes the indentation from the depth of the
+preceding <code>NH</code> call; <code>XH</code> requires a <var>depth</var> argument to
+do so.
+</p></dd></dl>
+
+<p><code>groff</code> <samp>ms</samp> encourages customization of table of contents
+entry production.
+</p>
+<dl>
+<dt id="index-_002eXN_002dREPLACEMENT">Macro: <strong><tt>.XN-REPLACEMENT</tt></strong> <em><span class="roman"><i>heading-text</i></span></em></dt>
+<dd><span id="index-XN_002dREPLACEMENT-_005bms_005d"></span>
+</dd><dt id="index-_002eXH_002dREPLACEMENT">Macro: <strong><tt>.XH-REPLACEMENT</tt></strong> <em><span class="roman"><i>depth</i></span> <span class="roman"><i>heading-text</i></span></em></dt>
+<dd><span id="index-XH_002dREPLACEMENT-_005bms_005d"></span>
+<p>These hook macros implement <code>XN</code> and <code>XH</code>, respectively.
+They call <code>XN-INIT</code> and pass their <var>heading-text</var> arguments to
+<code>XH-UPDATE-TOC</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eXN_002dINIT">Macro: <strong><tt>.XN-INIT</tt></strong></dt>
+<dd><span id="index-XN_002dINIT-_005bms_005d"></span>
+</dd><dt id="index-_002eXH_002dUPDATE_002dTOC">Macro: <strong><tt>.XH-UPDATE-TOC</tt></strong> <em><span class="roman"><i>depth</i></span> <span class="roman"><i>heading-text</i></span></em></dt>
+<dd><span id="index-XH_002dUPDATE_002dTOC-_005bms_005d"></span>
+<p>The <code>XN-INIT</code> hook macro does nothing by default.
+<code>XH-UPDATE-TOC</code> brackets <var>heading-text</var> with <code>XS</code> and
+<code>XE</code> calls, indenting it by 2 ens per level of <var>depth</var> beyond
+the first.
+</p></dd></dl>
+
+<p>We could therefore produce a table of contents similar to that in the
+previous example with fewer macro calls.  (The difference is that this
+input follows the &ldquo;Approach&rdquo; entries with leaders and page numbers.)
+</p>
+<div class="example">
+<pre class="example">.NH 1
+.XN Introduction
+<span class="roman">&hellip;</span>
+.NH 2
+.XN Methodology
+.XH 3 &quot;Fassbinder's Approach&quot;
+.XH 3 &quot;Kahiu's Approach&quot;
+<span class="roman">&hellip;</span>
+.NH 1
+.XN Findings
+<span class="roman">&hellip;</span>
+</pre></div>
+
+<p>To get the section number of the numbered headings into the table of
+contents entries, we might define <code>XN-REPLACEMENT</code> as follows.
+(We obtain the heading depth from <code>groff</code> <samp>ms</samp>&rsquo;s internal
+register <code>nh*hl</code>.)
+</p>
+<div class="example">
+<pre class="example">.de XN-REPLACEMENT
+.XN-INIT
+.XH-UPDATE-TOC \\n[nh*hl] \\$@
+\&amp;\\*[SN] \\$*
+..
+</pre></div>
+
+<p>You can change the style of the leader that bridges each table of
+contents entry with its page number; define the <code>TC-LEADER</code> special
+character by using the <code>char</code> request.  A typical leader combines
+the dot glyph &lsquo;<samp>.</samp>&rsquo; with a horizontal motion escape sequence to
+spread the dots.  The width of the page number field is stored in the
+<code>TC-MARGIN</code> register.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="ms-Multiple-Columns.html" accesskey="p" rel="prev">ms Multiple Columns</a>, Up: <a href="ms-Page-Layout.html" accesskey="u" rel="up">ms Page Layout</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

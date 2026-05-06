@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Conventions Used in This Manual (The GNU troff Manual)</title>
+
+<meta name="description" content="Conventions Used in This Manual (The GNU troff Manual)">
+<meta name="keywords" content="Conventions Used in This Manual (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Introduction.html" rel="up" title="Introduction">
+<link href="Credits.html" rel="next" title="Credits">
+<link href="Installation.html" rel="prev" title="Installation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Conventions-Used-in-This-Manual"></span><div class="header">
+<p>
+Next: <a href="Credits.html" accesskey="n" rel="next">Credits</a>, Previous: <a href="Installation.html" accesskey="p" rel="prev">Installation</a>, Up: <a href="Introduction.html" accesskey="u" rel="up">Introduction</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Conventions-Used-in-This-Manual-1"></span><h3 class="section">1.8 Conventions Used in This Manual</h3>
+
+<p>We apply the term &ldquo;groff&rdquo; to the language documented here,
+the GNU implementation of the overall system,
+the project that develops that system,
+and the command of that name.
+In the first sense,
+<code>groff</code>
+is an extended dialect of the
+<code>roff</code>
+language,
+for which many
+similar implementations exist.
+We say &ldquo;the formatter&rdquo; when speaking of behavior
+that is generally true of
+<code>troff</code> and
+<code>nroff</code> programs.
+</p>
+<p>A tradition has arisen that
+GNU
+programs&rsquo; names bear a prefix
+&lsquo;<samp>g</samp>&rsquo;
+where necessary to distinguish them from other implementations
+on the host system
+(see <a href="Environment.html">Environment</a>).
+Thus,
+for example,
+&lsquo;<samp>geqn</samp>&rsquo; is GNU
+<code>eqn</code>.
+On operating systems that lack a
+<code>troff</code> of different provenance,
+this prefix is omitted;
+GNU
+<code>troff</code> is the only
+<code>troff</code> available.
+Exceptionally,
+&lsquo;<samp>groff</samp>&rsquo;
+always retains its leading
+&lsquo;<samp>g</samp>&rsquo;.
+</p>
+<p>We call
+non-GNU
+<code>troff</code> systems
+<acronym>AT&amp;T</acronym> <code>troff</code> because that is the common origin of almost all
+<code>troff</code> implementations<a id="DOCF2" href="groff.html_fot.html#FOOT2"><sup>2</sup></a>
+(with more or less compatible changes).
+</p>
+<span id="index-RET-_0028keycap-notation_0029"></span>
+<span id="index-SPC-_0028keycap-notation_0029"></span>
+<p>This manual employs Emacs names for non-graphic keycap engravings on the
+alphabetic section of the keyboard.  &ldquo;<tt class="key">RET</tt>&rdquo; is Return or Enter,
+and &ldquo;<tt class="key">SPC</tt>&rdquo; is the space bar.
+</p>
+<p>The <code>roff</code> language features several major syntactical categories
+within which many items are predefined.  Presentations of these items
+comprise
+the name of the category followed by a colon and the form in which the
+item is most commonly used.
+</p>
+<dl>
+<dt id="index-_005cn_005bexample_005d">Register: <strong>\n[example]</strong></dt>
+<dd><p>The register &lsquo;<samp>example</samp>&rsquo; is one that that <code>groff</code> <em>doesn&rsquo;t</em>
+predefine.  You can create it yourself, though; see <a href="Setting-Registers.html">Setting Registers</a>.
+</p></dd></dl>
+
+<p>To make this document useful as a reference and not merely amiable
+bedtime reading, we tend to present these syntax items in exhaustive
+detail when they arise.  References to topics discussed later in the
+text are frequent; skim material you haven&rsquo;t mastered yet.
+</p>
+<p>We use Texinfo&rsquo;s &ldquo;result&rdquo; (&rArr;) and error&rarr; notations to
+present output written to the standard output and standard error
+streams, respectively.  Diagnostic messages from the GNU <code>troff</code>
+formatter and other programs are examples of the latter, but the
+formatter can also be directed to write user-specified messages to the
+standard error stream.  The notation then serves to identify the
+output stream and does not necessarily mean that an error has
+occurred.<a id="DOCF3" href="groff.html_fot.html#FOOT3"><sup>3</sup></a>
+</p>
+<div class="example">
+<pre class="example">$ echo &quot;Twelve o'clock and&quot; | groff -T ascii | sed '/^$/d'
+    &rArr; Twelve o'clock and
+$ echo '.tm all is well.' | groff &gt; /dev/null
+    error&rarr; all is well.
+</pre></div>
+
+<p>Sometimes we use &rArr; abstractly to represent formatted text that
+you will need to use a PostScript or PDF viewer program (or a printer)
+to observe.  While arguably an abuse of notation, we think this
+preferable to requiring the reader to understand the syntax of these
+page description languages.
+</p>
+<p>We also present diagnostic messages in an abbreviated form, often
+omitting the name of the program issuing them, the input file name, and
+line number or other positional information when such data do not serve
+to illuminate the topic under discussion.
+</p>
+<p>Most examples are of <code>roff</code> language input that would be placed in
+a text file.  Occasionally, we start an example with a &lsquo;<samp>$</samp>&rsquo;
+character to indicate a shell prompt, as seen above.
+</p>
+<p>We encourage you to to try the examples yourself,
+and to alter them to better learn
+<code>groff</code>&rsquo;s
+behavior.
+Our examples sometimes need to direct the formatter to set a line length
+(with
+&lsquo;<samp>.ll</samp>&rsquo;)
+that fits within the page margins of this manual.
+We mention this so that you know why it is there
+before we discuss the
+<code>ll</code>
+request
+formally.<a id="DOCF4" href="groff.html_fot.html#FOOT4"><sup>4</sup></a>
+</p>
+<span id="index-man-pages"></span>
+<span id="index-manual-pages-_0028_0060_0060man-pages_0027_0027_0029"></span>
+<p>We refer occasionally to <i>man pages</i>, in which aspects of the
+<code>groff</code> system or of its operating environment are further
+documented.<a id="DOCF5" href="groff.html_fot.html#FOOT5"><sup>5</sup></a> When you see a citation like
+<cite>groff_man<span class="roman">(7)</span></cite>, understand that you can type &lsquo;<samp>man
+groff_man</samp>&rsquo; at the command line to view it.  The numbered category
+distinguishes pages by their purpose.  You can try &lsquo;<samp>man 'groff(1)'</samp>&rsquo;
+and &lsquo;<samp>man 'groff(7)'</samp>&rsquo; to observe this
+distinction.<a id="DOCF6" href="groff.html_fot.html#FOOT6"><sup>6</sup></a>
+Your system likely offers an <cite>intro<span class="roman">(1)</span></cite><!-- /@w --> page that will help
+you make the most of this resource.
+</p>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Credits.html" accesskey="n" rel="next">Credits</a>, Previous: <a href="Installation.html" accesskey="p" rel="prev">Installation</a>, Up: <a href="Introduction.html" accesskey="u" rel="up">Introduction</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

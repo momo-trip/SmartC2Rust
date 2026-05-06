@@ -1,0 +1,64 @@
+Localization
+------------
+
+The localization process involves two groff files and zero or more
+hyphenation pattern files.
+
+1.  A locale-dependent file (for example, fr.tmac for French) does one
+    or several of the following.
+
+    A.  A string identifying the groff locale (e.g., "english") is set.
+    B.  Locale-specific strings used by macro packages are (re)defined.
+    C.  Other tweaks to macro package configuration are performed, such
+        as altering the ordering of the components of a date string.
+    D.  Additional inter-sentence space is set to a language-appropriate
+        amount with the .ss request.
+    E.  A hyphenation mode appropriate to the hyphenation pattern files
+        for the locale is set with the .hy request.  Here's a mapping
+        from TeX hyphenation pattern minimums to groff hyphenation
+        modes.
+            \lefthyphenmin=2, \righthyphenmin=2 => 1
+            \lefthyphenmin=2, \righthyphenmin=3 => 4
+            \lefthyphenmin=1, \righthyphenmin=2 => 32
+    F.  The hyphenation language is set with the .hla request.
+    G.  Support for the character encoding used by the hyphenation
+        pattern files is loaded with the .mso request.
+    H.  Hyphenation pattern and exception files are loaded with the .hpf
+        and .hpfa requests.
+
+2.  A locale-independent file (trans.tmac) activates the localized
+    strings set up in item B above.
+
+3.  After implementing a new groff locale, add a test for it in the
+    "localization-works.sh" file.
+
+4.  Add the name of the macro file (excluding ".tmac") to the loop in
+    the "initialization-is-quiet.sh" test script.
+
+See the groff Texinfo manual in doc/groff.texi for descriptions of the
+requests referred to above.
+
+Localization files are named using ISO 639-1 language identifiers.
+Further specialization of locales by ISO 3166 territory codes is
+tentatively planned as of groff 1.23.0, awaiting expressions of demand.
+
+After 'trans.tmac' has been loaded, you must redefine the date strings
+in order to use the day and month names translated earlier.  The date
+format also may need to be changed.
+
+- If the locale's date format is MM/DD/YYYY, use the following.
+
+    for ms: .ds DY \*[MO] \n[dy] \n[year]\"
+    for mm: .ds cov*new-date \\*[MO\\n[mo]] \\n[dy] \\n[year]\"
+    for me: .ds td \*(mo \n(dy \n(y4\"
+
+- If the locale's date format is DD/MM/YYYY, use the following.
+
+    for ms: .ds DY \n[dy] \*[MO] \n[year]\"
+    for mm: .ds cov*new-date \\n[dy] \\*[MO\\n[mo]] \\n[year]\"
+    for me: .ds td \n(dy \*(mo \n(y4\"
+
+Other date formats can be handled similarly.
+
+Note: For the mm package, in the 'ISODATE' macro, only the first
+definition of 'cov*new-date' must be changed (see 'fr.tmac').

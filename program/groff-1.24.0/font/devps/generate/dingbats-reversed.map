@@ -1,0 +1,8 @@
+#
+# Map between PostScript glyph names and groff character identifiers
+# (ordinary ones have a one-character name; special character names are
+# longer).
+#
+# Use this map with the (unstyled) reversed Zapf Dingbats font.
+#
+a12 lh

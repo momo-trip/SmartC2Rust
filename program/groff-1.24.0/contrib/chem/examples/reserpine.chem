@@ -1,0 +1,39 @@
+reserpine.chem:
+
+.cstart
+# Example file for chem:
+#   Reserpine or C_33H_40N_2O_9 (CAS-RN: 50-55-5).
+#
+# Found at https://en.wikipedia.org/wiki/Reserpine
+#
+# Prepared by Bernd Warken <groff-bernd.warken-72@web.de>,
+# reorganized by Norwid Behrnd <nbehrnd@yahoo.com>.
+
+R1:	ring6 double 1,2 3,4 5,6
+R2:	flatring5 pointing down with .V2 at R1.V3 put N at 1 double 4,5
+R3:	ring6 with .V5 at R2.V5 put N at 3
+R4:	ring6 with .V1 at R3.V3 put N at 1  # prevent a struck-through N
+R5:	ring6 with .V1 at R4.V3
+	frontbond 120 from R5.V3 ; O
+	bond 60
+BP:	doublebond up ; O
+	bond 120 from BP.start
+R6:	ring6 double 1,2 3,4 5,6
+
+	bond -120 from R1.V5 ; MeO
+	H below R2.N
+	frontbond -120 from R3.V4 ; H
+	backbond 60 from R4.V3 ; H
+	backbond -120 from R4.V4 ; H
+	backbond down from R5.V4 ; OMe
+	frontbond -120 from R5.V5 ; MeO2C
+	bond 060 from R6.V2 ; OMe
+	bond 120 from R6.V3 ; OMe
+	bond 180 from R6.V4 ; OMe
+
+# Local Variables:
+# fill-column: 72
+# mode: Nroff
+# End:
+# vim: set textwidth=72:
+.cend

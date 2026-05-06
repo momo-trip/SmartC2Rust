@@ -1,0 +1,136 @@
+This is GNU bc version 1.08.2.  (And dc version 1.5.2)
+
+Changes in bc from 1.08.1 to 1.08.2.
+    Remove last vestages of K&R C; this allows gcc-15+ to compile the
+      code without special options.
+    Plug a small memory leak in dc.
+    Some typo and formatting fixes in the documentation.
+
+Changes in bc from 1.08.0 to 1.08.1.
+    Fix a formatting botch in doc/bc.1 (which was rendered as blank lines at
+    the top of the page).
+
+Changes in dc 1.5.0 to 1.5.1.
+    Fix dependency rule in dc/Makefile.am (was causing build problems
+      on some systems).
+    Add missing close-" in the .TH line of dc.1.
+
+Changes in bc from 1.07.1 to 1.08.0.
+    Streamlined the build process; should now be better behaved for those
+      doing cross-compilation builds.
+    Made some minor improvements to the documentation.
+
+Changes in dc 1.4.1 to 1.5.0.
+    Added support for GNU readline (--with-readline)
+      and BSD libedit (--with-libedit)
+    Provided for compile-time disabling of the `!' command for sandboxed
+      environments (./configure --disable-dc-bang-shell).
+    The ill-designed 'a' command is now deprecated.
+    New --max-recursion=$depth command-line option, to facilitate
+      testing (especially fuzzing) without run-away memory consumption.
+    More consistent behavior for error handling --- if an error message
+      is emitted about the arguments passed on the top-of-stack,
+      then the stack should always be left unchanged.
+    Changed the internal representation of arrays (should perform better
+      for most access patterns on large arrays).
+    Made some minor improvements to the documentation.
+    Bug fixes.
+    Much other internal code re-organization and clean-up.
+
+Changes in bc from 1.07 to 1.07.1.
+    Fixed ibase extension causing problems for read()
+    Fixed parallel make problem.
+
+Changes in dc 1.4 to 1.4.1.
+    Fixed dc "Q" command bug.
+
+Changes in bc from 1.06 to 1.07.
+    Added void functions.
+    Bug fixes:
+	fixes bug in load_code introduced by mathlib string storage in 1.06.
+	fix to get long options working.
+	signal code clean-up.
+	fixed a bug in the AVL tree routines.
+	fixed math library to work properly when called with ibase not 10.
+	fixed a symbol table bug when using more than 32 names.
+	removed a double free.
+    Added base 17 to 36 for ibase.
+    Fixed some memory leaks.
+    Various small tweaks and doc bug fixes.
+
+Changes in dc from 1.3 to 1.4:
+    Recognize and handle tail recursion.
+    Add 'r' and 'R' commands for stack manipulation.
+    Finally fix dc to trap interrupts, like the documentation has said it
+    should: aborts any executing macros, but does not exit the program.
+    Bug fixes.
+    Miscellaneous code clean-up.
+    Changed to detect directories and generate errors.
+    Detects and reports on any output errors; exits non-success.
+
+Changes in dc from 1.2 to 1.3:
+    Minor bug fixes.
+    New multiply algorithm of bc.
+
+Changes in bc from 1.05 to 1.06:
+    New multiply algorithm and many other changes in lib/number.c
+    Function size now done dynamically.
+    Function syntax in non-posix mode allows newlines in more places.
+    Bug fixes:
+	improved computation of j(n,x).
+	enables readline only if interactive.
+	for statement bug fixed.
+	use int instead of char for readline char counts.
+	improved cosine accuracy.
+
+Changes in dc from 1.1 to 1.2:
+    added !< != !> commands
+    arrays now stack
+    output is now line buffered, provided setvbuf() is available
+    fixed known bugs in 'q', 'Q', 'a' commands, '-f' command-line option,
+      and documentation
+	changed the 'P' command's behavior on a numeric argument:
+	  due to popular demand it now does the equivalent of 'aP'
+	  (for small values)
+	added new 'n' command to do what the old 'P' command did
+
+Changes in bc from 1.04 to 1.05:
+    Solaris makes work better.
+    bug fixes
+	stdout now always does line buffering.
+	sqrt bug fixed for small numbers.
+	readline (if support is compiled in) is enabled only for
+		interactive executions of bc.
+
+
+This is GNU bc version 1.04.  (And dc version 1.1)
+
+Changes from 1.03
+
+	reorganization of source tree
+	use of automake
+
+	new commands for dc (|, ~, r, a)
+	new command line options for dc
+
+	fixed infinite loop in sqrt in bc
+	fixed an I/O bug in bc
+	made bc conform to POSIX for array parameters
+	added long option support for bc
+	new commandline options for bc (-q)
+	added support for readline to bc (use configure --with-readline)
+	command line argumens can now be taken from an environment variable
+	
+
+Changes from 1.02
+
+	minor bug fixes in bc.
+
+	addition of Ken Pizzini's dc program that uses the GNU bc 
+	arbitrary precision arithmetic routines.
+
+Changes from 1.01
+	
+	minor bug fixes.
+
+

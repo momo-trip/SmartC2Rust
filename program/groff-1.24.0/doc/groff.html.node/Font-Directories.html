@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Font Directories (The GNU troff Manual)</title>
+
+<meta name="description" content="Font Directories (The GNU troff Manual)">
+<meta name="keywords" content="Font Directories (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Invoking-groff.html" rel="up" title="Invoking groff">
+<link href="Paper-Format.html" rel="next" title="Paper Format">
+<link href="Macro-Directories.html" rel="prev" title="Macro Directories">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Font-Directories"></span><div class="header">
+<p>
+Next: <a href="Paper-Format.html" accesskey="n" rel="next">Paper Format</a>, Previous: <a href="Macro-Directories.html" accesskey="p" rel="prev">Macro Directories</a>, Up: <a href="Invoking-groff.html" accesskey="u" rel="up">Invoking groff</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Font-Directories-1"></span><h3 class="section">2.4 Font Directories</h3>
+
+<span id="index-device-description-file_002c-introduced"></span>
+<span id="index-description-file_002c-device_002c-introduced"></span>
+<span id="index-file_002c-device-description_002c-introduced"></span>
+<span id="index-font-description-file_002c-introduced"></span>
+<span id="index-description-file_002c-font_002c-introduced"></span>
+<span id="index-file_002c-font-description_002c-introduced"></span>
+<p>The GNU <code>troff</code> formatter and <code>groff</code>&rsquo;s output drivers read
+<i>device</i> and <i>font description files</i> that detail the
+output device and the typefaces available to it, including their glyph
+repertoires and the <i>metrics</i> (dimensions) of each glyph.  This
+information permits the formatter to accurately place glyphs with
+respect to each other.  The device description file is always named
+<samp>DESC</samp>; fonts are typically described in files with short names
+like <samp>TR</samp>, <samp>CR</samp>, <samp>HBI</samp>, or
+<samp>S</samp>.<a id="DOCF9" href="groff.html_fot.html#FOOT9"><sup>9</sup></a>
+</p>
+<span id="index-font-directory"></span>
+<span id="index-directory_002c-device-and-font-description"></span>
+<span id="index-search-path_002c-font"></span>
+<span id="index-fonts_002c-searching-for"></span>
+<span id="index-font-path"></span>
+<span id="index-path_002c-for-font-files"></span>
+<p>Device and font description files are kept in <em>font directories</em>,
+which together constitute the <em>font path</em>.  The search procedure
+always appends the directory <code>dev</code><var>name</var>, where <var>name</var> is
+the name of the output device.  Assuming TeX DVI output, and
+<samp>/foo/bar</samp> as a font directory, the description files for
+<code>grodvi</code> must be in <samp>/foo/bar/devdvi</samp>.  Each directory in
+the font path is searched in the following order until the desired
+description file is found or the list is exhausted.
+</p>
+<ul>
+<li> Directories specified with the <samp>-f</samp> command-line option.  All
+output drivers (and some preprocessors) support this option as well,
+because they require information about glyphs to be rendered in the
+document.
+
+</li><li> <span id="index-GROFF_005fFONT_005fPATH_002c-environment-variable-1"></span>
+Directories listed in the <code>GROFF_FONT_PATH</code> environment variable.
+
+</li><li> <span id="index-site_002dlocal-directory-1"></span>
+<span id="index-directory_002c-site_002dlocal-1"></span>
+A site-local directory and a stock directory.
+Locations corresponding to your installation
+are listed in section &ldquo;Environment&rdquo; of
+<cite>troff<span class="roman">(1)</span></cite>.
+If not otherwise configured,
+they are as follows.
+
+<div class="example">
+<pre class="example">/usr/local/share/groff/site-font
+/usr/local/share/groff/1.23.0/font
+</pre></div>
+
+<p>The foregoing assumes that the version of <code>groff</code> is 1.23.0, and
+that the installation prefix was <samp>/usr/local</samp>.  These locations can
+be customized as part of the build-time configuration process.
+</p></li></ul>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Paper-Format.html" accesskey="n" rel="next">Paper Format</a>, Previous: <a href="Macro-Directories.html" accesskey="p" rel="prev">Macro Directories</a>, Up: <a href="Invoking-groff.html" accesskey="u" rel="up">Invoking groff</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

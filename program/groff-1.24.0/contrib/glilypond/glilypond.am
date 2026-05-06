@@ -1,0 +1,71 @@
+# Automake rules for 'glilypond'
+#
+# Copyright 2013-2020 Free Software Foundation, Inc.
+# Written by Werner Lemberg <wl@gnu.org> and
+# Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
+#
+# This file is part of glilypond.
+#
+# glilypond is distributed with groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+# License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+glilypond_srcdir = $(top_srcdir)/contrib/glilypond
+bin_SCRIPTS += glilypond
+man1_MANS += contrib/glilypond/glilypond.1
+
+# files going to lib directory '$(glilypond_dir)'
+# TODO: glilypond_dir is substituted by configure.ac; check if this
+# could be removed.
+glilyponddir = $(glilypond_dir)
+
+EXTRA_DIST += \
+  contrib/glilypond/COPYRIGHT \
+  contrib/glilypond/ChangeLog \
+  contrib/glilypond/ChangeLog.0x \
+  contrib/glilypond/GPLv2 \
+  contrib/glilypond/README \
+  contrib/glilypond/examples/example.groff \
+  contrib/glilypond/glilypond.1.man \
+  contrib/glilypond/glilypond.pl
+
+glilypond_TESTS = contrib/glilypond/tests/smoke-test.sh
+TESTS += $(glilypond_TESTS)
+EXTRA_DIST += $(glilypond_TESTS)
+
+# create perl executable 'glilypond', being stored into 'bindir'
+glilypond: $(glilypond_srcdir)/glilypond.pl $(SH_DEPS_SED_SCRIPT)
+	$(AM_V_GEN)$(RM) $@ \
+	&& sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	       -e "s|[@]g[@]|$(g)|g" \
+	       -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	       -e "s|[@]glilypond_dir[@]|$(DESTDIR)$(glilypond_dir)|g" \
+	       -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	       $(glilypond_srcdir)/glilypond.pl \
+	       >$@ \
+	&& chmod +x $@
+
+uninstall_groffdirs: uninstall-glilypond-hook
+uninstall-glilypond-hook:
+	if test -d $(DESTDIR)$(glilyponddir); then \
+	  rmdir $(DESTDIR)$(glilyponddir); \
+	fi
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

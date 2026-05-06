@@ -1,0 +1,1020 @@
+-*- coding: utf-8 -*-
+
+Notation:
+---------
+
+In the list below some paragraphs (or lines) are marked either
+by a '#' or a '*' or a '?'. A 
+  '*' marks some internal change of which the user doesn't see anything.
+  '#' denotes a change which is noticeable by the user.
+  '?' describes a known problem which is not fixed yet.
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.4 (March 2013) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fixed CVE-2012-3386 (by using updated automake)
+# Fixed bug-gv] Problem after saving gv-settings
+# improve wording of gv-update-userconfig manual
+# Scrolling and memory access improved
+# README.I18N adjusted for libXaw3d 1.6.x
+# Fixed GNU gv 3.6.4 - 3.7.3 page selector button geometry bug
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.3.90 (March 2012) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Support for libXaw3d-1.6.x
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.3 (November 2011) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Updated Translations
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.2.90 (October 2011) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+? Reverted fix of debian bug #594991: unexpected scrolling of the TOC widget",
+  this fixes the following bug:
+# Pressng END does not scroll TOC wodget.
+
+# Fixed "Save document" dialog for PDF files
+
+# Fix debian bug 627471: gv: fails to read bounding box (depending on the
+  command line!), see http://bugs.debian.org/627471 for details
+
+# ignore resource and style files without absolute paths
+  (in order to improve security)
+
+# Do not install files that re not used
+
+# avoid make distcheck failing because of gv-i18n.h
+
+* Update gnulib, import signal, 
+# this should fix compiling on Mac OS again
+
+* Improved handling of DSC parse errors
+
+* Varuos code cleanups - for details see either CHANGELOG or the git repotory.
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.2 (April 2011) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Minor bugfix
+
+? "Fit to window magnification" and "Fit width to window magnification" with
+  "Automatic resizing" turned on sometime miss rescaling, especially when
+  changing the orientation or resizing the window. You can force
+  rescaling by selecting the active "special" scale in the scales menu.
+
+? Interactive prompting for the password of encrypted PDF files do not work
+  if and only if DSC is turned off. As a workarouund, you can load the file
+  with DSC turned on and then turn DSC off.
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.1.90 (April 2011) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fix Debian bug #594991: unexpected scrolling of the TOC widget
+
+# Fixed file descriptor leak
+
+# Added Dutch, French, Italian and Spanish translation
+
+* Code cleanup
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.1 (June 2010) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fix bug [bug #30081] gv 3.7.0: unable to print/save pdf files.
+
+%%%%%%%%%%%%%%%%%%% GV 3.7.0 (June 2010) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+* GV 3.6.91 has been released as GV 3.7.0 with no changes but
+  some minor code cleanups.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.91 (June 2010) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Support starting ghostscript from a safe directory.
+
+# ghostscript is started with -P- if SAFER is enabled.
+
+# ghostscript is started with -dSAFER and -dDELAYSAFER for "pdf2dsc"
+  and "pdf2ps" if safer is enabled
+  
+# Minor bugfixes
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.90 (May 2010) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fix compiling on Mac OS X
+
+# Support for localised user interfaces
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.9  (April 2010) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Bugfix in gv-update-userconfig
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.8.91  (March 2010) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fixed compiling on Xaw3d 1.5.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.8.90  (March 2010) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# UTF-8 Support. Read the included file README.I18N for details.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.8  (December 2009) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# GV 3.6.7.90 has been released as GV 3.6.8 with no changes
+
+? "Fit to window magnification" and "Fit width to window magnification" with
+  "Automatic resizing" turned on sometime miss rescaling, especially when
+  changing the orientation or resizing the window. You can force
+  rescaling by selecting the active "special" scale in the scales menu.
+
+? Interactive prompting for the password of encrypted PDF files do not work
+  if and only if DSC is turned off. As a workarouund, you can load the file
+  with DSC turned on and then turn DSC off.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.7.90  (December 2009) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Compilation fix for Mac OS X: Requires --enable-SIGCHLD-fallback during
+  compilation.
+  
+# "Fit height to window magnification"  --
+  currently works best with "Automatic resizing" turned off. 
+  With --scale=-1003, you can access the new scale from the command line.  
+
+# Improved handling of filename "-" (which means read document from stdin)
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.7  (March 2009) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# GV 3.6.6.92 has been released as GV 3.6.7 with no changes
+
+? "Fit to window magnification" and "Fit width to window magnification" with
+  "Automatic resizing" turned on sometime miss rescaling, especially when
+  changing the orientation or resizing the window. You can force
+  rescaling by selecting the active "special" scale in the scales menu.
+
+? Interactive prompting for the password of encrypted PDF files do not work
+  if and only if DSC is turned off. As a workarouund, you can load the file
+  with DSC turned on and then turn DSC off.
+
+%%%%%%%%%%%%%% GV 3.6.6.92 (internal release: March 2009) %%%%%%%%%%%%%%
+
+# Fixed debian bug #516995: Misleading error message when .gv file is not
+present [and XUSERFILESEARCHPATH is used]
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.6.91 (February 2009) %%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fixed a bug in switching to presentation mode.
+
+# Fixed reset scrolling position in open dialog when changing directories.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.6.90 (January 2009) %%%%%%%%%%%%%%%%%%%%%%%%
+
+# TOC can now display more than about 2000 pages (fixes bug #24069).
+
+# File open dialog can now display more than about 2000 files
+  (fixes ubuntu bug #274767).
+
+# By pressing "Shift-P" or selecting "State/Presentation Mode", you can
+  open another instance of GNU gv which is in presentation mode.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.6  (September 2008) %%%%%%%%%%%%%%%%%%%%%%%%
+
+# Updated maintainer's e-mail address, otherwise no changes
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.5.92  (September 2008) %%%%%%%%%%%%%%%%%%%%%
+
+# libzio is now used if available during compile time
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.5.91  (September 2008) %%%%%%%%%%%%%%%%%%%%%
+
+# gv-update-userconfig now offers the options -n resp. -N to switch to an
+  alternative navigation: After each page switch (except if selected by the 
+  page number) the page is scrolled to   the top (if switching forward) resp.
+  the bottom (if switching backward).
+
+# gv-update-userconfig can remove the resources inserted by -n resp. -N with
+  the new option -s.
+
+# Support for encrypted PDF files. New command line switch 
+  "--password=PASSWORD" for opening encrypted PDFs. If the password
+  is not supplied via command line, the user will be asked to enter it.
+
+# Support for files > 2GB on file systems with large file support.
+
+? Interactive prompting for the password of encrypted PDF files do not work
+  if and only if DSC is turned off. As a workarouund, you can load the file
+  with DSC turned on and then turn DSC off.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.5.90  (August 2008) %%%%%%%%%%%%%%%%%%%%%%%%
+
+# the current coordinate can be saved to a file by the z resp. the u key.
+  See gv.info for details.
+
+# The return key now scrolls through the whole document vertically.
+  Unlike the space key no horizontal scrolling is performed. The old function
+  of the return key is still available through the "Page Down" and the "f" key.
+
+# *.ad and *.dat files are installed to $PREFIX/share/gv
+
+# "ERROR:" and "error:" now also trigger the info popup in error mode
+
+# Xinerama support. It can be configured by the "xinerama"-resource.
+  Its values can be "On", "Off" or "Auto". "Auto" is the default.
+
+# New helper Script "gv-update-userconfig", which is a simple script to
+  update an .gv config file to the current version of gv.
+
+# Should build on Solaris now using sun studio 11 compiler
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.5  (July 2008) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# GV 3.6.4.91 has been released as GV 3.6.5 with no changes
+
+? "Fit to window magnification" and "Fit width to window magnification" with
+  "Automatic resizing" turned on sometime miss rescaling, especially when
+  changing the orientation or resizing the window. You can force
+  rescaling by selecting the active "special" scale in the scales menu.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.4.91  (June 2008) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# ~/.gv now contains the version that has saved that configuration.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.4.90  (June 2008) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+* Build-system ensures that the man-page is always up to date
+
+# Fixed some compiler warnings
+
+# Added new widgetless mode, usable via option "--widgetless"
+
+# --help, --usage and --version now work without having an X11 display
+
+# --spartan and --widgetless now use embedded resources. Before this bugfix,
+  you had to use --style=gv_spartan.dat to use the embedded resource.
+  
+# --infoSilent, --infoErrors and --infoAll will control, which ghostscript
+  messages will lead to an info pop-up window.
+  The same effect can be reached via a resource "infoVerbose", which values can
+  be "Silent", "Errors" and "All". It can also be edited via the "gv options"
+  dialog.
+  
+# "Fit to window magnification" and "Fit width to window magnification" --
+  currently works best with "Automatic resizing" turned off. With --scale=-1000
+  resp. --scale=-1001, you can access these special scales from the command line.
+  
+? "Fit to window magnification" and "Fit width to window magnification" with
+  "Automatic resizing" turned on sometime miss rescaling, especially when
+  changing the orientation or resizing the window. You can force
+  rescaling by selecting the active "special" scale in the scales menu.
+
+# Arbitrary scales are now possible - input them in the gv options dialog
+  or with --scale=n, where n is a float.
+
+# New fullscreen mode which needs support from the window manager
+
+# New command line switch "--presentation" as a shortcut for
+  "--fullscreen --noresize --scale=-1000 --widgetless"
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.4  (June 2008) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# GV 3.6.3.90 has been released as GV 3.6.4 with no changes
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.3.90  (May 2008) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# DSC parser now respects the level of BeginDocument/EndDocument
+
+# Possible segfault has been fixed
+
+# Fixed bug #21239: Vlist.c produces garbage if International is set
+
+# Fixed bug #21740: popup windows may partly invisible as not on the screen
+
+# The escape key is now working in more contexts
+
+# The filename can optionally be shown insted of the title
+
+# Fixed bug #23199: No error message for errors in opened file
+
+* Got rid of non-free code.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.3  (June 2007) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# gv is now able to work with latest ghostscript: gs 8.57
+
+# The bug causing the version not to figure in the manual has been
+  fixed.
+
+# The SIGINT signal is now masked (ignored) by gv.
+
+# gv no more segfaults when reading a configuration file as produced by 
+  State -> Setup Options -> Save
+
+# gv should compile in non-GNU system that doesnt have glib2. The
+  `getopt' gnulib module has been imported to fix this.
+
+# gv now correctly adjust the page index window after PAGE-UP and
+  PAGE-DOWN events.
+
+# gv is now able to open files with minus character beginning
+  filenames.
+
+# X resources related bugs has been fixed. gv is now able to get
+  resources from the display database, user file, gv system database
+  and command line doing the Right Thing (TM).
+
+# gv is now able to correctly understand DocumentMedia and other DSC
+  directives that uses postscript strings. It was not possible with
+  previous versions due to a bug in the postscript names scanning
+  routine.
+
+* Vulnerability CVE-2006-5864 has been fixed.
+
+* gs is now invoked with `-dFIXEDMEDIA'
+
+* The internal gettext implementation has been renamed to `ps_gettext'
+  to avoid collisions with the builtin `gettext' function.
+
+* --quiet and --noquiet now works as expected.
+
+? There are troubles with 64 bits machines: the use of x-pointers to
+  store data should be eliminated in subsequent versions.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.2  (14 December 2006) %%%%%%%%%%%%%%%%%%%%%%
+
+? There are troubles with 64 bits machines: the use of x-pointers to
+  store data should be eliminated from the sources.
+
+? It is not possible to zoom when viewing PDF 1.4 files. PDF 1.5 files are
+  not supported at all.
+
+? The quality of postcript files generated by saving PDF files is poor.
+
+? See http://savannah.gnu.org/bugs/?group=gv for more known bugs on
+  this release.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.1  (?? December 2004) %%%%%%%%%%%%%%%%%%%%%%
+
+# New set of command line arguments. This solves the horrid bug on
+  gv 3.6.0 that made such release nearly unusable. See the
+  documentation for details about the new argument list.
+
+# The "Reopen" entry on the File menu has been renamed to "Reload" in
+  order to be coherent with the "Reload" button.
+
+# The distributed package structure have been fixed, now conforming a
+  legal GNU source package.
+
+# The delete key now work as expected, that is, it deletes the next
+  character rather the last character when typed on text entries.
+
+# Dot files are not shown by default on file selection forms.
+
+# If you try to open an empty file you get a coherent error
+  message.
+
+# New manual page
+
+* Most of the Debian patches has been applied to gv:
+
+  162830_scanf.diff (Fix a security risk involving buffer overflows)
+  167029_argv.diff  (Fix an access beyond end of array on process.c)
+  206008_flicker.diff (Add double-buffering to pixmap operations)
+  223556_hidden_dir.diff (Do not show dot files on file listings)
+  250854_tmp_umask.diff (Tempfiles should not be created worldreadable)
+  252548_errno.diff (Wrong error message while opening empty files)
+  179643_bad_dsc.diff (Make DSC parsing case-insensitive)
+  159433_delete_key.diff (Change behaviour of Delete key on text entries)
+
+* The gs command used for PDF to PostScript conversion has been fixed to allow 
+  document saving.
+
+? It is not possible to zoom when viewing PDF 1.4 files. PDF 1.5 files are
+  not supported at all.
+
+? The quality of postcript files generated by saving PDF files is poor.
+
+? See http://savannah.gnu.org/bugs/?group=gv for more known bugs on
+  this release.
+
+%%%%%%%%%%%%%%%%%%% GV 3.6.0  (20 November 2004) %%%%%%%%%%%%%%%%%%%%%%
+
+# New configuration/compilation/installation using GNU Autotools
+
+# Documentation is now distributed in texinfo format.
+
+# "Redisplay" button has been renamed to "Reload".
+
+# Some GNU standard command line arguments are supported now:
+  --help, --usage and --version.
+
+# Antialiasing is now used by default.
+
+# Solved bug #11014: gv is capable to open files with spaces (or other 
+  harm character) in the filename.
+
+%%%%%%%%%%%%%%%%%%% GV 3.5.8  (21 June 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Bugfix: The command line option "-geometry" didn't work correctly
+  (neither did the GV.Geometry resource).
+
+# Bugfix: Use a LabeledLineTextField instead of a LabeledTextField
+  for the "Screen Size" in the "Setup Options".
+
+# Keep the number of the displayed page "in sight" in the table
+  of contents if the geometry of the main window changes.
+
+# Automatically use "Fixed Size" if a fixed window width or height
+  is prescribed by the "-geometry" command line option or the
+  "GV.geometry" resource.
+
+# Kill ghostscript processes in zoom windows immediately after the
+  page is rendered and not when the window is closed.
+
+# Disallow the "Misc Menu" in zoom windows.
+
+# Define and change the default resources "GV*dirs", "GV*filter" and 
+  "GV*filters" in source/Imakefile and source/descrip.mms since they 
+  are Unix/VMS specific.
+
+# Remove the "GV.geometry: +10+10" resource from the default resource 
+  files.
+
+%%%%%%%%%%%%%%%%%%% GV 3.5.3  (9 June 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Bugfix: Fixed compilation problems on Solaris.
+  [ thanks to Yamamoto Hirotaka <ymmt@lute.is.s.u-tokyo.ac.jp> for 
+  sending a patch ]
+
+%%%%%%%%%%%%%%%%%%% GV 3.5.2  (7 June 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Bugfix: Zooming didn't work for large magnifications.
+
+# Bugfix: "Redisplay" still jumped back to the first page when the
+  file changed. How funny ...
+
+# Bugfix: "Auto Center" didn't work as it should.
+
+# Bugfix: Removed a debugging printf(...) call from the zoom code. 
+
+# Bugfix: Removed some drawing flaws in the Vlist widget (table of
+  contents).
+
+# Bugfix: Show caret in the print confirmation dialog and set the
+  insert position to the end of the print command.
+
+# Bugfix: Action GV_Resizing() didn't work.
+
+# Bugfix: File Selection Popup allowed weird things after not being 
+  able to access a directory.
+
+# Added a keyboard scrolling "Eye Guide": when scrolling a temporary 
+  border is drawn around the previously visible area. The feature may 
+  be disabled in the "Setup Options".
+
+# Changed the keyboard bindings in the main window.
+  This was necessary to fully take advantage of the capabilities of
+  the new action GV_Page() which is now responsible for navigating 
+  with keyboard events through the document.
+  People will hate me for doing that, but it was overdue ...
+  Some examples:
+   - Allow to move through a document by using a single key.
+     For instance the key "Space" scrolls in vertical strips and 
+     jumps to the next page if the bottom/right edge of a page is 
+     reached. ("BackSpace" reverses this operation).
+   - Allow to move to a page by typing its page number on the keypad, 
+     followed by pressing "Enter" on the keypad.
+     Pressing (Keypad +) or (Keypad -) followed by (Keypad Enter)
+     does the obvioys thing.
+
+# Clicking on the ">>" button in the main window with mouse 
+  button 1,2,3 jumps +1,+5,+10 pages.
+  Analogously for the "<<" button ...
+  
+# Take care that the mark highlighting the current page in the
+  table of contents always remains visible.
+
+# Added command line option "-v" to display version information.
+
+# Highlight the "Dismiss" button in zoom windows and let pressing
+  "Return" close the window.
+
+# Let the table of contents not become to broad for exorbitantly long
+  page labels.
+
+# Removed the action GV_HandleEOF() and its key binding to key "E".
+
+* Changed resource syntax "*.Translations" to "*.baseTranslations" to
+  allow overriding event bindings in user resource files.
+
+* Made USE_FALLBACK_STYLES the default.
+
+* Replaced the actions GV_Scroll(),GV_Next(),GV_Previous(),GV_Show(),
+  GV_Center() and GV_Redisplay() by the more flexible action GV_Page().
+
+* Bugfix: Correct header "error.h" for Linux/Alpha.
+
+* Bugfix: Corrected a typo in source/Imakefile that caused the 
+  "fallbackPageMedia" not to be recognized correctly.
+
+* Added possibility to install documentation via "make install.doc".
+
+* Removed the directory 'old' from the distribution.
+
+%%%%%%%%%%%%%%%%%%% GV 3.4.12  (1 June 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+# Bugfix: Zooming didn't work correctly in non portrait orientations.
+
+# Bugfix: "Update File" jumped back to the first page.
+
+# Bugfix: "Redisplay" jumped back to the first page when the file
+  changed.
+
+# Bugfix: When compiling USE_FALLBACK_STYLES didn't work as intended.
+
+# Bugfix: Command line options -watch and -nowatch didn't work.
+
+# Bugfix: The "watchFile" resource was not taken into account properly.
+
+# Bugfix: Viewing gzipped non-DSC files didn't work.
+
+# Bugfix: Wrong postscript coordinates were shown in the main window when
+  using non portrait orientation. 
+
+# Compatibility: Allow the command line options
+     -letter -tabloid, -ledger, -legal, -statement, -executive, -a0, -a1,
+     -a2, -a3, -a4, -a5, -b4, -b5, -folio, -quarto, -10x14
+  for backwards compatibility as an undocumented feature.
+
+# Compatibility: Allow the command line option "-magstep <n>" as synonym
+  for "-scale <n>" for compatibility reasons but as an undocumented 
+  feature.
+
+# Fix manpage so that 'apropos postscript' lists gv.
+
+%%%%%%%%%%%%%%%%%%% GV 3.4.3  (26 April 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fix a missing dependancy in the Imakefile which caused
+  'gv_intern_res_unix.h' not to be created sometimes.
+
+%%%%%%%%%%%%%%%%%%% GV 3.4.2  (26 April 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fix a bug which caused  'Segmentation Faults' when performing
+  certain operations after starting gv with a file name on the
+  command line.
+
+# Add the automatic decompression feature for VMS.
+  [thanks to Tim Adye (adye@v2.rl.ac.uk) for sending a patch]
+
+# Replace the concept of "magsteps" by "scales" and "scale bases".
+  This also caused the "-dpi", "-xdpi" and "-ydpi" option to
+  vanish.
+
+# Allow to specify additional scales, scale bases and paper sizes
+  in the option popups.
+
+# Allow to provide the screen size to view documents in their natural
+  size.
+
+# Change the way how gv handles resource files.
+  A full set of required resources is now always compiled into the
+  executable, system and user specific resource files contain by
+  default only the very limited set of resources which may be 
+  interesting to change by non gv-developers.
+  This has the side effect that
+    - the chance of gv complaining about no or incompatible
+      resources is minimized.
+    - security sensitive resources (those of type 'GVintern') can
+      now be treated in a unified way without loss of security
+      and may also be specified in the system specific resource file.
+
+# When opening/saving a file pressing 'Return' now rescans the 
+  directory if the provided path doesn't seem to be a file but
+  a directory.
+
+# Add the command line otions '-pixmap' and '-nopixmap' to trigger
+  the value of the 'useBackingPixmap' resource (which, in this turn,
+  became a resource of gv).
+
+# Remove the "-letter", "-a4" etc. page media options.
+  Instead the option "-media <media>" should be used.
+
+# Allow to compile style files into the executable (currently this only
+  affects gv_spartan.dat).
+
+# The 'Uncompress' text field in the options window didn't show a 
+  cursor.
+
+# For a given papersize or bounding box the displayed area was a little
+  too small; one or two postscript points were omitted.
+
+%%%%%%%%%%%%%%%%%%% GV 3.2.4  (15 April 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Let gv handle gzipped, zipped or compressed files (this feature is
+  not available on VMS).
+
+# Create another options window for ghostscript specific settings.
+  In the 'State' menu there are now entries 'gv Options' and
+  'Ghostscript options'.
+  
+# Make the on-screen menu that pops up when clicking with the third
+  mouse button on the displayed page configurable via the 'miscMenu'
+  resource.
+
+# Let gv (optionally) show the name of the displayed file in the
+  window title bar.
+
+# Add an entry "BBox" to the PageMedia menu and use the document's
+  bounding box information even if it is not an EPSF.
+
+# Define the command line option '-spartan' as a shortcut for
+  '-style gv_spartan.dat'.
+
+# Add 'Toggle even marks', 'Toggle odd marks', 'Toggle current mark'
+  and 'Unmark all' entries to the 'Page' menu.
+
+# Add 'Automatic resizing' entry to the 'State' menu.
+
+# Remove the 'Update File' button from the main window and add
+  an entry 'Update' to the 'File' menu instead.
+
+# Fix a memory bug that caused seg faults when scanning documents
+  specifying more than one papersize  in the context of 
+  '%%DocumentPaperSizes:' comments.
+  This bug was in there since the dawn of time ....
+
+# Rename the macro definition 'O_NONE' to something which is not used
+  on AIX.
+  [thanks to Larry Schwimmer <rosebud@cyclone.Stanford.EDU>].
+
+# Use fork() instead of vfork() (except on VMS).
+  [thanks again to Larry Schwimmer <rosebud@cyclone.Stanford.EDU>].
+
+# Change the test for SunOS in the Imakefile.
+  [thanks once more  to Larry Schwimmer <rosebud@cyclone.Stanford.EDU>].
+
+# Include a code modification to avoid Bus error crashs on  HP/UX 9.07.
+  [thanks to Christian Illinger <illinger@lepsi.in2p3.fr>]
+
+# The list of top- and sub-directories was not scrollable in horizontal
+  direction.
+
+%%%%%%%%%%%%%%%%%%% GV 3.1.6  (8 April 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fix the 'Filters' menu which was broken in 3.1.4 (showed entries
+  with all spaces removed).
+
+* Redefine 'InstallProgram' in the source/Imakefile to respect BINDIR
+  and GV_BINDIR (which was a problem on Solaris).
+
+# On VMS use a smaller font in the 'Path' field of the file selection 
+  popup.
+
+# Let the file selection window grow in width when the path or filter
+  becomes longer.
+
+%%%%%%%%%%%%%%%%%%% GV 3.1.4  (6 April 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Tim Adye (adye@v2.rl.ac.uk) and William Bader (william@nscs.fast.net)
+  sent me a large patch which has been merged into this version.
+  Their changes include:
+    - an excellent improvement to the postcript scanner which allows
+      to ignore bogus 'End of File' (EOF) comments.
+      The main effect is that if you have a document which embeds
+      other documents without the proper 'BeginDocument', 'EndDocument'
+      comments then the chances are good that they can still be 
+      previewed.
+      And believe me, there are many such documents ....
+      This feature can be turned on/off by means of the '-eof' and
+      '-noeof' command line option or via an entry in the 'State'
+      menu or via ... .
+    - a 'confirm quit' popup which (by default) shows up when trying
+      to leave gv while PDF to PS conversions are still in progress.
+    - a signal handler to clean up ghostscript subprocesses when
+      gv receives a SIGQUIT, SIGINT or SIGTERM signal.
+      SIGHUP causes gv to display a new version of the current
+      if it exists.
+    - an FAQ which is now part of the documentation.
+    - better name suggestions when saving data.
+    - and about 3681 other improvements which are not mentioned here.
+
+# More work on the postscript scanner: increase initial buffer size
+  and adjust its size increment when reallocation is needed.
+  Also increase the anumber of bytes read in one turn.
+  This reduces memory reallocation and memory shifting to a minimum.
+
+# Fix a bug in the postscript scanner which caused faulty behaviour
+  when reading lines longer than about 100kB.
+
+# Add a "Next Page" and "Previous Page" button to the main window.
+
+# Further extend the "Options" menu.
+
+# Add a "Watch file" feature which checks the displayed file
+  periodically if activated. If the document changes the new version
+  is displayed.
+
+# Add a menu "State" to the main window which holds entries
+  previously found in the "File" menu without having anything to do 
+  with any file.
+
+# Add Mouse bindings for two button mice: actions bound to the third
+  button can be accessed by using the second button while pressing
+  the Shift key.
+
+# Include some 'memmove()' replacement for systems which don't
+  provide this function. The code will be activated by defining
+  'USE_MEMMOVE_CODE' in the configuration file 'confg.Unix'.
+
+# Use the 'Vlist' widget (instead of the 'List' widget) to display files
+  and directories in the file selection popup.
+
+# Add scrolllbars to the file selection popup.
+  They are not needed since scrolling can be done directly
+  in the windows of the file and directory lists by using the
+  event sequence 'button down, move mouse, button release'.
+  However, the scrollbars reappeared since the mails
+  asking why the lists cannot be scrolled start to fill my hard disc.
+
+# Fix the 'A' key (for antialiasing) which stopped working recently.
+
+# *Try* to provide some more helpful message when gv detects 
+  incompatible resources.
+
+# Change the format of the manpage.
+
+* Change 'ifdef _DECC' to 'if defined (__DECC) && defined (VMS)'
+  in error.c.
+
+%%%%%%%%%%%%%%%%%%% GV 3.0.4  (1 April 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Allow to choose and save a default filter from within the options 
+  menu.
+
+# Add the filter 'GV*filter: no .*' to the user resource file.
+  This defines the filter 'no .*' as default when opening the file
+  selection popup.
+
+# Fix the 'two-pixel' bug that caused the page marks to overlap with 
+  the indicator for the current page.
+
+# Correct syntax in Imakefile which was not understood by non-'GNU makes'.
+
+* Avoid unnecessary drawing of shadows in the table of contents.
+
+%%%%%%%%%%%%%%%%%%% GV 3.0.0  (31 March 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Provide a new 'Look and Feel' by using
+  - 'feather touch' buttons, toggles and menus instead of the standard
+    ones with raised shadows.
+  - a new table of contents. Apart from looking better this has the side
+    effect that the table of contents can now be scrolled in the same 
+    way as the main window, the zoom window and the file and directory
+    lists in the File Selection popup (it should be clear now that
+    I don't like Scrollbars :-).
+
+# Redo the File Selection popup. Changes include but are not limited to
+   - the addition of a menu with pre-definable directories.
+   - the removal of the 'Tmp' and 'Home' buttons. The functionality
+     offered by these two buttons is now available via the 'Directories'
+     menu.
+   - the addition of a menu with pre-definable filters.
+
+# Add all relevant preferences to the 'Options' popup so that users
+  don't have to mess around with resource files in order to change
+  some options.
+
+# Add an 'Antialias' entry to the 'File' menu.
+
+# Allow for multiple wildcards '%s' in the print command. Each such 
+  wildcard will be replaced by the file to be printed.
+
+# Add a bugfix for the bugfix added to cure some problems when
+  scanning postscript files with incorrect structuring comments.
+  
+%%%%%%%%%%%%%%%%%%% GV 2.9.4  (20 March 1997) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Add another mouse binding in the main window.
+  A double click with the left mouse button in the left/right half
+  of the shown page causes the previous/next page to be displayed.
+
+# Add yet another mouse binding in the main window.
+  A click with the right mouse button pops up a small menu offering
+  a few standard action.
+
+# Allow gv to either respect or ignore document structuring comments
+  when opening a file. This should be helpful when viewing documents
+  with faulty structuring comments.
+  To toggle between these two states a new menu entry has been added to 
+  the 'File' menu.
+  A keyboard binding to toggle DSC parsing on and off has beem added as
+  well. By default the key is 'I'.
+  Alternatively the new command line options '-dsc' and '-nodsc' may be
+  used.
+
+# Keep the point located in the center of the visible area of the 
+  displayed page centered when changing the magnification or
+  orientation.
+
+# Add resources 'minimumWidth' and 'minimumHeight' to allow users
+  to specify a size beyond which gv will never shrink so that all
+  controls and titles remain accessible when changing the magnification
+  or the page media or ...
+  For both resources the default value is 400.
+
+# Merge in a few patches enlarging and correcting the set of allowed
+  papersizes.
+  [ thanks to Andreas Schott (schott@rzg.mpg.de) ]
+ 
+# Add Keyboard binding to toggle antialiasing on and off.
+  By default the key 'A' is used.
+
+# Add Keyboard binding to toggle the resize behaviour of the main window
+  between 'Fixed Size' and 'Variable Size'.
+  By default the key 'Z' is used.
+
+# Update the documentation. The new sections mainly cover resources
+  and key and mouse bindings.
+
+# Fix a bug that causes gv to crash when the current page media
+  is 'Bounding Box' and the user disables automatic page media
+  selection.
+
+# Fix a bug that causes wrong page media selection when changing
+  from a document with document specific papersizes to one without
+  document specific papersizes (or vice versa).
+
+%%%%%%%%%%%%%%%%%%% GV 2.7.6  (1 November 1996) %%%%%%%%%%%%%%%%%%%%%%%%%
+
+# 'Upgrade' postscript scanner to be able to read buggy Windows NT
+  generated postscript files.
+  Mark Pfeifer (pfeiferm%ppddev@comet.cmis.abbott.com) found that 
+  Windows NT generates files which show some non-comment postscript
+  code after the '%%EndSetup' and before the first page comment
+  '%%Page: x y'.
+# VMS: Built in Rick Dyson's (dyson@blanc.physics.uiowa.edu) two small
+  changes for the Xmu library to allow compilation with DECC 5.2.
+  Note that these changes do not affect the sources of gv itself,
+  it's only the VMS specific archive xmu_4.zip which was modified.
+# Use my own scrollbar widget to avoid problems people encounter with
+  hacked Xaw3d libraries.
+# Make 'make depend' cleaner.
+  [thanks to Thomas Gellekum (thomas@ghpc8.ihf.rwth-aachen.de)]
+# Include Xfuncs.h in ps.c and Ghostview.c to avoid unresolved memmove()
+  on SunOS
+  [thanks to Harald Boehme (boehme@informatik.hu-berlin.de)]
+# VMS: Fix a problem which reapperared in 2.7 b5 and caused certain file
+  formats (non LF_STREAM,CR_STREAM) not to be read correctly.
+  [thanks to Tim Adye (adye@v2.rl.ac.uk)]
+# Correct wrong URL in the documentation.
+  [thanks to Helmut Geyer (hardy@lynx.ps.uci.edu)]
+# Change some resource bindings s that gv works on SunOS.
+  [thanks to Matthias Klose (doko@cs.tu-berlin.de)]
+
+%%%%%%%%%%%%%%%%%%% GV 2.7 b5  ( 1 August 1996) %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Add doc/gv.man, doc/gv.ps, doc/gv.html to provide at least some
+  documentation about gv's command line options.
+# Unix: Fixed the 'Update File' button (everything related to updating
+  the displayed file when the modification date changed didn't work
+  correctly). 
+  [thanks to Lars Bruecher (bruecher@dipmza.physik.uni-mainz.de) for
+  telling me about the bug]
+# Fixed 'Reopen'. After reopening a (changed) file gv displayed the first
+  page instead of the current page.
+  [thanks to Lars Bruecher (bruecher@dipmza.physik.uni-mainz.de) for
+  telling me about the bug]
+
+%%%%%%%%%%%%%%%%%%% GV 2.7 b4  (31 July 1996) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fixed extracting pages
+  [thanks to Arne Mueller (amuelle3@gwdg.de) for telling me about the bug]
+# Allow for a possible extra byte in front of the "%!PS-Adobe-" identifier
+  at the beginning of the file for comaptibility reasons.
+  [thanks to Ronan Melennec (MELENNEC_Ronan@cena.dgac.fr) for suggesting
+  this change]
+# Fixed errorneous detection of the "-arguments <arguments>" command-line
+  option. 
+  [thanks to Dr. Gunnar Ribitzki (ribitzki@clri6f.gsi.de) for his patch]
+ 
+%%%%%%%%%%%%%%%%%%% GV 2.7 b3  (15 June 1996) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Fixed code for appending <lf>s at the end of ps-sections of <cr>
+  oriented files on Unix systems (thanks to Tim Adye (adye@v2.rl.ac.uk)).
+
+%%%%%%%%%%%%%%%%%%% GV 2.7 b2  (8 June 1996) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# VMS: use explicit ftell() calls in ps.c to get reliable file positions
+       whenever possible (thanks to Tim Adye (adye@v2.rl.ac.uk)).
+* Use read() instead of fread() in ps.c to unify VMS and Unix code.
+
+%%%%%%%%%%%%%%%%%%% GV 2.7 b1  (2 June 1996) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This version
+
+  # offers an improved PDF capability:
+    a) Page numbers are shown, allowing to freely move through the
+       document.
+    b) Saving marked pages of a PDF file (or the whole file) is now a
+       valid operation. The file will first be converted to postscript,
+       then the pages are extracted and saved to the destination file.
+       Since the PDF->PS conversion takes a considerable amount of time
+       it is done "in the background" to not block the user interface.
+    c) Printing marked pages of a PDF file (or the whole file) is now 
+       also a valid option. The marked pages are first saved in
+       postscript format, then they are printed. Printing is also done
+       "in the background" due to the involved PDF->PS conversion.
+
+  # provides an additional layout of the main window for those who want
+    to minimize the on-screen-area consumption of gv. To use it start
+    gv by executing
+      $ gv -style gv_spartan.dat
+    The file gv_spartan.dat contains a layout description which omits
+    some of the buttons shown in the standard version and which uses
+    a different on-screen arrangement of the remaining widgets.
+
+  # provides an option to reverse the scrolling behaviour in the main
+    window.
+
+  # widens the class of previewable postscript documents by
+    a) removing the constraint that lines shouldn't have more than 
+       255 characters.
+    b) allowing LF, CR and CR LF as line terminators.
+
+  # removes the concept of a "forced" orientation and media. Instead the
+    orientation and papersize menus offer the "Automatic" entry, which,
+    if selected, advices gv to use the orientation and media extracted
+    from the DSC comments.
+
+  # uses a different algorithm for smoothing the scrolling process in the
+    main window. The new method is based on taking an average of the last
+    few motion events.
+
+  # handles some resources more restrictive for security reasons.
+    Those resources are prefixed by "GVintern" and may only be set
+    via a command line option or in the resource file "~/.gv" 
+    (or "DECW$USER_DEFAULTS:GV.DAT" on VMS).
+    Affected are, for instance, "GVintern.printCommand" and 
+    "GVintern.gsArguments". After installation the file "gv_intern_res.dat"
+    contains a complete list of these resources.
+
+  # uses by default a Pixmap instead of requesting Backing Store from
+    the X Server (GV*useBackingPixmap: True).
+
+  # uses an improved version of the FileSelection Widget.
+
+  # fixes a bug in the file selection widget which causes a crash
+    on OpenVMS VAX.
+
+  # doesn't show tons of String-to-Pixmap conversion warnings on
+    Motif displays anymore.
+
+  # corrects a bug in the layout of the main window which caused a wrong
+    horizontal scaling behaviour.
+
+  # fixes a bug which caused the comment '%%Pages: 0" to appear in saved
+    postscript files.
+
+  # fixes problematic file inclusion macros in "paths.h" which caused
+    errors for a lot of people.
+
+ñ%%%%%%%%%%%%%%%%%%% GhostView-VMS 2.3   (1 March 1996) %%%%%%%%%%%%%%%%%%%%
+
+1) New platform (linux)
+2) New widgets: Clip,Frame,Aaa
+3) New Layout
+4) New method to define regions to be magnified by zoom popups.
+5) New Zoom Popups (scrollable)
+6) New Bugfixes
+7) New Bugs
+
+%%%%%%%%%%%%%%%%%%% GhostView-VMS 2.1   (18 January 1996) %%%%%%%%%%%%%%%%%
+
+1) added "basic" PDF support. PDF files are handled in the same way
+   as unstructured PS files now.
+
+2) fixed a quite large memory leak which appeared in the VMS_DIR.C code.
+
+3) added the -landscape,-portrait, -seascape and -upsidedown options
+   which somehow got lost in previous versions.
+
+%%%%%%%%%%%%%%%%%%% GhostView-VMS 2.0.3 (1 February 1995) %%%%%%%%%%%%%%%%%
+
+1) callback 'cb_moveSlider' in file CALLBACKS.C calls 'XtCallActionProc'
+   which is buggy in the VMS/X11R4 implemetation and causes a crash
+   at startup -> fixed
+   Related problem appears in ACTIONS.C when in action_panner
+   XtRemoveCallback(pageview,XtNreportCallback,...) is called.
+   Also a problem only on R4 ... -> fixed
+   (thanks to Martin Zinser who provided an account on an X11R4 machine,
+   so that the tests could be made).
+
+2) color specifications of type 'rgb:x/y/z' do not work on VMS/X11R4.
+   They got replaced in the resource files by specifications of 
+   type 'grayX'.
+
+3) some ps-formatters include the 'end' command in the last page,
+   not in the trailer. These may cause ghostscript to break if
+   switching from the last page to another page.
+   Therefore the compile time option 'GV_RESTART_IF_BUSY' has been
+   introduced (see CONFIG.H).
+   Enabling this option may help but will slow down performance for
+   many correctly formatted files also.
+   By default this options is not activated.
+
+%%%%%%%%%%%%%%%%%%% GhostView-VMS 2.0 (1 January 1995) %%%%%%%%%%%%%%%%%%%%
+
+Original Release
+

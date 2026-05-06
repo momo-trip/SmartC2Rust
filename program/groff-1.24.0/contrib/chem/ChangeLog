@@ -1,0 +1,685 @@
+2026-01-18  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/reserpine.chem: Edit the visual representation of the
+	structure for aesthetic reasons.
+	- Contract substituents' labels where suitable;
+	- adjust bond angles; and
+	- complete the description of information about stereogenic
+	centres
+
+	... in line with rules compiled by Brecher,[1]  allowing a
+	simpler and shorter definition than the earlier one.  Retain the
+	orientation of the overall molecule previously set because this
+	matches the orientation of yohimban one can refer as parental
+	hydride depicted in appendix 3 of IUPAC's Blue Book.[2,3]
+
+	[1] Brecher, J. Graphical Representation Standards for Chemical
+	    Structure Diagrams (IUPAC Recommendations 2008). Pure Appl.
+	    Chem. 2008, 80 (2), 277–410.
+	    https://doi.org/10.1351/pac200880020277.
+	[2] Nomenclature of Organic Chemistry: IUPAC Recommendations and
+	    Preferred Names 2013; Favre, H. A., Powell, W. H.,
+	    International Union of Pure and Applied Chemistry, Eds.;
+	    Royal Society of Chemistry: Cambridge, 2014.
+	[3] https://iupac.qmul.ac.uk/BlueBook/
+
+2026-01-18  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/morphine.chem: Resurrect, rewritting as a more
+	advanced example of how to use chem.  Make the visualization
+	follow the rules compiled by Brecher[1] in the orientation of
+	morphine (as illustration of rule P-13.8.1.1) and parental
+	hydride morphinane (in appendix 3) of IUAPC's Blue Book.[2,3]
+
+	[1] Brecher, J. Graphical Representation Standards for Chemical
+	    Structure Diagrams (IUPAC Recommendations 2008). Pure Appl.
+	    Chem. 2008, 80 (2), 277–410.
+	    https://doi.org/10.1351/pac200880020277.
+	[2] Nomenclature of Organic Chemistry: IUPAC Recommendations and
+	    Preferred Names 2013; Favre, H. A., Powell, W. H.,
+	    International Union of Pure and Applied Chemistry, Eds.;
+	    Royal Society of Chemistry: Cambridge, 2014.
+	[3] https://iupac.qmul.ac.uk/BlueBook/
+
+	Fixes <https://savannah.gnu.org/bugs/?67922>.
+
+2026-01-18  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/mepacrine.chem: Update to describe mepacrine.  Now
+	the visual representation of the structure matches the
+	expectations set by the file name.  The visuals obtained by a
+	compilation meet the rules compiled by Brecher.[1]
+
+	[1] Brecher, J. Graphical Representation Standards for Chemical
+	    Structure Diagrams (IUPAC Recommendations 2008). Pure Appl.
+	    Chem 2008, 80 (2), 277–410.
+	    https://doi.org/10.1351/pac200880020277.
+
+	Continues fixing <https://savannah.gnu.org/bugs/?67922>.
+
+2026-01-18  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/morphine.chem: Rename this...
+	* examples/mepacrine.chem: ...to this.
+	* chem.am (CHEM_EXAMPLES): Reflect rename.
+
+	Begins fixing <https://savannah.gnu.org/bugs/?67922>.
+
+2026-01-19  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/smoke-test.sh: Skip test if Perl's Math::Trig module is
+	not available.
+
+	Thanks to Bruno Haible for the report.  See <https://lists.gnu\
+	.org/archive/html/groff/2026-01/msg00075.html>.
+
+2026-01-13  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/lsd.chem: Improve visual representation.  Reorganize
+	representation of the structure.
+	- For aesthetic appeal, the structure was a rotated little bit.
+	  Its orientation is the one of ergoline, the parent hydride
+	  {in chemists' terms, the senior or reference structure motive}
+	  lsd and other ergot alkaloids derive from as displayed in
+	  appendix 3 of [1a], and publications (e.g., [2-4]).  The
+	  edit retains the pragmatic definition of the pyrrole moiety
+	  based on keyword flatring.
+	- The backbone labels the rings A, B, C, and D.  This is both
+	  for backward compatibility in nomenclature (rule P-101.2.4
+	  in [1b]) still used in peer reviewed publications today {e.g.,
+	  [2-4]} as well as showcase of chem's flexibilty of definitions
+	  coined by the user.
+	- Some cleaning according e.g., to rules GR-4.1.1, 4.1.2,
+	  6.5.[5]
+
+	[1a] Nomenclature of Organic Chemistry: IUPAC Recommendations
+	     and Preferred Names 2013; Favre, H. A., Powell, W. H.,
+	     International Union of Pure and Applied Chemistry, Eds.;
+	     Royal Society of Chemistry: Cambridge, 2014. Authorized
+	     online excerpt:
+	     https://iupac.qmul.ac.uk/BlueBook/Papp3.html
+	[1b] Same as [1a], authorized online excerpt:
+	     https://iupac.qmul.ac.uk/BlueBook/P10.html#1010204
+	[2]  Barker, S. A. Simple Analogs of the LSD D-Ring: A
+	     Consideration of Structure–Activity Relationships and Their
+	     Potential as Therapeutics. ACS Chem. Neurosci. 2025, 16
+	     (22), 4309–4314.
+	     https://doi.org/10.1021/acschemneuro.5c00695.
+	[3]  Pazur, E. J.; Kalatanova, A.; Tasker, N. R.; Vainionpää,
+	     K.; Leinonen, H.; Wipf, P. Synthesis and Biological
+	     Analysis of Iso-Dimethyltryptamines in a Model of
+	     Light-Induced Retinal Degeneration. ACS Med. Chem. Lett.
+	     2024, 15 (7), 1049–1056.
+	     https://doi.org/10.1021/acsmedchemlett.4c00130.
+	[4]  Rathnayake, U.; Garner, P. Asymmetric Synthesis of Lysergic
+	     Acid via an Intramolecular (3+2) Dipolar Cycloaddition/
+	     Ring-Expansion Sequence. Org. Lett. 2021, 23 (17),
+	     6756–6759.
+	     https://doi.org/10.1021/acs.orglett.1c02337.
+	[5]  Brecher, J. Graphical Representation Standards for Chemical
+	     Structure Diagrams (IUPAC Recommendations 2008). Pure Appl.
+	     Chem. 2008, 80 (2), 277–410.
+	     https://doi.org/10.1351/pac200880020277.
+
+	Fixes <https://savannah.gnu.org/bugs/?67921>.
+
+2026-01-01  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/penicillin.chem: Reorganize file.
+	- Improve use of the ring templates.
+	- Prevent partial overwrite of N in lactam moiety and alkyl
+	  amide.
+	- Explicitly designate stereochemistry.  If available, future
+	  versions of chem should replace `backbond` by a wegde shaped
+	  variant of this bond.
+
+	...for better visual representation similar to the one currently
+	used on Wikipedia.[1]
+
+	Fixes <https://savannah.gnu.org/bugs/?67877>.
+
+	[1] https://en.wikipedia.org/wiki/Benzylpenicillin
+
+2026-01-01  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/ethamivan.chem: Improve visual representation.
+	Reorganize representation of the structure.
+	- Contract the hydroxyl group, both simplifying the definition
+	  of the substituent and correcting the unusual dihedral angle
+	  of 180 degrees about C-O-H previously used.
+	- Adjust orientations of the drawing overall and substituents
+	  (e.g., rules GR-3.1.2, GR-3.1.3; 3.2.1 in [1]), especially
+	  alkyl chains around N (GR-4.1.1, ibid.).
+
+	...as one would "clean" the structure drawing in a GUI-based
+	editor, and indeed with a result very similar to the current
+	depiction on Wikipedia.[2]
+
+	Fixes <https://savannah.gnu.org/bugs/?67876>.
+
+	[1] Brecher, J. Graphical Representation Standards for Chemical
+	Structure Diagrams (IUPAC Recommendations 2008). Pure Appl.
+	Chem.  2008, 80 (2), 277-410.
+	https://doi.org/10.1351/pac200880020277.
+	[2] https://en.wikipedia.org/wiki/Etamivan
+
+2025-12-31  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/cholesterol.chem: Add stereochemistry.
+	- The previous depiction was incomplete and did not explicitly
+	  described the stereogenic centres as such.  This information
+	  was added with `front bond` and `back bond` as available with
+	  groff 1.23.0.  If possible, future versions should use a wedge
+	  shaped version of `back bond`.
+	- Particular about steroids: among chemists, it is more common
+	  to name the four rings by A, B, C, and D.  To use these labels
+	  instead of R1, R2, etc. equally displays chem's flexibility
+	  here.
+	- The orientation of cycles allowed simplifying the definition
+	  of their mutual attachment.
+
+	Fixes <https://savannah.gnu.org/bugs/?67873>.
+
+2025-12-31  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/cholesterin.chem: Rename this...
+	* examples/cholesterol.chem: ...to this.
+	* chem.am (EXTRA_DIST): Reflect rename.
+
+2026-01-05  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.pl (version): Restore here-document marker that I
+	thoughtlessly discarded in commit 5d777599d5, 29 December.
+
+2026-01-05  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/smoke-test.sh: Add (directory and) test script.
+	* chem.am: Add script to new `chem_TESTS` macro and append that
+	macro to `TESTS` macro, so that "make check" runs the test.
+	Append `chem_TESTS` to `EXTRA_DIST`, so that the test script
+	ships in distribution archives.
+
+2025-12-31  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.am (EXTRA_DIST): Ship "COPYRIGHT" file in distribution
+	archive.
+
+2025-12-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.pl: Drop `copyright` scalar; see below.  Bump revision or
+	"micro" portion of version number.
+	(version): Stop reporting copyright and license notice
+	after version disclosure.  No other program groff installs, not
+	even others authored by Bernd Warken, handles `--version` in
+	this way, except for the namesake program groff(1) itself.
+
+2025-12-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/122: Rename this directory...
+	* examples/cstr-122: ...to this.
+	* chem.am (chemexample122dir, EXTRA_DIST, install_chem_extra)
+	(uninstall_chem_hook, dist_chem): Update macro and rule
+	definitions accordingly.
+
+2025-12-20  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Our README files no longer contain '@g@' sequences, so they no
+	longer require build-time processing.
+
+	* README.txt:
+	* examples/README.txt:
+	* examples/122/README.txt: Rename these...
+	* README:
+	* examples/README:
+	* examples/122/README: ...to these.
+	* chem.am (EXTRA_DIST): Ship the suffixless files instead of
+	their now-nonexistent suffixed counterparts.
+	(contrib/chem/README)
+	(contrib/chem/examples/README)
+	(contrib/chem/examples/122/README): Drop target rules for
+	creating these files now that they already exist in the source
+	tree.
+	(CHEM_GENEXAMPLES, nodist_chemexample_DATA)
+	nodist_chemexample122_DATA): Drop now-unneeded macro
+	definitions.
+	(CHEM_EXAMPLES): Add "README" file.
+	(install_chem_extra): Update "lazy" `for` loop to install
+	"122/README" file as well, not just the files ending in `.chem`.
+	(MOSTLYCLEANFILES): Drop now-unneeded macro appendment.
+
+2025-12-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* GPLv2: New file.
+	* chem.am (EXTRA_DIST): Ship it.
+
+	The GNU GPLv2 covers Bernd Warken's work on chem through 27
+	August 2015.  Copyrightable changes to chem since September 2017
+	are licensed under the GNU GPLv3, not GPLv2.
+
+2025-12-09  Norwid Behrnd <nbehrnd@yahoo.com>
+
+	* examples/atp.chem: The previous depiction of the ATP molecule
+	omitted a nitrogen atom in the pyrimidine moiety.
+
+	Fixes <https://savannah.gnu.org/bugs/?67792>.
+
+2024-12-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.am (all): Drop seemingly spurious use of target.
+
+2024-12-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Move "chem.pic" from its own subdirectory (which has no other
+	contents provided by groff) to the "tmac" directory.  The
+	"eqnrc" file and groff's hyphenation pattern and exception files
+	establish a precedent for using "tmac" for things that aren't
+	"troff macro" files.  This makes it easier to run automated
+	tests on GNU chem from the build tree.
+
+	* chem.am (chempicdir, dist_chempic_DATA): Drop macros.
+	(CHEMTMACFILES, chemtmacdir, dist_chemtmac_DATA): Add macros.
+	(uninstall_chem_extra): Rename this...
+	(uninstall_chem_hook): ...to this, for consistency with other
+	groff Automake files.
+	* chem.pl: If running as "built" version of script, locate
+	"chem.pic" file relative to the build's "tmac" directory.
+
+2024-12-11  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.pl: Revise approach to determining program name.  This
+	reverts the change on 9 December; the Perl interpreter does not
+	populate `argv[0]` the same way that the shell typically does
+	with execve(2).  Drop global scalar `chem` in favor of a new
+	global scalar `prog`, populated by `File::Spec->splitpath()`.
+	(usage, version): Migrate from `chem` to `prog`.
+	(usage): Report only the "basename" of the script.  Revise and
+	shorten command description.
+
+2024-12-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.pl (usage): Revise usage message.  Organize like other
+	groff commands' usage messages.  Use $0 in the synopses for
+	consistency with groff's C++ programs.  This also informs the
+	user with multiple versions available which they are running.
+
+2024-12-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.am (chem): Use sed to replace magic token `@PERL@` with
+	contents of `PERL` macro, determined by groff configure script.
+	* chem.pl: Rewrite shebang line to use the magic token.
+
+2023-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.pl: Stop endorsing shebang line space myth.  See
+	<https://savannah.gnu.org/bugs/?64058>.
+
+2022-08-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.pl: Refactor.
+	  - Rename scalars.
+	    Copyright -> copyright
+	    Program_Version -> chem_version
+	    Groff_Version -> groff_version
+	    Chem_Name -> chem
+	    before_make -> is_in_source_tree
+	  - Rename hash.
+	    at_at -> makevar
+	  - Drop unused hash member `$makevar{'BINDIR'}`.
+	  - Drop scalar `Groff_Version_Preset`, which apparently hadn't
+	    been updated since groff 1.20.  Instead, follow grog(1) and
+	    set the `groff_version` scalar to "DEVELOPMENT" if this is
+	    the version from the groff source tree.  Overwrite its value
+	    with that determined by make(1) if available.
+	  - Tighten usage and version messages; make the latter more
+	    conformant with the format recommended in the GNU Coding
+	    Standards.  Explicitly identify license as GNU GPLv2.
+	  (usage): Refer to "pic" with its command prefix if it is known
+	  to have one.  (If running "unbuilt", we have no way to know.)
+
+2022-08-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.pl: Stop copying "pic.tmac" (fallback troff macro
+	definitions) into the output.  It might not be necessary and it
+	is inappropriate to do so if a macro package offers its own
+	definitions or the user has made other arrangements on the
+	command line.  (The same thing can be achieved with the "-mpic"
+	argument to the formatter or a front end.)  Bump version number.
+
+2022-06-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.1.man: Fix markup nits.  Use idiomatic input style,
+	placing newlines after sentences and commas.  Also put an empty
+	request between sentences.
+
+	Fixes <https://savannah.gnu.org/bugs/?51328>.
+
+2022-04-12  Ingo Schwarze <schwarze@openbsd.org>
+
+	Delete the harmful, ill-designed, buggy, and essentially
+	unmaintained and untested --with-doc option of the configure
+	script.  See the NEWS file for more details on the rationale.
+
+	* chem.am: Delete three BUILD_EXAMPLES conditionals.
+
+2020-04-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* chem.1.man:
+	* examples/122/README.txt:
+	* examples/README.txt: Delete references to groffer.
+
+2018-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	* chem.am (chem, README): Use $(AM_V_GEN) to silence file generation.
+
+2015-08-22  Bernd Warken  <bernd.warken@web.de>
+
+	* chem.1.man: Rename `chem.man'.
+
+	* chem.am: Include renaming.
+
+2015-08-05  Bernd Warken  <bernd.warken@web.de>
+
+	* chem.am: Add `Last update'.  Setup Emacs makefile-automake-mode.
+
+2015-04-03  Werner LEMBERG  <wl@gnu.org>
+
+	* chem.man: Make it work in compatibility mode.
+	(EL): Fix typo.
+
+2014-09-25  Bernd Warken  <bernd.warken@web.de>
+
+	* chem.pl: New chem version 1.0.5.
+
+	* Makefile.sub: Add .PHONY.  Restructure install and uninstall.
+
+2014-09-03  Bernd Warken  <bernd.warken@web.de>
+
+	* chem.pl: New chem version 1.0.4.  Change version().
+
+	* all `chem' source files: Add and improve the copying
+	information.  Remove last update. Add Emacs setting if necessary.
+
+2014-07-05  Bernd Warken  <bernd.warken@web.de>
+	________________________________________________________________
+	* chem.pl: New chem version 1.0.3
+
+	* chem.man: Make file doclifter compatible.
+
+2014-07-04  Bernd Warken  <bernd.warken@web.de>
+	________________________________________________________________
+	* release of chem 1.0.2
+
+	* chem.man: Remove definition of `.FONT'.
+
+2014-07-04  Bernd Warken  <bernd.warken@web.de>
+
+	* chem.man: Transform into classical man-page style.
+
+2014-07-04  Bernd Warken  <bernd.warken@web.de>
+
+	* chem.man: Remove definition of .Env-var.
+
+2014-07-03  Bernd Warken  <bernd.warken@web.de>
+	________________________________________________________________
+	* release of chem 1.0.1
+
+	* chem.man: Add `.mso' for `groffer.man'.
+
+2014-06-17  Bernd Warken  <bernd.warken@web.de>
+	________________________________________________________________
+	* release of chem 1.0.0
+
+	* Makefile.sub: Add Emacs final part.
+
+	* ChangeLog: Correct the space characters in this file as Emacs
+	style.
+
+2014-03-29  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* Makefile.sub (uninstall_examples): Remove superfluous `rmdir'.
+
+2014-03-29  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* Makefile.sub (install_examples): Use `find', not shell globs.
+
+	Instead of using rm(1) two times with shell globs the expansion of
+	which will include subdirectories (thus resulting in error
+	messages), use find(1) and its `-exec' operand.
+
+2014-03-29  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* Makefile.sub: Handle examples separately, controlled by
+	$(make{_,_install_,_uninstall_}examples).
+
+2013-01-29  Bernd Warken  <bernd.warken@web.de>
+
+	* all: Change license into GPL2.
+
+2013-01-29  Werner LEMBERG  <wl@gnu.org>
+
+	* Makefile.sub (MOSTLYCLEANADD): Fix typo.
+
+2010-12-13  Werner LEMBERG  <wl@gnu.org>
+
+	Really fix handling of examples/122.
+
+	* examples/122/README: Renamed to...
+	* examples/122/README.txt: This.
+
+	* Makefile.sub (all, MOSTLYCLEANADD): Add `examples/122/README'.
+	(examples/122/README): New target.
+	(install_data): Fix typo.
+
+2010-06-02  Larry Jones  <lawrence.jones@siemens.com>
+
+	* Makefile.sub (install): Fix handling of examples/122.
+	It tried to process the CVS subdirectory as a file.
+
+2009-01-03  Werner LEMBERG  <wl@gnu.org>
+
+	* chem.pl: Prepare for groff version 1.20.
+
+2008-01-04  Werner LEMBERG  <wl@gnu.org>
+
+	* chem.man: Insert `\:' in URLs where appropriate.
+
+2007-02-06  Eric S. Raymond  <esr@snark.thyrsus.com>
+
+	* chem.man: Change .UR/.UE and .MT/.ME so the start macro no
+	longer takes a second argument that is pasted to the end of the
+	generated text.  Instead, the end macro takes an argument that
+	does the same thing.
+
+2007-02-02  Werner LEMBERG  <wl@gnu.org>
+
+	* chem.man: Further refinements and normalizations.
+
+2007-02-02  Eric S. Raymond  <esr@snark.thyrsus.com>
+
+	* chem.man: Converted to use .SY/.OP/.YS and for cross-viewer
+	portability.  Conversion checked using the protocol described in
+	tmac/TESTING-HINTS.
+
+2006-11-10  Bernd Warken  <groff-bernd.warken-72@web.de>
+	________________________________________________________________
+	* release of chem 0.3.1
+
+	* chem.man: Add information about example files.
+
+2006-11-10  Werner LEMBERG  <wl@gnu.org>
+
+	* chem.man1: Rename back to...
+	* chem.man: This.
+	Use @G@, @MACRODIR@, and @DATASUBDIR@.
+
+	* Makefile.sub (CLEANADD, all): Don't handle chem.man.
+	(chem.man): Remove rule.
+	(chem): s/tmacdir/MACRODIR/, s/picdir/PICDIR/.
+
+	* chem.pl: s/tmacdir/MACRODIR/, s/picdir/PICDIR/.
+
+2006-11-10  Bernd Warken  <groff-bernd.warken-72@web.de>
+	________________________________________________________________
+	* release of chem 0.3.0
+
+	* chem.man1: Rename `chem.man' to translate some `@...@'
+	constructs.  Some minor corrections.  Remove some unused macros.
+
+	* examples/README.txt, examples/122/README: Add information on
+	`roff2*' programs.
+
+	* chem.pic: Rename `macros.pic'.
+
+	* Makefile.sub, chem.pl: Replace `macros.pic' by `chem.pic'.
+
+2006-11-09  Werner LEMBERG  <wl@gnu.org>
+
+	* chem.man: Revised.
+
+2006-11-08  Bernd Warken  <groff-bernd.warken-72@web.de>
+	________________________________________________________________
+	* release of chem 0.2.0
+
+	* pic.tmac: Remove this file.  Use instead the installed pic.tmac
+	in $(tmacdir).
+
+	* Makefile.sub, chem.pl:
+	- Install macros.pic to $(tmacdir)/pic/chem.pic.
+	- Remove parts with `libdir'.
+
+2006-11-07  Werner LEMBERG  <wl@gnu.org>
+
+	* Makefile.sub: Add and fix $(srcdir) where necessary to make it
+	compile with srcdir != builddir.  Other minor fixes improvements.
+
+2006-11-07  Bernd Warken  <groff-bernd.warken-72@web.de>
+	________________________________________________________________
+	* release of chem 0.1.2
+
+	### `chem' works now with all example files (examples/*.chem and
+	examples/122/*.chem).
+
+	* examples/122/README: Add some information on the example files.
+
+	* examples/122/chAi_poly_vinyl_chloride.chem: Use .ps with
+	argument `-2' and recall `.ps +2' at the end of the file.  This
+	stops the size shift in the following files.
+
+	* examples/122/ch6b_dna.chem: Make the file runnable, it works
+	now.
+
+	* examples/reserpine.chem: Change access to `begin chem'.
+
+	* chem.man:
+	- Fix the BUGS section.
+	- Correct the name of the macro file to `macros.pic'.
+	- Extent section DESCRIPTION and LANGUAGE.
+	- Moieties and Strings: Rewritten section about moieties and
+	double quoted strings.
+
+	* chem.pl:
+	- parameter check: Add filespecs only when non-empty file.
+	- Set $Last_Type to $OTHER for the `pic' command.
+	- joinring(), label(), labsave(), reduce(): Remove these functions.
+	- `[', `]', `{', `}', `define': Make these and the defined
+	functions commands for `chem' without using the `pic' word.
+	- @Words: Fix it such that all double quoted strings are
+	completely in an element.
+	- `Last: ': Remove this prefix from all commands that are related
+	to `pic'.
+
+	### global variables
+
+	* chem.pl:
+	- $Line: Add this variable to store the unchanged input line.
+	- %Params: Add the variables from setparams() to this hash.
+	- %Types: Add BOND, MOL, RING, OTHER from init() to this hash.
+	- %Put: Move %put to this.
+	- %Dbl: Move %dbl to this.
+	- %Labtype: Move %labtype to this.
+	- %Aromatic: Move $aromatic to this.
+	- %Dc: Move %dc to this.
+	- %Nput: Move $nput to this.
+	- %Define: New hash for storing the names of the `define'
+	constructs during `chem'.  Use the elements in `%Define' as `chem'
+	commands.
+
+2006-10-27  Bernd Warken  <groff-bernd.warken-72@web.de>
+	________________________________________________________________
+	* release of chem 0.1.1
+
+	* chem.pl:
+	- Add handling of `[' and `]' (extension of chem awk).
+	- Restrict line break after labels.
+
+	* ChangeLog: Correct the former entry.
+
+2006-10-26  Bernd Warken  <groff-bernd.warken-72@web.de>
+	________________________________________________________________
+	* release of chem 0.1.0
+
+	### Extensions to the chem awk version.
+
+	* chem.pl:
+	- parameters: -h, --help, -v, --version, -- are added as options.
+	The minus character - is added as filespec for standard input, it
+	may be used several times.
+	- remove the functions `inline', `shiftfields', and `set'.
+	- Fix the handling of the initialization commands .PS, .cstart,
+	`begin chem', and `end'.
+	- Add error massages.
+	- error(): Add file name.
+	- Add concatenation of lines with final backslash `\'.
+	- Add pic.tmac to guarantee that each pic display is centered.
+	- Warnings and strict are active.
+
+	### Source files of the chem Perl version
+
+	* chem.pl: Source file for the Perl version of chem.
+
+	* macros.pic: Pic macro file that is loaded by each run of chem.
+
+	* pic.tmac: Macro file for .PS and .PE; taken over from the groff
+	source file <groff-top-source>/tmac/pic.tmac.
+
+	* Makefile.sub: Make file for the groff system.
+
+	* ChangeLog: This file.
+
+	* chem.man: Manual page for the Perl version of chem.
+
+	* README.txt: File for information on this chem version.
+
+	* examples/*.chem: Self-constructed example files for chem.
+
+	* examples/README.txt: Information on the example files.
+
+	* examples/122/*.chem: Example files from the classical chem book
+	122.ps at <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+	* examples/122/README: Information on the example files in this
+	directory.
+
+2006-10-16  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* awk version of chem
+	chem is a roff preprocessor that generates chemical structure
+	diagrams suitable for the pic preprocessor.  The original version
+	of chem is an awk script written by Brian Kernighan.  This project
+	is a rewrite of chem in Perl.
+
+________________________________________________________________________
+
+Copyright 2006-2015 Free Software Foundation, Inc.
+Copyright 2022-2024 G. Branden Robinson
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

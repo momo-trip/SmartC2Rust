@@ -248,7 +248,7 @@ def replace_includes(dep_json_file): # Fix include statements for files outside 
                             #if line.strip().startswith('#include') and source_file in line: # It might be better to track line numbers here
                                 #if not same_module:
                                 module_name_basename = os.path.basename(module_name)
-                                new_include = line.replace(source_file_basename, module_name_basename) #module_name)
+                                new_include = line.replace(source_file_basename, module_name_basename) # module_name)
                                 #updated_lines.append('test')
                                 updated_lines.append(new_include)
                                 #else:
@@ -328,7 +328,6 @@ def write_func_flag(all_macros_path):
         for item in items:
             print(f"Searching flag, {macro} for {item['file_path']}")
             if item['category'] == 'macro_var' and item['func_flag'] == True:
-            #if 'category' in item and item['category'] == 'macro_var' and 'func_flag' in item and item['func_flag'] == True:
                 item['category'] = 'macro_func'
 
     write_json(all_macros_path, macro_data)
@@ -350,7 +349,7 @@ def convert_dict_to_frozenset(d):
 
 def is_include_guard(item, meta_data):
     # Minimum requirement: check category and #if directive
-    if not (item['category'] == 'conditional'): # and item['directive'] == '#if'
+    if not (item['category'] == 'conditional'):
         return False
     
     # Check whether it is the outermost conditional compilation block in the file
@@ -444,7 +443,7 @@ def categorize_blocks(file_path, raw_dir, meta_dir, all_macros_path):
 
     meta_data = read_json(meta_path)
     for item in meta_data:
-        if item['category'] == 'function': #for item in meta_data['function']:
+        if item['category'] == 'function':
             item['block_type'] = 'function'
 
         elif item['category'] in ['macro_func', 'macro_var', 'data_type', 'global_var', 'header_include']:
@@ -648,7 +647,7 @@ def find_parent_def_key(cashed, meta_dir, use_item, use_file_path, use_start_lin
 
         if block_start <= use_start_line <= block_end:
             if 'type' in item:
-                if item['type'] in ["IFDEF", "IFNDEF", "IF", "ELIF"]: # IF
+                if item['type'] in ["IFDEF", "IFNDEF", "IF", "ELIF"]:
                     name = item['type']
                 elif 'name' in item:
                     name = item['name']
@@ -792,7 +791,6 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
             
             uses_list = []
             for use_item in uses_items:
-                #print(use_item)
                 use_name = use_item['name']
                 use_definition = use_item['definition']
                 use_file_path = use_item['file_path']
@@ -843,6 +841,7 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
         print(" -> ".join(cycle + [cycle[0]]))
 
     # ===== added =====
+    # Enables incremental translation for large-scale programs
     target_keys = load_target_keys(target_path, sorted_functions, meta_dir, target_dir)
     sorted_functions, excluded = restrict_to_reachable(sorted_functions, target_keys, dependencies)
     # ===== ended =====
@@ -1283,7 +1282,7 @@ def sort_by_source(list_path, dep_json_path):
     sorted_files = topological_flow_sort(dependencies)
     #sorted_files, cycles = topological_file_sort(dependencies)
 
-    cycles = find_minimal_circular_dependencies(dep_json) #find_circular_dependencies(dependencies)
+    cycles = find_minimal_circular_dependencies(dep_json)
     print("Circular dependencies found:")
     for cycle in cycles:
         print(" -> ".join(cycle + [cycle[0]]))
@@ -1412,7 +1411,7 @@ def summarize_components_with_keys(file_path, raw_dir, meta_dir, keep_key_refere
     return len(nested_item_keys)
 
 
-def get_target_location(target_dir, target_path): #, marker):
+def get_target_location(target_dir, target_path):
     """
     Parse function information from a text file and return it as JSON
     
@@ -1445,8 +1444,8 @@ def get_target_location(target_dir, target_path): #, marker):
     # Search for the actual locations in target_dir where the following comment has been inserted:
     # self.marker = f'/* Genifai: here is one target function!: [file_path:line:func_name] */'
     # Marker pattern: /* Genifai: here is one target function!: [file_path:line:func_name] */
-    #marker_pattern = re.compile(r'/\* Genifai: here is one target function!: \[([^:]+):(\d+):([^\]]+)\] \*/')
-    #marker_pattern = re.compile(r'/\* Genifai: here is one target function!: ([^:]+):(\d+):(\d+):([^\s]+) \*/')
+    # marker_pattern = re.compile(r'/\* Genifai: here is one target function!: \[([^:]+):(\d+):([^\]]+)\] \*/')
+    # marker_pattern = re.compile(r'/\* Genifai: here is one target function!: ([^:]+):(\d+):(\d+):([^\s]+) \*/')
     marker_pattern = re.compile(r'/\* Genifai: here is one target function!: (.+):(\d+):(\w+) \*/')
 
     actual_locations = []
@@ -1461,14 +1460,6 @@ def get_target_location(target_dir, target_path): #, marker):
                     file_lines = f.readlines()
                 
                 for line_num, line in enumerate(file_lines, start=1):
-                    # if 'Genifai' in line:
-                    #     print(f"Found Genifai in {file_path}:{line_num}")
-                    #     print(f"  Line: {line.strip()}")
-                    #     match = marker_pattern.search(line)
-                    #     print(f"  Match: {match}")
-                    #     if match:
-                    #         print(f"  Groups: {match.groups()}")
-
                     match = marker_pattern.search(line)
                     if match:
                         orig_file = match.group(1)
@@ -1576,7 +1567,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     #---------------------------------------------
     """
     # Write out the cfg-related items here (macros used for conditional compilation) <- remove include guards
-    detect_cfg(unordered_taken_directive_path, guards_path, cfg_path)  #detect_cfg(all_directive_path, guards_path, cfg_path)
+    detect_cfg(unordered_taken_directive_path, guards_path, cfg_path)  # detect_cfg(all_directive_path, guards_path, cfg_path)
 
     # Make prompt generation easier by incorporating cfg if statements as component elements
     #insert_ifdef_statement(cfg_path, target_dir, meta_dir) # flag_path may have been cfg_path
@@ -1589,7 +1580,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     
     #---------------------------------------------
     # Determine blocks # This makes various things disappear, though... I thought I had included it in parse_all
-    #define_blocks(None, all_directive_path, guards_path, target_dir, meta_dir, div_meta_dir, database_dir)  # , raw_dir
+    # define_blocks(None, all_directive_path, guards_path, target_dir, meta_dir, div_meta_dir, database_dir)  # , raw_dir
 
 
     #---------------------------------------------
@@ -1601,7 +1592,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     # Since definitions are handled in the configuration section, remove all definition locations for conditional macros
     # Comment-associated items should remain: it may be good to leave notation such as // deleted
     # This will remove definitions of all macros, but perhaps macros are indeed unnecessary now that they are inherited from the C world
-    delete_independent_defs(independent_path, target_dir, is_program_path) #delete_macro_defs(all_macros_path, target_dir)s
+    delete_independent_defs(independent_path, target_dir, is_program_path) # delete_macro_defs(all_macros_path, target_dir)s
     # ↑The state macros for if should be nested and removed here, though: delete_state_macro_defs()
 
     # Remove declaration locations of global variables
@@ -1701,29 +1692,29 @@ def handle_paths(all_macros_path, taken_macros_path, all_directive_path, taken_d
 def initialize(target_dir, meta_dir, database_dir, dep_json_path):
 
     # initialize directories and files
-    #delete_directory(raw_dir)
+    # delete_directory(raw_dir)
     delete_directory(target_dir)
     delete_directory(meta_dir)
-    #delete_directory(root_dir)
+    # delete_directory(root_dir)
 
-    #delete_file(macro_list_path)
-    #delete_file(all_macros_path)
-    #delete_file(initial_macro_path)
+    # delete_file(macro_list_path)
+    # delete_file(all_macros_path)
+    # delete_file(initial_macro_path)
 
-    #delete_file(initial_list_path)
-    #delete_file(all_macro_path)
+    # delete_file(initial_list_path)
+    # delete_file(all_macro_path)
 
     delete_file(f'{database_dir}/m_conds.json')
     delete_file(f'{database_dir}/m_grep.json')
 
     delete_file(f"{database_dir}/dep_user.json")
-    #delete_file(token_path)
-    #delete_file("token_macro.json")
+    # delete_file(token_path)
+    # delete_file("token_macro.json")
 
     delete_file(f'{database_dir}/macro_func.txt')
 
-    #delete_file('find_defines.c') # Not confirmed yet
-    #delete_file('find_if.c')  # Not confirmed yet
+    # delete_file('find_defines.c') # Not confirmed yet
+    # delete_file('find_if.c')  # Not confirmed yet
 
     # create new directories
     if not DEBUG_LLM:
@@ -1910,10 +1901,10 @@ def allrust_preprocess_main(config):
 
         given_compile_json_path = setup_compile_json(given_compile_dir, f"{MACRO_HOME}", f"{TRANS_HOME}")
 
-        #denormalize_dep_data(dep_json_path, f"{TRANS_HOME}", os.path.abspath(f"{TRANS_HOME}"))
+        # denormalize_dep_data(dep_json_path, f"{TRANS_HOME}", os.path.abspath(f"{TRANS_HOME}"))
         
         denormalize_metafiles(meta_dir, raw_dir, all_macros_path, taken_macros_path, guards_path)
-        #denormalize_block_path(is_program_path, f"{MACRO_HOME}", f"{TRANS_HOME}")
+        # denormalize_block_path(is_program_path, f"{MACRO_HOME}", f"{TRANS_HOME}")
 
         if os.path.exists(f"{c_code_dir}/{target}"):
             delete_directory(f"{c_code_dir}/{target}") # Initialize

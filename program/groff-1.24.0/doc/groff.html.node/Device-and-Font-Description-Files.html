@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Device and Font Description Files (The GNU troff Manual)</title>
+
+<meta name="description" content="Device and Font Description Files (The GNU troff Manual)">
+<meta name="keywords" content="Device and Font Description Files (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="File-Formats.html" rel="up" title="File Formats">
+<link href="DESC-File-Format.html" rel="next" title="DESC File Format">
+<link href="File-Formats.html" rel="prev" title="File Formats">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Device-and-Font-Description-Files"></span><div class="header">
+<p>
+Next: <a href="GNU-troff-Output.html" accesskey="n" rel="next">GNU <code>troff</code> Output</a>, Up: <a href="File-Formats.html" accesskey="u" rel="up">File Formats</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Font-Files"></span><span id="Device-and-Font-Description-Files-1"></span><h3 class="section">6.1 Device and Font Description Files</h3>
+<span id="index-font-files"></span>
+<span id="index-files_002c-font"></span>
+
+<p>The <code>groff</code> font and output device description formats are slight
+extensions of those used by <acronym>AT&amp;T</acronym> device-independent
+<code>troff</code>.  In distinction to the <acronym>AT&amp;T</acronym> implementation,
+<code>groff</code> lacks a binary format; all files are text
+files.<a id="DOCF194" href="groff.html_fot.html#FOOT194"><sup>194</sup></a>  The device and font description files for a device <var>name</var>
+are stored in a <samp>dev<var>name</var></samp> directory.  The device description
+file is called <samp>DESC</samp>, and, for each font supported by the device,
+a font description file is called&nbsp;<samp><var>f</var></samp>, where
+<var>f</var>&nbsp;is usually an abbreviation of a font&rsquo;s name and/or style.
+For example,
+the
+<code>ps</code>
+(PostScript)
+device has
+<code>groff</code>
+font
+description files for Times roman
+(<samp>TR</samp>)
+and Zapf Chancery Medium italic
+(<samp>ZCMI</samp>),
+among many others,
+while the
+<code>utf8</code>
+device
+(for terminals)
+has font descriptions for the roman,
+italic,
+bold,
+and bold-italic styles
+(<samp>R</samp>,
+<samp>I</samp>,
+<samp>B</samp>,
+and
+<samp>BI</samp>,
+respectively).
+</p>
+<p>Device and font description files are read both by the formatter, GNU
+<code>troff</code>, and by output drivers.  The programs delegate these files&rsquo;
+processing to an internal library, <samp>libgroff</samp>, ensuring their
+consistent interpretation.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="DESC-File-Format.html" accesskey="1">DESC File Format</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Font-Description-File-Format.html" accesskey="2">Font Description File Format</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Andorra
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+#
+# Note: This file consists only of the country-wide
+# holidays for Andorra.
+#
+# For region-specific holidays, you need to include
+# one of the regional *.rem files in the directory
+# [$SysInclude]/holidays/ad/
+
+OMIT 1 January MSG %"New Year's Day%" %! %b.
+OMIT 6 January MSG %"Epiphany%" %! %b.
+OMIT [easterdate($Uy)-47] MSG %"Carnival%" %! %b.
+OMIT 14 March MSG %"Constitution Day%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Good Friday%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Easter Monday%" %! %b.
+OMIT 1 May MSG %"Labor Day%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Whit Monday%" %! %b.
+OMIT 15 August MSG %"Assumption Day%" %! %b.
+OMIT 8 September MSG %"National Day%" %! %b.
+OMIT 1 November MSG %"All Saints' Day%" %! %b.
+OMIT 8 December MSG %"Immaculate Conception Day%" %! %b.
+OMIT 25 December MSG %"Christmas Day%" %! %b.
+OMIT 26 December MSG %"Saint Stephen's Day%" %! %b.

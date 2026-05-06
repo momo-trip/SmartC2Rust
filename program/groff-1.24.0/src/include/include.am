@@ -1,0 +1,44 @@
+# Copyright 2014 Free Software Foundation, Inc.
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+nodist_noinst_HEADERS = defs.h
+CLEANFILES += defs.h
+defs.h: config.status
+	@$(SHELL) $(top_srcdir)/gendef.sh defs.h \
+	"PROG_PREFIX=\"$(g)\"" \
+	"DEFAULT_DEVICE=\"$(DEFAULT_DEVICE)\"" \
+	"INSTALLPATH=\"$(prefix)\"" \
+	"BINPATH=\"$(bindir)\"" \
+	"FONTPATH=\"$(fontpath)\"" \
+	"MACROPATH=\"$(tmacpath)\"" \
+	"INDEX_SUFFIX=\"$(indexext)\"" \
+	"COMMON_WORDS_FILE=\"$(common_words_file)\"" \
+	"DEFAULT_INDEX_DIR=\"$(indexdir)\"" \
+	"DEFAULT_INDEX_NAME=\"$(indexname)\"" \
+	"DEFAULT_INDEX=\"$(indexdir)/$(indexname)\""
+
+dist-hook: dist_include
+dist_include:
+	chmod u+w $(distdir)/src/include
+	cp -f $(top_srcdir)/src/include/*.h $(distdir)/src/include
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

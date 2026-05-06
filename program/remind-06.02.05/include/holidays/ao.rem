@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Angola
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Dia do Ano Novo%" %! %b.
+REM 2 January ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia do Ano Novo (ponte)%" %! %b.
+REM 3 February ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia do Início da Luta Armada de Libertação Nacional (ponte)%" %! %b.
+OMIT 4 February MSG %"Dia do Início da Luta Armada de Libertação Nacional%" %! %b.
+REM 5 February ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia do Início da Luta Armada de Libertação Nacional (ponte)%" %! %b.
+REM 12 February ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia do Carnaval (ponte)%" %! %b.
+REM 14 February ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia do Carnaval (ponte)%" %! %b.
+OMIT [easterdate($Uy)-47] MSG %"Dia do Carnaval%" %! %b.
+REM 7 March ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia Internacional da Mulher (ponte)%" %! %b.
+OMIT 8 March MSG %"Dia Internacional da Mulher%" %! %b.
+REM 9 March ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia Internacional da Mulher (ponte)%" %! %b.
+REM 22 March ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia da Libertação da África Austral (ponte)%" %! %b.
+OMIT 23 March MSG %"Dia da Libertação da África Austral%" %! %b.
+REM 24 March ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia da Libertação da África Austral (ponte)%" %! %b.
+REM 3 April ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia da Paz e Reconciliação Nacional (ponte)%" %! %b.
+OMIT 4 April MSG %"Dia da Paz e Reconciliação Nacional%" %! %b.
+REM 5 April ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia da Paz e Reconciliação Nacional (ponte)%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Sexta-Feira Santa%" %! %b.
+REM 30 April ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia Internacional do Trabalhador (ponte)%" %! %b.
+OMIT 1 May MSG %"Dia Internacional do Trabalhador%" %! %b.
+REM 2 May ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia Internacional do Trabalhador (ponte)%" %! %b.
+REM 16 September ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia do Fundador da Nação e do Herói Nacional (ponte)%" %! %b.
+OMIT 17 September MSG %"Dia do Fundador da Nação e do Herói Nacional%" %! %b.
+REM 18 September ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia do Fundador da Nação e do Herói Nacional (ponte)%" %! %b.
+REM 1 November ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia dos Finados (ponte)%" %! %b.
+OMIT 2 November MSG %"Dia dos Finados%" %! %b.
+REM 3 November ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia dos Finados (ponte)%" %! %b.
+REM 10 November ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia da Independência Nacional (ponte)%" %! %b.
+OMIT 11 November MSG %"Dia da Independência Nacional%" %! %b.
+REM 12 November ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia da Independência Nacional (ponte)%" %! %b.
+REM 24 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia de Natal e da Família (ponte)%" %! %b.
+OMIT 25 December MSG %"Dia de Natal e da Família%" %! %b.
+REM 26 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 4] MSG %"Dia de Natal e da Família (ponte)%" %! %b.
+REM 31 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 2] MSG %"Dia do Ano Novo (ponte)%" %! %b.

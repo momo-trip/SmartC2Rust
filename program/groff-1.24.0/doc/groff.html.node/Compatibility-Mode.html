@@ -1,0 +1,410 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Compatibility Mode (The GNU troff Manual)</title>
+
+<meta name="description" content="Compatibility Mode (The GNU troff Manual)">
+<meta name="keywords" content="Compatibility Mode (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Implementation-Differences.html" rel="up" title="Implementation Differences">
+<link href="Other-Differences.html" rel="next" title="Other Differences">
+<link href="Safer-Mode.html" rel="prev" title="Safer Mode">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Compatibility-Mode"></span><div class="header">
+<p>
+Next: <a href="Other-Differences.html" accesskey="n" rel="next">Other Differences</a>, Previous: <a href="Safer-Mode.html" accesskey="p" rel="prev">Safer Mode</a>, Up: <a href="Implementation-Differences.html" accesskey="u" rel="up">Implementation Differences</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Compatibility-Mode-1"></span><h4 class="subsection">5.39.2 Compatibility Mode</h4>
+<span id="index-compatibility-mode-1"></span>
+<span id="index-mode_002c-compatibility"></span>
+
+<p>Some syntactical and behavioral differences between GNU and
+<acronym>AT&amp;T</acronym>
+<code>troff</code>s
+are thought too important to neglect;
+GNU
+<code>troff</code> therefore makes available a
+<em>compatibility mode</em>
+in an effort to keep documents prepared for AT&amp;T
+<code>troff</code> rendering well.
+</p>
+<span id="index-long-names"></span>
+<span id="index-names_002c-long"></span>
+<span id="index-_005c_002a_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-_005cn_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>Identifiers of arbitrary length may be
+GNU
+<code>troff</code>&rsquo;s most obvious innovation.
+<acronym>AT&amp;T</acronym>
+<code>troff</code> interprets
+&lsquo;<samp>.dsabcd</samp>&rsquo;
+as defining a string
+&lsquo;<samp>ab</samp>&rsquo;
+with contents
+&lsquo;<samp>cd</samp>&rsquo;.
+Normally,
+GNU
+<code>troff</code> interprets this input as calling a macro named
+<code>dsabcd</code>.
+<acronym>AT&amp;T</acronym>
+<code>troff</code> also interprets
+&lsquo;<samp>\*[</samp>&rsquo;
+and
+&lsquo;<samp>\n[</samp>&rsquo;
+as interpolating a string or register,
+respectively,
+named
+&lsquo;<samp>[</samp>&rsquo;.
+GNU
+<code>troff</code>, however,
+normally interprets
+&lsquo;<samp>[</samp>&rsquo;
+as bracketing a long name
+(with
+&lsquo;<samp>]</samp>&rsquo;
+at the distal end).
+In compatibility mode,
+GNU
+<code>troff</code> interprets names in the traditional way;
+they thus can be two characters long at most.
+</p>
+<dl>
+<dt id="index-_002ecp">Request: <strong><tt>.cp</tt></strong> <em>[<span class="roman"><i>b</i></span>]</em></dt>
+<dd><span id="index-cp"></span>
+</dd><dt id="index-_005cn_005b_002eC_005d">Register: <strong><tt>\n[.C]</tt></strong></dt>
+<dd><span id="index-_002eC"></span>
+<p>Enable or disable AT&amp;T <code>troff</code> compatibility mode per Boolean
+expression <var>b</var>.  It is disabled by default, and enabled if <var>b</var>
+is omitted.  In compatibility mode, long names are not recognized, and
+the incompatibilities they cause do not arise.
+</p>
+<p>The read-only register <code>.C</code> interpolates&nbsp;1 if compatibility
+mode is enabled, 0&nbsp;otherwise.
+</p>
+<p>Compatibility mode is also enabled by the <samp>-C</samp> command-line
+option.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002edo">Request: <strong><tt>.do</tt></strong> <em>name [<span class="roman"><i>argument</i></span> <span class="roman">&hellip;</span>]</em></dt>
+<dd><span id="index-do"></span>
+</dd><dt id="index-_005cn_005b_002ecp_005d">Register: <strong><tt>\n[.cp]</tt></strong></dt>
+<dd><span id="index-_002ecp-1"></span>
+<p>Interpret the string,
+request,
+diversion,
+or macro
+<var>name</var>
+(along with any further arguments)
+with compatibility mode disabled.
+Compatibility mode is restored
+(only if it was active)
+when the interpolation
+of
+<var>name</var>
+is interpreted;
+that is,
+the restored compatibility state applies to the request or
+contents of the macro,
+string,
+or diversion
+<var>name</var>,
+its arguments,
+and data read from files or pipes if
+<var>name</var>
+is the
+<code>so</code>,
+<code>soquiet</code>,
+<code>mso</code>,
+<code>msoquiet</code>,
+or
+<code>pso</code>
+request.
+</p>
+<p>The following example illustrates several aspects of <code>do</code> behavior.
+</p>
+<div class="example">
+<pre class="example">.de mac1
+FOO
+..
+.de1 mac2
+groff
+.mac1
+..
+.de mac3
+compatibility
+.mac1
+..
+.de ma
+\\$1
+..
+.cp 1
+.do mac1
+.do mac2 \&quot; mac2, defined with .de1, calls &quot;mac1&quot;
+.do mac3 \&quot; mac3 calls &quot;ma&quot; with argument &quot;c1&quot;
+.do mac3 \[ti] \&quot; groff syntax accepted in .do arguments
+    &rArr; FOO groff FOO compatibility c1 ~
+</pre></div>
+
+<p>The read-only register <code>.cp</code>, meaningful only when dereferenced
+from a <code>do</code> request, is&nbsp;1 if compatibility mode was on when
+the <code>do</code> request was encountered, and 0&nbsp;if it was not.  This
+register is specialized and may require a statement of rationale.
+</p>
+<p>When writing macro packages or documents that use GNU <code>troff</code>
+features and which may be mixed with other packages or documents that do
+not&mdash;common scenarios include serial processing of man pages or use of
+the <code>so</code> or <code>mso</code> requests&mdash;you may desire correct operation
+regardless of compatibility mode enablement in the surrounding context.
+It may occur to you to save the existing value of &lsquo;<samp>\n(.C</samp>&rsquo; into a
+register, say, &lsquo;<samp>_C</samp>&rsquo;, at the beginning of your file, turn
+compatibility mode off with &lsquo;<samp>.cp 0</samp>&rsquo;, then restore it from that
+register at the end with &lsquo;<samp>.cp \n(_C</samp>&rsquo;.  At the same time, a modular
+design of a document or macro package may lead you to multiple layers of
+inclusion.  You cannot use the same register name everywhere lest you
+&ldquo;clobber&rdquo; the value from a preceding or enclosing context.
+The two-character register name space of <acronym>AT&amp;T</acronym>
+<code>troff</code> is confining,
+but employing
+GNU
+<code>troff</code>&rsquo;s more capacious one,
+as with
+&lsquo;<samp>.nr _my_saved_C \n(.C</samp>&rsquo;,
+does not work in compatibility mode;
+the register name is too long.
+Employing the
+<code>do</code>
+request is no help:
+&lsquo;<samp>.do nr _my_saved_C \n(.C</samp>&rsquo;
+always saves zero to the register,
+because
+<code>do</code>
+turns compatibility mode
+<em>off</em>
+while it interprets its argument list.
+</p>
+<p>To robustly save compatibility mode before switching it off, use
+</p>
+<div class="example">
+<pre class="example">.do nr _my_saved_C \n[.cp]
+.cp 0
+</pre></div>
+
+<p>at the beginning of your file,
+followed by
+</p>
+<div class="example">
+<pre class="example">.cp \n[_my_saved_C]
+.do rr _my_saved_C
+</pre></div>
+
+<p>at the end.
+As the C language exposes application programs&rsquo; symbols
+to those defined by libraries,
+<code>roff</code> documents share a name space with macro packages;
+choose a register name that is unlikely to collide with other uses.
+</p></dd></dl>
+
+<span id="index-input-level-2"></span>
+<span id="index-level_002c-input-2"></span>
+<span id="index-interpolation-depth-2"></span>
+<span id="index-depth_002c-interpolation-2"></span>
+<span id="index-nesting-depth_002c-of-interpolations-2"></span>
+<span id="index-depth_002c-nesting_002c-of-interpolations-2"></span>
+<p>Normally,
+GNU
+<code>troff</code> tracks the nesting depth of interpolations.
+In compatibility mode,
+it does not.
+</p>
+<div class="example">
+<pre class="example">.ds xx '
+\w'abc\*(xxdef'
+    &rArr; 168 <span class="roman">(not in compatibility mode on a terminal device)</span>
+    &rArr; 72def' <span class="roman">(compatibility mode on a terminal device)</span>
+</pre></div>
+
+<span id="index-_005cf_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-_005cH_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-_005cs_002c-incompatibilities-with-AT_0026T-troff"></span>
+<span id="index-_005cS_002c-incompatibilities-with-AT_0026T-troff"></span>
+<p>The escape sequences
+<code>\f</code>,
+<code>\H</code>,
+<code>\m</code>,
+<code>\M</code>,
+<code>\R</code>,
+<code>\s</code>,
+and
+<code>\S</code>
+are transparent to control charcter recognition
+at the beginning of a line,
+or after the conditional expression of an
+<code>if</code>
+or
+<code>ie</code>
+request,
+only in compatibility mode.
+That is,
+upon interpreting them,
+GNU
+<code>troff</code> normally no longer recognizes a control character on the input line;
+but in compatibility mode,
+it does,
+just like AT&amp;T
+<code>troff</code>. Thus the next example produces bold output in both modes,
+but the text differs.
+</p>
+<div class="example">
+<pre class="example">.de xx
+Hello!
+..
+\fB.xx\fP
+    &rArr; .xx <span class="roman">(not in compatibility mode)</span>
+    &rArr; Hello! <span class="roman">(in compatibility mode)</span>
+</pre></div>
+
+<span id="index-_005cs_002c-incompatibilities-with-AT_0026T-troff-1"></span>
+<p>Normally,
+the syntax form
+<code>\s</code><var>n</var>
+accepts only a single character
+(a digit)
+for
+<var>n</var>,
+consistently with other forms that originated in
+<acronym>AT&amp;T</acronym>
+<code>troff</code>, like
+<code>\*</code>,
+<code>\f</code>,
+<code>\g</code>,
+<code>\k</code>,
+<code>\n</code>,
+and
+<code>\z</code>.
+In compatibility mode only,
+a non-zero&nbsp;<var>n</var>
+must be in the range 4&ndash;39.
+Legacy documents relying upon this quirk of parsing<a id="DOCF187" href="groff.html_fot.html#FOOT187"><sup>187</sup></a>
+should migrate to another
+<code>\s</code>
+form.
+</p>
+<p>In compatibility mode,
+the
+<code>de</code>,
+<code>am</code>,
+<code>ds</code>,
+and
+<code>as</code>
+requests behave as
+<code>de1</code>,
+<code>am1</code>,
+<code>ds1</code>,
+and
+<code>as1</code>,
+respectively:
+GNU
+<code>troff</code> inserts a
+<i>compatibility save</i>
+token at the beginning of the macro,
+string,
+or appendment thereto as applicable
+and a
+<i>compatibility restore</i>
+token at its end,
+enabling compatibility mode during its interpolation.<a id="DOCF188" href="groff.html_fot.html#FOOT188"><sup>188</sup></a>
+Thus they work as expected
+even if the interpolation context disables compatibility mode.
+</p>
+<p><acronym>AT&amp;T</acronym>
+<code>troff</code> recognized slightly varying sets of delimiters when expecting
+numerical expressions
+(as with the
+<code>\h</code>
+escape sequence),
+string expressions
+(as with the
+<code>\w</code>
+escape sequence
+and
+<code>tl</code>
+request),
+and output comparisons
+(as in
+&lsquo;<samp>.if #foo#bar# .tm match</samp>&rsquo;).
+GNU
+<code>troff</code>, when not in compatibility mode,
+recognizes a single consistent set of delimiters.
+Compatibility mode
+emulates
+<acronym>AT&amp;T</acronym>
+<code>troff</code> only up to a point.
+GNU
+<code>troff</code> accepts leaders and tabs as delimiters,
+as well as
+<tt class="key">Control+D</tt>
+(EOT or EOF),
+<tt class="key">Control+H</tt>
+(BS or backspace),
+and
+<tt class="key">Control+L</tt>
+(FF or form feed),
+all of which,
+when used as delimiters,
+cause
+<acronym>AT&amp;T</acronym>
+<code>troff</code> to behave in ways difficult to predict.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Other-Differences.html" accesskey="n" rel="next">Other Differences</a>, Previous: <a href="Safer-Mode.html" accesskey="p" rel="prev">Safer Mode</a>, Up: <a href="Implementation-Differences.html" accesskey="u" rel="up">Implementation Differences</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

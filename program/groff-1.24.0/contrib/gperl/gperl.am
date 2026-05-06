@@ -1,0 +1,48 @@
+# Copyright 2014-2020 Free Software Foundation, Inc.
+#
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
+#
+# This file is part of gperl.
+#
+# gperl is distributed with groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+bin_SCRIPTS += gperl
+man1_MANS += contrib/gperl/gperl.1
+EXTRA_DIST += \
+  contrib/gperl/COPYRIGHT \
+  contrib/gperl/ChangeLog \
+  contrib/gperl/GPLv2 \
+  contrib/gperl/gperl.1.man \
+  contrib/gperl/gperl.pl
+
+gperl: $(top_srcdir)/contrib/gperl/gperl.pl $(SH_DEPS_SED_SCRIPT)
+	$(AM_V_GEN)$(RM) $@ \
+	&& sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	       -e "s|[@]g[@]|$(g)|g" \
+	       -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	       -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	       -e "$(SH_SCRIPT_SED_CMD)" \
+	       $(top_srcdir)/contrib/gperl/gperl.pl \
+	       >$@ \
+	&& chmod +x $@
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

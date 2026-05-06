@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>GNU troff Output (The GNU troff Manual)</title>
+
+<meta name="description" content="GNU troff Output (The GNU troff Manual)">
+<meta name="keywords" content="GNU troff Output (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="File-Formats.html" rel="up" title="File Formats">
+<link href="Language-Concepts.html" rel="next" title="Language Concepts">
+<link href="Font-Description-File-Format.html" rel="prev" title="Font Description File Format">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="GNU-troff-Output"></span><div class="header">
+<p>
+Previous: <a href="Device-and-Font-Description-Files.html" accesskey="p" rel="prev">Device and Font Description Files</a>, Up: <a href="File-Formats.html" accesskey="u" rel="up">File Formats</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="GNU-troff-Output-1"></span><h3 class="section">6.2 GNU <code>troff</code> Output</h3>
+<span id="index-troff_002c-output"></span>
+<span id="index-output_002c-troff"></span>
+
+<p>We now describe the <code>groff</code> device-independent page description
+language produced by GNU
+<code>troff</code>. </p>
+<p>As
+<code>groff</code>
+is a wrapper program around
+GNU
+<code>troff</code> and
+automatically runs an output driver,
+users seldom encounter this format under normal circumstances.
+<code>groff</code>
+offers the option
+<samp>-Z</samp>
+to inhibit postprocessing such that
+GNU
+<code>troff</code>&rsquo;s output is sent to the standard output stream just as it is when running
+GNU
+<code>troff</code>
+directly.
+</p>
+<p>The purpose of device-independent output
+is to facilitate the development of postprocessors
+by providing a common programming interface to all devices.
+It is a distinct,
+and much simpler,
+language
+from that of the formatter,
+<code>troff</code>. The device-independent output can be thought of
+as a &ldquo;page description language&rdquo;.
+</p>
+<span id="index-troff-page-description-language"></span>
+<span id="index-page-description-language_002c-troff"></span>
+<span id="index-language_002c-troff-page-description"></span>
+<span id="index-troff-output-format"></span>
+<span id="index-output-format_002c-troff"></span>
+<span id="index-format_002c-troff-output"></span>
+<span id="index-intermediate-output"></span>
+<span id="index-output_002c-intermediate"></span>
+<p>In the following discussion,
+the term
+<em>troff output</em>
+describes what is output by
+GNU
+<code>troff</code>, while
+<em>page description</em>
+denotes the language accepted
+by the parser that interprets this output for the output drivers.
+This parser handles whitespace more flexibly than <acronym>AT&amp;T</acronym>
+<code>troff</code>&rsquo;s
+implementation,
+recognizes a GNU extension to the language,
+and supports a legacy compressed encoding of a subset of commands
+for compatibility;
+otherwise,
+the formats are the same.<a id="DOCF198" href="groff.html_fot.html#FOOT198"><sup>198</sup></a>
+</p>
+<p>When Brian Kernighan designed <acronym>AT&amp;T</acronym>
+<code>troff</code>&rsquo;s device-independent page description language circa 1980,
+he had to balance
+readability and maintainability against severe constraints on file size
+and transmission speed to the output device.<a id="DOCF199" href="groff.html_fot.html#FOOT199"><sup>199</sup></a>
+A decade later,
+when James Clark wrote
+<code>groff</code>,
+these constraints were no longer as tight.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Language-Concepts.html" accesskey="1">Language Concepts</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Command-Reference.html" accesskey="2">Command Reference</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="GNU-troff-Output-Examples.html" accesskey="3">GNU <code>troff</code> Output Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Output-Language-Compatibility.html" accesskey="4">Output Language Compatibility</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Device-and-Font-Description-Files.html" accesskey="p" rel="prev">Device and Font Description Files</a>, Up: <a href="File-Formats.html" accesskey="u" rel="up">File Formats</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

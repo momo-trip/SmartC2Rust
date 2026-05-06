@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Input Encodings (The GNU troff Manual)</title>
+
+<meta name="description" content="Input Encodings (The GNU troff Manual)">
+<meta name="keywords" content="Input Encodings (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Text.html" rel="up" title="Text">
+<link href="Input-Conventions.html" rel="next" title="Input Conventions">
+<link href="Input-Format.html" rel="prev" title="Input Format">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Input-Encodings"></span><div class="header">
+<p>
+Next: <a href="Input-Conventions.html" accesskey="n" rel="next">Input Conventions</a>, Previous: <a href="Input-Format.html" accesskey="p" rel="prev">Input Format</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Input-Encodings-1"></span><h4 class="subsection">5.1.10 Input Encodings</h4>
+
+<p>Recall from
+<a href="Groff-Options.html">Groff Options</a>,
+that the
+<code>groff</code>
+command&rsquo;s
+<samp>-k</samp>
+option runs the
+<code>preconv</code>
+preprocessor
+to perform input character encoding conversions to satisfy
+GNU
+<code>troff</code>&rsquo;s
+requirement of a single-byte encoding compatible with
+ISO&nbsp;646:1991&nbsp;IRV<!-- /@w --> (US-<acronym>ASCII</acronym>).
+</p>
+<p>Localization influences automatic hyphenation
+in two distinct but related respects.
+A macro file specific to a character coding identifies
+which character codes correspond to letters expected
+in the language&rsquo;s hyphenation pattern files
+and sets up case equivalences for those letters.
+A language&rsquo;s macro file determines which of these letters
+are equivalent to other letters for hyphenation purposes.
+</p>
+<p>For example,
+in English,
+the letter &lsquo;<samp>ñ</samp>&rsquo; occurs in loan words.
+The
+<samp>latin1.tmac</samp>
+and
+<samp>latin9.tmac</samp>
+macro files define a hyphenation code for &lsquo;<samp>ñ</samp>&rsquo;
+and make &lsquo;<samp>Ñ</samp>&rsquo; equivalent to it.
+The English localization file
+<samp>en.tmac</samp>
+furthermore makes &lsquo;<samp>ñ</samp>&rsquo; equivalent to &lsquo;<samp>n</samp>&rsquo;.
+In Spanish
+(<samp>es.tmac</samp>),
+however,
+&lsquo;<samp>ñ</samp>&rsquo; and &lsquo;<samp>n</samp>&rsquo; are
+<em>not</em>
+equivalent.
+The language localization file
+(see <a href="Manipulating-Hyphenation.html">Manipulating Hyphenation</a>)
+loads an appropriate encoding localization file;
+a document need not do so directly.
+</p>
+<dl compact="compact">
+<dt><code>koi8-r</code></dt>
+<dd><span id="index-encoding_002c-input_002c-KOI8_002dR"></span>
+<span id="index-KOI8_002dR_002c-input-encoding"></span>
+<span id="index-input-encoding_002c-KOI8_002dR"></span>
+<span id="index-koi8_002dr_002etmac"></span>
+<p>To use <span class="nolinebreak">KOI8-R</span><!-- /@w -->, an encoding for the Russian language, either place
+&lsquo;<samp>.mso&nbsp;<span class="nolinebreak">koi8-r.tmac</span></samp>&rsquo;<!-- /@w --> at the very beginning of your document or
+supply &lsquo;<samp>-m koi8-r</samp>&rsquo; as a command-line argument to <code>groff</code>.
+The
+<samp>ru.tmac</samp>
+localization file loads
+<samp>koi8-r.tmac</samp>
+automatically.<a id="DOCF37" href="groff.html_fot.html#FOOT37"><sup>37</sup></a>
+</p>
+</dd>
+<dt><code>latin1</code></dt>
+<dd><span id="index-encoding_002c-input_002c-ISO-Latin_002d1-_00288859_002d1_0029"></span>
+<span id="index-Latin_002d1-_0028ISO-8859_002d1_0029-input-encoding"></span>
+<span id="index-ISO-Latin_002d1-_00288859_002d1_0029-input-encoding"></span>
+<span id="index-input-encoding_002c-ISO-Latin_002d1-_00288859_002d1_0029"></span>
+<span id="index-latin1_002etmac"></span>
+<p>ISO <span class="nolinebreak">Latin-1</span><!-- /@w --> is an encoding for Western European languages.
+The
+<samp>de.tmac</samp>,
+<samp>en.tmac</samp>,
+<samp>it.tmac</samp>,
+and
+<samp>sv.tmac</samp>
+localization files load
+<samp>latin1.tmac</samp>
+automatically.
+</p>
+</dd>
+<dt><code>latin2</code></dt>
+<dd><span id="index-encoding_002c-input_002c-ISO-Latin_002d2-_00288859_002d2_0029"></span>
+<span id="index-Latin_002d2-_0028ISO-8859_002d2_0029-input-encoding"></span>
+<span id="index-ISO-Latin_002d2-_00288859_002d2_0029-input-encoding"></span>
+<span id="index-input-encoding_002c-ISO-Latin_002d2-_00288859_002d2_0029"></span>
+<span id="index-latin2_002etmac"></span>
+<p>To use ISO <span class="nolinebreak">Latin-2</span><!-- /@w -->, an encoding for Central and Eastern European
+languages, invoke &lsquo;<samp>.mso&nbsp;latin2.tmac</samp>&rsquo;<!-- /@w --> at the beginning of your
+document or supply &lsquo;<samp>-m latin2</samp>&rsquo; as a command-line argument to
+<code>groff</code>.
+The
+<samp>cs.tmac</samp>
+and
+<samp>pl.tmac</samp>
+localization files load
+<samp>latin2.tmac</samp>
+automatically.
+</p>
+</dd>
+<dt><code>latin5</code></dt>
+<dd><span id="index-encoding_002c-input_002c-ISO-Latin_002d5-_00288859_002d9_0029"></span>
+<span id="index-Latin_002d5-_0028ISO-8859_002d9_0029-input-encoding"></span>
+<span id="index-ISO-Latin_002d5-_00288859_002d9_0029-input-encoding"></span>
+<span id="index-input-encoding_002c-ISO-Latin_002d5-_00288859_002d9_0029"></span>
+<span id="index-latin5_002etmac"></span>
+<p>To use ISO <span class="nolinebreak">Latin-5</span><!-- /@w -->, an encoding for the Turkish language, invoke
+&lsquo;<samp>.mso&nbsp;latin5.tmac</samp>&rsquo;<!-- /@w --> at the beginning of your document or
+supply &lsquo;<samp>-m latin5</samp>&rsquo; as a command-line argument to <code>groff</code>.
+</p>
+</dd>
+<dt><code>latin9</code></dt>
+<dd><span id="index-encoding_002c-input_002c-ISO-Latin_002d9-_00288859_002d15_0029"></span>
+<span id="index-Latin_002d9-_0028ISO-8859_002d15_0029-input-encoding"></span>
+<span id="index-ISO-Latin_002d9-_00288859_002d15_0029-input-encoding"></span>
+<span id="index-input-encoding_002c-ISO-Latin_002d9-_00288859_002d15_0029"></span>
+<span id="index-latin9_002etmac"></span>
+<p>ISO <span class="nolinebreak">Latin-9</span><!-- /@w --> succeeds <span class="nolinebreak">Latin-1</span><!-- /@w -->; it includes a Euro sign and better
+coverage for French.  To use this encoding, invoke &lsquo;<samp>.mso&nbsp;latin9.tmac</samp>&rsquo;<!-- /@w --> at the beginning of your document or supply
+&lsquo;<samp>-m latin9</samp>&rsquo; as a command-line argument to <code>groff</code>.
+The
+<samp>es.tmac</samp>
+and
+<samp>fr.tmac</samp>
+localization files load
+<samp>latin9.tmac</samp>
+automatically.
+</p></dd>
+</dl>
+
+<p>Some characters from an input encoding may not be available with a
+particular output driver, or their glyphs may not have representation in
+the font used.  For terminal devices, fallbacks are defined, like
+&lsquo;<samp>EUR</samp>&rsquo; for the Euro sign and &lsquo;<samp>(C)</samp>&rsquo; for the copyright sign.  For
+typesetter devices, you may need to &ldquo;mount&rdquo; fonts that support glyphs
+required by the document.  See <a href="Font-Positions.html">Font Positions</a>.
+</p>
+<span id="index-freeeuro_002epfa"></span>
+<span id="index-ec_002etmac"></span>
+<p>Because a Euro glyph was not historically defined in PostScript fonts,
+<code>groff</code> comes with a font called <samp>freeeuro.pfa</samp> that provides
+the Euro in several styles.  Standard PostScript fonts contain the
+glyphs from <span class="nolinebreak">Latin-5</span><!-- /@w --> and <span class="nolinebreak">Latin-9</span><!-- /@w --> that <span class="nolinebreak">Latin-1</span><!-- /@w --> lacks, so these
+encodings are supported for the <samp>ps</samp> and <samp>pdf</samp> output
+devices as <code>groff</code> ships, while <span class="nolinebreak">Latin-2</span><!-- /@w --> is not.
+</p>
+<p>Unicode supports characters from all other input encodings; the
+<samp>utf8</samp> output driver for terminals therefore does as well.  The
+DVI output driver supports the <span class="nolinebreak">Latin-2</span><!-- /@w --> and <span class="nolinebreak">Latin-9</span><!-- /@w --> encodings if
+the command-line option &lsquo;<samp><samp>-m ec</samp></samp>&rsquo; is used as well.
+<a id="DOCF38" href="groff.html_fot.html#FOOT38"><sup>38</sup></a>
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Input-Conventions.html" accesskey="n" rel="next">Input Conventions</a>, Previous: <a href="Input-Format.html" accesskey="p" rel="prev">Input Format</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

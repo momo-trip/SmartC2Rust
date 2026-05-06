@@ -1,0 +1,56 @@
+ch4z1_eqn_glutamic.chem:
+.br
+.EQ
+delim $$
+.EN
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+#
+# Corrections by Bernd Warken, 2006.
+
+# a left bracket
+    bond right length .1 ; BP
+    bond up length .3
+    bond right length .1
+    bond down length .3 from BP
+    bond right length .1
+# this is the mainchain amide structure
+    bond right length .1 from BP ; NH
+    bond right ; CH
+# label the CH with an alpha, intended for eqn.
+# this line says "put the north edge of the alpha at the
+# south edge of the CH"
+    "$alpha$" with .n at CH.s
+    bond right from CH ; C
+    double bond up from C ; O
+    bond right length .1 from C ; BP
+# a right bracket
+    bond up length .3
+    bond left length .1
+    bond right length .1 from BP
+    bond down length .3 from BP ; BP
+    bond left length .1
+# label the degree of polymerization
+    "$n$" with .w at BP.se
+# this is the sidechain
+    bond up from CH ; CH2
+    "$beta$" with .e at CH2.w
+    bond up from CH2 ; CH2
+    "$gamma$" with .e at CH2.w
+    bond up from CH2 ; C
+# this is the benzyl ester part
+    double bond -60 from C ; O
+    bond 60 from C ; O
+    bond right ; CH2C6H5
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend
+.EQ
+delim off
+.EN

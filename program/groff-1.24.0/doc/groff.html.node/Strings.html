@@ -1,0 +1,548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Strings (The GNU troff Manual)</title>
+
+<meta name="description" content="Strings (The GNU troff Manual)">
+<meta name="keywords" content="Strings (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Conditionals-and-Loops.html" rel="next" title="Conditionals and Loops">
+<link href="Colors.html" rel="prev" title="Colors">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Strings"></span><div class="header">
+<p>
+Next: <a href="Conditionals-and-Loops.html" accesskey="n" rel="next">Conditionals and Loops</a>, Previous: <a href="Colors.html" accesskey="p" rel="prev">Colors</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Strings-1"></span><h3 class="section">5.22 Strings</h3>
+<span id="index-strings"></span>
+
+<p>GNU <code>troff</code> supports strings primarily for user convenience.
+Conventionally, if one would define a macro only to interpolate a small
+amount of text, without invoking requests or calling any other macros,
+one defines a string instead.  Only one string is predefined by the
+language.
+</p>
+<dl>
+<dt id="index-_005c_002a_005b_002eT_005d">String: <strong><tt>\*[.T]</tt></strong></dt>
+<dd><span id="index-_002eT"></span>
+<span id="index-_002eT-1"></span>
+<span id="index-output-device-name-string-_0028_002eT_0029-1"></span>
+<p>Contains the name of the output device (for example, &lsquo;<samp>utf8</samp>&rsquo; or
+&lsquo;<samp>pdf</samp>&rsquo;).
+</p></dd></dl>
+
+<p>The <code>ds</code> request creates a string with a specified name and
+contents and the <code>\*</code> escape sequence dereferences its name,
+interpolating its contents.  If the string named by the <code>\*</code> escape
+sequence does not exist, it is defined as empty, nothing is
+interpolated, and a warning in category &lsquo;<samp>mac</samp>&rsquo; is emitted.
+See <a href="Warnings.html">Warnings</a>, regarding the enablement and suppression of warnings.
+</p>
+<dl>
+<dt id="index-_002eds-1">Request: <strong><tt>.ds</tt></strong> <em>name [[<code>&quot;</code>]<span class="roman"><i>contents</i></span>]</em></dt>
+<dd><span id="index-ds-1"></span>
+</dd><dt id="index-_002eds1">Request: <strong><tt>.ds1</tt></strong> <em>name [[<code>&quot;</code>]<span class="roman"><i>contents</i></span>]</em></dt>
+<dd><span id="index-ds1"></span>
+</dd><dt id="index-_005c_002an">Escape&nbsp;sequence: <strong><tt>\*</tt><span class="roman"><i>n</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_002a"></span>
+</dd><dt id="index-_005c_002a_0028nm">Escape&nbsp;sequence: <strong><tt>\*(</tt><span class="roman"><i>nm</i></span><tt></tt></strong></dt>
+<dt id="index-_005c_002a_005bname-_005barg1-arg2-_2026_005d_005d">Escape&nbsp;sequence: <strong><tt>\*[</tt><span class="roman"><i>name <span class="sansserif">[</span>arg1 arg2 &hellip;<span class="sansserif">]</span></i></span><tt>]</tt></strong></dt>
+<dd><span id="index-string-interpolation-_0028_005c_002a_0029"></span>
+<span id="index-string-expansion-_0028_005c_002a_0029"></span>
+<span id="index-interpolation-of-strings-_0028_005c_002a_0029"></span>
+<span id="index-expansion-of-strings-_0028_005c_002a_0029"></span>
+<span id="index-string-arguments"></span>
+<span id="index-arguments_002c-to-strings"></span>
+<p>Define a string called <var>name</var> with contents <var>contents</var>.  If
+<var>name</var> already exists as an alias, the target of the alias is
+redefined; see <code>als</code> and <code>rm</code> below.  If <code>ds</code> is invoked
+with only one argument, <var>name</var> is defined as an empty string.
+Otherwise, GNU <code>troff</code> stores <var>contents</var> in copy
+mode.
+<span id="index-_005c_002a_002c-interpretation-in-copy-mode"></span>
+<code>\*</code> is itself interpreted even in copy mode.<a id="DOCF138" href="groff.html_fot.html#FOOT138"><sup>138</sup></a>
+</p>
+<p>The <code>\*</code> escape sequence interpolates a previously defined string
+<var>name</var> (one-character name&nbsp;<var>n</var>, two-character name
+<var>nm</var>).  The bracketed interpolation form accepts arguments that are
+handled as macro arguments are; recall <a href="Calling-Macros.html">Calling Macros</a>.  In
+contrast to macro calls, however, if a closing bracket &lsquo;<samp>]</samp>&rsquo; occurs
+in a string argument, that argument must be enclosed in double quotes.
+When defining strings, argument interpolations must be escaped if they
+are to reference parameters from the calling context; see
+<a href="Parameters.html">Parameters</a>.
+</p>
+<div class="example">
+<pre class="example">.ds cite (\\$1, \\$2)
+Gray codes are explored in \*[cite Morgan 1998].
+    &rArr; Gray codes are explored in (Morgan, 1998).
+</pre></div>
+
+
+<span id="index-spaces-in-string-definitions-and-appendments"></span>
+<span id="index-comments_002c-with-string-definitions-and-appendments"></span>
+<span id="index-as-request_002c-and-comments"></span>
+<span id="index-as1-request_002c-and-comments"></span>
+<span id="index-ds-request_002c-and-comments"></span>
+<span id="index-ds1-request_002c-and-comments"></span>
+<p><strong>Caution:</strong>
+After the formatter has read the space character that ends the first
+argument,
+it treats the remainder of the input line as the second argument,
+including any spaces,
+up to a newline or comment escape sequence.
+Ending string definitions
+(and appendments)
+with a comment,
+even an empty one,
+prevents unwanted space from creeping into them during source document
+maintenance.
+</p>
+<div class="example">
+<pre class="example">.ds Si silicon \&quot; use chemical symbol
+We observed a \*[Si]-based life form.
+    &rArr; We observed a silicon -based life form.
+</pre></div>
+
+<p>Instead,
+place the comment on another line
+or put the comment escape sequence immediately adjacent
+to the last character of the string.
+</p>
+<div class="example">
+<pre class="example">.ds Si silicon\&quot; use chemical symbol
+We observed a \*[Si]-based life form.
+    &rArr; We observed a silicon-based life form.
+</pre></div>
+
+<p>Because the first space after the string name separates the arguments,
+you can retain it while using a comment to document an empty string.
+</p>
+<div class="example">
+<pre class="example">.ds author Alice Pleasance Liddell\&quot;
+.ds friends \&quot; empty; append to with .as
+</pre></div>
+
+<span id="index-ds-and-ds1-requests_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<span id="index-leading-spaces-in-ds-and-ds1-argument"></span>
+<span id="index-spaces-in-ds-and-ds1-argument_002c-leading"></span>
+<span id="index-ds-and-ds1-request_002c-and-leading-spaces"></span>
+<p>The formatter removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from
+<var>contents</var>,
+permitting initial embedded spaces in it.
+It interprets any other
+&lsquo;<samp>&quot;</samp>&rsquo;
+literally,
+but the wise author uses the special character escape sequence
+<code>\[dq]</code>
+instead if the string
+might be interpolated as part of a macro argument;
+recall <a href="Calling-Macros.html">Calling Macros</a>.
+</p>
+<div class="example">
+<pre class="example">.ds salutation &quot;         Yours in a white wine sauce,\&quot;
+.ds c-var-defn &quot;  char mydate[]=\[dq]2020-07-29\[dq];\&quot;
+</pre></div>
+
+<span id="index-multi_002dline-strings"></span>
+<span id="index-strings_002c-multi_002dline"></span>
+<span id="index-newline-character_002c-in-strings_002c-escaping"></span>
+<span id="index-escaping-newline-characters_002c-in-strings"></span>
+<p>Strings are not limited to a single input line of text.
+<code>\<span class="key">RET</span></code> works just as it does elsewhere.  The resulting string
+is stored <em>without</em> the newlines.  When filling is disabled, care
+is required to avoid overrunning the line length when interpolating
+strings.
+</p>
+<div class="example">
+<pre class="example">.ds foo This string contains \
+text on multiple lines \
+of input.
+</pre></div>
+
+<p>Conversely, when filling is enabled, it is not necessary to append
+<code>\c</code> to a string interpolation to prevent a break afterward, as
+might be required in a macro argument.  Nor does a string require use of
+the GNU <code>troff</code> <code>chop</code> request to excise a trailing newline
+as is often done with diversions.
+</p>
+<p>It is not possible to embed a newline in a string that will be
+interpreted as such when the string is interpolated.  To achieve that
+effect, use <code>\*</code> to interpolate a macro instead; see <a href="Punning-Names.html">Punning Names</a>.
+</p>
+<p>Because strings are similar to macros, they too can be defined so as to
+suppress AT&amp;T <code>troff</code> compatibility mode when used; see
+<a href="Writing-Macros.html">Writing Macros</a> and <a href="Compatibility-Mode.html">Compatibility Mode</a>.  The <code>ds1</code>
+request defines a string such that compatibility mode is off when the
+string is later interpolated.
+To be more precise,
+GNU
+<code>troff</code> inserts a
+a
+<em>compatibility save</em>
+token at the beginning of <var>contents</var>,
+and a
+<em>compatibility restore</em>
+token at the end.
+</p>
+<div class="example">
+<pre class="example">.nr xxx 12345
+.ds aa The value of xxx is \\n[xxx].
+.ds1 bb The value of xxx is \\n[xxx].
+.
+.cp 1
+.
+\*(aa
+    error&rarr; warning: register '[' not defined
+    &rArr; The value of xxx is 0xxx].
+\*(bb
+    &rArr; The value of xxx is 12345.
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002eas">Request: <strong><tt>.as</tt></strong> <em>name [[<code>&quot;</code>]<span class="roman"><i>contents</i></span>]</em></dt>
+<dd><span id="index-as"></span>
+</dd><dt id="index-_002eas1">Request: <strong><tt>.as1</tt></strong> <em>name [[<code>&quot;</code>]<span class="roman"><i>contents</i></span>]</em></dt>
+<dd><span id="index-as1"></span>
+<span id="index-appending-to-a-string-_0028as_0029"></span>
+<span id="index-string_002c-appending-_0028as_0029"></span>
+<p>The <code>as</code> request is similar to <code>ds</code> but appends <var>contents</var>
+to the string stored as <var>name</var> instead of redefining it.  If
+<var>name</var> doesn&rsquo;t exist yet, it is created.  If <code>as</code> is invoked
+with only one argument, no operation is performed (beyond dereferencing
+the string).
+</p>
+<div class="example">
+<pre class="example">.as salutation &quot; with shallots, onions and garlic,\&quot;
+</pre></div>
+
+<span id="index-as-and-as1-requests_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<p><strong>Caution:</strong>
+The formatter reads the second argument to the end of the line
+in copy mode,
+omitting any leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+character.
+See the discussion of the
+<code>ds</code>
+request above.
+</p>
+<p>The <code>as1</code> request works as does <code>as</code>, but like <code>ds1</code>, it
+brackets <var>contents</var> with <i>compatibility save</i> and
+<i>restore</i> tokens.
+</p></dd></dl>
+
+<p>Several requests exist to perform rudimentary string operations.
+Strings can be queried (<code>length</code>) and modified (<code>chop</code>,
+<code>substring</code>, <code>stringup</code>, <code>stringdown</code>), and their names
+can be manipulated through renaming, removal, and aliasing (<code>rn</code>,
+<code>rm</code>, <code>als</code>).
+</p>
+<span id="index-spaces-in-string-length-measurement"></span>
+<span id="index-comments_002c-with-string-length-measurements"></span>
+<span id="index-length-request_002c-and-comments"></span>
+<dl>
+<dt id="index-_002elength">Request: <strong><tt>.length</tt></strong> <em>reg [[<code>&quot;</code>]<span class="roman"><i>contents</i></span>]</em></dt>
+<dd><span id="index-length"></span>
+<span id="index-length-of-a-string-_0028length_0029"></span>
+<span id="index-string_002c-length-of-_0028length_0029"></span>
+<span id="index-length-request_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-length-request"></span>
+<span id="index-mode_002c-copy_002c-and-length-request"></span>
+<p>Compute the number of characters in
+<var>contents</var>
+and store the count in the register
+<var>reg</var>.
+If
+<var>reg</var>
+doesn&rsquo;t exist,
+GNU
+<code>troff</code> creates it.
+</p>
+<p>GNU
+<code>troff</code> removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from
+<var>contents</var>,
+permitting initial embedded spaces in it,
+and reads it to the end of the input line in copy mode.
+See <a href="Copy-Mode.html">Copy Mode</a>.
+</p>
+<div class="example">
+<pre class="example">.ds xxx abcd\h'3i'efgh
+.length yyy \*[xxx]
+\n[yyy]
+    &rArr; 14
+</pre></div>
+
+<span id="index-length-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<p><strong>Caution:</strong>
+The formatter reads the second argument to the end of the line
+in copy mode,
+omitting any leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+character.
+See the discussion of the
+<code>ds</code>
+request above.
+</p>
+<p><strong>Caution:</strong>
+If you interpolate a macro or diversion in
+<var>contents</var>
+(see <a href="Punning-Names.html">Punning Names</a>),
+the
+<code>length</code>
+request counts characters
+(or nodes)
+only up to the first newline,
+and leaves the rest on the input stream.
+In conventional circumstances,
+that means the remainder is interpreted,
+and may be formatted.
+To discover the length of any
+string,
+macro,
+or diversion,
+use the
+<code>pm</code>
+request.
+See <a href="Debugging.html">Debugging</a>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002echop">Request: <strong><tt>.chop</tt></strong> <em>object</em></dt>
+<dd><span id="index-chop"></span>
+<p>Remove the last character from the macro, string, or diversion named
+<var>object</var>.  This is useful for removing the newline from the end of a
+diversion that is to be interpolated as a string.  This request can be
+used repeatedly on the same <var>object</var>; see
+<a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>,
+for details on nodes inserted additionally by GNU <code>troff</code>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002esubstring">Request: <strong><tt>.substring</tt></strong> <em>str start [<span class="roman"><i>end</i></span>]</em></dt>
+<dd><span id="index-substring"></span>
+<span id="index-substring-_0028substring_0029"></span>
+<p>Replace the string named <var>str</var> with its substring bounded by the
+indices <var>start</var> and <var>end</var>, inclusively.  The first character in
+the string has index&nbsp;0.  If <var>end</var> is omitted, it is implicitly
+set to the largest valid value (the string length minus one).  Negative
+indices count backward from the end of the string: the last character
+has index&nbsp;-1, the character before the last has
+index&nbsp;-2, and so on.
+</p>
+<div class="example">
+<pre class="example">.ds xxx abcdefgh
+.substring xxx 1 -4
+\*[xxx]
+    &rArr; bcde
+.substring xxx 2
+\*[xxx]
+    &rArr; de
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002estringdown">Request: <strong><tt>.stringdown</tt></strong> <em>str</em></dt>
+<dd><span id="index-stringdown"></span>
+</dd><dt id="index-_002estringup">Request: <strong><tt>.stringup</tt></strong> <em>str</em></dt>
+<dd><span id="index-stringup"></span>
+<span id="index-case_002dtransforming-a-string-_0028stringdown_002c-stringup_0029"></span>
+<span id="index-uppercasing-a-string-_0028stringup_0029"></span>
+<span id="index-lowercasing-a-string-_0028stringdown_0029"></span>
+<span id="index-down_002dcasing-a-string-_0028stringdown_0029"></span>
+<p>Alter the string named <var>str</var> by replacing each of its bytes with its
+lowercase (<code>stringdown</code>) or uppercase (<code>stringup</code>) version (if
+one exists).  Special characters in the string will often transform in
+the expected way due to the regular naming convention for accented
+characters.  When they do not, use substrings and/or catenation.
+</p>
+<div class="example">
+<pre class="example">.ds resume R\['e]sum\['e]\&quot;
+\*[resume]
+.stringdown resume
+\*[resume]
+.stringup resume
+\*[resume]
+    &rArr; Résumé résumé RÉSUMÉ
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002ern">Request: <strong><tt>.rn</tt></strong> <em>old new</em></dt>
+<dd><span id="index-rn"></span>
+<span id="index-renaming-request-_0028rn_0029"></span>
+<span id="index-request_002c-renaming-_0028rn_0029"></span>
+<span id="index-renaming-macro-_0028rn_0029"></span>
+<span id="index-macro_002c-renaming-_0028rn_0029"></span>
+<span id="index-renaming-string-_0028rn_0029"></span>
+<span id="index-string_002c-renaming-_0028rn_0029"></span>
+<span id="index-renaming-diversion-_0028rn_0029"></span>
+<span id="index-diversion_002c-renaming-_0028rn_0029"></span>
+<p>Rename the request, macro, diversion, or string <var>old</var> to <var>new</var>.
+</p></dd></dl>
+
+<span id="index-CSTR-_002354-errata-6"></span>
+<span id="index-CSTR-_002354-erratum_002c-rm-request"></span>
+<dl>
+<dt id="index-_002erm">Request: <strong><tt>.rm</tt></strong> <em>name &hellip;</em></dt>
+<dd><span id="index-rm"></span>
+<span id="index-removing-request-_0028rm_0029"></span>
+<span id="index-request_002c-removing-_0028rm_0029"></span>
+<span id="index-removing-macro-_0028rm_0029"></span>
+<span id="index-macro_002c-removing-_0028rm_0029"></span>
+<span id="index-removing-string-_0028rm_0029"></span>
+<span id="index-string_002c-removing-_0028rm_0029"></span>
+<span id="index-removing-diversion-_0028rm_0029"></span>
+<span id="index-diversion_002c-removing-_0028rm_0029"></span>
+<p>Remove each request, macro, diversion, or string <var>name</var>.  GNU
+<code>troff</code> treats subsequent invocations as if the name had never
+been defined.
+</p>
+<p>This request is incorrectly documented in the <acronym>AT&amp;T</acronym>
+<code>troff</code> manual as accepting only one argument.
+</p></dd></dl>
+
+<span id="als"></span><dl>
+<dt id="index-_002eals">Request: <strong><tt>.als</tt></strong> <em>new-name existing-name</em></dt>
+<dd><span id="index-als"></span>
+<span id="index-alias_002c-string_002c-creating-_0028als_0029"></span>
+<span id="index-alias_002c-macro_002c-creating-_0028als_0029"></span>
+<span id="index-alias_002c-diversion_002c-creating-_0028als_0029"></span>
+<span id="index-creating-alias_002c-for-string-_0028als_0029"></span>
+<span id="index-creating-alias_002c-for-macro-_0028als_0029"></span>
+<span id="index-creating-alias_002c-for-diversion-_0028als_0029"></span>
+<span id="index-string_002c-creating-alias-of-_0028als_0029"></span>
+<span id="index-macro_002c-creating-alias-of-_0028als_0029"></span>
+<span id="index-diversion_002c-creating-alias-of-_0028als_0029"></span>
+<p>Create alias
+(additional name)
+<var>new-name</var>
+of request,
+string,
+macro,
+or diversion
+<var>existing-name</var>,
+causing the names to refer to the same stored object.
+If
+<var>existing-name</var>
+is undefined,
+the formatter ignores the request.<a id="DOCF139" href="groff.html_fot.html#FOOT139"><sup>139</sup></a>
+If
+<var>new-name</var>
+already exists,
+its contents are lost unless already aliased.
+</p>
+<p>To understand how the <code>als</code> request works, consider two different
+storage pools: one for objects (macros, strings, etc.), and another
+for names.  As soon as an object is defined, GNU <code>troff</code> adds it to
+the object pool, adds its name to the name pool, and creates a link
+between them.  When <code>als</code> creates an alias, it adds a new name to
+the name pool that gets linked to the same object as the old name.
+</p>
+<p>Now consider this example.
+</p>
+<div class="example">
+<pre class="example">.de foo
+..
+.
+.als bar foo
+.
+.de bar
+.  foo
+..
+.
+.bar
+    error&rarr; input stack limit exceeded (probable infinite
+    error&rarr; loop)
+</pre></div>
+
+<p>In the above, <code>bar</code> remains an <em>alias</em>&mdash;another name
+for&mdash;the object referred to by <code>foo</code>, which the second <code>de</code>
+request replaces.  Alternatively, imagine that the <code>de</code> request
+<em>dereferences</em> its argument before replacing it.  Either way, the
+result of calling <code>bar</code> is a recursive loop that finally leads to
+an error.  See <a href="Writing-Macros.html">Writing Macros</a>.
+</p>
+<span id="index-alias_002c-string_002c-removing-_0028rm_0029"></span>
+<span id="index-alias_002c-macro_002c-removing-_0028rm_0029"></span>
+<span id="index-alias_002c-diversion_002c-removing-_0028rm_0029"></span>
+<span id="index-removing-alias_002c-for-string-_0028rm_0029"></span>
+<span id="index-removing-alias_002c-for-macro-_0028rm_0029"></span>
+<span id="index-removing-alias_002c-for-diversion-_0028rm_0029"></span>
+<span id="index-string_002c-removing-alias-of-_0028rm_0029"></span>
+<span id="index-macro_002c-removing-alias-of-_0028rm_0029"></span>
+<span id="index-diversion_002c-removing-alias-of-_0028rm_0029"></span>
+<p>To remove an alias,
+call
+<code>rm</code>
+on its name.
+The object itself is not destroyed until it has no more names.
+</p>
+<p>When a request,
+macro,
+string,
+or diversion is aliased
+redefinitions and appendments &ldquo;write through&rdquo; alias names.
+To replace an alias with a separately defined object,
+remove its name first.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Conditionals-and-Loops.html" accesskey="n" rel="next">Conditionals and Loops</a>, Previous: <a href="Colors.html" accesskey="p" rel="prev">Colors</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

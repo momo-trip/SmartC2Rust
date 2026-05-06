@@ -1,0 +1,33 @@
+Copyright 2013-2020 Free Software Foundation, Inc.
+
+Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+Changes from October 2017 onward by the groff development team
+
+This file is part of glilypond.
+
+Bernd Warken originally licensed glilypond under the GNU GPLv2; see the
+file "GPLv2".
+
+glilypond is distributed with groff, the GNU roff typesetting system.
+
+groff is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+groff is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+##### Editor settings
+Local Variables:
+fill-column: 72
+mode: text
+End:
+vim: set textwidth=72:
+

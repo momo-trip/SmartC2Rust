@@ -1,0 +1,52 @@
+# Copyright 2014 Free Software Foundation, Inc.
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+bin_PROGRAMS += grops
+grops_SOURCES = \
+  src/devices/grops/ps.cpp \
+  src/devices/grops/psrm.cpp \
+  src/devices/grops/ps.h
+grops_LDADD = $(LIBM) \
+  libdriver.a \
+  libgroff.a \
+  lib/libgnu.a
+
+GROPSTMACFILES = \
+  tmac/europs.tmac \
+  tmac/ps.tmac \
+  tmac/psatk.tmac \
+  tmac/psfig.tmac \
+  tmac/psold.tmac \
+  tmac/pspic.tmac
+gropstmacdir = $(tmacdir)
+dist_gropstmac_DATA = $(GROPSTMACFILES)
+
+man1_MANS += src/devices/grops/grops.1
+EXTRA_DIST += \
+  src/devices/grops/grops.1.man \
+  src/devices/grops/psfig.diff \
+  src/devices/grops/TODO
+
+uninstall_groffdirs: uninstall_grops_hook
+uninstall_grops_hook:
+	-rmdir $(DESTDIR)$(tmacdir)
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

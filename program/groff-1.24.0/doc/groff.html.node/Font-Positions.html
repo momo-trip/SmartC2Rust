@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Font Positions (The GNU troff Manual)</title>
+
+<meta name="description" content="Font Positions (The GNU troff Manual)">
+<meta name="keywords" content="Font Positions (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Using-Fonts.html" rel="up" title="Using Fonts">
+<link href="Characters-and-Glyphs.html" rel="next" title="Characters and Glyphs">
+<link href="Font-Families.html" rel="prev" title="Font Families">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Font-Positions"></span><div class="header">
+<p>
+Next: <a href="Characters-and-Glyphs.html" accesskey="n" rel="next">Characters and Glyphs</a>, Previous: <a href="Font-Families.html" accesskey="p" rel="prev">Font Families</a>, Up: <a href="Using-Fonts.html" accesskey="u" rel="up">Using Fonts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Font-Positions-1"></span><h4 class="subsection">5.19.3 Font Positions</h4>
+<span id="index-font-positions"></span>
+<span id="index-positions_002c-font"></span>
+
+<p>To support typeface indirection through abstract styles, and for
+compatibility with <acronym>AT&amp;T</acronym> <code>troff</code>, the formatter maintains
+a list of font <em>positions</em> at which fonts required by a document are
+<em>mounted</em>.  An output device&rsquo;s description file <samp>DESC</samp>
+typically configures a set of pre-mounted fonts; see <a href="Device-and-Font-Description-Files.html">Device and Font Description Files</a>.  A font need not be explicitly mounted before
+it is selected; GNU <code>troff</code> will search <code>GROFF_FONT_PATH</code> for
+a file name matching the identifier and mount it on demand.
+</p>
+<dl>
+<dt id="index-_002efp">Request: <strong><tt>.fp</tt></strong> <em>pos id [<span class="roman"><i>font-description-file-name</i></span>]</em></dt>
+<dd><span id="index-fp"></span>
+</dd><dt id="index-_005cn_005b_002ef_005d">Register: <strong><tt>\n[.f]</tt></strong></dt>
+<dd><span id="index-_002ef"></span>
+</dd><dt id="index-_005cn_005b_002efp_005d">Register: <strong><tt>\n[.fp]</tt></strong></dt>
+<dd><span id="index-_002efp-1"></span>
+<span id="index-mounting-a-font-_0028fp_0029"></span>
+<span id="index-font_002c-mounting-_0028fp_0029"></span>
+<p>Mount a font under the name <var>id</var> at mounting position <var>pos</var>, a
+non-negative integer.  When the formatter starts up, it reads the output
+device&rsquo;s description to mount an initial set of faces, and selects font
+position&nbsp;1.  Position&nbsp;0 is unused by default.  Unless the
+<var>font-description-file-name</var> argument is given, <var>id</var> should be
+the name of a font description file stored in a directory corresponding
+to the selected output device.  GNU <code>troff</code> does not traverse
+directories to locate the font description file.
+</p>
+<span id="index-font-aliasing-with-third-argument-to-fp-request"></span>
+<span id="index-aliasing-fonts-with-third-argument-to-fp-request"></span>
+<p>The optional third argument enables font names to be aliased, which can
+be necessary in compatibility mode since AT&amp;T <code>troff</code> syntax
+affords no means of identifying fonts with names longer than two
+characters, like &lsquo;<samp>TBI</samp>&rsquo; or &lsquo;<samp>ZCMI</samp>&rsquo;, in a font selection escape
+sequence.  See <a href="Compatibility-Mode.html">Compatibility Mode</a>.  You can also alias fonts on
+mounting for convenience or abstraction.  (See below regarding the
+<code>.fp</code> register.)
+</p>
+<div class="example">
+<pre class="example">.fp \n[.fp] SC ZCMI
+Send a \f(SChand-written\fP thank-you note.
+.fp \n[.fp] Emph TI
+.fp \n[.fp] Strong TB
+Are \f[Emph]these names\f[] \f[Strong]comfortable\f[]?
+</pre></div>
+
+<p>&lsquo;<samp>DESC</samp>&rsquo;, &lsquo;<samp>P</samp>&rsquo;, and non-negative integers are not usable as font
+identifiers.
+</p>
+<p>You can obtain a report of occupied font mounting positions
+(whether configured by the
+&lsquo;<samp>DESC</samp>&rsquo;
+file,
+the
+<code>fp</code>
+request,
+or automatic mounting)
+on the standard error stream with the
+<code>pfp</code> request.
+See <a href="Debugging.html">Debugging</a>.
+</p>
+<span id="index-font-position-register-_0028_002ef_0029"></span>
+<p>The position of the currently selected font (or abstract style) is
+available in the read-only register &lsquo;<samp>.f</samp>&rsquo;.  It is associated with
+the environment (see <a href="Environments.html">Environments</a>).
+</p>
+<p>Copy the value of <code>.f</code> to another register to save it for later
+use.
+</p>
+<div class="example">
+<pre class="example">.nr sF \n(.f
+<span class="roman">&hellip; <i>text involving many font changes</i> &hellip;</span>
+.ft \n(sF
+</pre></div>
+
+<span id="index-next-free-font-position-register-_0028_002efp_0029"></span>
+<p>The index of the next (non-zero) free font position is available in the
+read-only register &lsquo;<samp>.fp</samp>&rsquo;.
+<span id="index-DESC-file_002c-and-font-mounting"></span>
+Fonts not listed in the <samp>DESC</samp> file are automatically mounted at
+position &lsquo;<samp>\n[.fp]</samp>&rsquo; when selected with the <code>ft</code> request or
+<code>\f</code> escape sequence.  When mounting a font at a position
+explicitly with the <code>fp</code> request, this same practice should be
+followed, although GNU <code>troff</code> does not enforce this strictly.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Characters-and-Glyphs.html" accesskey="n" rel="next">Characters and Glyphs</a>, Previous: <a href="Font-Families.html" accesskey="p" rel="prev">Font Families</a>, Up: <a href="Using-Fonts.html" accesskey="u" rel="up">Using Fonts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

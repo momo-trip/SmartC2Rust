@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>GNU troff Internals (The GNU troff Manual)</title>
+
+<meta name="description" content="GNU troff Internals (The GNU troff Manual)">
+<meta name="keywords" content="GNU troff Internals (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Debugging.html" rel="next" title="Debugging">
+<link href="Miscellaneous.html" rel="prev" title="Miscellaneous">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="GNU-troff-Internals"></span><div class="header">
+<p>
+Next: <a href="Debugging.html" accesskey="n" rel="next">Debugging</a>, Previous: <a href="Miscellaneous.html" accesskey="p" rel="prev">Miscellaneous</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="gtroff-Internals"></span><span id="GNU-troff-Internals-1"></span><h3 class="section">5.37 GNU <code>troff</code> Internals</h3>
+
+<span id="index-input-token"></span>
+<span id="index-token"></span>
+<span id="index-output-node"></span>
+<span id="index-node"></span>
+<span id="index-flushing_002c-of-an-output-line"></span>
+<p>GNU
+<code>troff</code> processes input in three steps.
+It gathers one or more input characters into a
+<em>token</em>,<a id="DOCF183" href="groff.html_fot.html#FOOT183"><sup>183</sup></a>
+the smallest meaningful unit of
+<code>troff</code> input.
+The process of formatting translates tokens into nodes
+that populate a pending output line
+(recall
+<a href="Manipulating-Filling-and-Adjustment.html">Manipulating Filling and Adjustment</a>).
+A
+<em>node</em>
+is a data structure representing any object
+that may ultimately appear in the output,
+like a glyph or motion on the page.
+When the pending output line breaks,
+the formatter applies any relevant adjustment,
+line number,
+and margin character,
+and finally appends it to the current diversion.
+Periodically,
+the formatter
+<em>flushes</em>
+accumulated output line(s) to the output device,
+a process that translates each node
+into a device-independent output language representation
+understood by all output drivers.
+Copy mode tokenizes but does not format;
+diversions
+(apart from that at the top level)
+format but do not write output.
+</p>
+<p>For example,
+GNU
+<code>troff</code>
+converts the input
+&lsquo;<samp>Gi\[:u]\%seppe</samp>&rsquo;
+into a
+character token for
+&lsquo;<samp>g</samp>&rsquo;,
+a character token for
+&lsquo;<samp>i</samp>&rsquo;,
+a special character token for
+&lsquo;<samp>:u</samp>&rsquo;
+(representing
+&lsquo;<samp>u</samp>&rsquo;
+with an umlaut),
+a token encoding a hyphenation break point,<a id="DOCF184" href="groff.html_fot.html#FOOT184"><sup>184</sup></a>
+and further character tokens.
+You can observe this process
+by storing the foregoing input into a string&mdash;which,
+because its contents are read in copy mode,
+is only tokenized,
+not formatted&mdash;and
+dumping it with the
+<code>pm</code> request.<a id="DOCF185" href="groff.html_fot.html#FOOT185"><sup>185</sup></a>
+(Using <cite>printf<span class="roman">(1)</span></cite> requires us to double the &lsquo;<samp>\</samp>&rsquo;
+and &lsquo;<samp>%</samp>&rsquo; characters.)
+</p>
+<div class="example">
+<pre class="example">$ printf '.ds str Gi\\[:u]\\%%seppe\n.pm str\n' \
+    | groff 2&gt;&amp;1 | jq
+</pre></div>
+
+<p>Similarly,
+we can observe the details of the formatting process
+by interpolating the string,
+or supplying its contents directly as input,
+and invoking the
+<code>pline</code>
+request.
+</p>
+<div class="example">
+<pre class="example">$ printf 'Gi\\[:u]\\%%seppe\n.pline\n' | groff -z 2&gt;&amp;1 | jq
+</pre></div>
+
+<p>We now see a list of nodes,
+including an output line start node,
+several glyph nodes,
+a discretionary break node
+containing a glyph node for the special character
+&lsquo;<samp>:u</samp>&rsquo;
+<em>and</em>
+a glyph node for the special character
+&lsquo;<samp>hy</samp>&rsquo;
+(hyphen),
+and a word space node at the end
+corresponding to the newline at the end of input.<a id="DOCF186" href="groff.html_fot.html#FOOT186"><sup>186</sup></a>
+</p>
+<p>If we change
+&lsquo;<samp>G</samp>&rsquo;
+to
+&lsquo;<samp>f</samp>&rsquo;,
+we see that the first two glyph nodes,
+for
+&lsquo;<samp>f</samp>&rsquo;
+and
+&lsquo;<samp>i</samp>&rsquo;,
+become contained by a ligature node
+(provided the current font has a glyph for this ligature).
+All output glyph nodes are &ldquo;processed&rdquo;,
+which means that they are associated
+with a given font,
+type size,
+advance width,
+and so forth.
+</p>
+<p>Macros, diversions, and strings collect elements in two chained lists: a
+list of tokens that have been passed unprocessed, and a list of nodes.
+Consider the following diversion.
+</p>
+<div class="example">
+<pre class="example">.di xxx
+a
+\!b
+c
+.br
+.di
+</pre></div>
+
+<p>It contains these elements.
+</p>
+<table>
+<tr><td>node list</td><td>token list</td><td>element number</td></tr>
+<tr><td><i>line start node</i></td><td>&mdash;</td><td>1</td></tr>
+<tr><td><i>glyph node <code>a</code></i></td><td>&mdash;</td><td>2</td></tr>
+<tr><td><i>word space node</i></td><td>&mdash;</td><td>3</td></tr>
+<tr><td>&mdash;</td><td><code>b</code></td><td>4</td></tr>
+<tr><td>&mdash;</td><td><code>\n</code></td><td>5</td></tr>
+<tr><td><i>glyph node <code>c</code></i></td><td>&mdash;</td><td>6</td></tr>
+<tr><td><i>vertical size node</i></td><td>&mdash;</td><td>7</td></tr>
+<tr><td><i>vertical size node</i></td><td>&mdash;</td><td>8</td></tr>
+<tr><td>&mdash;</td><td><code>\n</code></td><td>9</td></tr>
+</table>
+
+<span id="index-_005cv_002c-internal-representation"></span>
+<p><code>troff</code>
+inserts elements 1,
+7,
+and&nbsp;8;
+the latter two
+(which are always present)
+specify the vertical extent of the last line,
+possibly modified by <code>\x</code>.
+The
+<code>br</code>
+request finishes the pending output line,
+inserting a newline token,
+which is subsequently converted to a space
+when the diversion is interpolated.
+Note that the word space node
+has a fixed width that isn&rsquo;t adjustable anymore.
+To convert horizontal space nodes back into tokens,
+use the
+<code>unformat</code>
+request.
+</p>
+<p>Macros only contain elements in the token list (and the node list is
+empty); diversions and strings can contain elements in both lists.
+</p>
+<p>The <code>chop</code> request simply reduces the number of elements in a
+macro, string, or diversion by one.  Exceptions are <em>compatibility
+save</em> and <em>compatibility ignore</em> tokens, which are ignored.  The
+<code>substring</code> request also ignores those tokens.
+</p>
+<p>Some requests like <code>tr</code> or <code>cflags</code> work on glyph identifiers
+only; this means that the associated glyph can be changed without
+destroying this association.  This can be very helpful for substituting
+glyphs.  In the following example, we assume that glyph &lsquo;<samp>foo</samp>&rsquo; isn&rsquo;t
+available by default, so we provide a substitution using the
+<code>fchar</code> request and map it to input character &lsquo;<samp>x</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.fchar \[foo] foo
+.tr x \[foo]
+</pre></div>
+
+<p>Now let us assume that we install an additional special font &lsquo;<samp>bar</samp>&rsquo;
+that has glyph &lsquo;<samp>foo</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.special bar
+.rchar \[foo]
+</pre></div>
+
+<p>Since glyphs defined with <code>fchar</code> are searched before glyphs in
+special fonts, we must call <code>rchar</code> to remove the definition of the
+fallback glyph.  Anyway, the translation is still active; &lsquo;<samp>x</samp>&rsquo; now
+maps to the real glyph &lsquo;<samp>foo</samp>&rsquo;.
+</p>
+<span id="index-compatibility-mode_002c-and-parameters"></span>
+<span id="index-mode_002c-compatibility_002c-and-parameters"></span>
+<span id="index-arguments_002c-and-compatibility-mode"></span>
+<span id="index-parameters_002c-and-compatibility-mode"></span>
+<span id="index-macro-arguments_002c-and-compatibility-mode"></span>
+<span id="index-request-arguments_002c-and-compatibility-mode"></span>
+<p>Macro and request arguments preserve compatibility mode enablement.
+</p>
+<div class="example">
+<pre class="example">.cp 1     \&quot; switch to compatibility mode
+.de xx
+\\$1
+..
+.cp 0     \&quot; switch compatibility mode off
+.xx caf\['e]
+    &rArr; café
+</pre></div>
+
+<p>Since compatibility mode is enabled while <code>de</code> is invoked, the
+macro <code>xx</code> enables compatibility mode when it is called.  Argument
+<code>$1</code> can still be handled properly because it inherits the
+compatibility mode enablement status that was active at the point where
+<code>xx</code> was called.
+</p>
+<p>After interpolation of the parameters, the compatibility save and
+restore tokens are removed.
+</p>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Debugging.html" accesskey="n" rel="next">Debugging</a>, Previous: <a href="Miscellaneous.html" accesskey="p" rel="prev">Miscellaneous</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

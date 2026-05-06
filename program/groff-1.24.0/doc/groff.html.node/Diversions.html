@@ -1,0 +1,550 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Diversions (The GNU troff Manual)</title>
+
+<meta name="description" content="Diversions (The GNU troff Manual)">
+<meta name="keywords" content="Diversions (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Punning-Names.html" rel="next" title="Punning Names">
+<link href="End_002dof_002dinput-Traps.html" rel="prev" title="End-of-input Traps">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Diversions"></span><div class="header">
+<p>
+Next: <a href="Punning-Names.html" accesskey="n" rel="next">Punning Names</a>, Previous: <a href="Traps.html" accesskey="p" rel="prev">Traps</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Diversions-1"></span><h3 class="section">5.30 Diversions</h3>
+<span id="index-diversions"></span>
+
+<p>In
+<code>roff</code>
+systems it is possible to format text as if for output,
+but instead of writing it immediately,
+one can
+<em>divert</em>
+the formatted text into a named storage area.
+It is retrieved later by specifying its name after a control character.
+The formatter uses the same name space for such
+<i>diversions</i>
+as for strings and macros;
+recall <a href="Identifiers.html">Identifiers</a>.
+Such text is sometimes said to be &ldquo;stored in a macro&rdquo;,
+but this coinage obscures the important distinction
+between macros and strings on one hand
+and diversions on the other;
+the former store
+<em>unformatted</em>
+input text,
+and the latter capture
+<em>formatted</em>
+output.<a id="DOCF168" href="groff.html_fot.html#FOOT168"><sup>168</sup></a>
+Diversions also do not interpret arguments.
+Applications of diversions include
+footnotes,
+tables of contents,
+indices,
+and &ldquo;keeps&rdquo;
+(preventing a page break from occurring at an inconvenient place
+by forcing a set of output lines to be set as a group).
+<span id="index-top_002dlevel-diversion"></span>
+<span id="index-diversion_002c-top_002dlevel"></span>
+For orthogonality it is said that
+GNU
+<code>troff</code> populates the
+<em>top-level diversion</em>
+if no diversion is active
+(that is,
+formatted output is being &ldquo;diverted&rdquo; directly
+to the output device).
+The top-level diversion has no name.
+</p>
+<p>Dereferencing an undefined diversion creates an empty one
+of that name.<a id="DOCF169" href="groff.html_fot.html#FOOT169"><sup>169</sup></a>
+A diversion does not exist for the purpose of testing with the
+<code>d</code>
+conditional expression operator
+until its initial definition ends;
+recall <a href="Operators-in-Conditionals.html">Operators in Conditionals</a>.
+The following requests create and alter diversions.
+</p>
+<dl>
+<dt id="index-_002edi">Request: <strong><tt>.di</tt></strong> <em>[<span class="roman"><i>name</i></span>]</em></dt>
+<dd><span id="index-di"></span>
+</dd><dt id="index-_002eda">Request: <strong><tt>.da</tt></strong> <em>[<span class="roman"><i>name</i></span>]</em></dt>
+<dd><span id="index-da"></span>
+<span id="index-beginning-diversion-_0028di_002c-box_0029"></span>
+<span id="index-diversion_002c-beginning-_0028di_002c-box_0029"></span>
+<span id="index-ending-diversion-_0028di_002c-box_0029"></span>
+<span id="index-diversion_002c-ending-_0028di_002c-box_0029"></span>
+<span id="index-appending-to-a-diversion-_0028da_002c-boxa_0029"></span>
+<span id="index-diversion_002c-appending-to-_0028da_002c-boxa_0029"></span>
+<p>Start collecting formatted output in a diversion called
+<var>name</var>.
+The
+<code>da</code>
+request appends to a diversion called
+<var>name</var>,
+creating it if necessary.
+If
+<var>name</var>
+already exists as an alias,
+the target of the alias is replaced or appended to;
+recall <a href="Strings.html">Strings</a>.
+The pending output line is diverted as well.
+Switching to another environment
+(with the
+<code>ev</code>
+request)
+before invoking
+<code>di</code>
+or
+<code>da</code>
+avoids including any pending output line in the diversion.<a id="DOCF170" href="groff.html_fot.html#FOOT170"><sup>170</sup></a>
+</p>
+<p>Invoking
+<code>di</code>
+or
+<code>da</code>
+without an argument stops diverting output
+to the diversion named by the most recent corresponding request.
+Invoking
+<code>di</code>
+or
+<code>da</code>
+without an argument
+when no diversion is being populated does nothing.<a id="DOCF171" href="groff.html_fot.html#FOOT171"><sup>171</sup></a>
+</p>
+<div class="example">
+<pre class="example">.ll 56n
+Ahoy, me hearties,
+I traveled unto a distant isle,
+.br
+.di HT
+and thereupon I lay a vast treasure,
+.br
+.di
+.HT
+.br
+which none o' ye shall ever see.
+    &rArr; Ahoy, mateys, I traveled unto a distant isle,
+    &rArr; and thereupon I lay a vast treasure,
+    &rArr; which none o&rsquo; ye shall ever see.
+</pre></div>
+</dd></dl>
+
+<span id="index-box-_0028diversion-operation_0029"></span>
+<p>GNU <code>troff</code> supports <em>box</em> requests to exclude a partially
+collected line from a diversion, as this is often desirable.
+</p>
+<dl>
+<dt id="index-_002ebox">Request: <strong><tt>.box</tt></strong> <em>[<span class="roman"><i>name</i></span>]</em></dt>
+<dd><span id="index-box"></span>
+</dd><dt id="index-_002eboxa">Request: <strong><tt>.boxa</tt></strong> <em>[<span class="roman"><i>name</i></span>]</em></dt>
+<dd><span id="index-boxa"></span>
+<p>Divert (or append) output to <var>name</var>, similarly to the <code>di</code> and
+<code>da</code> requests, respectively.  Any pending output line is <em>not</em>
+included in the diversion.  Without an argument, stop diverting output;
+any pending output line inside the diversion is discarded.
+</p>
+<div class="example">
+<pre class="example">.ll 56n
+Ahoy, mateys,
+I traveled unto a distant isle,
+.br
+.box SECRET
+and thereupon I lay a vast treasure,
+.br
+accurst wi' neutron activation,
+.box
+.SECRET
+.br
+which none o' ye shall ever see.
+    &rArr; Ahoy, mateys, I traveled unto a distant isle,
+    &rArr; and thereupon I lay a vast treasure,
+    &rArr; which none o&rsquo; ye shall ever see.
+</pre></div>
+</dd></dl>
+
+<p>Apart from pending output line inclusion and the request names that
+populate them, boxes are handled exactly as diversions are.  All of the
+following <code>groff</code> language elements can be used with them
+interchangeably.
+</p>
+<dl>
+<dt id="index-_005cn_005b_002ez_005d">Register: <strong><tt>\n[.z]</tt></strong></dt>
+<dd><span id="index-_002ez"></span>
+</dd><dt id="index-_005cn_005b_002ed_005d">Register: <strong><tt>\n[.d]</tt></strong></dt>
+<dd><span id="index-_002ed"></span>
+<span id="index-nl-register_002c-and-_002ed"></span>
+<span id="index-nested-diversions"></span>
+<span id="index-diversion_002c-nested"></span>
+<span id="index-diversion-name-register-_0028_002ez_0029"></span>
+<span id="index-vertical-position-in-diversion-register-_0028_002ed_0029"></span>
+<span id="index-position_002c-vertical_002c-in-diversion_002c-register-_0028_002ed_0029"></span>
+<span id="index-diversion_002c-vertical-position-in_002c-register-_0028_002ed_0029"></span>
+<p>Diversion requests may be nested.  The read-only string-valued register
+<code>.z</code> contains the name of the current diversion.  The read-only
+register <code>.d</code> contains the vertical drawing position in the
+diversion.  If the input text is not being diverted, <code>.d</code> reports
+the same location as the register <code>nl</code>.
+</p>
+<div class="example">
+<pre class="example">.nf
+.di A
+alpha
+.di B
+beta
+.di
+gamma
+\*B
+.di
+delta
+\*A
+epsilon
+    &rArr; delta
+    &rArr; alpha
+    &rArr; gamma
+    &rArr; beta
+    &rArr;
+    &rArr;
+    &rArr; epsilon
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002eh_005d">Register: <strong><tt>\n[.h]</tt></strong></dt>
+<dd><span id="index-_002eh"></span>
+<span id="index-high_002dwater-mark-register-_0028_002eh_0029"></span>
+<span id="index-mark_002c-high_002dwater_002c-register-_0028_002eh_0029"></span>
+<span id="index-position-of-lowest-text-line-_0028_002eh_0029"></span>
+<span id="index-text-line_002c-position-of-lowest-_0028_002eh_0029"></span>
+<p>The read-only register <code>.h</code> stores the <em>high-water mark</em> on the
+current page or in the current diversion.  It corresponds to the text
+baseline of the lowest line on the page.<a id="DOCF172" href="groff.html_fot.html#FOOT172"><sup>172</sup></a>
+</p>
+<div class="example">
+<pre class="example">.tm .h==\n[.h], nl==\n[nl]
+    &rArr; .h==0, nl==-1
+This is a test.
+.br
+.sp 2
+.tm .h==\n[.h], nl==\n[nl]
+    &rArr; .h==40, nl==120
+</pre></div>
+
+<span id="index-_002eh-register_002c-difference-from-nl"></span>
+<span id="index-nl-register_002c-difference-from-_002eh"></span>
+<p>As implied by the example, vertical motion does not produce text
+baselines and thus does not increase the value interpolated by
+&lsquo;<samp>\n[.h]</samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005bdn_005d">Register: <strong><tt>\n[dn]</tt></strong></dt>
+<dd><span id="index-dn"></span>
+</dd><dt id="index-_005cn_005bdl_005d">Register: <strong><tt>\n[dl]</tt></strong></dt>
+<dd><span id="index-dl"></span>
+<span id="index-dn-register_002c-and-da-_0028boxa_0029"></span>
+<span id="index-dl-register_002c-and-da-_0028boxa_0029"></span>
+<span id="index-da-request_002c-and-dn-_0028dl_0029"></span>
+<span id="index-boxa-request_002c-and-dn-_0028dl_0029"></span>
+<p>After output to a (named) diversion stops,
+the formatter stores its vertical and horizontal sizes,
+to the writable registers
+<code>dn</code>
+and
+<code>dl</code>,
+respectively.
+Only the lines just processed are counted: for the computation of
+<code>dn</code> and <code>dl</code>, the requests <code>da</code> and <code>boxa</code> are
+handled as if <code>di</code> and <code>box</code> had been used,
+respectively&mdash;lines that have been already stored in the diversion
+(box) are not taken into account.
+</p>
+<div class="example">
+<pre class="example">.\&quot; Center text both horizontally and vertically.
+.\&quot; Macro .(c starts centering mode; .)c terminates it.
+.
+.\&quot; Disable the escape character with .eo so that we
+.\&quot; don't have to double backslashes on the &quot;\n&quot;s.
+.eo
+.de (c
+.  br
+.  ev (c
+.  evc 0
+.  in 0
+.  nf
+.  di @c
+..
+</pre></div>
+<div class="example">
+<pre class="example">.de )c
+.  br
+.  ev
+.  di
+.  nr @s (((\n[.t]u - \n[dn]u) / 2u) - 1v)
+.  sp \n[@s]u
+.  ce 1000
+.  @c
+.  ce 0
+.  sp \n[@s]u
+.  br
+.  fi
+.  rr @s
+.  rm @c
+..
+.ec
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_005c_0021character_002dsequence">Escape&nbsp;sequence: <strong><tt>\!</tt><span class="roman"><i>character-sequence</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_0021"></span>
+</dd><dt id="index-_005c_003fcharacter_002dsequence_005c_003f">Escape&nbsp;sequence: <strong><tt>\?</tt><span class="roman"><i>character-sequence</i></span><tt>\?</tt></strong></dt>
+<dd><span id="index-_005c_003f"></span>
+<span id="index-transparent-output-_0028_005c_0021_002c-_005c_003f_0029"></span>
+<span id="index-output_002c-transparent-_0028_005c_0021_002c-_005c_003f_0029"></span>
+<p><em>Transparently</em>
+embed
+<var>character-sequence</var>
+into the current diversion,
+preventing the formatter from interpreting
+requests,
+macro calls,
+and escape sequences
+when reading them into a diversion.
+Doing so prevents them from taking effect
+until the diverted text is actually output.
+The
+<code>\!</code>
+escape sequence transparently embeds input
+up to and including the end of the line.
+The
+<code>\?</code>
+escape sequence transparently embeds input,
+read in copy mode,
+up to its own next occurrence on the input line.
+<span id="index-_005c_003f_002c-and-copy-mode-1"></span>
+<span id="index-copy-mode_002c-and-_005c_003f-1"></span>
+<span id="index-mode_002c-copy_002c-and-_005c_003f-1"></span>
+<span id="index-_005c_0021_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-_005c_0021"></span>
+<span id="index-mode_002c-copy_002c-and-_005c_0021"></span>
+Use
+<code>\!</code>
+by itself to embed newlines in a diversion.
+<span id="index-_005c_003f_002c-interpretation-in-copy-mode"></span>
+The two escape sequences differ in that
+GNU
+<code>troff</code> interprets
+<code>\?</code>
+even in copy mode;
+recall
+<a href="Copy-Mode.html">Copy Mode</a>.
+Consequently,
+comparands protected with
+<code>\?</code>
+need not be valid
+GNU
+<code>troff</code> syntax.
+</p>
+<div class="example">
+<pre class="example">.nr x 1
+.nf
+.di d
+\?\\?\\\\?\\\\\\\\nx\\\\?\\?\?
+.di
+.nr x 2
+.di e
+.d
+.di
+.nr x 3
+.di f
+.e
+.di
+.nr x 4
+.f
+    &rArr; 4
+</pre></div>
+
+<p>Both escape sequences read the data in copy mode.
+</p>
+<span id="index-_005c_0021_002c-in-top_002dlevel-diversion"></span>
+<span id="index-top_002dlevel-diversion_002c-and-_005c_0021"></span>
+<span id="index-diversion_002c-top_002dlevel_002c-and-_005c_0021"></span>
+<p>If
+<code>\!</code>
+is used in the top-level diversion,
+its argument is embedded into
+GNU
+<code>troff</code>&rsquo;s device-independent output.
+One of its applications is control of a postprocessor
+that transforms the data that are subsequently read by an output driver.
+</p>
+<span id="index-_005c_003f_002c-in-top_002dlevel-diversion"></span>
+<span id="index-top_002dlevel-diversion_002c-and-_005c_003f"></span>
+<span id="index-diversion_002c-top_002dlevel_002c-and-_005c_003f"></span>
+<p>Using the
+<code>\?</code>
+escape sequence in the top-level diversion produces no output at all;
+its argument is simply ignored.
+</p></dd></dl>
+
+<span id="index-_005c_0021_002c-and-output-request"></span>
+<span id="index-output-request_002c-and-_005c_0021"></span>
+<span id="index-output-request_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-output-request"></span>
+<span id="index-mode_002c-copy_002c-and-output-request"></span>
+<dl>
+<dt id="index-_002eoutput">Request: <strong><tt>.output</tt></strong> <em>[<code>&quot;</code>]<span class="roman"><i>character-sequence</i></span></em></dt>
+<dd><span id="index-output"></span>
+<p>Emit
+<var>character-sequence</var>
+directly to
+GNU
+<code>troff</code>&rsquo;s output;
+this usage is similar to that of
+<code>\!</code>
+when it occurs in the top-level diversion.
+</p>
+<p>GNU
+<code>troff</code> removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from
+<var>character-sequence</var>,
+permitting initial embedded spaces in it,
+and reads it to the end of the input line in copy mode.
+Recall <a href="Copy-Mode.html">Copy Mode</a>.
+</p>
+<p><strong>Caution:</strong>
+Use of these features can put syntactically invalid content
+into the formatter&rsquo;s output,
+which
+<code>groff</code>&rsquo;s
+output drivers then fail to process.
+One application of
+<code>output</code>
+and of
+<code>\!</code>
+from the top-level diversion is to pass instructions
+to a postprocessor that interprets
+<var>character-sequence</var>
+and filters it out
+before sending it to the output driver.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002easciify">Request: <strong><tt>.asciify</tt></strong> <em>div</em></dt>
+<dd><span id="index-asciify"></span>
+<span id="index-unformatting-diversions-_0028asciify_0029"></span>
+<span id="index-diversion_002c-unformatting-_0028asciify_0029"></span>
+<span id="index-trin-request_002c-and-asciify"></span>
+<p><em>Unformat</em> the diversion <var>div</var> in a way such that Unicode basic
+Latin (US-<acronym>ASCII</acronym>) characters, characters translated with the
+<code>trin</code> request, space characters, and some escape sequences that
+were formatted and diverted into <var>div</var> are treated like ordinary
+input characters when <var>div</var> is interpolated.  Doing so can be useful
+in conjunction with the <code>writem</code> request.
+</p>
+<p>When transforming a glyph node back into an input sequence
+that demands expression as a special character escape sequence,
+GNU
+<code>troff</code>
+uses the default escape character.
+</p>
+<p><code>asciify</code> can be also used for gross hacks; for example, the
+following sets register&nbsp;<code>n</code> to&nbsp;1.
+</p>
+<div class="example">
+<pre class="example">.tr @.
+.di x
+@nr n 1
+.br
+.di
+.tr @@
+.asciify x
+.x
+</pre></div>
+
+<p><code>asciify</code>
+cannot return all nodes in a diversion to their source equivalents:
+those produced by indexed characters
+(<code>\N</code>),
+for example,
+remain nodes,
+so the result cannot be guaranteed to be a character sequence
+as a macro or string is.
+Give the diversion name as an argument to the
+<code>pm</code>
+request to inspect its contents and node list.
+Glyph parameters such as the type face and size are not preserved;
+use
+<code>unformat</code>
+to achieve that.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eunformat">Request: <strong><tt>.unformat</tt></strong> <em>div</em></dt>
+<dd><span id="index-unformat"></span>
+<p>Like <code>asciify</code>, unformat the diversion <var>div</var>.  However,
+<code>unformat</code> handles only tabs and spaces between words, the latter
+usually arising from spaces or newlines in the input.  Tabs are treated
+as tokens, and spaces become adjustable again.  The vertical sizes of
+lines are not preserved, but glyph information (font, type size, space
+width, and so on) is retained.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Punning-Names.html" accesskey="n" rel="next">Punning Names</a>, Previous: <a href="Traps.html" accesskey="p" rel="prev">Traps</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

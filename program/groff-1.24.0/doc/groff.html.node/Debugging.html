@@ -1,0 +1,638 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Debugging (The GNU troff Manual)</title>
+
+<meta name="description" content="Debugging (The GNU troff Manual)">
+<meta name="keywords" content="Debugging (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Warnings.html" rel="next" title="Warnings">
+<link href="GNU-troff-Internals.html" rel="prev" title="GNU troff Internals">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Debugging"></span><div class="header">
+<p>
+Next: <a href="Implementation-Differences.html" accesskey="n" rel="next">Implementation Differences</a>, Previous: <a href="GNU-troff-Internals.html" accesskey="p" rel="prev">GNU <code>troff</code> Internals</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Debugging-1"></span><h3 class="section">5.38 Debugging</h3>
+<span id="index-debugging"></span>
+
+<p align="right"><i>Standard troff voodoo, just put a power of two backslashes in
+front of it until it works and if you still have problems add a \c.</i>
+&mdash; Ron Natalie
+</p>
+<p>The
+<code>roff</code>
+language family
+is not the easiest to debug,
+in part thanks to its design features
+of recursive interpolation
+and the use of multi-stage pipeline processing
+in the surrounding system.
+Nevertheless there exist several features useful for troubleshooting.
+</p>
+<p>Preprocessors use the <code>lf</code> request to preserve the identity of the
+line numbers and names of input files.
+GNU
+<code>troff</code> emits a variety of error diagnostics
+and supports several categories of warning;
+the output of each category can be selectively enabled or suppressed.
+A trace of the formatter&rsquo;s input processing stack
+can be emitted when errors or warnings occur
+by means of
+GNU
+<code>troff</code>&rsquo;s <samp>-b</samp>
+option,
+or produced on demand with the
+<code>backtrace</code>
+request.
+The <code>tm</code>
+and related requests can be used to emit customized diagnostic messages
+or for instrumentation while troubleshooting.  The <code>ex</code> and
+<code>ab</code> requests cause early termination with successful and error
+exit codes respectively, to halt further processing when continuing
+would be fruitless.
+Examine the state of the formatter with requests that write lists of
+defined names&mdash;macros, strings, and diversions&mdash;colors,
+composite character mappings,
+environments,
+occupied font mounting positions,
+font translations,
+automatic hyphenation codes
+and exceptions,
+registers,
+open streams,
+and page location traps.
+Requests can also disclose
+to the standard error stream
+the internal properties and representations of
+characters and classes,
+macros
+(and strings and diversions),
+and the list of output nodes corresponding to the pending output line.
+Recall <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.
+</p>
+<dl>
+<dt id="index-_002elf">Request: <strong><tt>.lf</tt></strong> <em>input-line-number [[<code>&quot;</code>]<span class="roman"><i>file-identifier</i></span>]</em></dt>
+<dd><span id="index-lf"></span>
+<span id="index-soelim-1"></span>
+<span id="index-multi_002dfile-documents"></span>
+<span id="index-documents_002c-multi_002dfile"></span>
+<span id="index-assign-input-line-number-request-_0028lf_0029"></span>
+<span id="index-input-line-number_002c-assignment_002c-request-_0028lf_0029"></span>
+<span id="index-number_002c-input-line_002c-assignment-request-_0028lf_0029"></span>
+<span id="index-lf-request_002c-arguments-starting-with-double-quote-_0022_002c-and-comments"></span>
+<p>Set the input line number
+(and,
+optionally,
+the file name)
+the formatter uses when reporting diagnostics.
+The argument becomes the input line number of the
+<em>next</em>
+line the formatter reads.
+<var>file-identifier</var>
+is a sequence of ordinary characters and/or spaces.
+GNU
+<code>troff</code> removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from
+<var>file-identifier</var>,
+permitting initial embedded spaces in it,
+and reads it to the end of the input line in copy mode.
+Recall <a href="Copy-Mode.html">Copy Mode</a>.
+</p>
+<p><code>lf</code>&rsquo;s primary purpose is to aid the debugging of documents that
+undergo preprocessing.  Programs like <code>tbl</code> that transform input
+in their own languages into <code>roff</code> requests use it so that any
+diagnostic messages emitted by a subsequent preprocessor or by
+<code>troff</code> correspond to the source document.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002etm">Request: <strong><tt>.tm</tt></strong> <em>terminal-message</em></dt>
+<dd><span id="index-tm"></span>
+</dd><dt id="index-_002etm1">Request: <strong><tt>.tm1</tt></strong> <em>[<code>&quot;</code>]message</em></dt>
+<dd><span id="index-tm1"></span>
+</dd><dt id="index-_002etmc">Request: <strong><tt>.tmc</tt></strong> <em>[<code>&quot;</code>]message</em></dt>
+<dd><span id="index-tmc"></span>
+<span id="index-print-to-the-standard-error-stream-_0028tm_002c-tm1_002c-tmc_0029"></span>
+<span id="index-standard-error-stream_002c-write-to-_0028tm_002c-tm1_002c-tmc_0029"></span>
+<span id="index-stream_002c-standard-error_002c-write-to-_0028tm_002c-tm1_002c-tmc_0029"></span>
+<p>Send
+<var>terminal-message</var>
+to the standard error stream.
+The formatter reads the argument
+to the end of the input line in copy mode
+(recall <a href="Copy-Mode.html">Copy Mode</a>),
+but does
+<em>not</em>
+remove a leading double quote;
+contrast
+<code>tm1</code>.
+</p>
+<p><code>tm1</code>
+removes a leading neutral double quote
+&lsquo;<samp>&quot;</samp>&rsquo;
+from
+<var>message</var>,
+permitting initial embedded spaces in it.
+</p>
+<p><code>tmc</code> works as
+<code>tm1</code>,
+but does not append a newline.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eab">Request: <strong><tt>.ab</tt></strong> <em>[<span class="roman"><i>terminal-message</i></span>]</em></dt>
+<dd><span id="index-ab"></span>
+<span id="index-abort-_0028ab_0029"></span>
+<p>Write any
+<var>terminal-message</var>
+to the standard error stream
+(like
+<code>tm</code>)
+and then abort the formatter;
+that is,
+stop processing and terminate with a failure status.
+Aborting does not flush a partially collected line,
+a potentially significant fact if you&rsquo;re using
+<code>ab</code>
+to &ldquo;bisect&rdquo; a troublesome document or macro definition;
+see the
+<code>fl</code>
+request below.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eex">Request: <strong><tt>.ex</tt></strong></dt>
+<dd><span id="index-ex"></span>
+<span id="index-ex-request_002c-use-in-debugging"></span>
+<span id="index-exiting-_0028ex_0029"></span>
+<p>Exit the formatter;
+that is,
+stop processing and terminate successfully.
+To stop processing only the current file,
+use the
+<code>nx</code>
+request;
+recall <a href="Host-System-Service-Access.html">Host System Service Access</a>.
+</p></dd></dl>
+
+<p>When doing something complicated, it is useful to leave the debugging
+statements in the code and have them turned on by a command-line flag.
+</p>
+<div class="example">
+<pre class="example">.if \n[DB] .tm debugging output
+</pre></div>
+
+<p>To activate such statements, use the <samp>-r</samp> option to set the
+register.
+</p>
+<div class="example">
+<pre class="example">groff -rDB=1 <i>file</i>
+</pre></div>
+
+<p>If you know in advance that there are many errors and no useful output,
+or are interested <em>only</em> in diagnostic output, you can suppress GNU
+<code>troff</code>&rsquo;s formatted output with its <samp>-z</samp> option.
+</p>
+<dl>
+<dt id="index-_002epchar">Request: <strong><tt>.pchar</tt></strong> <em>c <span class="roman">&hellip;</span></em></dt>
+<dd><span id="index-pchar"></span>
+<p>Report,
+to the standard error stream,
+information about each character
+(be it
+ordinary,
+special,
+or indexed)
+or character class &nbsp;<var>c</var>.
+A character defined by a request
+(<code>char</code>,
+<code>fchar</code>,
+<code>fschar</code>,
+or
+<code>schar</code>)
+reports its contents as a <acronym>JSON</acronym>-encoded string,
+but the output is not otherwise in <acronym>JSON</acronym> format.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epcolor">Request: <strong><tt>.pcolor</tt></strong> <em>[<span class="roman"><i>col</i></span> <span class="roman">&hellip;</span>]</em></dt>
+<dd><span id="index-pcolor"></span>
+<span id="index-dumping-defined-colors-_0028pcolor_0029"></span>
+<span id="index-defined-colors_002c-dumping-_0028pcolor_0029"></span>
+<span id="index-colors_002c-defined_002c-dumping-_0028pcolor_0029"></span>
+<p>Report, to the standard error stream, each defined color named
+<var>col</var>, its color space identifier, and channel value assignments,
+or, without arguments, those of all defined colors.  A device&rsquo;s default
+stroke and/or fill colors, &ldquo;default&rdquo;, are not listed since they are
+immutable and their details unknown to the formatter.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epcomposite">Request: <strong><tt>.pcomposite</tt></strong></dt>
+<dd><span id="index-pcomposite"></span>
+<span id="index-dumping-composite-character-mappings-_0028pcomposite_0029"></span>
+<span id="index-composite-characters-mappings_002c-dumping-_0028pcomposite_0029"></span>
+<span id="index-character-mappings_002c-composite_002c-dumping-_0028pcomposite_0029"></span>
+<p>Report,
+to the standard error stream,
+the list of configured composite character mappings.
+Recall the <code>composite</code> request description in <a href="Characters-and-Glyphs.html">Characters and Glyphs</a>.
+The &ldquo;from&rdquo; code point is listed first,
+followed by its &ldquo;to&rdquo; mapping.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epev">Request: <strong><tt>.pev</tt></strong></dt>
+<dd><span id="index-pev"></span>
+<span id="index-dumping-environments-_0028pev_0029"></span>
+<span id="index-environments_002c-dumping-_0028pev_0029"></span>
+<p>Report the state of the current environment followed by that of all
+other environments to the standard error stream.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epfp">Request: <strong><tt>.pfp</tt></strong></dt>
+<dd><span id="index-pfp"></span>
+<span id="index-dumping-occupied-font-mounting-positions-_0028pfp_0029"></span>
+<span id="index-occupied-font-mounting-positions_002c-dumping-_0028pfp_0029"></span>
+<span id="index-font-mounting-positions_002c-occupied_002c-dumping-_0028pfp_0029"></span>
+<span id="index-mounting-positions_002c-occupied-by-fonts_002c-dumping-_0028pfp_0029"></span>
+<span id="index-positions_002c-font-mounting_002c-occupied_002c-dumping-_0028pfp_0029"></span>
+<p>Report,
+to the standard error stream,
+the list of occupied font mounting positions.
+Recall the
+<code>fp</code>
+request description in
+<a href="Selecting-Fonts.html">Selecting Fonts</a>.
+Occupied mounting positions are listed,
+one per line,
+in increasing order,
+followed by the typeface name;
+if the name corresponds to an abstract style,
+the entry ends there.
+Otherwise,
+the name of the font description file
+and the font&rsquo;s &ldquo;internal name&rdquo; datum,
+the meaning of which varies by output device,
+follow.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epftr">Request: <strong><tt>.pftr</tt></strong></dt>
+<dd><span id="index-pftr"></span>
+<span id="index-dumping-font-translations-_0028pftr_0029"></span>
+<span id="index-font-translations_002c-dumping-_0028pftr_0029"></span>
+<span id="index-translations_002c-font_002c-dumping-_0028pftr_0029"></span>
+<p>Report,
+to the standard error stream,
+the list of font translations.
+Recall the <code>ftr</code> request description in <a href="Selecting-Fonts.html">Selecting Fonts</a>.
+The &ldquo;from&rdquo; font identifier is listed first,
+followed by its &ldquo;to&rdquo; translation.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ephw">Request: <strong><tt>.phw</tt></strong></dt>
+<dd><span id="index-phw"></span>
+<span id="index-dumping-hyphenation-exception-words-_0028phw_0029"></span>
+<span id="index-hyphenation-exception-words_002c-dumping-_0028phw_0029"></span>
+<span id="index-exception-words_002c-hyphenation_002c-dumping-_0028phw_0029"></span>
+<p>Report,
+to the standard error stream,
+the list of hyphenation exception words
+associated with the hyphenation language
+selected by the
+<code>hla</code>
+request;
+recall <a href="Manipulating-Hyphenation.html">Manipulating Hyphenation</a>.
+A
+&lsquo;<samp>-</samp>&rsquo;
+marks each hyphenation point.
+A word prefixed with
+&lsquo;<samp>-</samp>&rsquo;
+is not hyphenated at all.
+The report suffixes words
+to which automatic hyphenation applies
+(meaning those defined in a hyphenation pattern file
+rather than with the
+<code>hw</code>
+request)
+with a tab and asterisk
+(<code>*</code>).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epline">Request: <strong><tt>.pline</tt></strong></dt>
+<dd><span id="index-pline"></span>
+<span id="index-dumping-pending-output-line-node-list-_0028pline_0029"></span>
+<span id="index-node-list_002c-of-pending-output-line_002c-dumping-_0028pline_0029"></span>
+<span id="index-output-line_002c-node-list-of-pending_002c-dumping-_0028pline_0029"></span>
+<span id="index-pending-node-list-of-output-line_002c-dumping-_0028pline_0029"></span>
+<p>Report,
+in <acronym>JSON</acronym> syntax to the standard error stream,
+the list of output nodes corresponding to the pending output line.
+In <acronym>JSON</acronym>,
+a pair of empty brackets
+&lsquo;<samp>[ ]</samp>&rsquo;
+represents an empty list.
+A
+<em>pending</em>
+output line has not yet undergone adjustment,
+and lacks a line number and margin character
+(all as applicable).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epm">Request: <strong><tt>.pm</tt></strong> <em>[<span class="roman"><i>name</i></span> <span class="roman">&hellip;</span>]</em></dt>
+<dd><span id="index-pm"></span>
+<span id="index-dumping-macros_002c-strings_002c-or-diversions-_0028pm_0029"></span>
+<span id="index-dumping-symbol-table-_0028pm_0029"></span>
+<span id="index-symbol-table_002c-dumping-_0028pm_0029"></span>
+<span id="index-macro_002c-dumping-_0028pm_0029"></span>
+<span id="index-string_002c-dumping-_0028pm_0029"></span>
+<span id="index-diversion_002c-dumping-_0028pm_0029"></span>
+<p>Report,
+to the standard error stream,
+the <acronym>JSON</acronym>-encoded name and contents of each macro,
+string,
+or diversion
+<var>name</var>,
+or,
+without arguments,
+the names of all defined macros,
+strings,
+and diversions and their lengths in characters or nodes.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epnr">Request: <strong><tt>.pnr</tt></strong> <em>[<span class="roman"><i>reg</i></span> <span class="roman">&hellip;</span>]</em></dt>
+<dd><span id="index-pnr"></span>
+<span id="index-dumping-registers-_0028pnr_0029"></span>
+<span id="index-registers_002c-dumping-_0028pnr_0029"></span>
+<p>Report the name and value and,
+if its type is numeric,
+the autoincrement amount and assigned format of each register
+<var>reg</var>,
+or,
+without arguments,
+those of all defined registers,
+to the standard error stream.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epstream">Request: <strong><tt>.pstream</tt></strong></dt>
+<dd><span id="index-pstream"></span>
+<span id="index-dumping-open-streams-_0028pstream_0029"></span>
+<span id="index-open-streams_002c-dumping-_0028pstream_0029"></span>
+<span id="index-streams_002c-open_002c-dumping-_0028pstream_0029"></span>
+<p>Report,
+in
+<acronym>JSON</acronym>
+syntax to the standard error stream,
+the list of open streams,
+including the name of each open stream,
+the name of the file backing it,
+and its mode
+(writing or appending).
+In
+<acronym>JSON</acronym>,
+a pair of empty brackets
+&lsquo;<samp>[ ]</samp>&rsquo;
+represents an empty list.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epwh">Request: <strong><tt>.pwh</tt></strong></dt>
+<dd><span id="index-pwh"></span>
+<span id="index-dumping-page-location-traps-_0028pwh_0029"></span>
+<span id="index-listing-page-location-traps-_0028pwh_0029"></span>
+<span id="index-traps_002c-page-location_002c-dumping-_0028pwh_0029"></span>
+<span id="index-traps_002c-page-location_002c-listing-_0028pwh_0029"></span>
+<p>Report the names and positions of all page location traps to the
+standard error stream.  GNU <code>troff</code> reports empty slots in the
+list, where a trap had been planted but subsequently (re)moved, because
+they can affect the visibility of subsequently planted traps.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002efl">Request: <strong><tt>.fl</tt></strong></dt>
+<dd><span id="index-fl"></span>
+<span id="index-flush-pending-output-line-_0028fl_0029"></span>
+<span id="index-output-line_002c-flush-pending-_0028fl_0029"></span>
+<span id="index-pending-output-line_002c-flush-_0028fl_0029"></span>
+<span id="index-interactive-use-of-GNU-troff"></span>
+<span id="index-troff_002c-interactive-use-of"></span>
+<span id="index-troff_002c-GNU_002c-interactive-use-of"></span>
+<p>Break the line and flush any pending output line immediately.
+The effect is the same as the
+<code>br</code>
+request unless the no-break control character is used;
+&lsquo;<samp>'br</samp>&rsquo;
+does nothing,
+whereas
+&lsquo;<samp>'fl</samp>&rsquo;
+writes the pending output line
+without further updating the drawing position.
+However,
+the <em>reported</em> horizontal drawing position is still
+reckoned from the start of the input line.
+</p>
+<div class="example">
+<pre class="example">foo \n(hp
+bar \c
+'fl
+\n(hp baz \n(hp
+    &rArr; foo 96 bar 0 baz 144
+</pre></div>
+
+<p>Flush timing is most easily perceived in device-independent output.
+</p>
+<p>Use of
+&lsquo;<samp>'fl</samp>&rsquo;
+may be desirable immediately prior to an
+<code>ab</code>
+request
+when troubleshooting a document or macro definition line by line,
+because a significant number of formatting operations
+can accumulate on a partially collected output line,
+misleading you about &ldquo;where&rdquo; the abort &ldquo;really&rdquo; took place.
+</p>
+<p>Historically, <code>fl</code> was used with <code>rd</code> to produce interactive
+<code>nroff</code> documents.  GNU <code>troff</code> does not easily support
+that mode of operation, because its output for terminals is first
+prepared in device-independent format, which <code>grotty</code> renders a
+page at a time.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ebacktrace">Request: <strong><tt>.backtrace</tt></strong></dt>
+<dd><span id="index-backtrace"></span>
+<span id="index-backtrace-of-input-stack-_0028backtrace_0029"></span>
+<span id="index-input-stack_002c-backtrace-_0028backtrace_0029"></span>
+<p>Write the state of the input stack to the standard error stream.
+</p>
+<p>Consider the following in a file <samp>test</samp>.
+</p>
+<div class="example">
+<pre class="example">.de xxx
+.  backtrace
+..
+.de yyy
+.  xxx
+..
+.
+.yyy
+    error&rarr; troff: backtrace: 'test':2: macro 'xxx'
+    error&rarr; troff: backtrace: 'test':5: macro 'yyy'
+    error&rarr; troff: backtrace: file 'test':8
+</pre></div>
+
+<p>The <samp>-b</samp> option of GNU <code>troff</code> causes a backtrace to be
+generated on each error or warning.  Some warnings have to be enabled;
+see <a href="Warnings.html">Warnings</a>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005bslimit_005d">Register: <strong><tt>\n[slimit]</tt></strong></dt>
+<dd><span id="index-slimit"></span>
+<span id="index-input-stack_002c-setting-limit"></span>
+<p>If greater than&nbsp;0, sets the maximum quantity of objects on GNU
+<code>troff</code>&rsquo;s internal input stack.  If less than or equal to&nbsp;0,
+there is no limit: recursion can continue until program memory is
+exhausted.  The default is 1,000.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ewarnscale">Request: <strong><tt>.warnscale</tt></strong> <em>scaling-unit</em></dt>
+<dd><span id="index-warnscale"></span>
+<p>Set the scaling unit used in certain warnings (one of
+&lsquo;<samp>u</samp>&rsquo;,
+&lsquo;<samp>i</samp>&rsquo;,
+&lsquo;<samp>c</samp>&rsquo;,
+&lsquo;<samp>p</samp>&rsquo;,
+and
+&lsquo;<samp>P</samp>&rsquo;;
+default:
+&lsquo;<samp>i</samp>&rsquo;).
+Ignored on
+<code>nroff</code>-mode
+output devices,
+for which these diagnostics report the vertical page location in lines,
+and the horizontal page location in ens.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002espreadwarn">Request: <strong><tt>.spreadwarn</tt></strong> <em>[<span class="roman"><i>limit</i></span>]</em></dt>
+<dd><span id="index-spreadwarn"></span>
+<p>Emit a <code>break</code> warning if the additional space inserted for each
+space between words in an output line adjusted to both margins with
+&lsquo;<samp>.ad&nbsp;b</samp>&rsquo;<!-- /@w --> is larger than or equal to <var>limit</var>.  A negative
+value is treated as zero; an absent argument toggles the warning on and
+off without changing <var>limit</var>.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.
+At startup, <code>spreadwarn</code> is inactive and <var>limit</var> is 3m.
+</p>
+<p>For example,
+</p>
+<div class="example">
+<pre class="example">.spreadwarn 0.2m
+</pre></div>
+
+<p>causes a warning if
+<code>break</code>
+warnings are not suppressed and
+GNU
+<code>troff</code> must add
+0.2m
+or more for each inter-word space in a line.
+See <a href="Warnings.html">Warnings</a>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ewarn">Request: <strong><tt>.warn</tt></strong> <em>[<span class="roman"><i>n</i></span>]</em></dt>
+<dd><span id="index-warn"></span>
+</dd><dt id="index-_005cn_005b_002ewarn_005d">Register: <strong><tt>\n[.warn]</tt></strong></dt>
+<dd><span id="index-_002ewarn-1"></span>
+<span id="index-warning-level-_0028warn_0029"></span>
+<p>Select the categories, or &ldquo;types&rdquo;, of reported warnings.
+<var>n</var>&nbsp;is the sum of the numeric codes associated with each
+warning category that is to be enabled; all other categories are
+disabled.  The categories and their associated codes are listed in
+<a href="Warnings.html">Warnings</a>.  For example, &lsquo;<samp>.warn 0</samp>&rsquo; disables all warnings, and
+&lsquo;<samp>.warn 1</samp>&rsquo; disables all warnings except those about missing glyphs.
+If no argument is given, all warning categories are enabled.
+</p>
+<p>The read-only register <code>.warn</code> contains the sum of the numeric
+codes of enabled warning categories.
+</p></dd></dl>
+
+<span id="index-warnings"></span>
+<p>GNU
+<code>troff</code> has command-line options for reporting warnings
+(<samp>-w</samp>),
+suppressing them
+(<samp>-W</samp>),
+and issuing backtraces
+(<samp>-b</samp>)
+when a warning or an error occurs.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Warnings.html" accesskey="1">Warnings</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Implementation-Differences.html" accesskey="n" rel="next">Implementation Differences</a>, Previous: <a href="GNU-troff-Internals.html" accesskey="p" rel="prev">GNU <code>troff</code> Internals</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

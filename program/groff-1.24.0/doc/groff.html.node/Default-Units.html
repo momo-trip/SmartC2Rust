@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Default Units (The GNU troff Manual)</title>
+
+<meta name="description" content="Default Units (The GNU troff Manual)">
+<meta name="keywords" content="Default Units (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Measurements.html" rel="up" title="Measurements">
+<link href="Numeric-Expressions.html" rel="next" title="Numeric Expressions">
+<link href="Motion-Quanta.html" rel="prev" title="Motion Quanta">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Default-Units"></span><div class="header">
+<p>
+Previous: <a href="Motion-Quanta.html" accesskey="p" rel="prev">Motion Quanta</a>, Up: <a href="Measurements.html" accesskey="u" rel="up">Measurements</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Default-Units-1"></span><h4 class="subsection">5.3.2 Default Units</h4>
+<span id="index-default-units"></span>
+<span id="index-units_002c-default"></span>
+
+<p>A general-purpose register
+(one created or updated with the
+<code>nr</code>
+request<a id="DOCF42" href="groff.html_fot.html#FOOT42"><sup>42</sup></a>)
+is implicitly dimensionless,
+or reckoned in basic units if interpreted in a measurement context.
+But it is convenient for many requests and escape sequences
+to infer a scaling unit for an argument if none is specified.
+An explicit scaling unit
+(not after a closing parenthesis)
+can override an undesirable default.
+Effectively,
+the default unit is suffixed to the expression
+if a scaling unit is not already present.
+GNU
+<code>troff</code>&rsquo;s use of integer arithmetic
+should also be kept in mind.<a id="DOCF43" href="groff.html_fot.html#FOOT43"><sup>43</sup></a>
+</p>
+<p>The <code>ll</code> request interprets its argument in ems by default.
+Consider several attempts to set a line length of 3.5&nbsp;inches when
+the type size is 10&nbsp;points on a terminal device with a resolution
+of 240 basic units and horizontal motion quantum of 24.  Some
+expressions become zero; the request clamps them to that quantum.
+</p>
+<div class="example">
+<pre class="example">.ll 3.5i      \&quot; 3.5i (= 840u)
+.ll 7/2       \&quot; 7u/2u -&gt; 3u -&gt; 3m -&gt; 0, clamped to 24u
+.ll (7 / 2)u  \&quot; 7u/2u -&gt; as above
+.ll 7/2i      \&quot; 7u/2i -&gt; 7u/480u -&gt; 0 -&gt; as above
+.ll 7i/2      \&quot; 7i/2u -&gt; 1680u/2m -&gt; 1680u/24u -&gt; 35u
+.ll 7i/2u     \&quot; 3.5i (= 840u)
+</pre></div>
+
+<p><span id="index-measurements_002c-specifying-safely"></span>
+The safest way to specify measurements is to attach a scaling unit.  To
+multiply or divide by a dimensionless quantity, use &lsquo;<samp>u</samp>&rsquo; as its
+scaling unit.
+</p>
+
+
+
+
+
+</body>
+</html>

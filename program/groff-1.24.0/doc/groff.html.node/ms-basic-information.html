@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ms basic information (The GNU troff Manual)</title>
+
+<meta name="description" content="ms basic information (The GNU troff Manual)">
+<meta name="keywords" content="ms basic information (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms-Introduction.html" rel="up" title="ms Introduction">
+<link href="ms-Document-Structure.html" rel="next" title="ms Document Structure">
+<link href="ms-Introduction.html" rel="prev" title="ms Introduction">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="ms-basic-information"></span><div class="header">
+<p>
+Up: <a href="ms-Introduction.html" accesskey="u" rel="up">ms Introduction</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Basic-information"></span><h4 class="subsubsection">4.6.1.1 Basic information</h4>
+
+<p>Prepare an
+<samp>ms</samp>
+document
+with your preferred text editor.
+Call an
+<samp>ms</samp>
+macro early in the document to initialize the package.
+A
+<em>macro</em>
+is a formatting instruction to
+<samp>ms</samp>.
+Put a macro call on a line by itself with a dot before its name.
+Use
+&lsquo;<samp>.PP</samp>&rsquo;
+if you want your paragraph&rsquo;s first line indented,
+or
+&lsquo;<samp>.LP</samp>&rsquo;
+if you don&rsquo;t.
+Then type text
+normally.
+It is a good practice to start each sentence on a new line,
+or to put two spaces after sentence-ending punctuation,
+so that the formatter knows where the sentence boundaries are.
+You can separate paragraphs with further paragraphing macros,
+or with blank lines,
+and you can indent with tabs.
+When you need one of the features mentioned earlier
+(see <a href="ms.html">ms</a>),
+return to this subsection.
+</p>
+<p>Format the document with the
+<code>groff</code>
+command.
+<code>nroff</code>
+can be useful for previewing.
+</p>
+<div class="example">
+<pre class="example">$ editor radical.ms # vim, emacs, nano, &hellip;
+$ nroff -ww -z -ms radical.ms # check for errors
+$ nroff -ms radical.ms | less -R
+$ groff -T ps -ms radical.ms &gt; radical.ps
+$ see radical.ps # or your favorite PDF viewer
+</pre></div>
+
+<p>Our <samp>radical.ms</samp> document might look like this.
+</p>
+<div class="example">
+<pre class="example">.LP
+Radical novelties are so disturbing that they tend to be
+suppressed or ignored, to the extent that even the
+possibility of their existence in general is more often
+denied than admitted.
+
+&rarr;That's what Dijkstra said, anyway.
+</pre></div>
+
+<p><samp>ms</samp> exposes many aspects of document layout to user control via
+<code>groff</code>&rsquo;s <em>registers</em> and <em>strings</em>, which store numbers
+and text, respectively.  Measurements in <code>groff</code> are expressed with
+a suffix called a <em>scaling unit</em>.
+</p>
+<dl compact="compact">
+<dt><code>i</code></dt>
+<dd><p>inches
+</p>
+</dd>
+<dt><code>c</code></dt>
+<dd><p>centimeters
+</p>
+</dd>
+<dt><code>p</code></dt>
+<dd><p>points (1/72 inch)
+</p>
+</dd>
+<dt><code>P</code></dt>
+<dd><p>picas (1/6 inch)
+</p>
+</dd>
+<dt><code>v</code></dt>
+<dd><p>vees; current vertical spacing
+</p>
+</dd>
+<dt><code>m</code></dt>
+<dd><p>ems; width of an &ldquo;M&rdquo; in the current font
+</p>
+</dd>
+<dt><code>n</code></dt>
+<dd><p>ens; one-half em (same as <code>m</code> on terminals)
+</p></dd>
+</dl>
+
+<p>Set registers with the <code>nr</code> request and strings with the <code>ds</code>
+request.  <em>Requests</em> are like macro calls; they go on lines by
+themselves and start with the <em>control character</em>, a dot (<code>.</code>).
+The difference is that they directly instruct the formatter program,
+rather than the macro package.  We&rsquo;ll discuss a few as applicable.  It
+is wise to specify a scaling unit when setting any register that
+represents a length, size, or distance.
+</p>
+<div class="example">
+<pre class="example">.nr PS 10.5p \&quot; Use 10.5-point type.
+.ds FAM P    \&quot; Use Palatino font family.
+</pre></div>
+
+<p>In the foregoing,
+we see that
+<code>\&quot;</code>
+begins a comment.
+This is an example of an
+<em>escape sequence</em>,
+the other kind of formatting instruction.
+Escape sequences can appear almost anywhere.
+They begin with the escape character
+(<code>\</code>)
+and are followed by at least one more character.
+<samp>ms</samp>
+documents
+tend to use only a few of
+<code>groff</code>&rsquo;s
+many requests and escape sequences;
+see <a href="Request-Index.html">Request Index</a> and <a href="Escape-Sequence-Index.html">Escape Sequence Index</a> or the
+<cite>groff<span class="roman">(7)</span></cite>
+man page for complete lists.
+</p>
+<dl compact="compact">
+<dt><code>\&quot;</code></dt>
+<dd><p>Begin comment; ignore remainder of line.
+</p>
+</dd>
+<dt><code>\n[<var>reg</var>]</code></dt>
+<dd><p>Interpolate value of register <var>reg</var>.
+</p>
+</dd>
+<dt><code>\n<var>r</var></code></dt>
+<dd><p>abbreviation of <code>\n[<var>r</var>]</code>;
+the name <var>r</var> must be only one character
+</p>
+</dd>
+<dt><code>\*[<var>str</var>]</code></dt>
+<dd><p>Interpolate contents of string <var>str</var>.
+</p>
+</dd>
+<dt><code>\*<var>s</var></code></dt>
+<dd><p>abbreviation of <code>\*[<var>s</var>]</code>; the name <var>s</var> must be only one
+character
+</p>
+</dd>
+<dt><code>\[<var>char</var>]</code></dt>
+<dd><p>Interpolate glyph of special character named <var>char</var>.
+</p>
+</dd>
+<dt><code>\&amp;</code></dt>
+<dd><p>dummy character
+</p>
+</dd>
+<dt><code>\~</code></dt>
+<dd><p>Insert an unbreakable space that is adjustable like a normal space.
+</p>
+</dd>
+<dt><code>\|</code></dt>
+<dd><p>Move horizontally by one-sixth em (&ldquo;thin space&rdquo;).
+</p></dd>
+</dl>
+
+<p>Prefix any words that start with a dot &lsquo;<samp>.</samp>&rsquo; or neutral apostrophe
+&lsquo;<samp>'</samp>&rsquo; with <code>\&amp;</code> if they are at the beginning of an input line
+(or might become that way in editing) to prevent them from being
+interpreted as macro calls or requests.  Suffix &lsquo;<samp>.</samp>&rsquo;, &lsquo;<samp>?</samp>&rsquo;, and
+&lsquo;<samp>!</samp>&rsquo; with <code>\&amp;</code> when needed to cancel end-of-sentence detection.
+</p>
+<div class="example">
+<pre class="example">My exposure was \&amp;.5 to \&amp;.6 Sv of neutrons, said Dr.\&amp;
+Wallace after the criticality incident.
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Up: <a href="ms-Introduction.html" accesskey="u" rel="up">ms Introduction</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

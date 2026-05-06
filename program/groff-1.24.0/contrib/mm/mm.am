@@ -1,0 +1,168 @@
+# Copyright 1991-2020 Free Software Foundation, Inc.
+#
+# This file is part of mm, a reimplementation of the Documenter's
+# Workbench (DWB) troff memorandum macro package for use with GNU troff.
+#
+# mm is distributed with groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+mm_srcdir = $(top_srcdir)/contrib/mm
+
+bin_SCRIPTS += mmroff
+
+man1_MANS += contrib/mm/mmroff.1
+man7_MANS += \
+  contrib/mm/groff_mm.7 \
+  contrib/mm/groff_mmse.7
+
+# Files installed in $(tmacdir)/mm
+MMFILES = \
+  contrib/mm/mm/0.MT \
+  contrib/mm/mm/5.MT \
+  contrib/mm/mm/4.MT \
+  contrib/mm/mm/ms.cov \
+  contrib/mm/mm/se_ms.cov
+mmdir = $(tmacdir)/mm
+dist_mm_DATA = $(MMFILES)
+
+# Files installed in $(tmacdir)
+tmacmmdir = $(tmacdir)
+dist_tmacmm_DATA = contrib/mm/refer-mm.tmac
+
+MMEXAMPLEFILES=\
+  contrib/mm/examples/letter.mm \
+  contrib/mm/examples/memorandum.mm \
+  contrib/mm/examples/story.mm
+
+mmexampledir=$(exampledir)/mm
+dist_mmexample_DATA = $(MMEXAMPLEFILES)
+
+# If we created rendered versions of these, we'd need this dependency.
+# $(MMEXAMPLEFILES): $(TMAC_PACKAGE_MM)
+
+EXTRA_DIST += \
+  contrib/mm/COPYRIGHT \
+  contrib/mm/ChangeLog \
+  contrib/mm/examples \
+  contrib/mm/Makefile.sim \
+  contrib/mm/mm \
+  contrib/mm/NOTES \
+  contrib/mm/README \
+  contrib/mm/groff_mm.7.man \
+  contrib/mm/groff_mmse.7.man \
+  contrib/mm/mmroff.1.man \
+  contrib/mm/mmroff.pl
+
+mm_TESTS = \
+  contrib/mm/tests/Captc-string-translates.sh \
+  contrib/mm/tests/LB-mark-or-format-argument-works.sh \
+  contrib/mm/tests/LT-BL-spaces-before-date.sh \
+  contrib/mm/tests/LT-SP-AU-without-AT-works.sh \
+  contrib/mm/tests/LT-SP-multi-word-LO-SJ-works.sh \
+  contrib/mm/tests/LT-should-space-after-inside-address.sh \
+  contrib/mm/tests/ML-accepts-empty-second-argument.sh \
+  contrib/mm/tests/ML-honors-third-argument.sh \
+  contrib/mm/tests/ML-marks-work.sh \
+  contrib/mm/tests/MT-1-reports-all-TM-numbers.sh \
+  contrib/mm/tests/MT-5-includes-AT-in-SG.sh \
+  contrib/mm/tests/Np-register-works.sh \
+  contrib/mm/tests/P-indentation-works.sh \
+  contrib/mm/tests/PH-PF-OH-OF-EH-EF-work.sh \
+  contrib/mm/tests/VL-accommodates-overlong-mark.sh \
+  contrib/mm/tests/date-localization-works.sh \
+  contrib/mm/tests/footnote-area-layout-is-correct.sh \
+  contrib/mm/tests/flush-long-displays-at-end-of-input.sh \
+  contrib/mm/tests/indexing-works.sh \
+  contrib/mm/tests/letter-with-bottom-block-works.sh \
+  contrib/mm/tests/letters-format-correctly.sh \
+  contrib/mm/tests/lists-indent-correctly.sh \
+  contrib/mm/tests/marks-in-nested-ML-lists-are-correct.sh \
+  contrib/mm/tests/memoranda-format-correctly.sh \
+  contrib/mm/tests/ms-cover-sheet-robust-to-missing-AF.sh \
+  contrib/mm/tests/mse_has-sufficient-footnote-space.sh \
+  contrib/mm/tests/nP-works.sh \
+  contrib/mm/tests/place-equation-labels-correctly-in-displays.sh \
+  contrib/mm/tests/remove-stale-bib-entry-data.sh \
+  contrib/mm/tests/short-pages-do-not-overflow-stack.sh \
+  contrib/mm/tests/toc-captions-ident-correctly.sh \
+  contrib/mm/tests/vertical-margins-are-correct.sh
+TESTS += $(mm_TESTS)
+EXTRA_DIST += \
+  $(mm_TESTS) \
+  contrib/mm/tests/artifacts/60657.ref \
+  contrib/mm/tests/artifacts/letter.BL \
+  contrib/mm/tests/artifacts/letter.FB \
+  contrib/mm/tests/artifacts/letter.SB \
+  contrib/mm/tests/artifacts/letter.SP \
+  contrib/mm/tests/artifacts/letter_with_bottom_block \
+  contrib/mm/tests/artifacts/memorandum.0 \
+  contrib/mm/tests/artifacts/memorandum.1 \
+  contrib/mm/tests/artifacts/memorandum.2 \
+  contrib/mm/tests/artifacts/memorandum.3 \
+  contrib/mm/tests/artifacts/memorandum.4 \
+  contrib/mm/tests/artifacts/memorandum.5 \
+  contrib/mm/tests/artifacts/memorandum.custom
+
+mmroff: $(mm_srcdir)/mmroff.pl
+	$(AM_V_GEN)$(SED) \
+	  -e 's;[@]PERL[@];$(PERL);' \
+	  -e 's;[@]VERSION[@];$(VERSION);' \
+	  $(mm_srcdir)/mmroff.pl \
+	  >$@.tmp \
+	  && chmod +x $@.tmp \
+	  && mv $@.tmp $@
+
+# special installation rules for m.tmac, mse.tmac, mmse.tmac, mm.tmac
+install-data-local: install_mm
+install_mm:
+	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
+	-test -d $(DESTDIR)$(mmdir) || $(mkinstalldirs) $(DESTDIR)$(mmdir)
+	$(RM) $(DESTDIR)$(tmacdir)/tmac.$(tmac_m_prefix)m
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)m.tmac
+	$(INSTALL_DATA) $(mm_srcdir)/m.tmac \
+	  $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)m.tmac
+	$(SED) -e "s;^.mso m.tmac;.mso $(tmac_m_prefix)m.tmac;g" \
+	  $(mm_srcdir)/mse.tmac > $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mse.tmac
+	@$(SED) -e "s;^.mso mse.tmac;.mso $(tmac_m_prefix)mse.tmac;g" \
+	  $(mm_srcdir)/mmse.tmac > $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mmse.tmac
+	@$(SED) -e "s;^.mso m.tmac;.mso $(tmac_m_prefix)m.tmac;g" \
+	  $(mm_srcdir)/mm.tmac > $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mm.tmac
+uninstall-local: uninstall_mm
+uninstall_mm:
+	if test -d $(DESTDIR)$(mmexampledir); then \
+	  rmdir $(DESTDIR)$(mmexampledir); \
+	fi
+	$(RM) $(DESTDIR)$(tmacdir)/tmac.$(tmac_m_prefix)m
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)m.tmac
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mm.tmac
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mse.tmac
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mmse.tmac
+	-rmdir $(DESTDIR)$(tmacdir)/mm
+	-rmdir $(DESTDIR)$(tmacdir)
+
+# Special distribution rule: we copy all .tmac files from contrib/mm
+dist-hook: dist_mm
+dist_mm:
+	chmod u+w $(distdir)/contrib/mm/
+	for i in $(mm_srcdir)/*.tmac; do \
+	  cp -f $$i $(distdir)/contrib/mm/; \
+	done
+
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

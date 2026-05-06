@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Tabs and Fields (The GNU troff Manual)</title>
+
+<meta name="description" content="Tabs and Fields (The GNU troff Manual)">
+<meta name="keywords" content="Tabs and Fields (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Leaders.html" rel="next" title="Leaders">
+<link href="Manipulating-Spacing.html" rel="prev" title="Manipulating Spacing">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Tabs-and-Fields"></span><div class="header">
+<p>
+Next: <a href="Character-Translations.html" accesskey="n" rel="next">Character Translations</a>, Previous: <a href="Manipulating-Spacing.html" accesskey="p" rel="prev">Manipulating Spacing</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Tabs-and-Fields-1"></span><h3 class="section">5.12 Tabs and Fields</h3>
+<span id="index-tabs_002c-and-fields"></span>
+<span id="index-fields_002c-and-tabs"></span>
+
+<span id="index-tab-character-encoding"></span>
+<p>A tab character (code point&nbsp;9) causes a horizontal movement to the
+next tab stop, if any.
+</p>
+<dl>
+<dt id="index-_005ct-1">Escape&nbsp;sequence: <strong><tt>\t</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005ct"></span>
+<span id="index-tab-character_002c-non_002dinterpreted-_0028_005ct_0029"></span>
+<span id="index-character_002c-tab_002c-non_002dinterpreted-_0028_005ct_0029"></span>
+<span id="index-_005ct_002c-and-copy-mode"></span>
+<span id="index-copy-mode_002c-and-_005ct"></span>
+<span id="index-mode_002c-copy_002c-and-_005ct"></span>
+<p>Interpolate a tab in copy mode; see <a href="Copy-Mode.html">Copy Mode</a>.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eta">Request: <strong><tt>.ta</tt></strong> <em>[[<span class="roman"><i>n1</i></span> <span class="roman"><i>n2</i></span> &hellip; <span class="roman"><i>nn</i></span> ]<tt>T</tt> <span class="roman"><i>r1</i></span> <span class="roman"><i>r2</i></span> &hellip; <span class="roman"><i>rn</i></span>]</em></dt>
+<dd><span id="index-ta"></span>
+</dd><dt id="index-_005cn_005b_002etabs_005d">Register: <strong><tt>\n[.tabs]</tt></strong></dt>
+<dd><span id="index-_002etabs"></span>
+<p>Set tab stop positions.  This request takes a series of tab specifiers
+as arguments (optionally divided into two groups with the letter
+&lsquo;<samp>T</samp>&rsquo;) that indicate where each tab stop is to be, overriding any
+previous settings.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.  Invoking
+<code>ta</code> without arguments removes all tab stops.
+<span id="index-default-tab-stops"></span>
+<span id="index-tab-stops_002c-default"></span>
+GNU <code>troff</code>&rsquo;s startup value is &lsquo;<samp>T&nbsp;0.5i</samp>&rsquo;<!-- /@w -->.
+</p>
+<p>Tab stops can be specified absolutely&mdash;as distances from the left
+margin.  The following example sets six tab stops, one every inch.
+</p>
+<div class="example">
+<pre class="example">.ta 1i 2i 3i 4i 5i 6i
+</pre></div>
+
+<p>Tab stops can also be specified using a leading &lsquo;<samp>+</samp>&rsquo;, which means
+that the specified tab stop is set relative to the previous tab stop.
+For example, the following is equivalent to the previous example.
+</p>
+<div class="example">
+<pre class="example">.ta 1i +1i +1i +1i +1i +1i
+</pre></div>
+
+<p>GNU <code>troff</code> supports an extended syntax to specify repeating tab
+stops.  These stops appear after a &lsquo;<samp>T</samp>&rsquo; argument.  Their values are
+always taken as distances relative to the previous tab stop.  This is
+the idiomatic way to specify tab stops at equal intervals in
+<code>groff</code>.  The following is, yet again, the same as the previous
+examples.  It does more, in fact, since it defines an infinite number of
+tab stops at one-inch intervals.
+</p>
+<div class="example">
+<pre class="example">.ta T 1i
+</pre></div>
+
+<p>Now we are ready to interpret the full syntax given above.  The
+<code>ta</code> request sets tabs at positions <var>n1</var>, <var>n2</var>, &hellip;,
+<var>nn</var>, then at <var>nn</var>+<var>r1</var>, <var>nn</var>+<var>r2</var>, &hellip;,
+<var>nn</var>+<var>rn</var>, then at <var>nn</var>+<var>rn</var>+<var>r1</var>,
+<var>nn</var>+<var>rn</var>+<var>r2</var>, &hellip;, <var>nn</var>+<var>rn</var>+<var>rn</var>, and so
+on.  For example, &lsquo;<samp>4c +6c T 3c 5c 2c</samp>&rsquo; is equivalent to &lsquo;<samp>4c 10c
+13c 18c 20c 23c 28c 30c &hellip;</samp>&rsquo;.
+</p>
+<p>Text between two tab stops may be aligned to the right or left, or
+centered.  This alignment is determined by appending &lsquo;<samp>R</samp>&rsquo;, &lsquo;<samp>L</samp>&rsquo;,
+or &lsquo;<samp>C</samp>&rsquo; to the tab specifier.  The default is &lsquo;<samp>L</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.ta 1i 2iC 3iR
+</pre></div>
+
+<p>The beginning of an output line is not a tab stop; the text that begins
+an output line is placed according to the configured alignment and
+indentation; see <a href="Manipulating-Filling-and-Adjustment.html">Manipulating Filling and Adjustment</a> and <a href="Line-Layout.html">Line Layout</a>.
+</p>
+<p>A tab stop becomes a non-breakable horizontal movement that cannot be
+adjusted.
+</p>
+<div class="example">
+<pre class="example">.ll 2i
+.ta T 1i
+a&rarr;b&rarr;c
+    error&rarr; warning: cannot adjust line; overset by 1n
+    &rArr; a         b         c
+</pre></div>
+
+<p>The above creates a single output line that is a bit longer than two
+inches.  Now consider the following.
+</p>
+<div class="example">
+<pre class="example">.ll 2i
+.ta T 1i
+a&rarr;b c&rarr;d
+    error&rarr; warning: cannot adjust line; underset by 9n
+    &rArr; a         b
+    &rArr; c       d
+</pre></div>
+
+<p>GNU <code>troff</code> first converts the line&rsquo;s tab stops into unbreakable
+horizontal movements, then breaks after &lsquo;<samp>b</samp>&rsquo;.  This usually isn&rsquo;t
+what you want.
+</p>
+<p>Superfluous tab characters&mdash;those that do not correspond to a tab
+stop&mdash;are ignored except for the first, which delimits the characters
+belonging to the last tab stop for right-alignment or centering.
+</p>
+<div class="example">
+<pre class="example">.nf
+.ta 2i 4iR
+\l'4i\&amp;-'
+foo&rarr;bar
+foo&rarr;bar&rarr;baz
+foo&rarr;bar&rarr;bazqux
+foo&rarr;bar&rarr;baz&rarr;qux
+    &rArr; ----------------------------------------
+    &rArr; foo                 bar
+    &rArr; foo                 bar              baz
+    &rArr; foo                 bar           bazqux
+    &rArr; foo                 bar              bazqux
+</pre></div>
+
+<p>We see that &ldquo;bar&rdquo; is between the first and second tab stops, not the
+second and (nonexistent) third.  The first &ldquo;baz&rdquo; is right-aligned
+within the second tab stop.  The second is catenated with &ldquo;qux&rdquo; and
+right-aligned within it.  The third &ldquo;baz&rdquo; is aligned like the first
+because the tab character after it determines the right boundary of the
+tab stop.
+</p>
+<p>Tab stops are associated with the environment (see <a href="Environments.html">Environments</a>).
+</p>
+<span id="index-tab-stop-settings-register-_0028_002etabs_0029"></span>
+<span id="index-_002eS-register_002c-Plan-9-name-for-_002etabs"></span>
+<span id="index-_002etabs-register_002c-Plan-9-name-for-_0028_002eS_0029"></span>
+<p>The read-only register <code>.tabs</code> contains a string
+representation of the current tab settings suitable for use as an
+argument to the <code>ta</code> request.<a id="DOCF102" href="groff.html_fot.html#FOOT102"><sup>102</sup></a>
+</p>
+<div class="example">
+<pre class="example">.ds tab-string \n[.tabs]
+\*[tab-string]
+    &rArr; T120u
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002etc">Request: <strong><tt>.tc</tt></strong> <em>[<span class="roman"><i>c</i></span>]</em></dt>
+<dd><span id="index-tc"></span>
+<span id="index-tab-repetition-character-_0028tc_0029"></span>
+<span id="index-character_002c-tab-repetition-_0028tc_0029"></span>
+<span id="index-glyph_002c-tab-repetition-_0028tc_0029"></span>
+<p>Set the tab repetition character to the ordinary or special character
+<var>c</var>; normally, no glyph is written when moving to a tab stop (and
+some output devices may output space characters to achieve this motion).
+A <em>tab repetition character</em> causes the formatter to write as many
+instances of <var>c</var> as are necessary to occupy the interval from the
+horizontal drawing position to the next tab stop.  With no argument, GNU
+<code>troff</code> reverts to the default behavior.  The tab repetition
+character is associated with the environment (see <a href="Environments.html">Environments</a>).
+Only a single character of <var>c</var> is recognized; any excess is ignored.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002elinetabs">Request: <strong><tt>.linetabs</tt></strong> <em>[<span class="roman"><i>b</i></span>]</em></dt>
+<dd><span id="index-linetabs"></span>
+</dd><dt id="index-_005cn_005b_002elinetabs_005d">Register: <strong><tt>\n[.linetabs]</tt></strong></dt>
+<dd><span id="index-_002elinetabs-1"></span>
+<span id="index-tab_002c-line_002dtabs-mode"></span>
+<span id="index-line_002dtabs-mode"></span>
+<span id="index-mode_002c-line_002dtabs"></span>
+<p>Activate or deactivate line-tabs in the environment per Boolean
+expression <var>b</var>.  They are inactive by default, and activated if
+<var>b</var> is omitted.  When line-tabs are active, tab stops are computed
+relative to the start of the pending output line instead of the drawing
+position corresponding to the start of the input line.
+</p>
+<div class="example">
+<pre class="example">.ta 1i 3i
+a&rarr;\c
+b&rarr;\c
+c
+.br
+.linetabs
+a&rarr;\c
+b&rarr;\c
+c
+    &rArr; a         b         c
+    &rArr; a         b                   c
+</pre></div>
+
+<p>The read-only register <code>.linetabs</code> interpolates&nbsp;1 if line-tabs
+are active, and 0 otherwise.
+</p></dd></dl>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Leaders.html" accesskey="1">Leaders</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Fields.html" accesskey="2">Fields</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Character-Translations.html" accesskey="n" rel="next">Character Translations</a>, Previous: <a href="Manipulating-Spacing.html" accesskey="p" rel="prev">Manipulating Spacing</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

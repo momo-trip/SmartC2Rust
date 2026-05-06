@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Typeface and decoration (The GNU troff Manual)</title>
+
+<meta name="description" content="Typeface and decoration (The GNU troff Manual)">
+<meta name="keywords" content="Typeface and decoration (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="ms-Body-Text.html" rel="up" title="ms Body Text">
+<link href="Lists-in-ms.html" rel="next" title="Lists in ms">
+<link href="Headings-in-ms.html" rel="prev" title="Headings in ms">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Typeface-and-decoration"></span><div class="header">
+<p>
+Next: <a href="Lists-in-ms.html" accesskey="n" rel="next">Lists in ms</a>, Previous: <a href="Headings-in-ms.html" accesskey="p" rel="prev">Headings in ms</a>, Up: <a href="ms-Body-Text.html" accesskey="u" rel="up">ms Body Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Highlighting-in-ms"></span><span id="Typeface-and-decoration-1"></span><h4 class="subsubsection">4.6.5.5 Typeface and decoration</h4>
+
+<p>The <samp>ms</samp> macros provide a variety of ways to style text.
+Attend closely to the ordering of arguments labeled <var>pre</var> and
+<var>post</var>, which is not intuitive.  Support for <var>pre</var>
+arguments is a GNU extension.<a id="DOCF14" href="groff.html_fot.html#FOOT14"><sup>14</sup></a>
+</p>
+<dl>
+<dt id="index-_002eB">Macro: <strong><tt>.B</tt></strong> <em>[<span class="roman"><i>text</i></span> [<span class="roman"><i>post</i></span> [<span class="roman"><i>pre</i></span>]]]</em></dt>
+<dd><span id="index-B-_005bms_005d"></span>
+<p>Style <var>text</var> in <b>bold</b>, followed by <var>post</var> in the previous
+font style without intervening space, and preceded by <var>pre</var>
+similarly.  Without arguments, <samp>ms</samp> styles subsequent text in bold
+until the next paragraphing, heading, or no-argument typeface macro
+call.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eR-1">Macro: <strong><tt>.R</tt></strong> <em>[<span class="roman"><i>text</i></span> [<span class="roman"><i>post</i></span> [<span class="roman"><i>pre</i></span>]]]</em></dt>
+<dd><span id="index-R-_005bms_005d"></span>
+<p>As <code>B</code>, but use the roman style (upright text of normal weight)
+instead of bold.  Argument recognition is a GNU extension.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eI">Macro: <strong><tt>.I</tt></strong> <em>[<span class="roman"><i>text</i></span> [<span class="roman"><i>post</i></span> [<span class="roman"><i>pre</i></span>]]]</em></dt>
+<dd><span id="index-I-_005bms_005d"></span>
+<p>As <code>B</code>, but use an <i>italic</i> or oblique style instead of bold.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eBI">Macro: <strong><tt>.BI</tt></strong> <em>[<span class="roman"><i>text</i></span> [<span class="roman"><i>post</i></span> [<span class="roman"><i>pre</i></span>]]]</em></dt>
+<dd><span id="index-BI-_005bms_005d"></span>
+<p>As <code>B</code>, but use a bold italic or bold oblique style instead of
+upright bold.  This is a Research Tenth Edition Unix extension.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eCW-1">Macro: <strong><tt>.CW</tt></strong> <em>[<span class="roman"><i>text</i></span> [<span class="roman"><i>post</i></span> [<span class="roman"><i>pre</i></span>]]]</em></dt>
+<dd><span id="index-CW-_005bms_005d"></span>
+<p>As <code>B</code>, but use a <tt>constant-width</tt> (monospaced) roman typeface
+instead of bold.  This is a Research Tenth Edition Unix extension.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eBX">Macro: <strong><tt>.BX</tt></strong> <em>[<span class="roman"><i>text</i></span>]</em></dt>
+<dd><span id="index-BX-_005bms_005d"></span>
+<p>Typeset <var>text</var> and draw a box around it.  On terminals, reverse
+video or another means of highlighting is used instead.  If you want
+<var>text</var> to contain space, use unbreakable space or horizontal motion
+escape sequences (<code>\~</code>, <code>\<span class="key">SPC</span></code>, <code>\^</code>, <code>\|</code>,
+<code>\0</code> or <code>\h</code>).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eUL">Macro: <strong><tt>.UL</tt></strong> <em>[<span class="roman"><i>text</i></span> [<span class="roman"><i>post</i></span>]]</em></dt>
+<dd><span id="index-UL-_005bms_005d"></span>
+<p>Typeset <var>text</var> with an underline.  On terminals, <var>text</var> is
+bracketed with underscores &lsquo;_&rsquo;.  <var>post</var>, if present, is set after
+<var>text</var> with no intervening space.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eLG">Macro: <strong><tt>.LG</tt></strong></dt>
+<dd><span id="index-LG-_005bms_005d"></span>
+<p>Set subsequent text in larger type (two points larger than the
+current size) until the next type size, paragraphing, or heading macro
+call.  Call the macro multiple times to enlarge the type size further.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eSM">Macro: <strong><tt>.SM</tt></strong></dt>
+<dd><span id="index-SM-_005bms_005d"></span>
+<p>Set subsequent text in smaller type (two points smaller than the current
+size) until the next type size, paragraphing, or heading macro call.
+Call the macro multiple times to reduce the type size further.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eNL">Macro: <strong><tt>.NL</tt></strong></dt>
+<dd><span id="index-NL-_005bms_005d"></span>
+<p>Set subsequent text at the normal type size (the amount in register
+<code>PS</code>).
+</p></dd></dl>
+
+<p><var>pre</var> and <var>post</var> arguments are typically used to simplify the
+attachment of punctuation to styled words.  When <var>pre</var> is used,
+a hyphenation control escape sequence <code>\%</code> that would ordinarily
+start <var>text</var> must start <var>pre</var> instead to have the desired
+effect.
+</p>
+<div class="example">
+<pre class="example">The CS course's students found one C language keyword
+.CW static ) \%(
+most troublesome.
+</pre></div>
+
+<p>The foregoing example produces output as follows.
+</p>
+<table class="cartouche" border="1"><tr><td>
+<div class="example">
+<pre class="example"><span class="roman">The CS course&rsquo;s students found one C language keyword (<tt>static</tt>)
+most troublesome.</span>
+</pre></div>
+</td></tr></table>
+
+<p>You can use the output line continuation escape sequence <code>\c</code> to
+achieve the same result (see <a href="Line-Continuation.html">Line Continuation</a>).  It is also
+portable to older <samp>ms</samp> implementations.
+</p>
+<div class="example">
+<pre class="example">The CS course's students found one C language keyword
+\%(\c
+.CW \%static )
+most troublesome.
+</pre></div>
+
+<p><code>groff</code> <samp>ms</samp> also offers strings to begin and end super- and
+subscripting.  These are GNU extensions.
+</p>
+<dl>
+<dt id="index-_005c_002a_005b_007b_005d">String: <strong><tt>\*[{]</tt></strong></dt>
+<dd><span id="index-_007b-_005bms_005d"></span>
+</dd><dt id="index-_005c_002a_005b_007d_005d">String: <strong><tt>\*[}]</tt></strong></dt>
+<dd><span id="index-_007d-_005bms_005d"></span>
+<p>Begin and end superscripting, respectively.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005c_002a_005b_003c_005d">String: <strong><tt>\*[&lt;]</tt></strong></dt>
+<dd><span id="index-_003c-_005bms_005d"></span>
+</dd><dt id="index-_005c_002a_005b_003e_005d">String: <strong><tt>\*[&gt;]</tt></strong></dt>
+<dd><span id="index-_003e-_005bms_005d"></span>
+<p>Begin and end subscripting, respectively.
+</p></dd></dl>
+
+<p>Rather than calling the <code>CW</code> macro, in <code>groff</code> <samp>ms</samp> you
+might prefer to change the font family to Courier by setting the
+<code>FAM</code> string to &lsquo;<samp>C</samp>&rsquo;.  You can then use all four style macros
+above, returning to the default family (Times) with &lsquo;<samp>.ds FAM T</samp>&rsquo;.
+Because changes to <code>FAM</code> take effect only at the next paragraph,
+<code>CW</code> remains useful to &ldquo;inline&rdquo; a change to the font family,
+similarly to the practice of this document in noting syntactical
+elements of <samp>ms</samp> and <code>groff</code>.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Lists-in-ms.html" accesskey="n" rel="next">Lists in ms</a>, Previous: <a href="Headings-in-ms.html" accesskey="p" rel="prev">Headings in ms</a>, Up: <a href="ms-Body-Text.html" accesskey="u" rel="up">ms Body Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+.if !'\*[.T]'pdf' .nx
+.
+.nr PDFOUTLINE.FOLDLEVEL 1
+.defcolor pdf:href.colour rgb 0.00 0.25 0.75
+.pdfinfo /Title "groff Collected Reference Pages"
+.
+.de Hl
+.br
+\l'\\n[.l]u-\\n[.i]u\&\\$1'
+.br
+..
+\Z@\D't 8p'@
+.pdfbookmark 1 Cover
+.pdfpagenumbering
+.sp 2i
+.Hl
+.sp .6i
+.ad r
+.nr GMP*saved-type-size \n[.ps]
+.ps 52
+.gcolor maroon
+groff
+.gcolor
+.sp 18p
+.ps 16
+.if F BMB .ft BMB
+Collected Reference Pages
+.if F BMB .ft
+.sp 12p
+.ps 10
+.if F BMI .ft BMI
+documenting version @VERSION@
+.if F BMI .ft
+.ps \n[GMP*saved-type-size]u
+.sp .1i
+.Hl
+.bp 1
+.pdfpagenumbering D . 1

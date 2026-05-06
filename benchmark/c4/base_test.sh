@@ -27,18 +27,6 @@ rm -rf "$TEMP_DIR"
 mkdir -p "$RESULTS_DIR"
 mkdir -p "$TEMP_DIR"
 
-# Log files
-C_LOG_FILE="/root/SmartC2Rust/benchmark/c4/out_flow_c.log"
-RUST_LOG_FILE="/root/SmartC2Rust/benchmark/c4/out_flow_rust.log"
-
-# Log start of a test
-logstart() {
-    local test_num=$1
-    local test_name=$2
-    
-    echo "Test Case #${test_num}: Started" >> $C_LOG_FILE
-    echo "Test Case #${test_num}: Started" >> $RUST_LOG_FILE
-}
 
 # Helper functions
 print_header() {
@@ -82,8 +70,7 @@ normalize() {
 
 # Check for required files and directories
 if [ ! -d "$EXPECTED_DIR" ]; then
-    print_fatal "Expected results directory not found: $EXPECTED_DIR"
-    echo "Please run generate_c4_expected.sh first to generate expected results."
+    print_fatal "Expected results directory not found: $EXPECTED_DIR. Please run generate_c4_expected.sh first to generate expected results."
 fi
 
 if [ ! -f "$C4_COMPILER" ]; then
@@ -100,68 +87,71 @@ fi
 
 for file in test1_result.txt test2_result.txt test3_result.txt test4_result.txt; do
     if [ ! -f "$EXPECTED_DIR/$file" ]; then
-        print_fatal "Expected result file not found: $EXPECTED_DIR/$file"
-        echo "Please run generate_c4_expected.sh first to generate expected results."
+        print_fatal "Expected result file not found: $EXPECTED_DIR/$file. Please run generate_c4_expected.sh first to generate expected results."
     fi
 done
 
 # Test execution
 print_header "C4 compiler test execution"
 
+
 # Test 1: Execute hello.c
-logstart "1" "Compile and execute hello.c"
 print_info "Test 1: Compile and execute hello.c"
 echo -e "${BLUE}--- Test 1 Output ---${NC}"
 temp_file="$TEMP_DIR/test1_raw.txt"
 $C4_COMPILER $HELLO_C 2>&1 | tee "$temp_file"
+c4_exit=${PIPESTATUS[0]}
 echo -e "${BLUE}--- End Test 1 Output ---${NC}"
-if [ ${PIPESTATUS[0]} -eq 0 ]; then
-    normalize "$temp_file" "$RESULTS_DIR/test1_result.txt"
+normalize "$temp_file" "$RESULTS_DIR/test1_result.txt"
+if [ $c4_exit -eq 0 ]; then
     print_success "hello.c execution succeeded"
 else
-    print_error "hello.c execution failed"
+    print_error "hello.c execution failed (output captured for comparison)"
 fi
 
+
 # Test 2: Compile hello.c and display intermediate code
-logstart "2" "Display intermediate code for hello.c"
 print_info "Test 2: Display intermediate code for hello.c"
 echo -e "${BLUE}--- Test 2 Output ---${NC}"
 temp_file="$TEMP_DIR/test2_raw.txt"
 $C4_COMPILER -s $HELLO_C 2>&1 | tee "$temp_file"
+c4_exit=${PIPESTATUS[0]}
 echo -e "${BLUE}--- End Test 2 Output ---${NC}"
-if [ ${PIPESTATUS[0]} -eq 0 ]; then
-    normalize "$temp_file" "$RESULTS_DIR/test2_result.txt"
+normalize "$temp_file" "$RESULTS_DIR/test2_result.txt"
+if [ $c4_exit -eq 0 ]; then
     print_success "hello.c intermediate code display succeeded"
 else
-    print_error "hello.c intermediate code display failed"
+    print_error "hello.c intermediate code display failed (output captured for comparison)"
 fi
 
+
 # Test 3: Compile and execute arginc.c
-logstart "3" "Compile and execute arginc.c"
 print_info "Test 3: Compile and execute arginc.c"
 echo -e "${BLUE}--- Test 3 Output ---${NC}"
 temp_file="$TEMP_DIR/test3_raw.txt"
 $C4_COMPILER $ARGINC_C 2>&1 | tee "$temp_file"
+c4_exit=${PIPESTATUS[0]}
 echo -e "${BLUE}--- End Test 3 Output ---${NC}"
-if [ ${PIPESTATUS[0]} -eq 0 ]; then
-    normalize "$temp_file" "$RESULTS_DIR/test3_result.txt"
+normalize "$temp_file" "$RESULTS_DIR/test3_result.txt"
+if [ $c4_exit -eq 0 ]; then
     print_success "arginc.c execution succeeded"
 else
-    print_error "arginc.c execution failed"
+    print_error "arginc.c execution failed (output captured for comparison)"
 fi
 
+
 # Test 4: Display intermediate code for arginc.c
-logstart "4" "Display intermediate code for arginc.c"
 print_info "Test 4: Display intermediate code for arginc.c"
 echo -e "${BLUE}--- Test 4 Output ---${NC}"
 temp_file="$TEMP_DIR/test4_raw.txt"
 $C4_COMPILER -s $ARGINC_C 2>&1 | tee "$temp_file"
+c4_exit=${PIPESTATUS[0]}
 echo -e "${BLUE}--- End Test 4 Output ---${NC}"
-if [ ${PIPESTATUS[0]} -eq 0 ]; then
-    normalize "$temp_file" "$RESULTS_DIR/test4_result.txt"
+normalize "$temp_file" "$RESULTS_DIR/test4_result.txt"
+if [ $c4_exit -eq 0 ]; then
     print_success "arginc.c intermediate code display succeeded"
 else
-    print_error "arginc.c intermediate code display failed"
+    print_error "arginc.c intermediate code display failed (output captured for comparison)"
 fi
 
 # Compare test result files

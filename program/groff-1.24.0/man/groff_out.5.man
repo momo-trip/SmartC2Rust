@@ -1,0 +1,1844 @@
+.TH groff_out @MAN5EXT@ "@MDATE@" "groff @VERSION@"
+.SH Name
+groff_out \- GNU
+.I roff
+device-independent page description language
+.
+.
+.\" XXX: This page needs review and editing.
+.\" ====================================================================
+.\" Legal Terms
+.\" ====================================================================
+.\"
+.\" Copyright 1989-2024 Free Software Foundation, Inc.
+.\"
+.\" This file is part of groff, the GNU roff typesetting system.
+.\"
+.\" Permission is granted to copy, distribute and/or modify this
+.\" document under the terms of the GNU Free Documentation License,
+.\" Version 1.3 or any later version published by the Free Software
+.\" Foundation; with no Invariant Sections, with no Front-Cover Texts,
+.\" and with no Back-Cover Texts.
+.\"
+.\" A copy of the Free Documentation License is included as a file
+.\" called FDL in the main directory of the groff source package.
+.
+.
+.\" Save and disable compatibility mode (for, e.g., Solaris 10/11).
+.do nr *groff_groff_out_5_man_C \n[.cp]
+.cp 0
+.
+.\" Define fallback for groff 1.23's MR macro if the system lacks it.
+.nr do-fallback 0
+.if !\n(.f           .nr do-fallback 1 \" mandoc
+.if  \n(.g .if !d MR .nr do-fallback 1 \" older groff
+.if !\n(.g           .nr do-fallback 1 \" non-groff *roff
+.if \n[do-fallback]  \{\
+.  de MR
+.    ie \\n(.$=1 \
+.      I \%\\$1
+.    el \
+.      IR \%\\$1 (\\$2)\\$3
+.  .
+.\}
+.rr do-fallback
+.
+.
+.\" ====================================================================
+.\" Setup
+.\" ====================================================================
+.
+.\" ================= Document configuration
+.
+.\" Number register to decide whether the commands '{' and '}' are used
+.\" 0: disable (current default); 1: enable
+.nr @USE_ENV_STACK 0
+.
+.ig
+Unfortunately, old versions of groff used an illogical position change
+after some D\~commands (Dp, DP, Dt).  If the register
+@STUPID_DRAWING_POSITIONING is 1 (current default) then change position
+after these commands, otherwise the position is not changed.
+..
+.nr @STUPID_DRAWING_POSITIONING 1
+.
+.\" ================= Semantical definitions
+.
+.nr @maxcolor 65536
+.ds @backslash \[rs]\"
+.ds @linebreak \fR\[la]line-break\[ra]\fP\"
+.
+.\" Begin of macro definitions
+.
+.de offset
+.RI ( \,\\$1\/ ,\  \,\\$2\/ )\\$3
+..
+.de indexed_offset
+.offset \fI\\$1\/\fP\d\s-3\\$2\s+3\u\x'\n[.v]/4' \fI\\$3\/\fP\
+\d\s-3\\$4\s+3\u\x'\n[.v]/4' \\$5\x'\n[.v]/4'\\$6
+..
+.\" format: .command <name> "<arguments>" <punctuation>
+.de command
+\fB\\$1\fP\ \fI\,\\$2\/\fP\\$3
+..
+.\" format: .D-command <subcommand> "<arguments>"
+.de D-command
+\fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]
+..
+.
+.\" We set these as troff micromotions rather than eqn because \d and \u
+.\" can be lifted to XML subscript/superscript tags.  Don't change
+.\" these to a parameterized string, man2html won't handle that.
+.ds hv1 \fIh\d\s-3\&1\s+3\u\~v\d\s-3\&1\s+3\u\fP\x'\n[.v]/4'
+.ds hv2 \fIh\d\s-3\&2\s+3\u\~v\d\s-3\&2\s+3\u\fP\x'\n[.v]/4'
+.ds hvn \fIh\d\s-3\&n\s+3\u\~v\d\s-3\&n\s+3\u\fP\x'\n[.v]/4'
+.
+.de Da-command
+\fBDa\fP\ \*[hv1] \*[hv2]\|\*[@linebreak]
+..
+.\" graphics command .D with a variable number of arguments
+.\" format: .D-multiarg <subcommand>
+.de D-multiarg
+\fBD\\$1\fP\ \*[hv1] \*[hv2] \&.\|.\|.\& \*[hvn]\|\*[@linebreak]
+..
+.\" format: .x-command <subname> "<arguments>"
+.de x-command
+\fBx\\$1\fP\ \fI\\$2\fP\|\*[@linebreak]
+..
+.de xsub
+.RI "(" "\\$1" " control command)"
+.br
+..
+.\" End of macro definitions
+.
+.
+.\" ====================================================================
+.SH Description
+.\" ====================================================================
+.
+.\" BEGIN Keep parallel with introductory paragraph of the "Language
+.\" Concepts" node in doc/groff.texi.in.
+The fundamental operation of the GNU
+.I troff \" GNU
+formatter,
+.MR @g@troff @MAN1EXT@ ,
+is the translation of the
+.MR groff @MAN7EXT@
+input language
+into a series of instructions concerned primarily
+with placing glyphs or geometric objects
+at specific positions on a rectangular page.
+.
+In the following discussion,
+the term
+.I command
+refers to this device-independent output language,
+never to the language intended for use by document authors.
+.
+Device-independent output commands comprise several categories:
+glyph output;
+font,
+color,
+and text size selection;
+motion of the drawing position;
+page advancement;
+drawing of geometric primitives;
+and device extension commands,
+a catch-all for other operations.
+.
+The last includes directives to start and stop output,
+identify the intended output device,
+and embed URL hyperlinks in supported output formats.
+.\" END Keep parallel with introductory paragraph of the "Language
+.\" Concepts" node in doc/groff.texi.in.
+.
+.
+.\" ====================================================================
+.SS Background
+.\" ====================================================================
+.
+.\" BEGIN Keep parallel with paragraphs after the first in the "GNU
+.\" troff Output" node in doc/groff.texi.in.
+As
+.MR groff @MAN1EXT@
+is a wrapper program around GNU
+.I troff \" GNU
+and automatically calls an output driver,
+users seldom encounter this format under normal circumstances.
+.
+.I groff
+offers the option
+.B \-Z
+to inhibit postprocessing such that GNU
+.IR troff 's \" GNU
+output is sent to the standard output stream just as it is when running
+GNU
+.I troff \" GNU
+directly.
+.
+.
+.P
+The purpose of device-independent output
+is to facilitate the development of postprocessors
+by providing a common programming interface for all devices.
+.
+It is a distinct,
+and much simpler,
+language from that of the formatter,
+.IR troff . \" generic
+The device-independent output can be thought of
+as a \[lq]page description language\[rq].
+.
+.
+.P
+In the following discussion,
+the term
+.I "troff output"
+describes what is output by GNU
+.IR troff , \" GNU
+while
+.I "page description"
+denotes the language accepted by the parser that interprets this output
+for the output drivers.
+.
+This parser handles whitespace more flexibly than AT&T
+.IR troff 's \" AT&T
+implementation,
+recognizes a GNU extension to the language,
+and supports a legacy compressed encoding of a subset of commands
+for compatibility;
+otherwise,
+the formats are the same.
+.
+(The parser for device-independent output can be found in the
+.I groff
+sources at
+.IR \%src/\:\%libs/\:\%libdriver/\:\%input.cpp .)
+.
+.
+.P
+When Brian Kernighan designed AT&T
+.IR troff 's \" AT&T
+device-independent page description language circa 1980,
+he had to balance
+readability and maintainability against severe constraints on file size
+and transmission speed to the output device.
+.
+A decade later,
+when James Clark wrote
+.IR groff ,
+these constraints were no longer as tight.
+.\" END Keep parallel with paragraphs after the first in the "gtroff
+.\" Output" node in doc/groff.texi.in.
+.
+.
+.\" ====================================================================
+.SS Syntax
+.\" ====================================================================
+.
+.IR roff 's
+page description language is a sequence of
+.I tokens:
+single-letter commands or their arguments.
+Some commands accept a subcommand as a first argument,
+followed by one or more further arguments.
+.
+.
+.P
+AT&T device-independent
+.I troff \" AT&T
+used whitespace minimally when producing output.
+.
+GNU
+.IR troff , \" GNU
+in contrast,
+attempts to make its output more human-readable.
+.
+The whitespace characters\[em]tab,
+space,
+and newline\[em]are always meaningful.
+.
+They are never used to represent spacing in the document;
+that is done with horizontal
+.RB ( h ,\~ H )
+and vertical
+.RB ( v ,\~ V )
+positioning commands.
+.
+Any sequence of space and/or tab characters is equivalent to a single
+space,
+separating commands from arguments and arguments from each other.
+.
+Space is required only where omitting it would cause ambiguity.
+.
+A line break separates commands.
+.
+The comment character is a pound/hash sign
+.RB ( # ),
+and marks the remainder of the line as a comment.
+.
+A line comprising only whitespace after comment removal does nothing but
+separate input tokens.
+.
+.
+.P
+For example,
+the relative horizontal motion command
+.RB ( h )
+and the command to write one glyph
+.RB ( c ),
+each take a single argument;
+the former a signed integer,
+and the latter a printable ISO\~646/\[lq]ASCII\[rq] character.
+.
+A series of such commands could validly occur without spaces
+on an input line,
+but GNU
+.I troff \" GNU
+follows each with a newline.
+.
+.
+.P
+Some commands have a more complex syntax;
+the GNU
+.I troff \" GNU
+extension command for writing glyph sequences
+.RB ( t )
+accepts a variable number of arguments.
+Those that draw geometric objects
+.RB ( D )
+or control the device
+.RB ( x )
+furthermore recognize subcommand arguments.
+.
+Such commands thus must end with a newline.
+.
+In GNU
+.I troff, \" GNU
+the device extension (sub)command
+.RB \[lq] x\~X \[rq]
+uniquely supports a line continuation syntax;
+a single input line contains any other.
+.
+.
+.\" ====================================================================
+.SS "Argument units"
+.\" ====================================================================
+.
+Some commands accept integer arguments that represent measurements,
+but the scaling units of the formatter's language are never used.
+.
+Most commands assume a scaling unit
+.RB of\~\[lq] u \[rq]
+(basic units),
+and others
+.RB use\~\[lq] s \[rq]
+(scaled points).
+.
+These are defined by the parameters specified in the device's
+.I DESC
+file;
+see
+.MR groff_font @MAN5EXT@
+and,
+for more on scaling units,
+.MR groff @MAN7EXT@
+and
+.IR "Groff: The GNU Implementation of troff" ,
+the
+.I groff
+Texinfo manual.
+.
+Color-related commands use dimensionless integers.
+.
+.
+.P
+Note that single characters can have the eighth bit set, as can the
+names of fonts and special characters (this is, glyphs).
+.
+The names of glyphs and fonts can be of arbitrary length.
+.
+A glyph that is to be printed will always be in the current font.
+.
+.
+.P
+A string argument is always terminated by the next whitespace
+character (space, tab, or newline); an embedded
+.B #
+character is regarded as part of the argument, not as the beginning of
+a comment command.
+.
+An integer argument is already terminated by the next non-digit
+character, which then is regarded as the first character of the next
+argument or command.
+.
+.
+.\" ====================================================================
+.SS "Output structure"
+.\" ====================================================================
+.
+Device-independent
+.I troff \" system
+output is organized into three parts:
+a header,
+a body,
+and a trailer.
+.
+.
+.P
+The task of the header is to set general device parameters.
+.
+GNU
+.I troff \" GNU
+guarantees that its
+header consists of the following three lines:
+.
+.
+.RS
+.P
+.B x\~T
+.I device
+.br
+.B x\~res
+.I n\~h\~v
+.br
+.B x init
+.RE
+.
+.
+.P
+with the parameters
+.IR n ,
+.IR h ,
+and
+.I v
+set as outlined in subsection \[lq]Device Control Commands\[rq] below.
+The parser for the device-independent page description language format
+is able to interpret additional whitespace and comments as well even in
+the header.
+.
+.
+.P
+The body contains the document's visible content.
+.
+Once an output driver interprets
+.RB \[lq] "x init" \[rq],
+it prepares to handle commands in general.
+.
+Processing terminates when a
+.RB \[lq] "x stop" \[rq]
+command is encountered;
+the last line of any
+GNU
+.I troff \" GNU
+page description output always contains such a command.
+.
+.
+.P
+Semantically,
+the body is page-oriented.
+.
+The
+.B p
+command starts a new page.
+.
+Positioning,
+writing,
+and drawing commands are performed within a page,
+so they cannot occur before the first
+.B p
+command.
+.
+The output driver reckons absolute positioning
+(by the
+.B H
+and
+.B V
+commands)
+with respect to the current page's origin
+at the top left corner,
+and all other positioning relative to the drawing position on the page.
+.
+.
+.P
+The trailer advances the drawing position to the bottom of the page
+and informs the device that the document
+(or \[lq]job\[rq])
+has ended.
+.
+.
+.\" ====================================================================
+.SH "Command reference"
+.\" ====================================================================
+.
+This section describes all page description output commands,
+both from AT&T
+.I troff \" AT*T
+as well as extension commands issued by
+GNU
+.I troff. \" GNU
+.
+.
+.\" ====================================================================
+.SS "Comment command"
+.\" ====================================================================
+.
+.TP
+.BI # anything\c
+\[la]line-break\[ra]
+Apply comment annotation.
+.
+Ignore any characters from the
+.BR # \~character
+up to the next newline.
+.
+Each comment can be preceded by arbitrary syntactical space,
+and every command can be terminated by a comment.
+.
+.
+.\" ====================================================================
+.SS "Simple commands"
+.\" ====================================================================
+.
+The commands in this subsection have a command code consisting of a
+single character, taking a fixed number of arguments.
+.
+Most of them are commands for positioning and text writing.
+.
+These commands are smart about whitespace.
+.
+Optionally,
+.I syntactical space
+can be inserted before, after, and between the command letter and its
+arguments.
+.
+All of these commands are stackable, i.e., they can be preceded by
+other simple commands or followed by arbitrary other commands on the
+same line.
+.
+A separating
+.I syntactical space
+is necessary only when two integer arguments would clash or if the
+preceding argument ends with a string argument.
+.
+.
+.if \n[@USE_ENV_STACK]=1 \{\
+.TP
+.command {
+Open a new environment by copying the current device configuration data
+to the environment stack.
+.
+The current environment is setup by the device specification and
+manipulated by the setting commands.
+.
+.
+.TP
+.command }
+Close the current environment
+(opened by a preceding
+.BR { \~command)
+and restore the previous environment from the environment
+stack as the current device configuration data.
+.
+.\}              \" endif @USE_ENV_STACK
+.
+.
+.TP
+.command C id \[la]white-space\[ra]
+Typeset the glyph of the special character
+.IR id .
+.
+Trailing syntactical space is necessary to allow special character names
+of arbitrary length.
+.
+The drawing position is not advanced.
+.\" XXX: Why does it matter that we read its size if we don't advance
+.\" the drawing position?
+.\" its size is read from the font description file.
+.
+.
+.TP
+.command c c
+Typeset the glyph of the ordinary
+.RI character\~ c .
+.
+The drawing position is not advanced.
+.\" XXX: Why does it matter that we read its size if we don't advance
+.\" the drawing position?
+.\" its size is read from the font description file.
+.
+.
+.TP
+.command f n
+Select the font mounted at
+.RI position\~ n .
+.
+.IR n\~ cannot
+be negative.
+.
+.
+.TP
+.command H n
+Horizontally move the drawing position to
+.IR n\~ basic
+units from the left edge of the page.
+.
+.IR n\~ cannot
+be negative.
+.
+.
+.TP
+.command h n
+Move the drawing position right
+.I n
+basic units.
+.
+AT&T
+.I troff \" AT&T
+allowed negative
+.I n;
+GNU
+.I troff \" GNU
+does not produce such values,
+but
+.IR groff 's
+output driver library handles them.
+.
+.
+.TP
+.command m "scheme \f[R][\f[]component\f[R] .\|.\|.]"
+Select the stroke color using the
+.IR component s
+in the color space
+.IR scheme .
+.
+Each
+.I component
+is an integer between 0 and \n[@maxcolor].
+.
+The quantity of components and their meanings vary with each
+.IR scheme .
+.
+This command is a
+.I groff
+extension.
+.
+.
+.RS
+.TP
+.command mc "cyan magenta yellow"
+Use the CMY color scheme with components
+cyan,
+magenta,
+and yellow.
+.
+.
+.TP
+.command md
+Use the default color
+(no components;
+black in most cases).
+.
+.
+.TP
+.command mg gray
+Use a grayscale color scheme with a component ranging
+between 0 (black) and \n[@maxcolor] (white).
+.
+.
+.TP
+.command mk "cyan magenta yellow black"
+Use the CMYK color scheme with components
+cyan,
+magenta,
+yellow,
+and black.
+.
+.
+.TP
+.command mr "red green blue"
+Use the RGB color scheme with components
+red,
+green,
+and blue.
+.RE
+.
+.
+.TP
+.command N n
+Typeset the glyph with
+.RI index\~ n
+in the current font.
+.
+.IR n\~ is
+normally a non-negative integer.
+.
+The drawing position is not advanced.
+.
+The
+.B html
+and
+.B xhtml
+devices use this command with
+.RI negative\~ n
+to produce unbreakable space;
+the absolute value of
+.I n
+is taken and interpreted in basic units.
+.
+.
+.TP
+.command n b\~a
+Indicate a break.
+.
+No action is performed;
+the command is present to make the output more easily parsed.
+.
+The integers
+.I b
+.RI and\~ a
+describe the vertical space amounts before and after the break,
+respectively.
+.
+GNU
+.I troff \" GNU
+issues this command but
+.IR groff 's
+output driver library ignores it.
+.
+See
+.B v
+and
+.BR V .
+.
+.
+.TP
+.command p n
+Begin a new page,
+setting its number
+.RI to\~ n .
+.
+Each page is independent,
+even from those using the same number.
+.
+The vertical drawing position is set to\~0.
+.
+All positioning,
+writing,
+and drawing commands are interpreted in the context of a page,
+so a
+.BR p \~command
+must precede them.
+.
+.
+.TP
+.command s n
+Set type size to
+.I n
+scaled points
+.RB (unit\~ z
+in GNU
+.IR troff ). \" GNU
+.
+AT&T
+.I troff \" AT&T
+used unscaled points
+.RB ( p )
+instead;
+see section \[lq]Compatibility\[rq] below.
+.
+.
+.TP
+.command t xyz\f[R]\|.\|.\|.\& \f[R]\[la]white-space\[ra]
+.TQ
+.command t "xyz\f[R]\|.\|.\|.\&\f[] dummy-arg" \[la]white-space\[ra]
+Typeset word
+.IR xyz ;
+that is,
+set a sequence of ordinary glyphs named
+.IR x ,
+.IR y ,
+.IR z ,
+\&.\|.\|.\|,
+terminated by a space or newline;
+an optional second integer argument is ignored
+(this allows the formatter to generate an even number of arguments).
+.\" XXX: Why?
+.
+Each glyph is set at the current drawing position,
+and the position is then advanced horizontally by the glyph's width.
+.
+A glyph's width is read from its metrics in the font description file,
+scaled to the current type size,
+and rounded to a multiple of the horizontal motion quantum.
+.
+Use the
+.B C
+command to emplace glyphs of special characters.
+.
+The
+.BR t \~command
+is a
+.I groff
+extension and is output only for devices whose
+.I DESC
+file contains the
+.B tcommand
+directive;
+see
+.MR groff_font @MAN5EXT@ .
+.
+.
+.TP
+.command u "n xyz"\f[R]\|.\|.\|.\& \f[R]\[la]white-space\[ra]
+.TQ
+.command u "xyz\f[R]\|.\|.\|.\&\f[] dummy-arg" \[la]white-space\[ra]
+Typeset word
+.I xyz
+with track kerning.
+.
+As
+.BR t ,
+but after placing each glyph,
+the drawing position is further advanced horizontally
+.RI by\~ n
+basic units.
+.
+The
+.BR u \~command
+is a
+.I groff
+extension and is output only for devices whose
+.I DESC
+file contains the
+.B tcommand
+directive;
+see
+.MR groff_font @MAN5EXT@ .
+.
+.
+.TP
+.command V n
+Vertically move the drawing position to
+.IR n\~ basic
+units from the top edge of the page.
+.
+.IR n\~ cannot
+be negative.
+.
+.
+.TP
+.command v n
+Move the drawing position down
+.I n
+basic units.
+.
+AT&T
+.I troff \" AT&T
+allowed negative
+.I n;
+GNU
+.I troff \" GNU
+does not produce such values,
+but
+.IR groff 's
+output driver library handles them.
+.
+.
+.TP
+.command w
+Indicate an inter-word space.
+.
+No action is performed;
+the command is present to make the output more easily parsed.
+.
+Only inter-word spaces on an output line
+(be they breakable or not)
+are thus described;
+those resulting from horizontal motion escape sequences are not.
+.
+GNU
+.I troff \" GNU
+issues this command but
+.IR groff 's
+output driver library ignores it.
+.
+See
+.B h
+and
+.BR H .
+.
+.
+.\" ====================================================================
+.SS "Graphics commands"
+.\" ====================================================================
+.
+Each graphics or drawing command in the page description language
+starts with the letter
+.RB \[lq] D \[rq],
+followed by one or two characters that specify a subcommand;
+this is followed by a fixed or variable number of integer
+arguments that are separated by a single space character.
+.
+A
+.RB \[lq] D \[rq],
+command may not be followed by another command on the same line
+(apart from a comment),
+so each
+.RB \[lq] D \[rq]
+command is terminated by a syntactical line break.
+.
+.
+.P
+.\" XXX: Fact-check this. --GBR
+GNU
+.I troff \" GNU
+output follows AT&T
+.IR troff 's \" AT&T
+output conventions
+(no space between command and subcommand,
+all arguments are preceded by a single space character),
+but
+.IR groff 's
+parser allows optional space
+between the command letters
+and makes the space before the first argument optional.
+.
+As usual,
+each space can be any sequence of tab and space characters.
+.
+.
+.P
+Some graphics commands can take a variable number of arguments.
+.
+In this case, they are integers representing a size measured in basic
+units\~\c
+.BR u .
+.
+The
+.I h
+arguments
+stand for horizontal distances where positive means right, negative
+left.
+.
+The
+.I v
+arguments
+stand for vertical distances where positive means down, negative up.
+.
+All these distances are offsets relative to the current location.
+.
+.
+.P
+Each graphics command directly corresponds to a
+.I troff \" generic
+.B \[rs]D
+escape sequence.
+.
+See subsection \[lq]Drawing commands\[rq] of
+.MR groff @MAN7EXT@ .
+.
+.
+.P
+Unless indicated otherwise, each graphics command directly corresponds
+to a similar
+.I groff
+.B \*[@backslash]D
+escape sequence; see
+.MR groff @MAN7EXT@ .
+.
+.
+.P
+Unknown
+.BR D \~commands
+are assumed to be device-specific.
+.
+Its arguments are parsed as strings; the whole information is then
+sent to the postprocessor.
+.
+.
+.P
+In the following command reference, the syntax element
+.I \[la]line-break\[ra]
+means a
+.I syntactical line break
+as defined in subsection \[lq]Separation\[rq] above.
+.
+.
+.TP
+.D-multiarg \[ti]
+Draw B-spline from current position to offset
+.indexed_offset h 1 v 1 ,
+then to offset
+.indexed_offset h 2 v 2
+if given, etc., up to
+.indexed_offset h n v n .
+This command takes a variable number of argument pairs; the current
+position is moved to the terminal point of the drawn curve.
+.
+.
+.TP
+.Da-command
+Draw arc from current position to
+.indexed_offset h 1 v 1 \|+\| \c
+.indexed_offset h 2 v 2
+with center at
+.indexed_offset h 1 v 1 ;
+then move the current position to the final point of the arc.
+.
+.
+.TP
+.D-command C d
+.TQ
+.D-command C "d dummy-arg"
+Draw a solid circle using the current fill color with diameter\~\c
+.I d
+(integer in basic units\~\c
+.BR u )
+with leftmost point at the current position; then move the current
+position to the rightmost point of the circle.
+.
+An optional second integer argument is ignored (this allows the
+formatter to generate an even number of arguments).
+.
+This command is a GNU extension.
+.
+.
+.TP
+.D-command c d
+Draw circle line with diameter\~\c
+.I d
+(integer in basic units\~\c
+.BR u )
+with leftmost point at the current position; then move the current
+position to the rightmost point of the circle.
+.
+.
+.TP
+.D-command E "h v"
+Draw a solid ellipse in the current fill color with a horizontal
+diameter of\~\c
+.I h
+and a vertical diameter of\~\c
+.I v
+(both integers in basic units\~\c
+.BR u )
+with the leftmost point at the current position; then move to the
+rightmost point of the ellipse.
+.
+This command is a GNU extension.
+.
+.
+.br
+.ne 4v
+.TP
+.D-command e "h v"
+Draw an outlined ellipse with a horizontal diameter of\~\c
+.I h
+and a vertical diameter of\~\c
+.I v
+(both integers in basic units\~\c
+.BR u )
+with the leftmost point at current position; then move to the
+rightmost point of the ellipse.
+.
+.
+.TP
+.D-command F "color-scheme \fR[\fPcomponent\fR .\|.\|.]\fP"
+Set fill color for solid drawing objects using different color
+schemes; the analogous command for setting the color of text, line
+graphics, and the outline of graphic objects is
+.BR m .
+.
+The color components are specified as integer arguments between 0 and
+\n[@maxcolor].
+.
+The number of color components and their meaning vary for the
+different color schemes.
+.
+These commands are generated by
+GNU
+.IR troff 's \" GNU
+escape sequences
+.RB \[lq] "\[rs]D\[aq]F\~" .\|.\|. \[aq] \[rq]
+.B \[rs]M
+(with no other corresponding graphics commands).
+.
+No position changing.
+.
+This command is a GNU extension.
+.
+.
+.RS
+.
+.TP
+.D-command Fc "cyan magenta yellow"
+Set fill color for solid drawing objects using the CMY color scheme,
+having the 3\~color components cyan, magenta, and yellow.
+.
+.
+.TP
+.D-command Fd
+Set fill color for solid drawing objects to the default fill color value
+(black in most cases).
+.
+No component arguments.
+.
+.
+.TP
+.D-command Fg "gray"
+Set fill color for solid drawing objects to the shade of gray given by
+the argument, an integer between 0 (black) and \n[@maxcolor] (white).
+.
+.
+.TP
+.D-command Fk "cyan magenta yellow black"
+Set fill color for solid drawing objects using the CMYK color scheme,
+having the 4\~color components cyan, magenta, yellow, and black.
+.
+.TP
+.D-command Fr "red green blue"
+Set fill color for solid drawing objects using the RGB color scheme,
+having the 3\~color components red, green, and blue.
+.
+.RE
+.
+.
+.TP
+.D-command f n
+The argument
+.I n
+must be an integer in the range \-32767 to 32767.
+.
+.RS
+.TP
+.RI 0\|\[<=]\| n \|\[<=]\|1000
+Set the color for filling solid drawing objects to a shade of gray,
+where 0 corresponds to solid white, 1000 (the default) to solid black,
+and values in between to intermediate shades of gray;
+this command is
+superseded by
+.RB \[lq] DFg \[rq].
+.
+.TP
+.IR n "\|<\|0 or " n \|>\|1000
+Set the filling color to the color that is currently being used for
+the text and the outline, see command
+.BR m .
+For example, the command sequence
+.
+.RS
+.IP
+.EX
+mg 0 0 \n[@maxcolor]
+Df \-1
+.EE
+.RE
+.
+.IP
+sets all colors to blue.
+.
+.P
+This command is a GNU extension.
+.RE
+.
+.
+.TP
+.D-command l "h v"
+Draw line from current position to offset
+.offset h v
+(integers in basic units\~\c
+.BR u );
+then set current position to the end of the drawn line.
+.
+.
+.TP
+.D-multiarg p
+Draw a polygon line from current position to offset
+.indexed_offset h 1 v 1 ,
+from there to offset
+.indexed_offset h 2 v 2 ,
+etc., up to offset
+.indexed_offset h n v n ,
+and from there back to the starting position.
+.
+.ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
+For historical reasons, the position is changed by adding the sum of
+all arguments with odd index to the current horizontal position and the
+even ones to the vertical position.
+.
+Although this doesn't make sense it is kept for compatibility.
+.
+.\}
+.el \{\
+As the polygon is closed, the end of drawing is the starting point, so
+the position doesn't change.
+.\}
+.
+This command is a
+.I groff
+extension.
+.
+.
+.TP
+.D-multiarg P
+The same macro as the corresponding
+.B Dp
+command with the same arguments, but draws a solid polygon in the
+current fill color rather than an outlined polygon.
+.
+.if \n[@STUPID_DRAWING_POSITIONING]=1 \{\
+The position is changed in the same way as with
+.BR Dp .
+.\}
+.
+This command is a GNU extension.
+.
+.
+.TP
+.D-command t n
+Set the current line thickness
+.RI to\~ n
+(an integer in basic
+.RB units\~ u )
+if
+.IR n \|>\|0;
+if
+.IR n \|=\|0
+select the smallest available line thickness;
+otherwise,
+the line thickness is made proportional to the type size,
+which is the default.
+.
+.if \n[@STUPID_DRAWING_POSITIONING]=1 \{\
+For historical reasons,
+the horizontal position is changed by adding the argument to the current
+horizontal position,
+while the vertical position is not changed.
+.
+Although this doesn't make sense,
+it is kept for compatibility.
+.\}
+.
+This command is a GNU extension.
+.
+.
+.\" ====================================================================
+.SS "Device control commands"
+.\" ====================================================================
+.
+Each device control command starts with the letter
+.RB \[lq] x \[rq],
+followed by a space character
+(optional or arbitrary space or tab in
+GNU
+.IR troff ) \" GNU
+and a subcommand letter or word;
+each argument
+(if any)
+must be preceded by a syntactical space.
+All
+.RB \[lq] x \[rq],
+commands are terminated by a syntactical line break;
+no device control command
+can be followed by another command on the same line
+(except a comment).
+.
+.
+.P
+The subcommand is basically a single letter, but to increase
+readability, it can be written as a word, i.e., an arbitrary sequence
+of characters terminated by the next tab, space, or newline character.
+.
+All characters of the subcommand word but the first are simply ignored.
+.
+For example,
+GNU
+.I troff \" GNU
+outputs the initialization command
+.RB \[lq] "x i" \[rq]
+as
+.RB \[lq] "x init" \[rq]
+and the resolution command
+.RB \[lq] "x r" \[rq]
+as
+.RB \[lq] "x res" \[rq].
+.
+.
+.P
+In the following, the syntax element
+.I \[la]line-break\[ra]
+means a
+.I syntactical line break
+as defined in subsection \[lq]Separation\[rq] above.
+.
+.TP
+.x-command F name
+.xsub Filename
+Use
+.I name
+as the intended name for the current file in error reports.
+.
+This is useful for remembering the original file name when
+.I groff
+uses its internal piping mechanism.
+.
+The input file is not changed by this command.
+.
+This command is a GNU extension.
+.
+.
+.TP
+.x-command f "n\ s"
+.xsub font
+Mount font position\~\c
+.I n
+(a non-negative integer) with font named\~\c
+.I s
+(a text word);
+see
+.MR groff_font @MAN5EXT@ .
+.
+.
+.TP
+.x-command H n
+.xsub Height
+Set character height to\~\c
+.I n
+(a positive integer in scaled points\~\c
+.BR z ).
+.
+.I Classical troff
+used the unit points (\c
+.BR p )
+instead;
+see section \[lq]Compatibility\[rq] below.
+.
+.
+.TP
+.x-command i
+.xsub init
+Initialize device.
+.
+This is the third command of the header.
+.
+.
+.TP
+.x-command p
+.xsub pause
+Parsed but ignored.
+.
+The classical documentation reads
+.I pause device, can be
+.IR restarted .
+.
+.
+.TP
+.x-command r "n\ h\ v"
+.xsub resolution
+Resolution is\~\c
+.IR n ,
+while
+.I h
+is the minimal horizontal motion, and
+.I v
+the minimal vertical motion possible with this device; all arguments
+are positive integers in basic units\~\c
+.B u
+per inch.
+.
+This is the second command of the header.
+.
+.
+.TP
+.x-command S n
+.xsub Slant
+Set slant to\~\c
+.I n
+degrees (an integer in basic units\~\c
+.BR u ).
+.
+.
+.TP
+.x-command s
+.xsub stop
+Terminates the processing of the current file; issued as the last
+command of device-independent
+.I troff \" generic
+output.
+.
+.
+.TP
+.x-command t
+.xsub trailer
+Generate trailer information, if any.
+.
+In
+.BR groff ,
+this is currently ignored.
+.
+.
+.TP
+.x-command T xxx
+.xsub Typesetter
+.
+Set the name of the output driver to
+.IR xxx ,
+a sequence of non-whitespace characters terminated by whitespace.
+.
+The possible names correspond to those of
+.IR groff 's
+.B \-T
+option.
+.
+This is the first command of the header.
+.
+.
+.TP
+.x-command u n
+.xsub underline
+Configure underlining of spaces.
+.
+If
+.I n
+is\~1, start underlining of spaces;
+if
+.I n
+is\~0, stop underlining of spaces.
+.
+This is needed for the
+.B cu
+request in
+.B @g@nroff
+mode and is ignored otherwise.
+.
+This command is a GNU extension.
+.
+.
+.TP
+.x-command X anything
+.xsub X-escape
+Send string
+.I anything
+uninterpreted to the device.
+.
+If the line following this command starts with a
+.B +
+character this line is interpreted as a continuation line in the
+following sense.
+.
+The
+.B +
+is ignored, but a newline character is sent instead to the device, the
+rest of the line is sent uninterpreted.
+.
+The same applies to all following lines until the first character of a
+line is not a
+.B +
+character.
+.
+This command is generated by the
+.I groff
+escape sequence
+.BR \*[@backslash]X .
+.
+Line continuation is a GNU extension.
+.
+.
+.\" ====================================================================
+.SS "Legacy compressed encoding"
+.\" ====================================================================
+.
+AT&T
+.I troff \" AT&T
+primarily emitted glyphs by writing two digits
+(a motion)
+followed by a single character corresponding to a glyph.
+.
+This syntax is less a command itself than a compressed encoding of the
+.B c
+and
+.B h
+commands.
+.
+.
+.TP
+.I ddc
+Move right
+.I dd
+(exactly two decimal digits) basic units\~\c
+.BR u ,
+then print glyph with single-letter name\~\c
+.IR c .
+.
+.
+.RS
+.P
+In
+.IR groff ,
+arbitrary
+.I syntactical space
+around and within this command is allowed to be added.
+.
+Only when a preceding command on the same line ends with an argument
+of variable length a separating space is obligatory.
+.
+In
+.I classical
+.IR troff ,
+large clusters of these and other commands were used, mostly without
+spaces; this made such output almost unreadable.
+.
+.RE
+.
+.
+.P
+For modern high-resolution devices,
+this command is impractical
+because the widths of the glyphs have a greater magnitude
+in basic units
+than two decimal digits can represent.
+.
+In
+.IR groff ,
+it is used only for output to the
+.BR X75 ,
+.BR X75\-12 ,
+.BR X100 ,
+and
+.B X100\-12
+devices.
+.
+For others,
+the commands
+.B t
+.RB and\~ u
+provide greater functionality and superior troubleshooting capacity.
+.
+.
+.\" ====================================================================
+.SH Compatibility
+.\" ====================================================================
+.
+.\" BEGIN Keep parallel with subsection "Output Language Compatibility"
+.\" in doc/groff.texi.in.
+The page description language of AT&T
+.I troff \" AT&T
+was first documented in
+\[lq]A Typesetter-independent TROFF\[rq],
+by Brian Kernighan,
+and by 1992 the AT&T
+.I troff \" AT&T; system
+manual was updated to incorporate a description of it.
+.
+.
+.P
+.IR groff 's
+page description language is compatible with this specification
+except in the following aspects.
+.
+.
+.IP \[bu] 3n
+AT&T device-independent
+.IR troff 's \" AT&T
+quasi-device independence is not yet implemented.
+.\" XXX: Explain what that means.
+.
+.
+.IP \[bu]
+The printing hardware of the early 1980s differed from today's.
+.
+.IR groff 's
+output device names also differ from those of AT&T
+.I troff \" AT&T; system
+.
+For example,
+the PostScript device in AT&T
+.I troff, \" AT&T; system
+.B post
+(implemented by the driver command
+.IR dpost ),
+has a resolution of only 720 units per inch,
+suitable for printers of decades past.
+.
+.IR groff 's
+.B ps
+device has a resolution of 72000 units per inch.
+.
+In principle,
+by implementing a rescaling mechanism,
+.I groff
+could come to emulate AT&T's
+.B post
+device.
+.
+.
+.IP \[bu]
+While the B-spline command
+.B D\[ti]
+is reliably interpreted by
+.IR groff 's
+page description language parser,
+some output drivers don't implement drawing routines for it.
+.
+.
+.IP \[bu]
+In
+GNU
+.I troff, \" GNU
+the argument to the commands
+.B s
+and
+.B x\~H
+uses an implicit unit of scaled points
+.B z
+whereas AT&T
+.I troff \" AT&T
+uses spacing points
+.BR p .
+.
+This isn't an incompatibility,
+but a compatible extension,
+for both units coincide for any device without a
+.B \%sizescale
+directive in its
+.I DESC
+file,
+including all postprocessors from AT&T and
+.IR groff 's
+text
+.RI ( nroff -mode)
+devices.
+.
+.I groff
+devices that use
+.B \%sizescale
+either do not exist for AT&T
+.I troff \" AT&T; system
+have a different name,
+or seem to have a different resolution.
+.
+So conflicts are very unlikely.
+.
+.
+.ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
+.IP \[bu]
+The drawing position after the commands
+.RB \[lq] Dp \[rq],
+.RB \[lq] DP \[rq],
+and
+.RB \[lq] Dt \[rq],
+are processed is illogical.
+.
+Since old versions of
+GNU
+.I troff \" GNU
+had this wart,
+we've retained it for compatibility,
+but may change it in the future.
+.
+Wrap these drawing commands with the
+.B \[rs]Z
+escape sequence to both overcome the illogical positioning
+and keep your input working consistently
+regardless of the wart's presence in the implementation.
+.\}             \" @STUPID_DRAWING_POSITIONING
+.el \{\
+.IP \[bu]
+Temporarily, there existed some confusion on the positioning after the
+.B D
+commands that are
+.I groff
+extensions.
+.
+This has been clarified by establishing the classical rule for all
+groff drawing commands:
+.
+.
+.RS
+.P
+.ft I
+The position after a graphic object has been drawn is at its end;
+for circles and ellipses, the "end" is at the right side.
+.ft
+.RE
+.
+.
+.P
+From this, the positionings specified for the drawing commands above
+follow quite naturally.
+.\}             \" @STUPID_DRAWING_POSITIONING
+.
+.P
+The differences between
+.I groff
+and
+.I classical troff
+are documented in
+.MR groff_diff @MAN7EXT@ .
+.\" END Keep parallel with subsection "Output Language Compatibility" in
+.\" doc/groff.texi.in.
+.
+.
+.\" ====================================================================
+.SH Files
+.\" ====================================================================
+.
+.TP
+.IR @FONTDIR@/\:\%dev name /\:DESC
+describes the output device
+.IR name .
+.
+.
+.br
+.ne 4v
+.\" ====================================================================
+.SH Authors
+.\" ====================================================================
+.
+James Clark wrote an early version of this document,
+which described only the differences between AT&T
+device-independent
+.IR troff 's \" AT&T
+page description language and that of GNU
+.IR troff . \" GNU
+.
+It has since been expanded and revised by
+.MT groff\-bernd\:.warken\-72@\:web\:.de
+Bernd Warken
+.ME
+and
+.MT g.branden\:.robinson@\:gmail\:.com
+G. Branden Robinson
+.ME .
+.
+.
+.\" ====================================================================
+.SH "See also"
+.\" ====================================================================
+.
+.P
+.IR "Groff: The GNU Implementation of troff" ,
+by Trent A.\& Fisher and Werner Lemberg,
+is the primary
+.I groff
+manual.
+.
+You can browse it interactively with \[lq]info groff\[rq].
+.
+.
+.br
+.ne 4v
+.P
+\[lq]Troff User's Manual\[rq]
+by Joseph F.\& Ossanna,
+1976
+(revised by Brian W.\& Kernighan,
+1992),
+AT&T Bell Laboratories Computing Science Technical Report No.\& 54,
+widely called simply \[lq]CSTR\~#54\[rq],
+documents the language,
+device and font description file formats,
+and device-independent page description language
+referred to collectively in
+.I groff
+documentation as
+.RI \[lq]AT&T\~ troff \[rq].
+.
+.
+.P
+\[lq]A Typesetter-independent TROFF\[rq]
+by Brian W.\& Kernighan,
+1982,
+AT&T Bell Laboratories Computing Science Technical Report No.\& 97,
+(CSTR\~#97),
+provides additional insights into the
+device and font description file formats
+and device-independent page description language.
+.
+.
+.TP
+.MR groff @MAN1EXT@
+documents the
+.B \-Z
+option and contains pointers to further
+.I groff
+documentation.
+.
+.
+.TP
+.MR groff @MAN7EXT@
+describes the
+.I groff
+language,
+including its escape sequences and system of units.
+.
+.
+.TP
+.MR groff_font @MAN5EXT@
+details the scaling parameters of
+.I DESC
+(device description)
+files.
+.
+.
+.TP
+.MR @g@troff @MAN1EXT@
+generates the language documented here.
+.
+.
+.TP
+.MR roff @MAN7EXT@
+presents historical aspects and the general structure of
+.I roff
+systems.
+.
+.
+.TP
+.MR groff_diff @MAN7EXT@
+enumerates differences between the output of AT&T
+.I troff \" AT&T
+and that of GNU
+.IR troff . \" GNU
+.
+.
+.TP
+.MR gxditview @MAN1EXT@
+is a viewer for device-independent
+.I troff \" generic
+output.
+.
+.
+.TP
+.UR https://\:github.com/\:Alhadis/\:Roff\:.js/
+.I Roff.js
+.UE
+is a viewer for device-independent
+.I troff \" generic
+output written in JavaScript.
+.
+.
+.P
+.MR grodvi @MAN1EXT@ ,
+.MR grohtml @MAN1EXT@ ,
+.MR grolbp @MAN1EXT@ ,
+.MR grolj4 @MAN1EXT@ ,
+.MR gropdf @MAN1EXT@ ,
+.MR grops @MAN1EXT@ ,
+and
+.MR grotty @MAN1EXT@
+are
+.I groff
+postprocessors.
+.
+.
+.\" Restore compatibility mode (for, e.g., Solaris 10/11).
+.cp \n[*groff_groff_out_5_man_C]
+.do rr *groff_groff_out_5_man_C
+.
+.
+.\" Local Variables:
+.\" fill-column: 72
+.\" mode: nroff
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

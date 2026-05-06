@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Identifiers (The GNU troff Manual)</title>
+
+<meta name="description" content="Identifiers (The GNU troff Manual)">
+<meta name="keywords" content="Identifiers (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Formatter-Instructions.html" rel="next" title="Formatter Instructions">
+<link href="Numeric-Expressions.html" rel="prev" title="Numeric Expressions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Identifiers"></span><div class="header">
+<p>
+Next: <a href="Formatter-Instructions.html" accesskey="n" rel="next">Formatter Instructions</a>, Previous: <a href="Numeric-Expressions.html" accesskey="p" rel="prev">Numeric Expressions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Identifiers-1"></span><h3 class="section">5.5 Identifiers</h3>
+<span id="index-identifiers"></span>
+
+<p>An
+<em>identifier</em>
+labels a
+GNU
+<code>troff</code> datum such as a register,
+name
+(macro,
+string,
+or diversion),
+typeface
+(font,
+family,
+or style),
+color,
+special character or character class,
+hyphenation language code,
+environment,
+or stream.
+Valid identifiers consist of one or more ordinary
+characters.<a id="DOCF51" href="groff.html_fot.html#FOOT51"><sup>51</sup></a>
+<span id="index-ordinary-character"></span>
+<span id="index-character_002c-ordinary"></span>
+An
+<i>ordinary character</i>
+is any Unicode Basic Latin character
+that is not a space and not the escape character;
+recall <a href="Input-Format.html">Input Format</a>.
+Thus,
+the identifiers
+&lsquo;<samp>br</samp>&rsquo;,
+&lsquo;<samp>PP</samp>&rsquo;,
+&lsquo;<samp>end-list</samp>&rsquo;,
+&lsquo;<samp>ref*normal-print</samp>&rsquo;,
+&lsquo;<samp>|</samp>&rsquo;,
+&lsquo;<samp>@_</samp>&rsquo;,
+and &lsquo;<samp>!&quot;#$%'()*+,-./</samp>&rsquo;
+are all valid.
+Discretion should be exercised to prevent confusion.
+Identifiers starting with
+&lsquo;<samp>(</samp>&rsquo;
+or
+&lsquo;<samp>[</samp>&rsquo;
+require care.
+</p>
+<div class="example">
+<pre class="example">.nr x 9
+.nr y 1
+.nr (x 2
+.nr [y 3
+.nr sum1 (\n(x + \n[y])
+    error&rarr; a space character is not allowed in an escape
+    error&rarr;   sequence parameter
+A:2+3=\n[sum1]
+.nr sum2 (\n((x + \n[[y])
+B:2+3=\n[sum2]
+.nr sum3 (\n[(x] + \n([y)
+C:2+3=\n[sum3]
+    &rArr; A:2+3=1 B:2+3=5 C:2+3=5
+</pre></div>
+
+<span id="index-_005d_002c-as-part-of-an-identifier"></span>
+<p>An identifier with a closing bracket (&lsquo;<samp>]</samp>&rsquo;) in its name can&rsquo;t be
+accessed with bracket-form escape sequences that expect an identifier as
+a parameter.  For example, &lsquo;<samp>\[foo]]</samp>&rsquo; accesses the glyph &lsquo;<samp>foo</samp>&rsquo;,
+followed by &lsquo;<samp>]</samp>&rsquo; in whatever the surrounding context is, whereas
+&lsquo;<samp>\C'foo]'</samp>&rsquo; formats a glyph named &lsquo;<samp>foo]</samp>&rsquo;.  Similarly, the
+identifier &lsquo;<samp>(</samp>&rsquo; can&rsquo;t be interpolated <em>except</em> with bracket
+forms.
+</p>
+<span id="index-refer_002c-and-macro-names-starting-with-_005b-or-_005d"></span>
+<span id="index-_005b_002c-macro-names-starting-with_002c-and-refer"></span>
+<span id="index-_005d_002c-macro-names-starting-with_002c-and-refer"></span>
+<span id="index-macro-names_002c-starting-with-_005b-or-_005d_002c-and-refer"></span>
+<p>Beginning a macro,
+string,
+or diversion name with the character
+&lsquo;<samp>[</samp>&rsquo;
+or
+&lsquo;<samp>]</samp>&rsquo;
+forecloses use of the
+<code>refer</code>
+preprocessor,
+which recognizes input lines starting with
+&lsquo;<samp>.[</samp>&rsquo;
+and
+&lsquo;<samp>.]</samp>&rsquo;
+as bibliographic reference delimiters.
+</p>
+<dl>
+<dt id="index-_005cA_0027input_0027">Escape&nbsp;sequence: <strong><tt>\A<code>'</code></tt><span class="roman"><i>input</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cA"></span>
+<p>Interpolate&nbsp;1 if
+<var>input</var>
+is a valid identifier,
+and&nbsp;0 otherwise.
+The delimiter need not be a neutral apostrophe; see
+<a href="Delimiters.html">Delimiters</a>.
+Because GNU
+<code>troff</code> ignores any input character with an invalid code when reading it,
+invalid identifiers are empty or contain
+spaces,
+tabs,
+newlines,
+or
+escape sequences
+that interpolate something other than a sequence of ordinary characters.
+</p>
+<p>You can employ <code>\A</code> to validate a macro argument before using it to
+construct another escape sequence or identifier.
+</p>
+<div class="example">
+<pre class="example">.\&quot; usage: .init-coordinate-pair name val1 val2
+.\&quot; Create a coordinate pair where name!x=val1 and
+.\&quot; name!y=val2.
+.de init-coordinate-pair
+.  if \A'\\$1' \{\
+.    if \B'\\$2' .nr \\$1!x \\$2
+.    if \B'\\$3' .nr \\$1!y \\$3
+.  \}
+..
+.init-coordinate-pair center 5 10
+.init-coordinate-pair &quot;poi&rarr;nt&quot; trash garbage \&quot; ignored
+.init-coordinate-pair point waste rubbish \&quot; ignored
+The center is at (\n[center!x], \n[center!y]).
+    &rArr; The center is at (5, 10).
+</pre></div>
+
+<p>In this example, we also validated the numeric arguments; the registers
+&lsquo;<samp>point!x</samp>&rsquo; and &lsquo;<samp>point!y</samp>&rsquo; remain undefined.  See <a href="Numeric-Expressions.html">Numeric Expressions</a> for the <code>\B</code> escape sequence.
+</p></dd></dl>
+
+<span id="index-undefined-identifiers"></span>
+<span id="index-identifiers_002c-undefined"></span>
+<p>The formatter&rsquo;s handling of undefined identifiers is context-dependent.
+There is no way to invoke an undefined request;
+such syntax is interpreted as a macro call instead.
+If the identifier is interpreted as a string,
+macro,
+or diversion name,
+the formatter defines it as empty and interpolates nothing.<a id="DOCF52" href="groff.html_fot.html#FOOT52"><sup>52</sup></a>
+Similarly,
+if the identifier is interpreted as a register name,
+the formatter initializes it to zero
+and interpolates that value.<a id="DOCF53" href="groff.html_fot.html#FOOT53"><sup>53</sup></a>
+Attempting to use an undefined
+typeface,
+special character or character class,
+color,
+environment,
+hyphenation language code,
+or
+stream
+generally provokes an error diagnostic.
+</p>
+<span id="index-name-space_002c-common_002c-of-macros_002c-diversions_002c-and-strings"></span>
+<span id="index-common-name-space-of-macros_002c-diversions_002c-and-strings"></span>
+<span id="index-macro-name-space_002c-shared-with-strings-and-diversions"></span>
+<span id="index-string-name-space_002c-shared-with-macros-and-diversions"></span>
+<span id="index-diversion-name-space_002c-shared-with-macros-and-strings"></span>
+<span id="index-name-space_002c-common_002c-of-special-characters-and-character-classes"></span>
+<span id="index-common-name-space-of-special-characters-and-character-classes"></span>
+<span id="index-character-class-name-space_002c-shared-with-special-characters"></span>
+<span id="index-special-character-name-space_002c-shared-with-character-classes"></span>
+<p>Identifiers for requests, macros, strings, and diversions share one name
+space; special characters and character classes another.  No other
+object types do.
+</p>
+<div class="example">
+<pre class="example">.de xxx
+.  nop foo
+..
+.di xxx
+bar
+.br
+.di
+.
+.xxx
+    &rArr; bar
+</pre></div>
+
+<p>The foregoing example shows that GNU <code>troff</code> reuses the identifier
+&lsquo;<samp>xxx</samp>&rsquo;, changing it from a macro to a diversion.  No warning is
+emitted, and the previous contents of &lsquo;<samp>xxx</samp>&rsquo; are lost.
+</p>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Formatter-Instructions.html" accesskey="n" rel="next">Formatter Instructions</a>, Previous: <a href="Numeric-Expressions.html" accesskey="p" rel="prev">Numeric Expressions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

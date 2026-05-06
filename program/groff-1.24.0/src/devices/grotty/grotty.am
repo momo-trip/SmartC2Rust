@@ -1,0 +1,51 @@
+# Copyright 2014-2015 Free Software Foundation, Inc.
+#           2021-2024 G. Branden Robinson
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+bin_PROGRAMS += grotty
+grotty_SOURCES = src/devices/grotty/tty.cpp
+grotty_LDADD = $(LIBM) \
+  libdriver.a \
+  libgroff.a \
+  lib/libgnu.a
+
+GROTTYTMACFILES = \
+  tmac/tty.tmac \
+  tmac/tty-char.tmac
+grottytmacdir = $(tmacdir)
+dist_grottytmac_DATA = $(GROTTYTMACFILES)
+
+man1_MANS += src/devices/grotty/grotty.1
+EXTRA_DIST += \
+  src/devices/grotty/grotty.1.man
+
+grotty_TESTS = \
+  src/devices/grotty/tests/basic-latin-glyphs-map-correctly.sh \
+  src/devices/grotty/tests/h-option-works.sh \
+  src/devices/grotty/tests/osc8-works.sh
+TESTS += $(grotty_TESTS)
+EXTRA_DIST += $(grotty_TESTS)
+
+uninstall_groffdirs: uninstall_grotty_hook
+uninstall_grotty_hook:
+	-rmdir $(DESTDIR)$(tmacdir)
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

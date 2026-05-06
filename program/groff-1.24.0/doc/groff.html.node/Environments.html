@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Environments (The GNU troff Manual)</title>
+
+<meta name="description" content="Environments (The GNU troff Manual)">
+<meta name="keywords" content="Environments (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Suppressing-Output.html" rel="next" title="Suppressing Output">
+<link href="Punning-Names.html" rel="prev" title="Punning Names">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Environments"></span><div class="header">
+<p>
+Next: <a href="Suppressing-Output.html" accesskey="n" rel="next">Suppressing Output</a>, Previous: <a href="Punning-Names.html" accesskey="p" rel="prev">Punning Names</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Environments-1"></span><h3 class="section">5.32 Environments</h3>
+<span id="index-environments"></span>
+
+<p>As discussed in <a href="Deferring-Output.html">Deferring Output</a>,
+environments store most of the parameters
+that determine the appearance of text.
+A default environment named
+&lsquo;<samp>0</samp>&rsquo;
+(zero)
+exists when the formatter starts up;
+formatting-related requests and escape sequences modify its properties.
+</p>
+<span id="index-stack"></span>
+<p>You can create new environments and switch among them.
+Only one is current at any given time.
+Active environments are managed using a
+<em>stack</em>,
+a data structure supporting &ldquo;push&rdquo; and &ldquo;pop&rdquo; operations.
+The current environment is at the top of the stack.
+The same environment name can be pushed onto the stack multiple times,
+possibly interleaved with others.
+Popping the environment stack does not destroy the current environment;
+it remains accessible by name and can be made current again
+by pushing it at any time.
+Environments cannot be renamed or deleted,
+and can only be modified when current.
+To inspect the environment stack,
+use the
+<code>pev</code>
+request.<a id="DOCF174" href="groff.html_fot.html#FOOT174"><sup>174</sup></a>
+</p>
+<p>Environments store the following information.
+</p>
+<ul>
+<li> a partially collected line, if any
+
+</li><li> data about the most recently output glyph and line (registers
+<code>.cdp</code>, <code>.cht</code>, <code>.csk</code>, <code>.n</code>, <code>.w</code>)
+
+</li><li> typeface parameters (size, family, style, height and slant, inter-word
+and inter-sentence space sizes)
+
+</li><li> page parameters (line length, title length, vertical spacing, line
+spacing, indentation, line numbering, centering, right-alignment,
+underlining, hyphenation parameters)
+
+</li><li> filling enablement; adjustment enablement and mode
+
+</li><li> tab stops; tab, leader, escape, control, no-break control, hyphenation,
+and margin characters
+
+</li><li> input line traps
+
+</li><li> stroke and fill colors
+</li></ul>
+
+<dl>
+<dt id="index-_002eev">Request: <strong><tt>.ev</tt></strong> <em>[<span class="roman"><i>ident</i></span>]</em></dt>
+<dd><span id="index-ev"></span>
+</dd><dt id="index-_005cn_005b_002eev_005d">Register: <strong><tt>\n[.ev]</tt></strong></dt>
+<dd><span id="index-_002eev-1"></span>
+<span id="index-switching-environments-_0028ev_0029"></span>
+<span id="index-environment_002c-switching-_0028ev_0029"></span>
+<span id="index-environment-number_002fname-register-_0028_002eev_0029"></span>
+<p>Enter the environment <var>ident</var>, which is created if it does not
+already exist, using the same parameters as for the default environment
+used at startup.  With no argument, GNU <code>troff</code> switches to the
+previous environment.
+</p>
+<p>Invoking <code>ev</code> with an argument puts environment <var>ident</var> onto
+the top of the environment stack.  (If it isn&rsquo;t already present in the
+stack, this is a proper push.)  Without an argument, <code>ev</code> pops the
+environment stack, making the previous environment current.  It is an
+error to pop the environment stack with no previous environment
+available.  The read-only string-valued register <code>.ev</code> contains the
+name of the current environment&mdash;the one at the top of the stack.
+</p>
+<div class="example">
+<pre class="example">.ev footnote-env
+.fam N
+.ps 6
+.vs 8
+.ll -.5i
+.ev
+
+<span class="roman">&hellip;</span>
+
+.ev footnote-env
+\[dg] Observe the smaller text and vertical spacing.
+.ev
+</pre></div>
+
+<p>We can familiarize ourselves with stack behavior by wrapping the
+<code>ev</code> request with a macro that reports the contents of the
+<code>.ev</code> register to the standard error stream.
+</p>
+<div class="example">
+<pre class="example">.de EV
+.  ev \\$1
+.  tm environment is now \\n[.ev]
+..
+.
+.EV foo
+.EV bar
+.EV
+.EV baz
+.EV
+.EV
+.EV
+</pre></div>
+
+<div class="example">
+<pre class="example">    error&rarr; environment is now foo
+    error&rarr; environment is now bar
+    error&rarr; environment is now foo
+    error&rarr; environment is now baz
+    error&rarr; environment is now foo
+    error&rarr; environment is now 0
+    error&rarr; error: environment stack underflow
+    error&rarr; environment is now 0
+</pre></div>
+
+</dd></dl>
+
+<dl>
+<dt id="index-_002eevc">Request: <strong><tt>.evc</tt></strong> <em>environment</em></dt>
+<dd><span id="index-evc"></span>
+<span id="index-copying-environment-_0028evc_0029"></span>
+<span id="index-environment_002c-copying-_0028evc_0029"></span>
+<p>Copy the properties of <var>environment</var> to the current environment,
+except for:
+</p>
+<ul>
+<li> a partially collected line, if present;
+
+</li><li> the interruption status of the previous input line (due to use of the
+<code>\c</code> escape sequence);
+
+</li><li> the count of remaining lines to center, to right-justify, or to
+underline (with or without underlined spaces)&mdash;these are set to zero;
+
+</li><li> the activation status of temporary indentation;
+
+</li><li> input line traps and their associated data;
+
+</li><li> the activation status of line numbering (which can be reactivated with
+&lsquo;<samp>.nm&nbsp;+0</samp>&rsquo;<!-- /@w -->); and
+
+</li><li> the count of consecutive hyphenated lines (set to zero).
+</li></ul>
+
+<p>Copying an environment to itself discards the foregoing data.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002ew_005d">Register: <strong><tt>\n[.w]</tt></strong></dt>
+<dd><span id="index-_002ew"></span>
+</dd><dt id="index-_005cn_005b_002echt_005d">Register: <strong><tt>\n[.cht]</tt></strong></dt>
+<dd><span id="index-_002echt"></span>
+</dd><dt id="index-_005cn_005b_002ecdp_005d">Register: <strong><tt>\n[.cdp]</tt></strong></dt>
+<dd><span id="index-_002ecdp"></span>
+</dd><dt id="index-_005cn_005b_002ecsk_005d">Register: <strong><tt>\n[.csk]</tt></strong></dt>
+<dd><span id="index-_002ecsk"></span>
+<span id="index-environment_002c-dimensions-of-last-glyph-_0028_002ew_002c-_002echt_002c-_002ecdp_002c-_002ecsk_0029"></span>
+<span id="index-width_002c-of-last-glyph-_0028_002ew_0029"></span>
+<span id="index-height_002c-of-last-glyph-_0028_002echt_0029"></span>
+<span id="index-depth_002c-of-last-glyph-_0028_002ecdp_0029"></span>
+<span id="index-skew_002c-of-last-glyph-_0028_002ecsk_0029"></span>
+<span id="index-last-glyph_002c-dimensions-_0028_002ew_002c-_002echt_002c-_002ecdp_002c-_002ecsk_0029"></span>
+<span id="index-glyph_002c-last_002c-dimensions-_0028_002ew_002c-_002echt_002c-_002ecdp_002c-_002ecsk_0029"></span>
+<p>The <code>\n[.w]</code> register contains the width of the last glyph
+formatted in the environment.
+</p>
+<p>The <code>\n[.cht]</code> register contains the height of the last glyph
+formatted in the environment.
+</p>
+<p>The <code>\n[.cdp]</code> register contains the depth of the last glyph
+formatted in the environment.  It is positive for glyphs extending below
+the baseline.
+</p>
+<p>The <code>\n[.csk]</code> register contains the <em>skew</em> (how far to the
+right of the glyph&rsquo;s center that GNU <code>troff</code> should place an
+accent) of the last glyph formatted in the environment.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002en_005d">Register: <strong><tt>\n[.n]</tt></strong></dt>
+<dd><span id="index-_002en"></span>
+<span id="index-environment_002c-previous-line-length-_0028_002en_0029"></span>
+<span id="index-line-length_002c-previous-_0028_002en_0029"></span>
+<span id="index-length-of-previous-line-_0028_002en_0029"></span>
+<span id="index-previous-line-length-_0028_002en_0029"></span>
+<p>The <code>\n[.n]</code> register contains the length of the previous output
+line emitted in the environment.
+</p></dd></dl>
+
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Suppressing-Output.html" accesskey="n" rel="next">Suppressing Output</a>, Previous: <a href="Punning-Names.html" accesskey="p" rel="prev">Punning Names</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

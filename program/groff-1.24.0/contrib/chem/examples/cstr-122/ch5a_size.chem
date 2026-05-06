@@ -1,0 +1,22 @@
+ch5a_size.chem:
+.br
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+.ps 14
+size 16
+R: ring6 put O at 1 put C at 2 put O at 3 put C at 4 put O at 5 put C at 6
+   double bond 60 from R.V2 ; NH
+   double bond down from R.V4 ; NH
+   double bond -60 from R.V6 ; HN
+size 10 # if you are doing more than one
+.ps 10
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

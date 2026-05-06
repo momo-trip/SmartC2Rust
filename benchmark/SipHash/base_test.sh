@@ -29,7 +29,7 @@ run_test() {
     current_test=$((current_test + 1))
     
     # Log test start
-    echo "Test Case #${current_test}: Started" | tee -a /root/SmartC2Rust/benchmark/SipHash/out_flow_c.log /root/SmartC2Rust/benchmark/SipHash/out_flow_rust.log
+    echo "Test Case #${current_test}: Started"
     
     # Create test input file (deterministic, matches gen_expected.sh)
     gen_input "$input_size"

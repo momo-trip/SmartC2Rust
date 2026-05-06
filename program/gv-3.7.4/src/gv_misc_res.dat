@@ -1,0 +1,783 @@
+
+!########## gv_misc_res.dat
+
+!##### General
+
+GV*highlightThickness:			1
+GV*ShapeStyle:				Rectangle
+GV*beNiceToColormap:			False
+GV*input:				True
+GV*initialResourcesPersistent:		False
+
+!##### Version (do not modify this resource)
+
+GV.version:				gv 3.6.7.90
+
+!##### Background, Foreground
+
+GV*background:				gray71
+GV*foreground:				black
+GV*Text*background:			#D3B5B5
+GV*SimpleMenu*background:		AntiqueWhite3
+GV*locator*background:			gray65
+GV*panner*foreground:			gray78
+GV*Label.background:			AntiqueWhite3
+GV*fileSel*Frame*background:		gray78
+GV*fileSel*Frame*Text*background:	#D3B5B5
+GV*optiongvPopup*Toggle*foreground:	gray65
+GV*optiongsPopup*Toggle*foreground:	gray65
+GV*optionsetupPopup*Toggle*foreground:	gray65
+GV*infoPopup*Scrollbar.background:	gray71
+GV*notePopup*message.background:	#D3B5B5
+
+GV*confirmPopup*message3.background:	#D3B5B5
+GV*confirmPopup*message1.background:	gray71
+
+GV*Button.background:			AntiqueWhite3
+GV*Button.highlightedBackground:	AntiqueWhite2
+GV*Button.setBackground:		AntiqueWhite4
+GV*Switch.background:			AntiqueWhite3
+GV*Switch.highlightedBackground:	AntiqueWhite4
+GV*Switch.setBackground:		AntiqueWhite2
+GV.?.Button.highlightedBackground:	AntiqueWhite2
+GV.?.Button.background:			AntiqueWhite3
+GV.?.Button.setBackground:		AntiqueWhite4
+
+GV*MButton*setBackground:		AntiqueWhite2
+GV*MButton*background:			AntiqueWhite3
+
+GV*Scrollbar.background:		gray78
+GV*Scrollbar.pointerColor:		black
+GV*Scrollbar.pointerColorBackground:	White
+GV*Scrollbar.scrollbarBackground:	gray71
+GV*Scrollbar.foreground:		gray78
+GV*optionsetupPopup*Text*Scrollbar.background:gray71
+GV*optionfsPopup*Text*Scrollbar.background:gray71
+
+GV*optionfsPopup*Label.background:	gray71
+GV*optiongsPopup*Label.background:	gray71
+GV*optiongvPopup*Label.background:	gray71
+GV*optionsetupPopup*Label.background:	gray71
+
+GV*newtocFrame*background:		gray78
+GV*newtocScroll.background:		gray78
+GV*Vlist.markBackground:		red
+GV*Vlist.selectedBackground:		#D3B5B5
+GV*Vlist.highlightedBackground:		gray65
+
+!##### Shadows
+
+GV*shadowWidth:				2
+GV*Label.shadowWidth:			1
+GV*Label*topShadowContrast:		-40
+GV*Label*bottomShadowContrast:		-20
+GV*Scrollbar.TopShadowPixel:		gray90
+GV*Scrollbar.BottomShadowPixel:		gray40
+GV*newtoc.shadowWidth:			0
+GV*newtocScroll.bottomShadowPixel:	gray40
+GV*optionfsPopup*Label.shadowWidth:	0
+GV*optiongsPopup*Label.shadowWidth:	0
+GV*optiongvPopup*Label.shadowWidth:	0
+GV*optionsetupPopup*Label.shadowWidth:	0
+GV*confirmPopup*message1.shadowWidth:	0
+
+!##### Frames
+
+GV*Frame.frameType:			sunken
+GV*Frame.topShadowPixel:		gray85
+GV*Frame.bottomShadowPixel:		gray40
+GV*Frame.hSpace:			0
+GV*Frame.vSpace:			0
+
+GV*MButton*unsetFrameStyle:		chiseled
+
+GV.?.Button.unsetFrameStyle:		chiseled
+GV.?.Button.highlightedFrameStyle:	chiseled
+
+GV*rescan.unsetFrameStyle:		chiseled
+GV*filter.unsetFrameStyle:		chiseled
+
+!##### Border
+
+GV*borderWidth:				0
+GV*processButton.borderWidth:		0
+GV*page.borderWidth:			1
+GV*SimpleMenu.borderWidth:		1
+GV*infoPopup*Text.borderWidth:		1
+
+!##### View Area
+
+GV*viewFrame.topShadowPixel:		gray78
+GV*viewFrame.hSpace:			1
+GV*viewFrame.vSpace:			1
+GV*page.borderColor:			gray65
+GV*viewClip.borderWidth:		1
+GV*viewClip.borderColor:		gray71
+
+!##### Scrollbar widget
+
+GV*Scrollbar.thickness:			17
+GV*Scrollbar.thumb:			None
+
+!##### Menus
+
+GV*magMenu*VertSpace:			15
+GV*magMenu*leftMargin:			30
+GV*magMenu*rightMargin:			30
+GV*magMenu*justify:			center
+
+!##### File Selection widget
+
+GV*fileSel.filterframe.background:	#D3B5B5
+GV*fileSel.filterframe.hSpace:		4
+GV*fileSel.filterframe*Text*Margin:	4
+GV*fileSel.pathframe.background:	#D3B5B5
+GV*fileSel.pathframe.hSpace:		4
+GV*fileSel.pathframe*Text*Margin:	6
+
+GV*fileSel*Vlist.selectedBackground:	gray58
+GV*fileSel*Vlist.selectedGeometry:	3 0 -3 1
+GV*fileSel*Vlist.highlightedGeometry:	3 0 -3 1
+
+GV*fileSel*topframe.forcedWidth:	100
+GV*fileSel*subframe.forcedWidth:	100
+
+GV*fileSel*Scrollbar.showArrows:	False
+GV*fileSel*Scrollbar.thumbTopIndent:	0
+GV*fileSel*Scrollbar.width:		12
+GV*fileSel*Scrollbar.shadowWidth:	1
+GV*fileSel*Scrollbar.background:	gray78
+GV*fileSel*Scrollbar.foreground:	gray71
+
+GV*fileSel.minimumWidth:		400
+GV*fileSel.height:			350
+GV*fileSelPopup.minWidth:		350
+GV*fileSelPopup.minHeight:		200
+GV*fileSel.highlightPixel:		#D3B5B5
+
+!##### Zoom Popup
+
+GV*zoomPopup.title:			Zoom
+GV*zoomControl.maximumWidth:		600
+GV*zoomControl.maximumHeight:		600
+
+!##### Version Popup
+
+GV*versionPopup*Label.internalHeight:	6
+GV*versionPopup*Label.internalWidth:	8
+
+!##### Info Popup
+
+GV*infoPopup.title:			Ghostscript Messages
+GV*infoPopup.geometry:			+50+50
+
+!##### Dialog Popup
+
+GV*dialogPopup.title:			Dialog
+GV*dialogPopup*message.internalHeight:	2
+GV*dialogPopup*message.internalWidth:	8
+GV*dialogPopup*defaultDistance:		2
+
+!##### Note Popup
+
+GV*notePopup.title:			Message
+GV*notePopup*message.internalHeight:	6
+GV*notePopup*message.internalWidth:	8
+
+!##### Confirm Popup
+
+GV*confirmPopup.title:			Confirm
+GV*confirmPopup*Label.internalHeight:	6
+GV*confirmPopup*Label.internalWidth:	8
+
+!##### OptionsSetup Popup
+
+GV*optionfsPopup.title:			File Selection Options
+GV*optionfsPopup*defaultDistance:	2
+GV*optionfsPopup*Text*leftMargin:	8
+GV*optionfsPopup*filters.Margin:	8
+GV*optionfsPopup*dirs.Margin:		8
+GV*optionfsPopup*filters.height:	120
+GV*optionfsPopup*dirs.height:		120
+
+!##### OptionsGS Popup
+
+GV*optiongsPopup.title:			Ghostscript Options
+GV*optiongsPopup*defaultDistance:	2
+GV*optiongsPopup*Text*Margin:		5
+
+!##### OptionsGV Popup
+
+GV*optiongvPopup.title:			gv Options
+
+!##### OptionsSetup Popup
+
+GV*optionsetupPopup.title:		Setup Options
+GV*optionsetupPopup*defaultDistance:	2
+GV*optionsetupPopup*Text*leftMargin:	8
+GV*optionsetupPopup*scales.Margin:	8
+GV*optionsetupPopup*scalesFrame.forcedWidth:	230
+GV*optionsetupPopup*mediasFrame.forcedWidth:	240
+GV*optionsetupPopup*mediasFrame.forcedHeight:	400
+
+!##### FileSet Popup
+
+GV*fileSelPopup.title:			Open File
+
+!##### Panner
+
+GV*pannerFrame.frameType:		sunken
+GV*pannerFrame.hSpace:			0
+GV*pannerFrame.vSpace:			0
+
+GV*panner.background:			gray65
+GV*pannerFrame.shadowWidth:		1
+GV*pannerFrame.topShadowPixel:		gray90
+GV*pannerFrame.bottomShadowPixel:	gray40
+GV*panner.width:			50
+GV*panner.height:			50
+
+GV*slider.background:			gray78
+GV*slider.shadowWidth:			1
+GV*slider.topShadowPixel:		gray90
+GV*slider.bottomShadowPixel:		gray40
+
+
+!##### Miscellaneous
+
+GV*stateButton*menu*leftMargin:		20
+GV*orientationButton*menu*leftMargin:	20
+GV*pagemediaButton*menu*leftMargin:	20
+GV*scaleButton*menu*leftMargin:		20
+GV.control.prevPage*internalHeight:	4
+GV.control.nextPage*internalHeight:	4
+GV*locator*internalHeight:		3
+GV.control.Button*internalWidth:	0
+
+!################################################
+!##### Labels
+!################################################
+
+GV*presentation.Label:			Presentation Mode
+GV*savepos.Label:			Savepos
+GV*cancel.Label:			Cancel
+GV*dismiss.Label:			Dismiss
+GV*apply.label:				Apply
+GV*copyright.Label:			Copyright
+GV*quit.Label:				Quit
+GV*fileButton.Label:			File
+GV*open.Label:				Open ...
+GV*reopen.Label:			Reload
+GV*update.Label:			Update
+GV*printAllPages.Label:			Print document ...
+GV*printMarkedPages.Label:		Print marked pages ...
+GV*saveAllPages.Label:			Save document ...
+GV*saveMarkedPages.Label:		Save marked pages ...
+GV*stateButton.Label:			State
+GV*stop.Label:				Stop interpreter
+GV*dsc.Label:				Respect document structure
+GV*eof.Label:				Ignore EOF comments
+GV*antialias.Label:			Antialias
+GV*watchFile.Label:			Watch file
+GV*titleLabel.Label:			Show Title
+GV*pixmap.Label:			Backing Pixmap
+GV*size.Label:				Automatic resizing
+GV*watch.Label:				Watch File
+GV*infoVerboseLabel.Label:			info Popup
+GV*ascaleLabel.Label:			Arbitraty scale
+GV*optionsgv.Label:			gv Options ...
+GV*optionsfs.Label:			File Selection Options ...
+GV*optionsgs.Label:			Ghostscript Options ...
+GV*optionssetup.Label:			Setup Options ...
+GV*pageButton.Label:			Page
+GV*next.Label:				Next
+GV*show.Label:				Redisplay
+GV*prev.Label:				Previous
+GV*center.Label:			Center
+GV*pageButton*current.Label:		Toggle current mark
+GV*pageButton*even.Label:		Toggle even marks
+GV*pageButton*odd.Label:		Toggle odd marks
+GV*pageButton*unmark.Label:		Unmark all
+GV*processButton.Label:			\ processing
+GV*mark.Label:				Mark
+GV*prevPage.Label:			<<
+GV*nextPage.Label:			>>
+GV*unmark.Label:			Unmark
+GV*automatic.Label:			Automatic
+GV*portrait.Label:			Portrait
+GV*landscape.Label:			Landscape
+GV*upsidedown.Label:			Upside-Down
+GV*seascape.Label:			Seascape
+GV*swap.Label:				Swap Landscape
+GV*toggleCurrent.label:
+GV*toggleEven.label:
+GV*toggleOdd.label:
+GV*unmarkAll.label:
+GV*printAll.label:			Print All 
+GV*printMarked.label:			Print Marked
+GV*saveAll.label:			Save All
+GV*saveMarked.label:			Save Marked
+GV*openFile.label:			Open
+GV*redisplay.label:			Reload
+GV*updateFile.label:			Update File
+GV*checkFile.label:			Check File
+
+GV*filters.label:			Filters:
+GV*dirs.label:				Directories
+GV*button1.label:			Cancel
+GV*button2.label:			Open File
+GV*rescan.label:			Rescan Directory
+GV*screenSizeLabel.label:		Screen Size (mm)
+
+GV*versionPopup*versionDone*label:	Dismiss
+GV*dialogPopup*cancel.label:		Cancel
+GV*notePopup*done.label:		Okay
+
+GV*confirmPopup*cancel.label:		Cancel
+GV*confirmPopup*done.label:		Quit
+GV*save.label:				Save
+
+GV*optiongvPopup*mediaLabel.label:	\ Paper Size \ 
+GV*optiongvPopup*fmediaLabel.label:	Fallback Paper Size
+GV*optiongvPopup*orientLabel.label:	\     Orientation    \ 
+GV*optiongvPopup*forientLabel.label:	Fallback Orientation
+GV*optiongvPopup*magLabel.label:	Scale
+GV*optiongvPopup*antialias.label:	Antialias
+GV*optiongvPopup*respectDSC.label:	Respect DSC
+GV*optiongvPopup*eof.label:		Ignore EOF
+GV*optiongvPopup*autoResize.label:	Variable Size
+GV*optiongvPopup*swapLandscape.label:	Swap Landscape
+GV*optiongvPopup*scalesLabel.label:	\   Scale  \ 
+
+GV*miscmenuLabel.label:			Misc Menu Entries
+GV*magmenuLabel.label:			Mag Menu Entries
+GV*mediasLabel.label:			Media Sizes
+GV*confirmLabel.label:			Confirm Quit
+GV*misc.label:				Miscellaneous
+GV*scrolling.label:			Reverse Scrolling
+GV*eyeGuide.label:			Scrolling Eye Guide
+GV*confirmPrint.label:			Confirm Printing
+GV*uncompressLabel.label:		Uncompress
+GV*autoCenter.label:			Auto Center
+GV*printCommandLabel.label:		Print Command
+GV*scratchDirLabel.label:		Scratch Directory
+GV*saveDirLabel.label:			Save Directory
+GV*scalesLabel.label:			Scales
+GV*scaleBaseLabel.label:		Scale Base
+
+GV*safeDir.label:	SafeDir
+GV*safer.label:		Safer
+GV*quiet.label:		Quiet
+GV*defaults.label:	System Defaults
+GV*scanLabel.label:	Scan PDF
+GV*convLabel.label:	Convert PDF
+GV*gsLabel.label:	Interpreter
+GV*x11devLabel.label:	Device
+GV*x11alphadevLabel.label:	Antialias Device
+GV*argumentsLabel.label:	Arguments
+
+GV*filtersLabel.label:			File Selection Filters
+GV*dirsLabel.label:			File Selection Directories
+GV*filterLabel.label:			Default Filter
+
+GV*miscMenu.update.label:		Update File
+GV*miscMenu.redisplay.label:		Reload
+GV*miscMenu.stop.label:			Stop Interpreter
+GV*miscMenu.toggle_current.label:	Toggle Current
+GV*miscMenu.toggle_odd.label:		Toggle Odd
+GV*miscMenu.toggle_even.label:		Toggle Even
+GV*miscMenu.unmark.label:		Unmark All
+GV*miscMenu.print_all.label:		Print All
+GV*miscMenu.print_marked.label:		Print Marked
+GV*miscMenu.save_all.label:		Save All
+GV*miscMenu.save_marked.label:		Save Marked
+
+!##################################################
+!##### Translations
+!##################################################
+
+!##### Main Window
+
+GV.control.baseTranslations:#replace		\n\
+ <Key>A:		GV_Antialias()		\n\
+ <Key>O:		GV_Open()		\n\
+ <Key>Q:		GV_Quit()		\n\
+ <Key>R:		GV_Resizing()		\n\
+ <Key>I:		GV_HandleDSC()		\n\
+ <Key>W:		GV_WatchFile()		\n\
+ ~s ~c <Key>s:		GV_Save(marked)		\n\
+ <Key>s:		GV_Save(all)		\n\
+ ~s ~c <Key>p:		GV_Print(marked)	\n\
+ ~s c <Key>p:		GV_Print(all)		\n\
+ ~c ~s <Key>period:	GV_Page(redisplay)	\n\
+ <Key>period:		GV_Reopen()		\n\
+ <Key>Z:               GV_SavePos()            \n\
+ <Key>U:               GV_PrintPos(marked)             \n\
+ s <Key>p:		GV_Presentation()		\n\
+ c <Key>L:		GV_Page(redisplay)	\n\
+ <Key>M:		GV_SetPageMark(current,mark)\n\
+ <Key>N:		GV_SetPageMark(current,unmark)\n\
+						\
+ <Key>7:		GV_SetOrientation(portrait)\n\
+ <Key>8:		GV_SetOrientation(landscape)\n\
+ <Key>9:		GV_SetOrientation(upside-down)\n\
+ <Key>0:		GV_SetOrientation(seascape)\n\
+						\
+ ~c ~s <Key>1:		GV_SetScale(1)		\n\
+ ~c ~s <Key>2:		GV_SetScale(2)		\n\
+ ~c ~s <Key>3:		GV_SetScale(3)		\n\
+ ~c ~s <Key>4:		GV_SetScale(4)		\n\
+ ~c ~s <Key>5:		GV_SetScale(5)		\n\
+ ~c ~s <Key>6:		GV_SetScale(6)		\n\
+ <Key>6:		GV_SetScale(-6)		\n\
+ <Key>5:		GV_SetScale(-5)		\n\
+ <Key>4:		GV_SetScale(-4)		\n\
+ <Key>3:		GV_SetScale(-3)		\n\
+ <Key>2:		GV_SetScale(-2)		\n\
+ <Key>1:		GV_SetScale(-1)		\n\
+ <Key>grave:		GV_SetScale(0)		\n\
+ <Key>asciicircum:	GV_SetScale(0)		\n\
+ <Key>-:		GV_SetScale(-)		\n\
+ <Key>=:		GV_SetScale(+)		\n\
+ <Key>+:		GV_SetScale(+)		\n\
+						\
+ ~c ~s <Key>Up:		GV_Page(up)		\n\
+ ~c ~s <Key>Right:	GV_Page(right)		\n\
+ ~c ~s <Key>Down:	GV_Page(down)		\n\
+ ~c ~s <Key>Left:	GV_Page(left)		\n\
+ ~c  s <Key>Up:		GV_Page(up,left-bottom,!page-1,bottom-rightedge)\n\
+ ~c  s <Key>Down:	GV_Page(down,right-top,!page+1,top-leftedge)\n\
+ ~c  s <Key>Left:	GV_Page(left,up-rightedge,!page-1,bottom-rightedge)\n\
+ ~c  s <Key>Right:	GV_Page(right,down-leftedge,!page+1,top-leftedge)\n\
+  c ~s <Key>Up:		GV_Page(!page-1,top-leftedge)\n\
+  c ~s <Key>Down:	GV_Page(!page+1,top-leftedge)\n\
+  c ~s <Key>Left:	GV_Page(!page-5,top-leftedge)\n\
+  c ~s <Key>Right:	GV_Page(!page+5,top-leftedge)\n\
+						\
+ ~c ~s <Key>d:		GV_Page(up)		\n\
+ ~c ~s <Key>x:		GV_Page(down)		\n\
+ ~c ~s <Key>z:		GV_Page(left)		\n\
+ ~c ~s <Key>y:		GV_Page(left)		\n\
+ ~c ~s <Key>c:		GV_Page(right)		\n\
+ ~c  s <Key>d:		GV_Page(up,left-bottom,!page-1,bottom-rightedge)\n\
+ ~c  s <Key>x:		GV_Page(down,right-top,!page+1,top-leftedge)\n\
+ ~c  s <Key>z:		GV_Page(left,up-rightedge,!page-1,bottom-rightedge)\n\
+ ~c  s <Key>y:		GV_Page(left,up-rightedge,!page-1,bottom-rightedge)\n\
+ ~c  s <Key>c:		GV_Page(right,down-leftedge,!page+1,top-leftedge)\n\
+  c ~s <Key>d:		GV_Page(!page-1,top-leftedge)\n\
+  c ~s <Key>x:		GV_Page(!page+1,top-leftedge)\n\
+  c ~s <Key>z:		GV_Page(!page-5,top-leftedge)\n\
+  c ~s <Key>y:		GV_Page(!page-5,top-leftedge)\n\
+  c ~s <Key>c:		GV_Page(!page+5,top-leftedge)\n\
+ <Key>V:		GV_Page(center)		\n\
+ ~c ~s<Key>space:	GV_Page(down,right-top,!page+1,top-leftedge)\n\
+ <Key>space:		GV_Page(up,left-bottom,!page-1,bottom-rightedge)\n\
+						\
+ <Key>BackSpace:	GV_Page(up,left-bottom,!page-1,bottom-rightedge)\n\
+ <Key>Insert:		GV_Page(page-5)		\n\
+ <Key>Delete:		GV_Page(page+5)		\n\
+ <Key>Home:		GV_Page(page=0)		\n\
+ <Key>End:		GV_Page(page=99999)	\n\
+ <Key>Prior:		GV_Page(page-1)		\n\
+ <Key>Next:		GV_Page(page+1)		\n\
+						\
+ <Key>KP_0:		GV_Page(highlight=0)	\n\
+ <Key>KP_1:		GV_Page(highlight=1)	\n\
+ <Key>KP_2:		GV_Page(highlight=2)	\n\
+ <Key>KP_3:		GV_Page(highlight=3)	\n\
+ <Key>KP_4:		GV_Page(highlight=4)	\n\
+ <Key>KP_5:		GV_Page(highlight=5)	\n\
+ <Key>KP_6:		GV_Page(highlight=6)	\n\
+ <Key>KP_7:		GV_Page(highlight=7)	\n\
+ <Key>KP_8:		GV_Page(highlight=8)	\n\
+ <Key>KP_9:		GV_Page(highlight=9)	\n\
+ <Key>KP_Subtract:	GV_Page(highlight-1)	\n\
+ <Key>KP_Add:		GV_Page(highlight+1)	\n\
+ <Key>KP_Enter:		GV_Page(page=highlighted)\n\
+ <Key>KP_Insert:	GV_Page(page-5)		\n\
+ <Key>KP_Delete:	GV_Page(page+5)		\n\
+ <Key>KP_Home:		GV_Page(page=0)		\n\
+ <Key>KP_End:		GV_Page(page=99999)	\n\
+ <Key>KP_Prior:		GV_Page(page-1)		\n\
+ <Key>KP_Next:		GV_Page(page+1)		\n\
+						\
+ ~c ~s <Key>Return: 	GV_Page(down,!page+1,top)	\n\
+ <Key>Return: 	GV_Page(top,!page-1,down)	\n\
+ <Key>B:		GV_Page(page-1)		\n\
+ <Key>F:		GV_Page(page+1)
+
+!##### Zoom Popup
+
+GV.zoomPopup.Aaa.baseTranslations:#replace	\n\
+ <Key>Q:		GV_DismissPopup()	\n\
+						\
+ ~c ~s <Key>Up:		GV_Page(up)		\n\
+ ~c ~s <Key>Right:	GV_Page(right)		\n\
+ ~c ~s <Key>Down:	GV_Page(down)		\n\
+ ~c ~s <Key>Left:	GV_Page(left)		\n\
+ ~c  s <Key>Up:		GV_Page(up,left-bottom)\n\
+ ~c  s <Key>Down:	GV_Page(down,right-top)\n\
+ ~c  s <Key>Left:	GV_Page(left,up-rightedge)\n\
+ ~c  s <Key>Right:	GV_Page(right,down-leftedge)\n\
+						\
+ ~c ~s <Key>d:		GV_Page(up)		\n\
+ ~c ~s <Key>x:		GV_Page(down)		\n\
+ ~c ~s <Key>z:		GV_Page(left)		\n\
+ ~c ~s <Key>y:		GV_Page(left)		\n\
+ ~c ~s <Key>c:		GV_Page(right)		\n\
+ ~c  s <Key>d:		GV_Page(up,left-bottom)\n\
+ ~c  s <Key>x:		GV_Page(down,right-top)\n\
+ ~c  s <Key>z:		GV_Page(left,up-rightedge)\n\
+ ~c  s <Key>y:		GV_Page(left,up-rightedge)\n\
+ ~c  s <Key>c:		GV_Page(right,down-leftedge)\n\
+ <Key>V:		GV_Page(center)		\n\
+ ~c ~s<Key>space:	GV_Page(down,right-top)\n\
+ <Key>space:		GV_Page(up,left-bottom)\n\
+						\
+ <Key>BackSpace:	GV_Page(up,left-bottom)
+
+!##### Table of contents
+
+GV*newtoc.baseTranslations: #replace		\n\
+ <EnterWindow>:		GV_Toc(highlight)	\n\
+ <LeaveWindow>:		GV_Toc(unhighlight)	\n\
+ <Btn1Down>:		GV_Toc(scrollon)	\n\
+ <Btn1Motion>:		GV_Toc(scroll)		\n\
+ <Btn1Up>:		GV_Toc(highlight)	\
+			GV_Toc(scrolloff)	\
+			GV_Toc(select)		\n\
+ <Btn2Down>:		GV_Toc(toggleon)	\n\
+ <Btn2Motion>:		GV_Toc(toggleextend)	\
+			GV_Toc(highlight)	\n\
+ <Btn2Up>:		GV_Toc(toggleoff)	\n\
+ <Btn3Down>:		GV_Toc(toggleon)	\n\
+ <Btn3Motion>:		GV_Toc(toggleextend)	\
+			GV_Toc(highlight)	\n\
+ <Btn3Up>:		GV_Toc(toggleoff)	\n\
+ <MotionNotify>:	GV_Toc(highlight)
+
+!##### Menus
+
+GV*SimpleMenu.baseTranslations:#replace\n\
+ <Enter>:	highlight()\n\
+ <Leave>:	unhighlight()\n\
+ <BtnMotion>:	highlight()\n\
+ <BtnUp>:	MenuPopdown()\
+		GV_MenuPopdown()\
+		notify()\
+		unhighlight()
+
+!##### Ghostview widget
+
+GV*Ghostview.baseTranslations:		#replace		\n\
+~Button1 ~Button3	<Btn2Down>:	cursor(scroll)		\
+					GV_MovePage(start)	\
+					GV_EraseLocator()	\n\
+~Button1 ~Button3	<Btn2Motion>:	GV_MovePage(move,1.0,0)	\n\
+			<Btn2Up>:	cursor(normal)		\
+					GV_MovePage(stop)	\
+					GV_OtherPage()		\
+					notify()		\n\
+~Button2 ~Button3 s	<Btn1Down>:	cursor(scroll)		\
+					GV_MovePage(start)	\
+					GV_EraseLocator()	\
+					GV_MiscMenu(init)	\n\
+~Button2 ~Button3 s	<Btn1Motion>:	GV_MovePage(move,0,1.0)	\n\
+		  s	<Btn1Up>:	cursor(normal)		\
+					GV_MiscMenu(popup)	\
+					notify()		\n\
+~Button1 ~Button2 s	<Btn3Down>:	GV_MagMenu(begin)	\n\
+~Button1 ~Button2 s	<Btn3Motion>:	GV_MagMenu(extend)	\n\
+~Button1 ~Button2 s	<Btn3Up>:	GV_MagMenu(choose)	\n\
+~Button2 ~Button3	<Btn1Down>:	GV_MagMenu(begin)	\n\
+ Button1		<Btn2Down>:	GV_MagMenu(reset)	\n\
+ Button1		<Btn3Down>:	GV_MagMenu(reset)	\n\
+~Button2 ~Button3	<Btn1Motion>:	GV_MagMenu(extend)	\n\
+~Button2 ~Button3	<Btn1Up>:	GV_MagMenu(choose)	\n\
+~Button1 ~Button2	<Btn3Down>:	cursor(scroll)		\
+					GV_MovePage(start)	\
+					GV_EraseLocator()	\
+					GV_MiscMenu(init)	\n\
+	  Button3	<Btn2Down>:	GV_MiscMenu(reset)	\n\
+	  Button3	<Btn1Down>:	GV_MiscMenu(reset)	\n\
+~Button1 ~Button2	<Btn3Motion>:	GV_MovePage(move,0,1.0)	\n\
+			<Btn3Up>:	cursor(normal)		\
+					GV_MiscMenu(popup)	\
+					notify()		\n\
+ Button2 ~Button3 	<Btn1Down>:  	GV_Page(redisplay)	\n\
+ Button2 ~Button1 	<Btn3Down>:  	GV_Page(redisplay)	\n\
+			<Message>:	message() 		\n\
+			<EnterWindow>:	notify()		\n\
+			<LeaveWindow>:	GV_EraseLocator()	\n\
+			<MotionNotify>:	notify()
+
+!##### Application
+
+GV.baseTranslations:	#replace		\n\
+ <MapNotify>:		GV_CheckFile(date)	\n\
+ <ConfigureNotify>:	GV_ConfigureNotify()	\n\
+ <Message>WM_PROTOCOLS:	GV_DeleteWindow()
+
+!##### Title and Date Button
+
+GV.control.titleButton.baseTranslations:#replace\n\
+ <Btn1Down>:		PopupMenu(1)
+GV.control.dateButton.baseTranslations:#replace	\n\
+ <Btn1Down>:		PopupMenu(1)
+
+!##### next/previous page Buttons Widget in the main window
+
+GV.control.prevPage.baseTranslations: #replace\n\
+ <EnterWindow>:	highlight()	\n\
+ <LeaveWindow>:	reset()		\n\
+ <BtnDown>:	set()		\n\
+ <Btn1Up>:	notify() unset() GV_Page(page-1)\n\
+ <Btn2Up>:	notify() unset() GV_Page(page-5)\n\
+ <Btn3Up>:	notify() unset() GV_Page(page-10)
+
+GV.control.nextPage.baseTranslations: #replace\n\
+ <EnterWindow>:	highlight()	\n\
+ <LeaveWindow>:	reset()		\n\
+ <BtnDown>:	set()		\n\
+ <Btn1Up>:	notify() unset() GV_Page(page+1)\n\
+ <Btn2Up>:	notify() unset() GV_Page(page+5)\n\
+ <Btn3Up>:	notify() unset() GV_Page(page+10)
+
+!##### Buttons in Option Popups
+
+GV*TransientShell*optionControl*Button.baseTranslations: #replace\n\
+ <EnterWindow>:	highlight()	\n\
+ <LeaveWindow>:	reset()		\n\
+ <Btn1Down>:	set()		\n\
+ <Btn1Up>:	notify() unset()
+
+!##### Options gv Popup
+
+GV*optiongvPopup*Toggle.baseTranslations: #replace\n\
+ <EnterWindow>:					\n\
+ <LeaveWindow>:					\n\
+ <Btn1Down>,<Btn1Up>:	toggle() notify()
+
+!##### Options gs Popup
+
+GV*optiongsPopup*Toggle.baseTranslations: #replace\n\
+ <EnterWindow>:					\n\
+ <LeaveWindow>:					\n\
+ <Btn1Down>,<Btn1Up>:	toggle() notify()
+
+!##### Panner
+
+GV*panner.baseTranslations: #replace		\n\
+	<Btn1Down>:	GV_Panner(on)		\n\
+	<Btn1Motion>:	GV_Panner(move)		\n\
+	<Btn1Up>:	GV_Panner(off)		\n\
+ s	<Btn2Down>:	GV_Page(page+1)		\n\
+ s	<Btn3Down>:	GV_Page(page-1)		\n\
+	<Btn2Down>:	GV_Page(page-1)		\n\
+	<Btn3Down>:	GV_Page(page+1)
+
+!##### Popup Shells
+
+GV.TransientShell.baseTranslations:#replace\n\
+ <Message>WM_PROTOCOLS:	GV_DeleteWindow()
+
+GV.TopLevelShell.baseTranslations:#replace\n\
+ <Message>WM_PROTOCOLS:	GV_DeleteWindow()
+
+GV.TransientShell.Aaa.baseTranslations:#replace\n\
+ <Key>Q:		GV_DismissPopup()
+
+GV.TopLevelShell.Aaa.baseTranslations:#replace\n\
+ <Key>Q:		GV_DismissPopup()
+
+!##### Button Widget in Zoom Popups
+
+GV.TopLevelShell*Button.accelerators:#override\n\
+ <Key>Return:	set() notify() unset()
+
+GV.TopLevelShell*dismiss.accelerators:#override\n\
+ <Key>Escape:	set() notify() unset()\n\
+ <Key>Return:	set() notify() unset()
+
+GV.TopLevelShell*Button.baseTranslations: #replace\n\
+ <Key>Return:	set() notify() unset()\n\
+ <LeaveWindow>:	unset()		\n\
+ <Btn1Down>:	set()		\n\
+ <Btn1Up>:	notify() unset()
+
+!##### Button Widget in Transient Popups
+
+GV*TransientShell*Button.accelerators:#override\n\
+ <Key>Return:	set() notify() unset()
+
+GV*TransientShell*cancel.accelerators:#override\n\
+ <Key>Escape:	set() notify() unset()\n\
+ <Key>Return:	set() notify() unset()
+
+GV*TransientShell*button1.accelerators:#override\n\
+ <Key>Escape:	set() notify() unset()\n\
+ <Key>Return:	set() notify() unset()
+
+GV*TransientShell*dismiss.accelerators:#override\n\
+ <Key>Escape:	set() notify() unset()\n\
+ <Key>Return:	set() notify() unset()
+
+GV*TransientShell*Button.baseTranslations: #replace\n\
+ <Key>Return:	set() notify() unset()\n\
+ <LeaveWindow>:	unset()		\n\
+ <Btn1Down>:	set()		\n\
+ <Btn1Up>:	notify() unset()
+
+!##### MagMenu
+
+GV*magMenu.baseTranslations:	#replace	\n\
+ <EnterWindow>:			highlight() 	\n\
+ <LeaveWindow>:			unhighlight()	\
+				GV_MagMenu(reset)\n\
+ <MapNotify>:			GV_MagMenu(check)\n\
+ <BtnMotion>:			highlight() 	\n\
+ <MotionNotify>:		highlight() 	\n\
+ <BtnDown>:			GV_MagMenu(show)\
+				MenuPopdown(magMenu)
+				
+
+!##### MiscMenu
+
+GV*miscMenu.baseTranslations:	#replace	\n\
+ <EnterWindow>:			highlight() 	\n\
+ <LeaveWindow>:			unhighlight()	\
+				GV_MiscMenu(reset)\n\
+ <MapNotify>:			GV_MiscMenu(check)\n\
+ <BtnMotion>:			highlight() 	\n\
+ <MotionNotify>:		highlight() 	\n\
+ <BtnUp>:			MenuPopdown(miscMenu)\
+				notify()\
+				unhighlight()\
+				GV_MiscMenu(reset)
+
+
+GV*gs.errors.none.Label:		None
+GV*gs.errors.errors.Label:		Errors
+GV*gs.errors.all.Label:			All
+
+GV*quitstyle.never.Label:		Never
+GV*quitstyle.whenprocessing.Label:	When processing
+GV*quitstyle.always.Label:		Always
+
+GV*title.notitle.Label:			No Title
+GV*title.documenttitle.Label:		Document Title
+GV*title.filename.Label:		Filename
+
+GV*strings.saveCurrentPage:		Save Current Page
+GV*strings.saveMarkedPages:		Save Marked Pages
+GV*strings.saveDocument:		Save Document
+GV*strings.saveAsPDF:			Save as PDF
+GV*strings.openFile:			Open File
+GV*strings.passwordPrompt:		Password:
+GV*strings.passwordRequired:		Password required
+GV*strings.quitConfirm:			Do you really want to quit ?
+GV*strings.texCommand:			TeX command
+GV*strings.putTexCommand:		Put a TeX command at the current position
+GV*strings.stillInProgress:		Still in progress:
+GV*strings.execOfFailed:		Exec of %s failed
+GV*strings.copyrightTranslation:	N/A

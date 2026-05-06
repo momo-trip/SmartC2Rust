@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision WV in United States
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision WV.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/us.rem
+
+REM 19 June ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T+1) == 6] MSG %"West Virginia Day (observed)%" %! %b.
+OMIT 20 June MSG %"West Virginia Day%" %! %b.
+REM 21 June ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"West Virginia Day (observed)%" %! %b.
+REM Second Monday in October ADDOMIT SCANFROM -28 MSG %"Columbus Day%" %! %b.
+REM Friday 23 November ADDOMIT SCANFROM -28 MSG %"Day After Thanksgiving%" %! %b.

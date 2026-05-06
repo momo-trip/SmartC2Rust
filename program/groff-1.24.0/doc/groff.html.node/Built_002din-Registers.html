@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Built-in Registers (The GNU troff Manual)</title>
+
+<meta name="description" content="Built-in Registers (The GNU troff Manual)">
+<meta name="keywords" content="Built-in Registers (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Registers.html" rel="up" title="Registers">
+<link href="Manipulating-Filling-and-Adjustment.html" rel="next" title="Manipulating Filling and Adjustment">
+<link href="Assigning-Register-Formats.html" rel="prev" title="Assigning Register Formats">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Built_002din-Registers"></span><div class="header">
+<p>
+Previous: <a href="Assigning-Register-Formats.html" accesskey="p" rel="prev">Assigning Register Formats</a>, Up: <a href="Registers.html" accesskey="u" rel="up">Registers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Built_002din-Registers-1"></span><h4 class="subsection">5.8.5 Built-in Registers</h4>
+<span id="index-built_002din-registers"></span>
+<span id="index-registers_002c-built_002din"></span>
+
+<p>Predefined registers whose identifiers start with a dot are read-only.
+Many are Boolean-valued, interpolating a true or false value testable
+with the <code>if</code>, <code>ie</code>, or <code>while</code> requests.
+</p>
+<span id="index-removing-a-built_002din-register"></span>
+<span id="index-register_002c-built_002din_002c-removing"></span>
+<span id="index-built_002din-register_002c-removing"></span>
+<p><strong>Caution:</strong>
+Built-in registers are subject to removal like others;
+once removed,
+they can be recreated only as normal writable registers
+and will not otherwise reflect the configuration of the formatter.
+</p>
+<p>A register name is often associated with a request of the same name
+(without the dot).  A complete listing of all built-in registers can be
+found in <a href="Register-Index.html">Register Index</a>.
+</p>
+<p>We present here a few built-in registers that are not described
+elsewhere in this manual;
+they have to do with invariant properties of
+GNU
+<code>troff</code>, or obtain information about the formatter&rsquo;s command-line options
+or processing progress.
+</p>
+<dl compact="compact">
+<dt><code>\n[.A]</code></dt>
+<dd><span id="index-_002eA"></span>
+<span id="index-approximation-output-register-_0028_002eA_0029"></span>
+<span id="index-plain-text-approximation-output-register-_0028_002eA_0029-1"></span>
+<p>Approximate output is being formatted (Boolean-valued); see
+<code>groff</code>&rsquo;s <samp>-a</samp> option (<a href="Groff-Options.html">Groff Options</a>).
+</p>
+</dd>
+<dt><code>\n[.c]</code></dt>
+<dd><span id="index-_002ec"></span>
+</dd>
+<dt><code>\n[c.]</code></dt>
+<dd><span id="index-c_002e"></span>
+<span id="index-input-line-number-register-_0028_002ec_002c-c_002e_0029"></span>
+<span id="index-line-number_002c-input_002c-register-_0028_002ec_002c-c_002e_0029"></span>
+<p>Input line number.  &lsquo;<samp>c.</samp>&rsquo; is a writable synonym,
+affecting subsequent interpolations of both &lsquo;<samp>.c</samp>&rsquo; and &lsquo;<samp>c.</samp>&rsquo;.
+</p>
+</dd>
+<dt><code>\n[.F]</code></dt>
+<dd><span id="index-current-input-file-name-register-_0028_002eF_0029"></span>
+<span id="index-input-file-name_002c-current_002c-register-_0028_002eF_0029"></span>
+<span id="index-_002eF"></span>
+<p>Name of input file (string-valued).
+</p>
+</dd>
+<dt><code>\n[.g]</code></dt>
+<dd><span id="index-_002eg"></span>
+<span id="index-GNU-troff_002c-identification-register-_0028_002eg_0029"></span>
+<span id="index-GNU_002dspecific-register-_0028_002eg_0029"></span>
+<p>Always true in GNU <code>troff</code> (Boolean-valued).  Documents can use
+this to ask the formatter if it claims <code>groff</code> compatibility.
+</p>
+</dd>
+<dt><code>\n[.P]</code></dt>
+<dd><span id="index-_002eP"></span>
+<p>Output page selection status (Boolean-valued); see <code>groff</code>&rsquo;s
+<samp>-o</samp> option (<a href="Groff-Options.html">Groff Options</a>).
+</p>
+</dd>
+<dt><code>\n[.R]</code></dt>
+<dd><span id="index-available-registers_002c-number-of_002c-register-_0028_002eR_0029"></span>
+<span id="index-number-of-available-registers-register-_0028_002eR_0029"></span>
+<span id="index-registers_002c-available-number-of_002c-register-_0028_002eR_0029"></span>
+<span id="index-_002eR-2"></span>
+<p>Count of available unused registers; in GNU <code>troff</code> this
+register always interpolates the maximum representable
+integer.<a id="DOCF76" href="groff.html_fot.html#FOOT76"><sup>76</sup></a>  Favor its use over numeric literals with
+many zeroes or nines to indicate an arbitrary large quantity.
+</p>
+</dd>
+<dt><code>\n[.T]</code></dt>
+<dd><span id="index-_002eT-2"></span>
+<p>Indicator of output device selection (Boolean-valued); see
+<code>groff</code>&rsquo;s <samp>-T</samp> option (<a href="Groff-Options.html">Groff Options</a>).
+</p>
+</dd>
+<dt><code>\n[.U]</code></dt>
+<dd><span id="index-safer-mode-2"></span>
+<span id="index-mode_002c-safer-2"></span>
+<span id="index-unsafe-mode-2"></span>
+<span id="index-mode_002c-unsafe-2"></span>
+<span id="index-_002eU"></span>
+<p>Unsafe mode enablement status (Boolean-valued); see <code>groff</code>&rsquo;s
+<samp>-U</samp> option (<a href="Groff-Options.html">Groff Options</a>).
+</p>
+</dd>
+<dt><code>\n[.x]</code></dt>
+<dd><span id="index-_002ex"></span>
+<span id="index-major-version-number-register-_0028_002ex_0029"></span>
+<span id="index-version-number_002c-major_002c-register-_0028_002ex_0029"></span>
+<p>Major version number of the running GNU <code>troff</code> formatter.  For
+example, if the version number is 1.23.0, then <code>.x</code>
+contains&nbsp;&lsquo;<samp>1</samp>&rsquo;.
+</p>
+</dd>
+<dt><code>\n[.y]</code></dt>
+<dd><span id="index-_002ey"></span>
+<span id="index-minor-version-number-register-_0028_002ey_0029"></span>
+<span id="index-version-number_002c-minor_002c-register-_0028_002ey_0029"></span>
+<p>Minor version number of the running GNU <code>troff</code> formatter.  For
+example, if the version number is 1.23.0, then <code>.y</code>
+contains&nbsp;&lsquo;<samp>23</samp>&rsquo;.
+</p>
+</dd>
+<dt><code>\n[.Y]</code></dt>
+<dd><span id="index-_002eY"></span>
+<span id="index-revision-number-register-_0028_002eY_0029"></span>
+<p>Revision number of the running GNU <code>troff</code> formatter.  For example,
+if the version number is 1.23.0, then <code>.Y</code> contains&nbsp;&lsquo;<samp>0</samp>&rsquo;.
+</p></dd>
+</dl>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Assigning-Register-Formats.html" accesskey="p" rel="prev">Assigning Register Formats</a>, Up: <a href="Registers.html" accesskey="u" rel="up">Registers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

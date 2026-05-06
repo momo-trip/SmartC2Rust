@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Page Geometry (The GNU troff Manual)</title>
+
+<meta name="description" content="Page Geometry (The GNU troff Manual)">
+<meta name="keywords" content="Page Geometry (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Measurements.html" rel="next" title="Measurements">
+<link href="Input-Conventions.html" rel="prev" title="Input Conventions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Page-Geometry"></span><div class="header">
+<p>
+Next: <a href="Measurements.html" accesskey="n" rel="next">Measurements</a>, Previous: <a href="Text.html" accesskey="p" rel="prev">Text</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Page-Geometry-1"></span><h3 class="section">5.2 Page Geometry</h3>
+<span id="index-page_002c-geometry-of"></span>
+<span id="index-geometry_002c-page"></span>
+
+<p><code>roff</code> systems format text under certain assumptions about the size
+of the output medium, or page.  For the formatter to correctly break a
+line it is filling, it must know the line length, which it derives from
+the page width (see <a href="Line-Layout.html">Line Layout</a>).  For it to decide whether to write
+an output line to the current page or wait until the next one, it must
+know the page length (see <a href="Page-Layout.html">Page Layout</a>).
+</p>
+<span id="index-device-resolution"></span>
+<span id="index-resolution_002c-device"></span>
+<span id="index-basic-units"></span>
+<span id="index-units_002c-basic"></span>
+<span id="index-machine-units"></span>
+<span id="index-units_002c-machine"></span>
+<p>A device&rsquo;s <em>resolution</em> converts practical units like inches or
+centimeters to <em>basic units</em>, a convenient length measure for the
+output device or file format.  The formatter and output driver use basic
+units to reckon page measurements.  The device description file defines
+its resolution and page dimensions (see <a href="DESC-File-Format.html">DESC File Format</a>).
+</p>
+<span id="index-page"></span>
+<p>A <em>page</em> is a two-dimensional structure upon which a <code>roff</code>
+system imposes a rectangular coordinate system with its origin near the
+upper left corner.  Coordinate values are in basic units and increase
+down and to the right.  Useful ones are typically positive and within
+numeric ranges corresponding to the page boundaries.
+</p>
+<p>Text is arranged on a one-dimensional lattice of text baselines from the
+top to the bottom of the page.
+<span id="index-text-baseline"></span>
+<span id="index-baseline_002c-text"></span>
+A <em>text baseline</em> is a (usually invisible) line upon which the
+glyphs of a typeface are aligned.
+<span id="index-vertical-spacing"></span>
+<span id="index-spacing_002c-vertical"></span>
+<span id="index-vee"></span>
+<em>Vertical spacing</em> is the distance between adjacent text baselines.
+Typographic tradition sets this quantity to 120% of the type size.
+Typographers term this unit a <i>vee</i>.
+</p>
+<span id="index-drawing-position"></span>
+<span id="index-position_002c-drawing"></span>
+<p>While the formatter (and, later, output driver) is processing a page, it
+keeps track of its <em>drawing position</em>, which is the location at
+which the next glyph will be written, from which the next motion will be
+measured, or where a geometric object will commence rendering.
+Notionally, glyphs are drawn from the text baseline upward and to the
+right.<a id="DOCF40" href="groff.html_fot.html#FOOT40"><sup>40</sup></a>  A glyph therefore &ldquo;starts&rdquo; at its bottom-left corner.
+The formatter&rsquo;s origin is one vee below the page top
+to prevent a glyph from lying partially or wholly off the page.
+</p>
+<span id="index-page-offset"></span>
+<span id="index-offset_002c-page"></span>
+<p>Further,
+it is conventional not to write or draw
+at the extreme edges of the page.
+Typesetters configure a
+<em>page offset</em>,
+a rightward shift from the left edge
+that defines the zero point
+from which the formatter reckons the line indentation
+and length.<a id="DOCF41" href="groff.html_fot.html#FOOT41"><sup>41</sup></a>
+</p>
+<span id="index-origin"></span>
+<span id="index-initial-drawing-position"></span>
+<span id="index-drawing-position_002c-initial"></span>
+<p>Combining the foregoing facts results in an origin that lies
+at the page offset in the horizontal dimension
+and at the text baseline (using the default vertical spacing)
+in the vertical dimension.
+A document can change these prior to its first written or drawn output;
+see <a href="Line-Layout.html">Line Layout</a> and
+<a href="Manipulating-Type-Size-and-Vertical-Spacing.html">Manipulating Type Size and Vertical Spacing</a>.
+</p>
+<span id="index-page-break"></span>
+<span id="index-break_002c-page"></span>
+<span id="index-page-ejection"></span>
+<span id="index-ejection_002c-page"></span>
+<p>Vertical spacing has an impact on page-breaking decisions.
+Generally,
+when a break occurs,
+the formatter automatically moves the drawing position
+to the next text baseline.
+If the formatter were already writing
+to the last line that fits on the page,
+advancing by one vee would place the next text baseline off the page.
+To avoid that,
+<code>roff</code>
+formatters instruct the output driver to eject the page,
+start a new one,
+and again place the drawing position
+at the page offset one vee below the page top;
+this is a
+<em>page break</em>.
+</p>
+<p>When the last line of input text
+corresponds to the last output line that fits on the page,
+the break caused by the end of input also breaks the page,
+producing a useless blank one.
+Macro packages keep users from having to confront this difficulty
+by setting &ldquo;traps&rdquo;
+(see <a href="Traps.html">Traps</a>);
+moreover,
+all but the simplest page layouts tend to have headers and footers,
+or at least bear vertical margins of at least one vee.
+</p>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Measurements.html" accesskey="n" rel="next">Measurements</a>, Previous: <a href="Text.html" accesskey="p" rel="prev">Text</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

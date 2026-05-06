@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision AL in United States
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision AL.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/us.rem
+
+REM Third Monday in January ADDOMIT SCANFROM -28 MSG %"Martin Luther King, Jr & Robert E. Lee's Birthday%" %! %b.
+REM Third Monday in February ADDOMIT SCANFROM -28 MSG %"George Washington & Thomas Jefferson's Birthday%" %! %b.
+REM Fourth Monday in April ADDOMIT SCANFROM -28 MSG %"Confederate Memorial Day%" %! %b.
+REM First Monday in June ADDOMIT SCANFROM -28 MSG %"Jefferson Davis Birthday%" %! %b.
+REM Second Monday in October ADDOMIT SCANFROM -28 MSG %"Columbus Day / American Indian Heritage Day / Fraternal Day%" %! %b.

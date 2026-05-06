@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Ukraine
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+
+# Optional holidays
+REM 1 January MSG %"Новий рік%" %! %b.
+REM 8 March MSG %"Міжнародний жіночий день%" %! %b.
+REM [orthodoxeaster($Uy)] MSG %"Великдень (Пасха)%" %! %b.
+REM 1 May MSG %"День праці%" %! %b.
+REM 8 May MSG %"День памʼяті та перемоги над нацизмом у Другій світовій війні 1939-1945 років%" %! %b.
+REM [orthodoxeaster($Uy)+49] MSG %"Трійця%" %! %b.
+REM 28 June MSG %"День Конституції України%" %! %b.
+REM 15 July MSG %"День Української Державності%" %! %b.
+REM 24 August MSG %"День незалежності України%" %! %b.
+REM 1 October MSG %"День захисників і захисниць України%" %! %b.
+REM 25 December MSG %"Різдво Христове%" %! %b.

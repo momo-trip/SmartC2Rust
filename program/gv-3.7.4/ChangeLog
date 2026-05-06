@@ -1,0 +1,1303 @@
+
+        * src/options_gv.c(orientation2extern): Handle "Automatic" orientation
+	  correctly
+        * src/options_gv.c(pagemedia2extern): For pagemedia, we have to replace
+	  Translation of "Automatic" to "Automatic" befire saving. This is done
+	  by this new function.
+        * src/options_gv.c(options_gv_cb_save): Call pagemedia2extern. See above
+	  for explanation.
+
+2012-04-01  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.3.91
+
+2012-04-01  A. Costa <agcosta@gis.net>
+
+        * doc/gv-update-userconfig: improve wording of gv-update-userconfig manual.
+
+2012-04-01  William Bader <williambader@hotmail.com>
+
+        * src/FileSel.c: Fix use of IIMESSAGE with a real argument. Initialize dirp.
+	
+	* src/Ghostview.c: Give InterpreterFailed() a way to indicate the type of failure.
+	
+	* src/Scrollbar.c, src/Scrollbar.h: Let XawScrollbarSetThumb pick its arguments as
+	double or float depending on NeedWidePrototypes. This is required to make the
+	scroll bar work in Fedora 14. 
+
+        * src/Vlist.c: Add some IIMESSAGE() lines for debugging. Add a call to ENDMESSAGE()
+	before an error return to balance the earlier BEGINMESSAGE().
+	
+	* src/ Vlist.c, src/Vlist.h:  Add VlistMaxEntriesVisible(Widget w, int height) to 
+	return the maximum number of entries that can fit in the list.
+	
+	* src/actions.c: Fix use of IIMESSAGE with a real argument.
+	
+	* src/doc_misc.c: Loosen the test for media sizes.
+	
+	* src/gv_misc_res.dat:  Add more space around the mag menu. Implement keypad
+	enter, insert, delete, home, end, prior. Switch buttons for zoom and pan.
+	
+	* src/gv_user_res.dat: Turn off scrolling eye guide. Add a margin in the geometry.
+	Add a 10x24 paper size.
+	
+	* src/magmenu.c: Fix an attempt to increment a NULL pointer.
+	
+	* src/main.c: Initialize gv_psfile and toc_text.
+	
+	* src/media.c: Fix an attempt to increment a NULL pointer.
+
+        * src/message.h: Write messages to stderr instead of stdout so they aren't buffered.
+	Add DDMESSAGE1() debug macro for real numbers.
+	
+	* src/misc.c: Clean up the toc scrolling to avoid leaving empty space when there are
+	items to fill the space. Fix a possible NULL pointer reference. Fix a possible -1 array
+	index. Fix an attempt to increment a NULL pointer.
+	
+	* src/ps.c: Check for %!PS instead of %!PS-Adobe- to recognize old files.
+	Do not stop parsing comments at a line starting % space. Implement Seascape orientation.
+	
+	* src/scale.c: Fix an attempt to increment a NULL pointer.
+
+2012-02-29  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.3.90
+
+2011-08-23  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+        * src/resource.c(resource_buildDatabase): Save resource
+        strings.saveAsPDF to variable
+
+2011-08-16  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+        * src/misc.c: Revert "Fix Debian bug #594991: unexpected scrolling of the TOC widget"
+
+2011-08-04  Bernhard R. Link <brlink@debian.org>
+
+        * src/ps.c(dsc_strncmp): avoid unnecessary temporary string copy
+	
+	* src/ps.c: reduce the number of sec_sscanf invocations
+
+2011-08-03  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+  	* src/ps.c (whole file): Fix calls of sec_sscanf having %s in format.
+	
+2011-08-01  Bernhard R. Link <brlink@debian.org>
+	
+	* src/Ghostview.c, src/error.h: do not define errno, as it might be a macro already.
+	
+	* src/doc_misc.c, src/misc.c, src/ps.c, src/ps.h: make numpages and nummedia signed to avoid warnings
+	
+	* src/*: get rid of core K&R, use gnulib's _GL_UNUSED and avoid some signed/unsigned
+	
+2011-07-12  Bernhard R. Link <brlink@debian.org>
+
+	* src/ps.c:  handling dsc parse errors: fix FILE given to unlink, check for file open error
+	
+2011-05-06  Bernhard R. Link <brlink@debian.org>
+
+	* configure.ac, src/Makefile.am: Only install files gv actually reads.
+
+2011-05-05  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* m4/* lib/* imported signal from gnulib.
+	  Note: I ran "sed -i 's/<config.h>/<ac_config.h>/g' lib/*" after the
+	  import.
+	  I imported from revision 9dba31e113c15a07103d04980a8f39bcba5f7795
+	  of gnulib.
+
+2011-05-04   Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/callbacks.c(cb_presentation): Drop typedef sighandler_t again,
+	  gnulib update (see 2011-05-05) will do the job.
+
+2011-05-04  Bernhard R. Link <brlink@debian.org>
+
+	* src/Makefile.am: Improved dependencies and minor improvements.
+	
+	* src/gv-i18n.pl: Use src/nls/LANGUAGES for getting list of translations
+	  available.
+
+2011-05-02   Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/callbacks.c(cb_presentation): Renamed typedef sighandler_t to
+	  mysighandler_t (incomplete).
+
+2011-04-29   Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/callbacks.c(cb_presentation): Readd typedef sighandler_t.
+
+2011-04-29  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.2.90
+
+2011-04-29  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.2
+
+2011-04-27  Bernhard R. Link <brlink@debian.org>
+
+	* configure.ac: remove --enable-memdebug-code from configure,
+	  as the feature itself was already removed.
+	  
+	* src/resource.c(resource_buildDatabase): don't store stat
+	  output in random memory location
+
+2011-04-25  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.1.91
+
+2011-04-17  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Ghostview.c(StartInterpreter): Save fd of pipe being used 
+	for std_in in the else case
+
+2011-02-13  Bernhard R. Link <brlink@debian.org>
+
+	* src/FileSel.c, src/Ghostview.c, src/actions.c, src/callbacks.c,
+	  src/main.c, src/main_globals.h, src/misc.c, src/options_gs.c,
+	  src/ps.c, src/zoom.c: avoid shadowing identifiers
+
+	* src/*.c, src/*.h: remove ancient memory debugging stuff,
+	  unconditionally use prototypes
+	
+	* src/scale.c: Include <stdlib.h>.
+	
+	* src/scale.c(scale_getScreenResourceName): Fixed typo.
+	
+	* src/secscanf.c(process_number): avoid warning about pointer sizes
+	
+	* src/gv_string.c, src/gv_string.h, src/vms_dir.c: Removed (unused)
+	
+	* src/info.c(cb_appendInfoPopup): show beginning of last error message
+	  instead if the end
+
+2010-11-20  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* srcscale.c(scale_getScreenResourceName): use ssh remote adress
+	  instead of hostname for a remote ssh connection
+
+2010-06-25  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+
+	* src/dialog.c(DialogPopupSetText): move "n=0" outside of #ifdef.
+
+2010-06-19  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/main.c(main): In case of a temporary safedir is needed, use
+	  strdup to copy the temporary buffer to a permanent location.
+
+2010-06-19  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.1.90
+
+2010-06-08  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/save.c(save_forkPDFToPSConversion): src has to be initialized
+	with command, not gv_gs_cmd_scan_pdf.
+	
+	Fix bug [bug #30081] gv 3.7.0: unable to print/save pdf files.
+
+2010-06-06  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.1
+
+2010-06-06  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.7.0
+
+2010-06-03  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac: Added macro AC_PROG_MKDIR_P
+	
+	* src/Makefile.am: Use $(MKDIR_P) instead mkdir
+
+2010-06-03  Bernhard R. Link <brlink@debian.org>
+
+	* src/Makefile.am: Add gv-i18n.h to MAINTAINERCLEANFILES insted of
+	CLEANFILES.
+
+2010-06-03  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/main.c(main): Use .scratchDir for path of temporary savedirectory.
+
+2010-06-03  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.92
+
+2010-06-03  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Aaa.c, src/Aaa_bison.c: Include ac_config.h, otherwise compiling
+	  failes in Mac OS X.
+
+2010-06-02  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* m4/* lib/* imported mkdtemp from gnulib.
+	  Note: I ran "sed -i 's/<config.h>/<ac_config.h>/g' lib/*" after the
+	  import.
+	  I imported from revision 
+	  of gnulib.
+
+2010-06-02  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Ghostview.c, src/process.c, src/ps.c: Use safe-dir from variable
+	  gv_safe_gs_workdir.
+	  
+	* src/main.c: Check if global safe-dir is accessible, if not, create
+	  a temporary one.
+	  
+	* src/Ghostview.c, src/Scrollbar.c, src/callbacks.c, src/ps.c:
+	  Call clean_safe_tempdir on each position gv can exit.
+
+	* src/main_globals.h: Two new vaiables gv_safe_gs_workdir and
+	  gv_safe_gs_tempdir (=1 iff gv_safe_gs_workdir is temporary).
+
+	* src/actions.c(clean_safe_tempdir): Delete temporary safe-dir.
+
+2010-06-02  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Makefile.am: Create s"afe-gs-workdir".
+
+2010-06-02  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/FileSel.c, src/Scrollbar.c, src/actions.c,
+	src/callbacks.c, src/file.c, src/main.c, src/misc.c, src/options_gv.c:
+	  mkstemo and inttypes.h are always available after gnulib import
+
+2010-06-02  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* m4/* lib/* updated gnulib and imported canonicalize-lgpl, inttypes
+	  and mkstemp.
+	  Note: I ran "sed -i 's/<config.h>/<ac_config.h>/g' lib/*" after the
+	  import.
+	  I imported from revision 8ab5996c4a14364411442d93babb343cc2ce0d89
+	  of gnulib.
+
+2010-05-30  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/gv_message.h: Document new options
+	
+	* rc/main.c: Parsing of new options --safedir and --nosafedir
+	
+	* src/main_globals.h: Global variable for each of the new options
+	
+	* src/resource.c: Modify resource GV.gsSafeDir on new options
+
+2010-05-30  Bernhard R. Link <brlink@debian.org>
+
+	* src/Ghostview.c, src/Ghostview.h, src/GhostviewP.h, src/Makefile.am,
+	src/doc_misc.c, src/doc_misc.h, gv_layout_res.dat, src/gv_misc_res.dat,
+	src/main.c, main_globals.h, main_resources.h, src/misc.c, options_gs.c,
+	process.c, src/ps.c, src/ps.h, src/save.c, src/zoom.c:
+	   New resource GV.gsSafeDir, ability to set it to true resp. false by
+	   user interface, if enabled start ghostscript from a safe directory.
+
+2010-05-30  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/misc.c(setup_ghostview), src/save.c(save_forkPDFToPSConversion):
+	  Add -P- if and only if SAVER is turned on.
+
+2010-05-29  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* doc/gv.texi: Update: ghostscript is called with -P- (by B. R. Link)
+
+	* src/Ghostview.c(StartInterpreter): Call ghostscript with -P-
+	  (by B. R. Link)
+
+	* src/misc.c(setup_ghostview): Call ghostscript with -P-
+	
+	* src/save.c(save_forkPDFToPSConversion): likewise
+
+2010-05-29  Bernhard R. Link <brlink@debian.org>
+
+	* src/resource.c(resource_buildDatabase): Fixed possible segfault
+
+2010-05-29  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.91
+
+2010-05-29  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/nls/de.UTF-8.dat, src/nls/noint:de.dat: Translate one missing
+	  string
+
+2010-05-14  Yasuyuki Furukawa <yasu@on.cs.keio.ac.jp>
+
+	* src/nls/ja_JP.UTF-8.dat, src/nls/ko_KR.UTF-8.dat: Added Japanese and
+	  Korean translation
+
+2010-05-14  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/nls/de.UTF-8.dat, src/nls/noint:de.dat: Added German translation.
+
+2010-05-14  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Makefile.am: New rule to generate src/gv-i18n.h
+	
+	* src/gv-i18n.pl: Generates src/gv-i18n.h at compile time
+	
+	* src/nls/README.txt: Placeholder just to ensure nls directory is not
+	  empty.
+
+        * src/Ghostview.c, src/callbacks.c, src/doc_misc.c,
+	  src/options_gv.c, src/options_setup.c, src/process.c, 
+	  src/resource.c, src/resource.h, src/version.c, src/versionp.h
+	  src/gv_misc_res.dat, : All textual user messages are moved to
+	  resources in src/gv_misc_res.dat.
+	  
+	* src/gv-update-userconfig.in: Support for creating translation files
+	  has been added.
+
+2010-04-24  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.90
+
+2010-04-24  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.9
+
+2010-03-10  Bernhard R. Link <brlink@debian.org>
+
+	* doc/gv-update-userconfig.1: Fixed typo
+
+2010-03-09  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/gv-update-userconfig.in: corrected parsing version from ~/.gv
+
+2010-03-10  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.8.92
+
+2010-03-07  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Vlist.c(PaintEntryString): Fixed a typo introducved by my patch
+	from 2010-03-03 preventing compiling with Xaw3d 1.5. (Fixes #28424)
+
+	* configure.ac: Fix several tests on RHEL 4.8.
+
+2010-03-07  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.8.91
+
+2010-03-03  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/configure.ac: if no international support is available in Xaw3d, 
+	do not abort.
+	
+	* src/configure.ac: setenv-test: if --disable-setenv-code is given,
+	continue without testing for setenv support
+
+	* src/dialog.c, src/info.c, src/misc_private.c, src/Vlist.c: Use
+	#ifdef-s to enable compilation on Xaw3d-1.5 by disabling all
+	if "international"-parts statements and leaving only their "else case".
+
+2010-03-02  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/configure.ac: New option "--enable-international".
+	
+	* src/Makefile.am(target gv_class.ad): Enable international if requested
+
+2010-03-02  Yasuyuki Furukawa <yasu@on.cs.keio.ac.jp>
+
+	* src/callbacks.c(setTitle): New function for supporting UTF-8 titles
+	
+	* src/callbacks.c(showTitle): call setTitle
+	
+	* src/misc.c(setup_ghostview): likewise
+
+2010-03-01  Dr. Werner Fink <werner@suse.de>
+	    Yasuyuki Furukawa <yasu@on.cs.keio.ac.jp>
+            Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* Makefile.am: Include README.I18N in distribuation
+	
+	* src/main.c(main): Correcting environment, calling XtSetLanguageProc
+	
+	* src/Makefile.am: Handling of new source files
+	
+	* src/info.c, src/misc_private.c, src/dialog.c: Properly handle
+	the case that international is enabled.
+	
+	* src/gv_misc_res.dat: Add resource "GV*fileSelPopup.title"
+	
+	* src/gv_font_res-I18N_mb.dat: New filw with extra resources for I18N.
+
+2010-02-27  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.8.90
+
+2009-12-25  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.8
+
+2009-12-08  Markus Steinborn <gnugv_maintainer@yahoo.de>
+	* src/scale.c(scale_parseScales): Fixed Scale "Fit to height", it
+	wasn't added o the scale menu
+
+2009-09-05  Andrew Hamilton <Andrew.Hamilton@colorado.edu>
+
+	* src/main.c: use getopt's built-in option counter
+	
+	* src/Ghostview.c (StartInterpreter): Call ghostscript with an
+	additional option "-dNOPROMPT"
+	  
+	* src/Ghostview.c: (StartInterpreter, GhostviewNextPage): 
+	Handle "-" as filename
+	
+	* src/zoom.c (zoom_createZoom): Fix checking for "no file"
+	
+	* src/zoom.c (zoom_createZoom): Handle "-" as filename
+	
+	* src/resource.c (resource_buildDatabase): Handle resource "arguments"
+
+2009-05-18  Markus Steinborn <gnugv_maintainer@yahoo.de>
+            Stefan Uhl <s.uhl@gmx.net>
+
+	* src/gv_user_res.dat: New scale "Fit height to window"
+	
+	* src/misc.c (set_new_scale): Handle "Fit height to window"-scale
+	
+	* src/main.c: likeweise, use --scale=-1003 for "fit height to window"
+
+2009-04-11  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Makefile.am: Include src/secscanf.h in tar archive.
+
+2009-04-11    Bernhard R. Link <brlink@debian.org>
+
+	* configure.ac: Corrected check if "SimplePart.international" exists 
+	in Xaw3D
+
+2009-04-10  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac: Check for presence of SIGCLD and SIGOCLD.
+	If --enable-SIGCLD-fallback is given, use SIGCHLD as fallback to SIGCLD.
+	
+	* configure.ac: Reverted change from 2009-03-23. It breaks building
+	on Mac OS X.
+
+2009-03-23    Bernhard R. Link <brlink@debian.org>
+
+	* configure.ac: Check if "SimplePart.international" exists in Xaw3D
+	
+	* several files: fixed a few compiler warnings
+
+2009-03-23  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.7.90
+
+2009-03-21  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.7
+
+2009-03-01  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* doc/gv-update-userconfig.1: Filename as optional argument
+
+	* src/gv-update-userconfig.in: Filename as optional argument
+	
+	* src/resource.c (resource_buildDatabase): Update newly introduced
+	variable haveXUSERFILESEARCHPATH and resource_user_file_symb
+	
+	* src/resource.c (resource_checkResources): Corrected error message in
+	case XUSERFILESEARCHPATH is used.
+
+2009-02-10  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/FileSel.c (TopDirSelectionProc, SubDirSelectionProc):
+	Call VlistSetFirstVisible(..., 0) to scroll list back to top position.
+
+2009-01-16  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/callbacks.c (cb_presentation): use /usr/bin/env to find executable
+
+2009-01-15  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/actions.c(action_shellConfigureNotify): Set Thumnb size of
+	scrollbar on resize event.
+
+2009-01-15  Bernhard R. Link <brlink@debian.org>
+
+	* src/misc.c(setup_ghostview): Set Thumnb size of scrollbar.
+
+2009-01-14  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* arc/action.c (action_presentation): Handling the new "z"-key for
+	saving positions.
+	
+	* src/actions.h: likewise for the prototypes
+	
+	* src/callbacks.c (cb_presentation): fork+exec new instance of gv in
+	presentation mode
+	
+        * src/callbacks.h: Likewise for the prototypes.
+	
+	* src/gv_misc_res.dat: Add handling for Shift P key
+	
+	* src/main.c: Add event handlers for GV_Presentation.
+	
+	* src/main_globals.h: Add Widget "presentationEntry". 
+	
+	* src/misc.c: Set Sensitivity of new "saveposEntry".
+
+2009-01-13  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/scrollbar.c(MoveThumb):  Improve usability
+	
+	* src/callbacks.c(cb_newtocScrollbar) src/FileSel.c(cb_scroll): Rouning
+	position to integer instead of using implicitly the floor function.
+
+2009-01-12  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/callbacks.c(cb_newtocVisibleAdjust): Use VlistVisibleLength to
+	  calculate visible area.
+
+	* src/scrollbar.c(MoveThumb): New calculation of TOP, the actual
+	  relative position of the scrollbar.
+	  
+	* src/scrollbar.c(GetRelativeThumbLocation): Adjusted to fit to
+	  MoveThumb.
+	  
+	* src/callbacks.c(cb_newtocScrollbar): Just scroll one position less
+	  than calculated, but at least one. This should help to ensure that
+	  every page is reachable by this mechanism.
+
+2009-01-02  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/FileSel.c: Bugfixed
+
+2009-01-01  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/Vlist.c: Fix a regression from prev. patch: The scroll arrows
+	on the page panel did not work any more.
+	
+	* src/FileSel.c: Changed in order to benefit from the changes in Vlist
+	to support large lists.
+
+2009-01-01  Bernhard R. Link <brlink@debian.org>
+
+	* src/Vlist.c, src/Vlist.h, VlistP.h: support large lists (big change!)
+	
+	* src/actions.c, src/callbacks.c, src/main.c, src/misc.c:
+	Changed in order to benefit from the change above.
+
+
+2008-09-28  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* src/secsscanf.c: Provide an implementation of strndup named
+	GNU_strndup and adjust the only call.
+
+2008-09-28  Bernhard R. Link <brlink@debian.org>
+
+	* src/file.c (file_assureDirectory): Changed 2nd argument to be const
+	
+	* src/info.c: Fixed one warning
+	
+	* configure.ac: Cleaner ZIO Detection
+
+2008-09-28  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.6.90
+
+2008-09-25  Markus Steinborn <gnugv_maintainer@yahoo.de>
+
+	* configure.ac, src/versionp.h: Bumped version to 3.6.6
+	
+	* Updated my e-mail address.
+
+2008-09-09  Dr. Werner Fink <werner@suse.de>
+
+	* configure.ac: Check if the ZIO Library is available.
+
+	* src/ps.c (psscan): Use the ZIO Library to decompress a file
+	if the ZIO Library is presemt.
+
+2008-09-09  Olaf Kirch <okir@suse.de>
+
+	* src/secscanf.c: New file providing sec_sscanf with an additional 
+	size argument for string arguments. All format specifiers should work
+	as in the standard scanf - except for those writing to a string
+	buffer provided by the caller. These specifiers take an additional
+	argument of type size_t that specifies the size of the buffer.
+
+	* src/ps.c: Replace all calls (with %s) to sscanf by sec_sscanf.
+	
+2008-09-09  Dr. Werner Fink <werner@suse.de>
+
+	* src/Ghostview.c: Under some circimstances add "-dDELAYSAFER"
+	to the commandline of gs.
+	
+	* src/misc.c (set_new_orientation): Handle the case Widget w is
+	not initialized.
+	
+	* src/misc.c (set_new_pagemedia): likewise
+	
+	* src/musc.c (set_pagemediaButton_label): likewise
+	
+	* src/ps.c: Add include <sys/types.h>
+
+2008-09-08  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/ps.c (psscan): Code cleanup: Use dup to use a new 
+	guaranteed free non-arbitrary number, use open instead of 
+	fopen & fileno.
+
+2008-09-02  Bernhard R. Link <brlink@debian.org>
+
+	* src/GhostviewP.h: Changed type of bytes_left from int to gv_off_t.
+
+2008-09-02  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/Ghostview.c, src/Ghostview.h, src/GhostviewP.h, src/callbacks.c,
+	src/file.c, src/misc.c, src/ps.c, src/ps.h, src/zoom.c:
+	Large File Support (LFS) - removed variant that was enabled by the
+	macros HAVE_LFS64.
+
+	* configure.ac, src/Makefile.am: likewise
+	
+	* src/versionp.h: Updated release month
+	
+2008-09-01  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/Ghostview.c, src/Ghostview.h, src/GhostviewP.h, src/callbacks.c,
+	src/file.c, src/misc.c, src/ps.c, src/ps.h, src/zoom.c:
+	Large File Support (LFS) - it has to be enabled by the preprocessor
+	macros HAVE_LFS64 resp. HAVE_OFF_T.
+
+	* configure.ac, src/Makefile.am: Support setting the macros
+	HAVE_LFS64 resp. HAVE_OFF_T.
+	
+2008-08-30  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/ps.c (ps_io_ftell): Changed return type to long
+	
+	* src/ps.c (ps_io_fseek): Changed 2nd argument to long
+	
+	* src/ps.c (FileDataStruct_): Changed type of filepos to long
+	
+	Purpose: At least on x86_64, long files are supported now
+
+2008-08-24  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/info.c: Skip displaying info-popup until gv_infoSkipErrors
+	are sent -- usually gv_infoSkipErrors is 0, but after recognising an
+	encrypted pdf, it is set to 1.
+	
+	* src/callbacks.c (cb_setPassword): Trigger reload of ghostscript by
+	calling "cb_reopen(...)".
+	
+	* src/main.c: Initialize gv_infoSkipErrors with 0
+	
+	* src/main_globals.h: Declare gv_infoSkipErrors.
+	
+	* src/ps.c (psscan): Set gv_infoSkipErrors to 1 and jump over
+	displaying dsc-parser error.
+
+2008-08-23  Bernhard R. Link <brlink@debian.org>
+
+	* src/callbacks.c (cb_setPassword): New callback for setting password.
+	
+	* src/callbacks.c (cb_cancelPassword): New callback aborting
+	password dialog.
+	
+	* src/callbacks.c (cb_askPassword): New callback Displaying the 
+	password dialog.
+	
+	* src/callbacks.h: likewise
+	
+	* src/ps.c (psscan): Use new callback cb_askPassword to query the user
+	for the password.
+
+2008-08-23  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* doc/gv.texi: Describe new option "--password=PASSWORD".
+	
+	* src/Ghostview.c (StartInterpreter): Pass actual PDF password
+	to ghostscript.
+	
+	* src/gv_message.h: Add description of new "--password=PASSWORD" option.
+	
+	* src/main.c (main): Parse new password-Option from command line
+	
+	* src/main_globals.h: New global variable for the PDF password.
+	
+	* src/ps.c (psscan): Pass actual PDF password to ghostscript.
+	
+	* src/versionp.h: Bump required resource version.
+	
+	* src/gv_misc_res.dat: likewise
+	
+	* src/Makefile.am: Update GV.gsCmdConvPDF
+
+	* src/gv-update-userconfig.in: remove GV.gsCmdConvPDF iff necessary.
+
+2008-08-10  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* configure.ac, src/versionp.h: Bump version to 3.6.5.91.
+	
+	* src/resource.c (resource_buildDatabase): Setting resource
+	"gv.arguments" is useless as it is not read.
+	
+	* src/Makefile.am: Append the contents of gv_misc_res.dat to
+	gv-update-userconfig, too.
+	
+	* src/gv-update-userconfig.in: Handling of -n, -N and -s.
+
+2008-08-09  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/resource.c(resource_checkResources): Corrected misspellings in
+	message displayed to the user.
+	
+	* src/gv-update-userconfig.in: "--help", "--usage" as an alias for "-h".
+	"sub compare" fixed for version strings of different length.
+	
+	* doc/gv-update-userconfig.1: Describe options "-h", "--help",
+	"--usage", "-r". s/gv/GNU gv/ according to GNU guidelines.
+	
+	* NEWS, src/versionp.h: Update release date for GNU gv 3.6.5.90
+
+2008-08-02  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/action.c (action_print_pos): Code cleanup
+	
+	* src/callbacks.c (cb_printpos, cb_doPrintPos): likewise
+
+2008-08-02  Thanh Han The <hanthethanh@gmail.com>
+
+	* arc/action.c (action_savepos): Handling the new "z"-key for saving
+        positions.
+	
+	* src/action.c (action_print_pos): Handling the new "u"-key for saving
+        positions.
+
+	* src/actions.h: likewise for the prototypes
+	
+	* src/callbacks.c: New static globals last_psx, last_psy for the last
+	cursor position
+	
+	* src/callbacks.c (cb_printpos): Displaying of popup dialog for entering
+	command to save
+	
+	* src/callbacks.c (cb_doPrintPos): saving the command entered above
+	
+	* src/callbacks.c (cb_savepos): saving the actual position
+	
+	* src/callbacks.c (cb_track): Update last_ps{xy}
+
+        * src/callbacks.h: Likewise for the prototypes.
+	
+	* src/gv_misc_res.dat: Add handling for Z und U key
+	
+	* src/main.c: Add event handlers for GV_PrintPos and GV_SavePos.
+	Update gv_savepos_filename by resource GV.saveposFIlename
+	
+	* src/main_globals.h: Add Widget "saveposEntry". 
+	
+	* src/main_globals.h: Add String gv_savepos_filename 
+	(Improvement by Markus Steinborn)
+	
+	* src/misc.c: Set Sensitivity of new "saveposEntry".
+
+2008-08-01  Bernhard R. Link <brlink@debian.org>
+
+	* src/main_resources.h: Remive global variable options
+	
+	* src/esource.c (resource_buildDatabase): Do not call XrmParseCommand
+	to parse an empty option list. It is not needed since 
+	the cvs checkin from 2004-12-06 12:52:10 GMT.
+
+2008-08-01  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/gv-update-userconfig: Renamed to src/gv-update-userconfig.in
+
+	* src/Makefile.am: Built src/gv-update-userconfig from
+	src/gv-update-userconfig.in by appending the default resources
+	
+	* src/gv-update-userconfig.in: Option "-r" to remove all resources from
+	~/.gv that have their default value
+	
+	* src/gv_misc_res.dat: The return key now scrolls through the whole
+	document vertically. Unlike the space key no horizontal scrolling
+	is performed.
+
+2008-07-31  Bernhard R. Link <brlink@debian.org>
+
+	* doc/gv-update-userconfig.1: Man-page for gv-update-userconfig
+	
+	* doc/Makefile.am: include and install doc/gv-update-userconfig.1
+	
+	* src/Makefile.am: Use configurable "sysconfdir" for generating
+	src/gv_make_res.dat
+	
+	* src/Aaa.c (aaaClassRec): Initialize the "dummy"-field.
+	
+	* src/Scrollbar.c src/actions.c : Some arguments miss a type.
+	
+	* src/file.c: Include unistd.h as close is used
+	
+	* src/file.c(file_getTmpFilename): a variable "struct stat s" is
+	sometimes not used and therefore need not to be declared in that cases.
+
+2008-07-19  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/Makefile.am: The .ad and .dat files are put into /usr/share/gv
+	(Patch from Orion Poplawski <orion@cora.nwra.com>)
+	
+	* configure.ac: Test for the presence of "mkstemp()"
+	
+	* src/file.c (file_getTmpFilename): Use mkstemp (if available) for
+	getting the temporary filename
+	
+	* src/Ghostview.c, src/Ghostview.h, src/GhostviewP.h, 
+	src/main.c, src/main_globals.h, src/resource.c: Add handling of 
+	xinerama resource
+	
+	* src/main.c: Use Xinerama to get display resolution if the xinerama resource 
+	is set to "On". If it is set to "Auto", let the heuristic from
+	2008-07-12 decide. If it is set to "off", do not use Xinerama at all.
+	
+	* src/resource.c: More informative error message in case of too old
+	~/.gv
+	
+	* src/Makefile.am src/gv-update-userconfig: New script for upating the
+	user config.
+	
+	* doc/Makefile.am src/Makefile.am: Out of tree built
+	Build GV outside of src directory (Patch by Bernhard R. Link)
+	
+	* configure.ac: Out of tree build
+
+2008-07-16  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/info.c: Trigger info popup on "ERROR:" and "error:", too. 
+	Needed for older gs.
+
+2008-07-12  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* configure.ac, src/versionp.h: Bump version to 3.6.5.90.
+
+	* src/main.c, src/paths.h: Heuristically use Xinerama to get display
+	resolution iff the current display size looks like a single monitor
+	(experimental)
+	
+	* src/gv_message.h: Improvement of "--scale" documentation which should
+	have been included in 3.6.4.91, but it has not been.
+
+2008-07-05  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* configure.ac, src/versionp.h: Bump version to 3.6.5.
+
+2008-06-22  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/options_*.c, src/resource.c: Save GV.version resource to ~/.gv,
+	if GV.version in ~/.gv is missing, assume it to be "gv 3.5.2".
+
+2008-06-21  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* configure.ac, src/versionp.h: Bump version to 3.6.4.91.
+
+2008-06-18  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* doc/gv.texi: Update manual
+
+	* src/gv_message.h: Update usage message
+	
+	* src/main_globals: Add fullscreen_p, presentation_p and ascale_p
+	
+	* src/main.c: Add parsing of --fullscreen and of --scale with a float and
+	--presentation
+	
+	* src/options_gv.c: Include math.h
+
+2008-06-17  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/callbacks.c (cb_setPagemedia): If autoresize is off and any
+	special scale is used, then recalculate the scale.
+	
+	* src/misc.c (show_page): If autoresize is off and any
+	special scale is used, display of new page is required and orientation
+	or Pagemedia differs, then recalculate the scale.
+
+2008-06-15  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/main_globals.h: New globat variable gv_ascale with the arbitraty
+	scale
+	
+	* src/gv_user_res.dat: In gv options, enable input of arbitrary scale
+	
+	* src/main.c: Initialize gv_ascale
+	
+	* src/scale.c (scale_parseScales): Adjust parser for arbitrary scale
+	 (symbolic scale factor is -2)
+	 
+	* src/misc.c (set_new_scale): Handle arbitrary scale
+	
+	* src/options_gv.c: Handle editing of arbitrary scale
+	
+	* src/callbacks.c(cb_setOrientation): If autoresize is off and any
+	special scale is used, then recalculate the scale.
+
+2008-06-14  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/action.c(action_shellConfigureNotify): If autoresize is turned
+	off and actual scale is "Fit to window" then rescale.
+	
+	* src/gv_user_res.dat: New scale "Fit to window"
+	
+	* src/misc.c (set_new_scale): Handle "Fit to window"-scale
+	
+	* src/scale.c (scale_parseScales): Adjust parser to handle new
+	"Fit to window"-scale (symbolic scale factor is 0.000).
+	
+	* src/action.c, src/gv_user_res.dat, src/misc.c, src/scale.c:
+	some as above for "Fit width to window"-scale
+	(symbolic scale factor is -1.000).
+
+2008-06-13  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/main.c, src/gv_message.h, src/resource.c:  Rename infoWarnings to
+	infoErrors,  likewise for resource infoVerbose
+
+	* src/gv_font_res.dat, src/gv_layout_res.dat, src/gv_misc_res.dat:
+	Entries for new setting for infoVerbose on gv options popup
+
+	* src/options_gv.c: Visual editing of resource infoVerbose
+
+2008-06-08  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/*.c:  include ac_config.h  first
+	
+	* configure.ac: Define intptr_t as preprocessor macro if necessary
+
+2008-06-07  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* include inttypes.h only if HAVE_INTTYPES_H is set
+	
+	* src/main_resources.h: Do not use empty array size for initialized
+	array of size 0 -- it makes problems with ISO C89.
+	
+	* configure.ac: added "--with-setenv-code"
+	
+	* src/setenv.[ch]: setenv emulation code
+	
+	* src/Makefile.am: include setenv.c if necessary
+
+2008-06-01  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* configure.ac, src/versionp.h: Bump version to 3.6.4.90.
+	
+	* src/*: Fix warnings (patch by debian)
+
+	* doc/Makefile.am: build doc/gv.1 by help2man if required
+	
+	* doc/gv.texi: Document new -widgetless switch 
+	(patch by debian)
+	
+	* src/gv_widgetless.dat: Resource for widgetless mode (new file)
+	(patch by debian)
+	
+	* src/gv_message.h: Document new -widgetless switch 
+	(patch by debian)
+	
+	* src/resource.c: Handle new -widgetless switch (patch by debian)
+	
+	* src/main_globals: added widgetless_p	(patch by debian)
+	
+	* src/main.c: Parsing of "-widgetless" (patch by debian)
+	
+	* src/main.c(main): If no display is availabe, delay the error
+	message until command line options has been parsed. This way, --help,
+	--version and --usage work without having an display
+	
+	* src/Makefile.am: Build and clean gv_widgetless.h
+	
+	* src/config.h: Define FALLBACK_STYLE_2_* as "gv_widgetless.*"
+	
+	* src/resource.c (resource_buildDatabase): Check full pathname for
+	embedded resource, not only the basename. Also embed gv_widletless.dat.
+
+	* src/Ghostview.c, src/Ghostview.h, src/GhostviewP.h, 
+	src/gv_message.h, src/main.c, src/main_globals.h,
+	src/resource.c: Add handling of infoVerbose resource
+	
+	* src/info.c: infoPopup respects infoVerbose-Resource
+
+2008-06-01  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* ChangeLog: Fixed typo in recent dates
+
+	* configure.ac, src/versionp.h: Bump version to 3.6.4.
+
+2008-05-23  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/stdc.h: removed (it is non-free)
+	
+	* src/getenv.c: likewise (it's not used in standard configuration,
+	anyway)
+	
+	* src/setenv.c: likewise(it's not used in standard configuration,
+	anyway)
+	
+	* src/setenv.h: likewise(it's not used in standard configuration,
+	anyway)
+	
+	* src/Aaa.h: Do not include stdc.h.  (Patch by debian)
+	
+	* src/main.c: likewise (Patch by debian)
+	
+	* src/main.c: Redefine preprocessor macro BITMAP_ARGS (Patch by debian)
+	
+	* src/main_resources.h: Redefine preprocessor macro DECLARE_STRING
+	(Patch by debian)
+	
+	* src/Makefile.am: Remove reference to src/stdc.h src/getenv.c
+	src/setenv.c src/setenv.h
+	
+	* configure.ac: Remove option --enable-setenv-code
+	
+	* INSTALL: Remove description of the option --enable-setenv-code
+
+2008-05-22  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/info.c (cb_popupInfoPopup): Revert returning when calling gs with
+	the `quiet' option (should fix #23199)
+
+	* src/main.c (main): Reverted Forcing the `XtSetArg' call to include
+	XtNquiet to True
+	
+	* src/file.c (global): Define ENODATA as ENOMSG if ENODATA if undefined.
+	Should fix compiling on GNU/kFreeBSD
+
+2008-05-21  Markus Steinborn <msteinbo@uni-paderborn.de>
+
+	* src/ps.c (psscan): Fixed possible uninitialized local variable
+	text (remained unintialized if sscanf failes for some reason)
+
+2008-05-21  Markus Steinborn <msteinbo@uni-paderborn.de>
+	* src/dialog.c (main): Update call to resource_buildDatabase (Patch
+	from debian)
+	* src/resource.c (resource_buildDatabase): Update signature, fix
+	handling of resources (Patch from debian)
+	* src/resource.c likewise (Patch from debian)
+	* src/magmenu.c (magmenu_a_magMenu): Calculation of position that is 
+	not outside the screen (Patch from debian)
+	* src/miscmenu.c (miscmenu_a_miscMenu): likewise (Patch from debian)
+	* src/ps.c (readline): Respect nesting level of DSC headers
+	BeginDocument/EndDocument (Patch from debian)
+	* src/Vlist.c (PaintEntryString): Handle case that international is set
+	(Patch from debian)
+	* src/dialog.c (action_preferDialogPopupButton): Add 2nd
+	XtInstallAccelerators (Patch from debian)
+	* src/FileSel.c (global): Remove string TextField_accelerators
+	(Patch from debian)
+	* src/FileSel.c (Initialize): Add some XtInstallAccelerators
+	(Patch from debian)
+	* src/info.c (makeInfoPopup):  likewise
+	* src/options_fs.c (options_fs_create): likewise
+	* src/options_gs.c (options_gs_create): likewise
+	* src/options_gv (options_gv_create): likewise
+	* src/options_setup (options_setup_create): likewise
+	* src/zoom.c (zoom_createZoom): likewise
+	* src/widgets_misc.c (global): Adjust strings LineTextTr and TextTr
+	for the escape key (Patch from debian)
+	* src/FileSel.c (SetPreferredButton): Remove old handling of esc-key
+	(Patch from debian)
+	* src/gv_misc_res.dat: Update resources
+	(Patch from debian)
+
+	* src/main_resources.h: replace showTitle with titleStyle
+	(Patch from Bernhard R. Link, debian)
+	* src/callbacks.c (cb_showTitle): also set the titlebutton,
+	depending on title_style instead of show_title
+	(Patch from Bernhard R. Link, debian)
+	* src/misc.h (build_label_menu): new prototype 
+	(Patch from Bernhard R. Link, debian)
+	* src/misc.c (setup_ghostview): move titlebutton setting code to
+	cb_showTitle (Patch from Bernhard R. Link, debian)
+	* src/options_setup.c: allow setting titleStyle instead of showTitle
+	(Patch from Bernhard R. Link, debian)
+	* src/gv_layout_res.dat: titleStyle instead of showTitle
+	(Patch from Bernhard R. Link, debian)
+	* src/texinfo.tex: document titleStyle
+	(Patch from Bernhard R. Link, debian)
+
+2007-06-28  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/ps.c (ps_gettext): Bypass trailing ')' when scanning a
+	postscript string.
+
+2007-06-28  Jose E. Marchesi  <jose.marchesi@deimos-space.com>
+
+	* NEWS (Notation): Updated for gv 3.6.3
+
+	* README: Updated version to 3.6.3
+
+	* doc/gv.1: Regenerated for gv 3.6.3
+
+	* src/Makefile.am (@echo "GV*dirs): Updated copyright notices to
+	2007.
+
+	* configure.ac: Updated version to 3.6.3
+
+	* src/main.c (main): Call `resource_buildDatabase' to get the
+	application entire resources database. Then, set that database as
+	the display database.
+
+	* src/resource.c (resource_buildDatabase): Get the display
+	resources database as a parameter and take care to give it
+	priority over the gv system resources. Return the entire resource
+	database to the caller.
+
+2007-06-27  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/Ghostview.c (Input): Send 1023 new line characters to the
+	postscript interpreter. This patch fixes bug #19870. Adapted from
+	http://bugs.ghostscript.com/show_bug.cgi?id=689237
+
+2007-06-25  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/misc.c (misc_setPageMarker): Correctly adjust the page
+	window after PAGE-UP and PAGE-DOWN events. (Patch by Markus
+	Steinborn).
+
+	* src/Ghostview.c (GhostviewIsInterpreterRunning): Doesnt report
+	the presence of a running gs interpreter if
+	`ghostview.disable_start' is true. Patch from Debian.
+	(StartInterpreter): Escape beginning minus characters from
+	filenames. (Patch by Markus Steinborn).
+
+	* src/Makefile.am (@echo "GV.gsArguments): Add `-dFIXEMEDIA' to
+	the `GV.gsArguments' default resource. (Patch by Markus
+	Steinborn).
+
+	* src/Ghostview.c (StartInterpreter): Doesnt add the implicit
+	"-g2x2" parameter to ghostscript invocation command line (patch by
+	Markus Steinborn).
+
+	* src/info.c (cb_popupInfoPopup): Return when calling gs with the
+	`quiet' option (patch by John Bowman).
+
+	* src/main.c (main): Force the `XtSetArg' call to include XtNquiet
+	to True (patch by John Bowman).
+
+	* lib/unistd.h (getcwd): New file.
+
+	* lib/unistd_.h (if !): New file.
+
+	* lib/Makefile.am: New file.
+
+	* lib/gettext.h: New file.
+
+	* lib/getopt_int.h: New file.
+
+	* lib/getopt_.h: New file.
+
+	* lib/getopt.c: New file.
+
+	* lib/getopt1.c: New file.
+
+	* lib/dummy.c: New file.
+
+2007-03-31  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* src/resource.c (resource_buildDatabase): avoid segfaults when
+	  reading ~/.gv as produced by State -> Setup Options -> Save
+
+2007-03-16  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* doc/gv.texi: Fix GVERSION.
+
+2006-07-07  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/ps.c: `gettext' function renamed to `ps_gettext' to avoid
+	  collision with the `gettext' builtin function.
+
+2006-05-17  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/gv_signal.c (signal_setSignalHandlers): Ignore the SIGINT
+	signal.
+
+2005-03-31  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/Makefile.am ($(srcdir)/gv_intern_res_unix.dat): Remove
+	quotes from the gs command lines in order to accomodate to the
+	0000-unchequed Debian patch for quoting filenames.
+
+2005-03-31  Jose E. Marchesi  <jemarch@dataware.es>
+
+	* src/Ghostview.c (StartInterpreter): Added the '-2x2' argument to
+	gs in order to get the correct orientation for landscape
+	files. Patch by John Bowman.
+
+	* configure.ac: Enable the scrollbar code. Solves bug #11091.
+
+	* src/main.c (main): use getopt_long_only in order to support old
+	command line arguments style.
+
+	* doc/gv.texi (Resource files): Typo fixed
+	(Displaying new versions of a document): Reference to VMS removed.
+	(How can I make even more room for the image?): Subst -spartan by --spartan
+
+	* configure.ac: The signal handler is now enabled by default,
+	following the commentary on configure.ac
+	Typo: enable-signal-handle -> enable-signal-handler
+
+	* src/ps.c: Strip off the external reference to 'pdf_delaysafer_hack'
+	Revert the delaysafer hack
+
+	* src/misc.c (misc_changeFile): Strip off directories from the
+	path of the file. Patch by John Bowman.
+
+2005-01-17  Jose E. Marchesi  <jemarch@dataware.es>
+
+	* src/ps.c: idem.
+
+	* src/main.c: idem.
+
+	* src/resource.c (resource_buildDatabase): Patch from FreeBSD
+	ports in order to avoid gcc-dependant code: variable declaration
+	only on beginning of blocks.
+
+2004-12-31  Jose E. Marchesi  <jemarch@dataware.es>
+
+	* src/Makefile.am (AM_CFLAGS): Use @X_CFLAGS@ from autoconf
+
+2004-12-29  Gerald Pfeifer  <gerald@pfeifer.com>
+
+	* src/file.c (file_fileIsNotUseful): Use EFTYPE instead of ENODATA
+	if the former has been defined.
+
+2004-12-19  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* NEWS (Notation): Upgraded for 3.6.1
+
+2004-12-19  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* README: Upgraded for 3.6.1
+
+2004-12-19  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* configure.ac: Change reference source file on AC_INIT
+
+2004-12-19  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/gv_message.h (displayed\n\): Fixed a typo on the help message.
+
+	* src/gv_misc_res.dat: Changed the Reopen label to Reload for the
+	File menu.
+
+	* src/Makefile.am ($(srcdir)/gv_intern_res_unix.dat): Fix
+	GV.gsCmdConvPDF in order to work.
+
+2004-12-06  Jose E. Marchesi  <jemarch@gnu.org>
+
+	* src/main.c (main): Process GNU arguments after X initialization
+
+2004-11-11  Jose E. Marchesi  <jemarch@dataware.es>
+
+	* configure.ac: Changed the scratch dir from ~/ to /tmp/
+
+2004-11-10  Jose E. Marchesi  <jemarch@dataware.es>
+
+	* New ChangeLog
+

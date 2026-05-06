@@ -1,0 +1,1397 @@
+\input texinfo
+@comment $Id$
+@comment %**start of header
+@setfilename gv.info
+@settitle GNU gv Manual
+@comment %**end of header
+
+@include version.texi
+@set MYEDITION First
+
+@copying
+This is the @value{MYEDITION} edition of the @cite{GNU gv Manual},
+updated for gv version @value{VERSION}.
+
+Copyright @copyright{} 1995, 1996, 1997 Johannes Plass
+
+Copyright @copyright{} 2004 Jos@'e E. Marchesi
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU General Public License, Version 3 or
+any later version published by the Free Software Foundation.
+@end quotation
+@end copying
+
+@dircategory Viewers
+@direntry
+* gv: (gv).     The GNU PostScript and PDF viewer.
+@end direntry
+
+@titlepage
+@sp 6
+@center @titlefont{GNU gv Manual}
+@sp 4
+@center @value{MYEDITION} Edition, Updated for gv Version @value{VERSION}.
+@sp 5
+@center Johannes Plass
+@center Jos@'e E. Marchesi
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+
+@end titlepage
+@page
+@ifnottex
+@node Top, Introduction, (dir), (dir)
+@top GNU gv
+
+GNU gv - View PostScript and PDF documents using ghostscript.
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Introduction::                
+* Invoking gv::                 
+* Resources::                   
+* Mouse and key bindings::      
+* Comments about the user interface::  
+* Frequently asked questions::  
+* gv internals::                
+* GNU General Public License::  
+@end menu
+
+
+@contents
+
+@node Introduction, Invoking gv, Top, Top
+@chapter Introduction
+
+GNU gv allows to view and navigate through PostScript and PDF
+documents on an X display by providing a user interface for the
+ghostscript interpreter.
+
+Please note that gv is derived from Tim Theisen's ghostview.
+
+@node Invoking gv, Resources, Introduction, Top
+@chapter Invoking gv
+
+@verbatim
+Usage: gv [OPTION]... [FILE]
+PostScript and PDF viewer.
+  [-]-monochrome                      display document using only black and white
+  [-]-grayscale                       display document without colors
+  [-]-color                           display document as usual
+  [-]-safer                           start ghostscript in safe mode
+  [-]-nosafer                         do not start ghostscript in safe mode
+  [-]-safedir                         start ghostscript from a safe diretory
+  [-]-nosafedir                       do not start ghostscript from a safe diretory
+  [-]-quiet                           start ghostscript with the -dQUIET option
+  [-]-noquiet                         do not start ghostscript with the -dQUIET option
+  [-]-infoSilent                      do not show any messages in the info popup window
+  [-]-infoErrors                      do not show warning messages in the info popup window
+  [-]-infoAll                         do show all messages in the info popup window
+  [-]-arguments=ARGS                  start ghostscript with additional options as specified
+                                      by the string ARGS
+  [-]-page=LABEL                      display the page with label LABEL first
+  [-]-center                          the page should be centered automatically
+  [-]-nocenter                        the page should not be centered automatically
+  [-]-media=MEDIA                     selects the paper size to be used
+  [-]-orientation=ORIENTATION         sets the orientation of the page
+  [-]-scale=N|f.f                     selects the scale N, or arbitrary scale f.f
+  [-]-scalebase=N                     selects the scale base N
+  [-]-swap                            interchange the meaning of the orientations landscape
+                                      and seascape
+  [-]-noswap                          do not interchange the meaning of the orientation
+                                      landscape and seascape
+  [-]-antialias                       use antialiasing
+  [-]-noantialias                     do not use antialiasing
+  [-]-dsc                             dsc comments are respected
+  [-]-nodsc                           dsc comments are not respected
+  [-]-eof                             ignore the postscript EOF comment while scanning
+                                      documents
+  [-]-noeof                           do not ignore the postscript EOF comment while
+                                      scanning documents
+  [-]-pixmap                          use backing pixmap
+  [-]-nopixmap                        do not use backing pixmap
+  [-]-watch                           watch the document file for changes
+  [-]-nowatch                         do not watch the document file for changes
+  [-]-help                            print a help message and exit
+  [-]-usage                           print a usage message and exit
+  [-]-resize                          fit the size of the window to the size of the page
+  [-]-noresize                        do not fit the size of the window to the size of the page
+  -geometry [<width>][x<height>][{+-}<xoffset>{+-}<yoffset>]
+  [-]-ad=FILE                         read and use additional resources from FILE
+  [-]-style=FILE                      read and use additional resources from FILE. These resources
+                                      have lower priority than those provided on the context of --ad
+  [-]-password=PASSWORD               Sets the password for opening encrypted PDF files
+  [-]-spartan                         shortcut for --style=gv_spartan.dat
+  [-]-widgetless                      shortcut for --style=gv_widgetless.dat
+  [-]-fullscreen                      start in fullscreen mode (needs support from WM)
+  [-]-presentation                    Presentation mode (fullscreen, Fit to window,
+                                      widgetless and no resizing of window)
+  [-]-version                         show gv version and exit
+@end verbatim
+
+@table @code
+@item @var{file}
+The name of the file to be displayed.
+The file ending @file{.ps} may be omitted.
+@var{file} may point to a compressed file 
+(gzipped, bzipped, zipped or compressed).
+Viewing PDF files requires at least ghostscript version 4.x.
+@item --ad=@var{file}
+Read and use additional resources from the file
+@var{file}.
+These resources have higher priority than those provided
+in the context of the @code{--style} option.
+@item --antialias, --noantialias
+Whether to use antialiasing.
+@item --arguments=@var{args}
+Start ghostscrip with additional options as specified by the
+string @var{args}.
+@item --center, --nocenter
+Whether the page should be centered automatically.
+@item --dsc, --nodsc
+Determines if @emph{document structuring convention} (@acronym{DSC})
+comments should be respected or ignored. If @code{--nodsc} is used gv
+will not attempt to examine the structure of the document but will
+pass the file to the ghostscript interpreter as a whole. In this case no
+page numbers are shown and freely moving around in the document is not
+possible.  This option may help when viewing files not conforming to
+the @emph{document structuring conventions}.
+@item --eof, --noeof
+Defines the behaviour of the postscript scanner used to examine the
+structure of the document.  If @code{--noeof} is used the scanner will
+ignore end of file (@acronym{EOF}) comments. This may help when
+viewing documents which import other documents without enclosing them
+within the proper "BeginDocument" and "EndDocument" comments.  If
+@code{--eof} is used, the scanner treats an @acronym{EOF} comment as
+marking the end of the file.
+@item --fullscreen
+Selects the fullscreen mode.
+@item --infoSilent
+Do not show any ghostscript messages in an info popup window.
+@item --infoErrors
+Only show error messages from ghostscript in an info popup window.
+@item --infoAll
+Shows all ghostscript messages in an info popup window.
+@item --pixmap, --nopixmap
+If @code{--pixmap} is used gv tries to maintain off-screen regions of
+the displayed page by allocating a sufficiently large pixmap.  If
+@code{--nopixmap} is used the @emph{X Server} is responsible for
+maintaining obscured portions of the displayed page (see also the
+@emph{useBackingPixmap} resource).
+@item --version
+Print the version number of gv to standard output and exit.
+@item --help, --usage
+Display a short help message and exit.
+@item --scale=@var{n}
+@var{n} must be an integer or a positive float.
+In case @var{n}  is an integer, @var{n} selects the scale entry @var{n} relative to the scale 1.0.
+With the special value of @code{-1000} Fit to page is selected, and likewise with the
+value of @code{-1001} Fit widthto page is selected.
+In case @var{n} is a float, @var{n} selects an arbitrary scale.
+@item --scalebase @var{n}
+Selects the scale base @var{n}.
+@item --monochrome, --grayscale, --color
+Sets the color palette to be used.
+@item --media=@var{media}
+Selects the paper size to be used. Valid values are names of
+paper sizes that appear in the list of page medias as given
+by the @var{medias} resource.
+@item --page=@var{label}
+Display the page with label @var{label} first.
+@item --orientation=@var{orientation}
+Sets the orientation. 
+Valid values for @var{orientation} are @code{portrait},
+@code{landscape}, @code{seascape} and @code{upsidedown}.
+@item --quiet, --noquiet
+Whether to start ghostscript with the @code{-dQUIET} option.
+@item --resize, --noresize
+Whether ghostscrip is allowed to automatically fit the
+size of its window to the size of the displayed page.
+@item --password=PASSWORD
+When opening a file, use PASSWORD to decrypt it. This Option is
+usefull for viewing encrypted PDF files.
+@item --presentation
+Is actually a shortcut for @code{--fullscreen --noresize --scale=-1000 --widgetless}.
+@item --safer, --nosafer
+Whether to start ghostscript in safer mode
+(that includes he @code{-dSAFER} option or the @code{-dDELAYSAFER}
+mode where appropriate) and the @code{-P-} option.
+@item --safedir, --nosafedir
+Whether to start ghostscript from a safe direcotry or not.
+@item --spartan
+This is a shortcut for @code{--style=gv_spartan.dat}.
+@item --style=@var{file}
+Read and use additional resources from the file @var{file}.
+These resources have  lower priority than those provided
+in the context of the @code{--ad} option.
+@item --swap, --noswap
+Whether to interchange the meaning of the orientations
+landscape and seascape.
+@item --watch, --nowatch
+The @code{--watch} option causes gv to check the document
+periodically. If changes are detected gv will
+automatically display the newer version of the file.
+The document is by default checked once every second. 
+This can be changed via the @emph{watchFileFrequency} resource.
+Note that sending gv the @strong{SIGHUP} signal also causes
+an update of the displayed document. This method
+may be used by document creators to trigger gv
+remotely.
+@item --widgetless
+This is a shortcut for @code{--style=gv_widgetless.dat}.
+@end table
+
+@node Resources, Mouse and key bindings, Invoking gv, Top
+@chapter Resources
+
+@menu
+* Resource files::              
+* Resources of gv::             
+@end menu
+
+@node Resource files, Resources of gv, Resources, Resources
+@section Resource files
+
+In general gv does not depend on any external resource files.
+However, when starting gv, preferences are read from
+
+@table @strong
+@item a system specific resource file.
+The name of this file is GV and is installed on as part of gv's
+architecture independent library. Usually the library files are
+installed on @file{/usr/local/lib/gv}.
+
+Administrators may want to modify this file in order
+to set up gv according to the local needs of their system.
+@item a user specific resource file.
+The name of this file is either @file{~/.gv} or as described
+by the @code{XUSERFILESEARCHPATH} environment variable.
+@end table
+
+The files @file{gv_user.ad} and @file{gv_system.ad} (located in the
+library directory of gv, which is most probably either
+@file{/usr/local/lib/gv/} or @file{/usr/lib/gv/}) may serve as a basis for
+constructing the user and system specific resource files.
+
+Note that the user and system specific resource files are not the only
+sources of preferences taken into account when gv is started.
+However, in practice these are the most important.
+
+@node Resources of gv,  , Resource files, Resources
+@section Resources of gv
+
+The following describes some of the resources of gv.
+The precise syntax of some of the resource values may be 
+inferred from the appended default system specific resource file.
+
+@table @strong
+@item antialias
+Whether antialiasing should be used.
+Valid values are @code{True} and @code{False}.
+
+It defaults to @code{True}.
+@item autoCenter
+Whether the displayed page should automatically be centered 
+(for instance when opening a new file).
+Valid values are @code{True} and @code{False}.
+
+It defaults to @code{True}.
+@item autoResize
+Whether gv is allowed to resize the main window
+according to the size of the current page.
+Valid values are @code{True} and @code{False}.
+
+It defaults to @code{True}.
+@item confirmPrint
+Whether printing requires an extra confirmation.
+Valid values are @code{True} and @code{False}.
+
+It defaults to @code{True}.
+@item confirmQuit
+Whether leaving gv requires extra confirmation.
+Valid values are @code{0} (Never), @code{1}
+(When processing) and @code{2} (Always).
+The default value is @code{1}, which causes
+a confirmation request when trying to leave gv
+in the presence of pending PDF to Postscript conversions.
+@item scrollingEyeGuide
+If this resource is @code{True} scrolling via the
+keyboard causes a temporary border to be drawn around the
+previously visible area of the page.
+Allowed values are @code{True} and @code{False}.   
+
+It defaults to @code{True}.
+@item infoVerbose
+Defines the behavior of the info popup which shows messages from ghostscript. Valid values are @code{Silent} (Never), @code{Errors}
+(show only errror messages) and @code{All} (Any message is being shown).
+
+It defaults to @code{Errors}.
+@item xinerama
+Defines whether the display resolution is determined by xinerama. Valid values are @code{On} (use
+Xinerama if available),  @code{Off} (do not use Xinerama) and @code{Auto}
+(heuristically decide whether to use Xinerama or not).
+
+It defaults to @code{Auto}.
+@item ignoreEOF
+Defines the behaviour of the postscript scanner as described
+in the Options section.
+Valid values are @code{True} and @code{False}.   
+
+It defaults to @code{True}.
+@item respectDSC
+Determines whether gv should attempt to respect document 
+structuring comments.
+Valid values are @code{True} and @code{False}.
+
+It defaults to @code{True}.
+@item reverseScrolling
+Defines the interpretation of directions when
+scrolling with the mouse.
+Valid values are @code{True} and @code{False}.
+
+It defaults to @code{False}.
+@item swapLandscape
+Whether the meaning of @code{landscape} and @code{seacape}
+should be interchanged.
+Valid values are @code{True} and @code{False}.
+
+It defaults to  @code{False}.
+@item scratchDir
+Specifies a directory used to store temporary data.
+
+It defaults to the invocation directory.
+@item defaultSaveDir
+Specifies the default destination directory for files to be saved.
+
+It defaults to the home directory, @file{~/}.
+@item useBackingPixmap
+If the value of this resource is @code{False} the @emph{X Server}
+is advised that saving off-screen pixels of the displayed page
+would be beneficial (maintaining backing store). In this case gv 
+does not actively maintain the contents of the page but relies
+on the @emph{X Server}. The server is, however, always free to stop 
+maintaining backing backing store.
+If the value of this resource is @code{True} the @emph{X Server}
+is advised that maintaining backing store is not useful.
+In this case gv attempts to allocate a sufficiently large pixmap
+to store the contents of the displayed page.
+
+It defaults to @code{True}.
+@item watchFile
+Whether the document should be checked periodically and updated
+automatically if  changes are detected.
+Valid values are @code{True} and @code{False}.
+
+It defaults to @code{False}.
+@item watchFileFrequency
+Defines the time in milliseconds elapsing between successive
+checks of the document when @emph{watchFile} is set to @code{True}.
+Allowed values must be larger than 500.
+
+It defaults to @code{1000}.
+@item printCommand
+The command used for printing a file.
+The command may contain multiple @code{%s} wildcards
+which will be replaced by the name of the file to be 
+printed.
+
+It defaults to @code{lpr}.
+@item saveposFilename
+This file is used for saving positions by the @code{z} and @code{u} keys.
+
+It defaults to @code{~/gv.savepos}.
+@item gsInterpreter
+The command used to start the ghostscript interpreter.
+
+It defaults to @code{gv}.
+@item gsCmdScanPDF
+The command used to extract document structuring comments
+from a PDF file.
+
+It defaults to @code{gs -dNODISPLAY -dQUIET -sPDFname=%s -sDSCname=%s pdf2dsc.ps -c quit}
+@item gsCmdConvPDF
+The command used to convert a PDF file to PostScript.
+
+It defaults to @code{gs -dNODISPLAY -dQUIET  -dNOPAUSE -sPSFile=%s %s -c quit}
+@item gsX11Device
+The ghostscript command line option which activates the
+@emph{X11} device. 
+
+It defaults to @code{-sDEVICE=x11}
+@item gsX11AlphaDevice
+The ghostscript command line option which activates the
+@emph{X11} device with antialiasing enabled. 
+
+It defaults to @code{-dNOPLATFONTS -sDEVICE=x11alpha}
+@item gsSafeeDir
+Determines whether ghostscript should be started from a safe
+directory.
+
+It defaults to @code{True}.
+@item gsSafer
+Determines whether ghostscript should be started with the
+@code{-dSAFER} command line option.
+
+It defaults to @code{True}.
+@item gsQuiet
+Determines whether ghostscript should be started with the
+@code{-dQUIET} command line option.
+
+It defaults to @code{True}.
+@item gsArguments
+May be used to provide additional command line options for the
+ghostscript interpreter.
+Starting gv with the @code{-arguments @var{arguments}}
+option will override this resource setting.
+
+It defaults to the empty string.
+@item magMenu
+Describes the menu that pops up when preparing to
+to zoom an area of the displayed page.
+
+@item dirs
+Defines a list of directories accessible via the @code{Directories}
+menu in the file selection window.
+The special value @code{Home} corresponds to the users home directory,
+the value @code{Tmp} corresponds to the scratch directory as defined
+by the @strong{scratchDir} resource.
+
+It defaults to @code{Home Tmp /usr/doc /usr/local/doc}
+@item filter
+Defines the default filter to be used when displaying a directory
+contents in the file selection window.
+A filter is specified according to the syntax
+
+@verbatim
+   <filter>    := [<filespecs>] [no <filespecs>]
+   <filespecs> := <filespec> [<filespecs>]
+   <filespec>  := filename possibly including wildcards '*'
+                  which match any character.
+@end verbatim
+
+   Example: The filter
+
+@verbatim
+   GV*filter: *.ps *.pdf no .*
+@end verbatim
+
+   screens out all files with names starting with a dot
+   and keeps of the remaining ones only those which end
+   on @file{.ps} or @file{.pdf}.
+
+   It defaults to @code{no .*}
+
+@item filters
+Defines a list of filters offered in the @emph{Filters}
+menu of the file selection window.
+The filter @code{None} has a special meaning
+causing all files to be displayed when the corresponding
+menu entry is selected.
+
+@item miscMenuEntries
+Describes the menu that pops up when clicking with the 
+third mouse button on the displayed page. 
+The value of this resource is a list of menu entries.
+
+Allowed entries are
+
+@itemize 
+@item
+@code{update}
+@item
+@code{reload}
+@item
+@code{toggle_current}
+@item
+@code{toggle_even}
+@item
+@code{toggle_odd}
+@item
+@code{unmark}
+@item
+@code{stop}
+@item
+@code{print_all}
+@item
+@code{print_marked}
+@item
+@code{save_all}
+@item
+@code{save_marked}
+@item
+@code{line}
+@end itemize
+
+@item titleStyle
+Whether the name of the displayed document should be shown in the
+title bar of the window. The name of gv's icon will also change
+accordingly if this resource is set to @code{True}.
+
+If this is @code{0}, no title will be shown.
+@code{1} means to show a the document title or the file name if there is
+no document title.
+Only the file name is shown with @code{2}.
+
+It defaults to @code{1}.
+@item maximumWidth, maximumHeight
+When resizing gv will not attempt to exceed the size specified
+by these resources.
+These resources may be specified as a positive integer
+or as @code{screen}, optionally combined with
+a positive or negative offset.
+The default values listed above provide examples for this syntax.
+@code{screen} will automatically be replaced by the size of the
+screen.
+
+@code{maximumWidth} defaults to @code{screen-20}.
+@code{maximumHeight} defaults to @code{screen-44}.
+
+@item minimumWidth, minimumHeight
+Defines a minimum size for the main window.
+Valid values for both resources are positive integers larger
+than 200.
+
+@code{minimumWidth} defaults to @code{400}.
+@code{minimumHeight} defaults to @code{430}.
+
+@item scale
+Sets the initial scale. The value of this resource is the offset
+of the scale to be selected relative to the scale 1.0 in the
+the @emph{Scale} menu.
+
+It defaults to @code{0}.
+@item scaleBase
+Selects the initial scale base. The value of this resource should 
+be a positive integer.
+
+It defaults to @code{1}.
+@item scales
+Defines the available scales bases and scales in the @emph{Scale}
+menu.   
+
+@item orientation
+Sets the initial orientation. Valid values are 
+@itemize
+@item
+@code{portrait}
+@item
+@code{landscape}
+@item
+@code{seascape}
+@item
+@code{upside-down}
+@item
+@code{automatic}
+@end itemize
+
+@code{automatic} causes gv to attempt
+to derive the correct orientation from document structuring
+comments.
+
+It defaults to @code{automatic}.
+@item fallbackOrientation
+Defines the paper-size to be used when automatic orientation
+detetction fails.  Valid values are @code{portrait}, @code{landscape},
+@code{seascape} and @code{upside-down}.
+
+It defaults to @code{portrait}.
+@item medias
+A list describing the page medias known to gv.
+List entries starting with @code{!} or @code{#} will not appear in the
+@emph{Media} menu but will still be used for automatic paper size 
+detection.
+
+@item pageMedia
+Sets the paper size. 
+Allowd values are as given in the above list of paper-sizes.
+Specifying
+@code{automatic} causes gv to attempt
+to derive the correct paper-size from document structuring
+comments.
+
+It defaults to @code{automatic}.
+@item fallbackPageMedia
+Defines the paper-size to be used when automatic paper-size 
+detetction fails.  Valid values are as given in the  above
+list of paper-sizes.
+
+It defaults to @code{a4}.
+
+@item strings.*
+Variuos strings for translating GNU gv.
+@end table
+
+@node Mouse and key bindings, Comments about the user interface, Resources, Top
+@chapter Mouse and key bindings
+
+@menu
+* Mouse bindings in the Main and the Zoom window::  
+* Mouse bindings in the File Selection popup::  
+* Mouse bindings in the Table of Contents::  
+* Mouse bindings in the Panner widget::  
+* Mouse bindings in the << and >> button windows::  
+* Key Bindings::                
+@end menu
+
+@node Mouse bindings in the Main and the Zoom window, Mouse bindings in the File Selection popup, Mouse and key bindings, Mouse and key bindings
+@section Mouse bindings in the Main and the Zoom window
+
+The following mouse events are defined when the mouse pointer
+is either on the displayed page or on a zoomed area:
+
+@table @strong
+@item press button 1, move mouse, release button 1
+Scrolls the displayed page 'proportionally'.
+@item press button 3, move mouse, release button 3
+Scrolls the displayed page 'absolutely'.
+@item double-click with button 1
+In the main window this displays the previous/next page
+if the double-click occured in the left/right half of the
+window.
+In a zoom window it does nothing.
+@item press button 2, release button 2
+Pops up a small menu which allows to choose a magnification
+for a certain area around the current mouse position.
+After selecting a magnification a zoom window pops up
+displaying the area at the chosen scale.
+@item press button 2, move mouse, release button 2
+This draws and thereby defines a rectangular region which
+can be displayed in a zoom window. The magnification for the
+area can be selected by means of a popup menu which appears after
+releasing button 2.
+@item press button 1, press button 2
+Reload the current page. This event sequence works only
+in the main window.
+@item press button 3, release button 3
+Pops up a small menu which offers a few standard actions
+like 'Reload', 'Mark Page', etc.
+@end table
+
+@node Mouse bindings in the File Selection popup, Mouse bindings in the Table of Contents, Mouse bindings in the Main and the Zoom window, Mouse and key bindings
+@section Mouse bindings in the File Selection popup
+
+The following mouse events are defined when the mouse pointer is
+in the window of either a file or a directory list:
+
+@table @strong
+@item press button 1, move mouse, release button 1
+Scrolls a file or directory list 'proportionally'.
+@item press button 2, move mouse, release button 2
+Scrolls a file or directory list 'absolutely'.
+@item press button 2, release button 2
+Scrolls a file or directory list one page up/down
+if the button was pressed in the upper/lower half of the list.
+@item double-click with button 1 on a filename
+Selects the file and closes the File Selection popup.
+@item click with button 1 on a directory name
+Causes the contents of this directory to be displayed.
+@end table
+
+@node Mouse bindings in the Table of Contents, Mouse bindings in the Panner widget, Mouse bindings in the File Selection popup, Mouse and key bindings
+@section Mouse bindings in the Table of Contents
+
+The following mouse events are defined when the mouse pointer is
+in the window showing a list of page numbers of the
+current file (table of contents):
+
+@table @strong
+@item press button 1, move mouse, release button 1
+Scrolls the table of contents.
+@item press button 1 on a page number
+Go to this page.
+@item press button 2 on a page number
+Mark this page if it is unmarked, but unmark it if it is marked.
+@item press button 2, move mouse, release button 2
+Marks/unmarks all unmarked/marked pages in the region
+crossed by the mouse pointer during the movement.
+@end table
+
+@node Mouse bindings in the Panner widget, Mouse bindings in the << and >> button windows, Mouse bindings in the Table of Contents, Mouse and key bindings
+@section Mouse bindings in the Panner widget
+
+The Panner widget is the rectangular region located close to the
+left edge of the main window. It indicates the size and the
+position of the visible area of the current page relative to the
+total page.
+
+The following mouse events are defined when the mouse pointer is
+in this region:
+
+@table @strong
+@item press button 1, move mouse
+Scrolls the displayed page.
+@item press button 2
+Display the previous page.
+@item press button 3
+Display the next page.
+@end table
+
+@node Mouse bindings in the << and >> button windows, Key Bindings, Mouse bindings in the Panner widget, Mouse and key bindings
+@section Mouse bindings in the << and >> button windows
+
+The << and >> buttons are used to move 
+to another page. The following mouse events are defined:
+
+@table @strong
+@item press button 1
+Move 1 page forward/backwards.
+@item press button 2
+Move 5 pages forward/backwards.
+@item press button 3
+Move 10 pages forward/backwards.
+@end table
+
+@node Key Bindings,  , Mouse bindings in the << and >> button windows, Mouse and key bindings
+@section Key Bindings
+
+The following key events are defined in the main window. Those bindings
+scrolling the page are also defined in zoom popups.
+
+
+@menu
+* Notation::                    
+* Miscellaneous keys::          
+* Orientation::                 
+* Magnification::               
+* Navigating::                  
+@end menu
+
+@node Notation, Miscellaneous keys, Key Bindings, Key Bindings
+@subsection Notation
+
+@table @key
+@item S-X
+means press @key{Shift} and key @key{X}
+@item C-X
+means press @key{Ctrl}  and key @key{X}
+@item SC-X 
+means press @key{Shift} or @key{Ctrl} and key @key{X}
+@end table
+
+@node Miscellaneous keys, Orientation, Notation, Key Bindings
+@subsection Miscellaneous keys:
+
+@table @key
+@item A
+Toggle antialiasing on and off
+@item O
+Open a new file
+@item Q
+Quit gv
+@item R
+Toggle gv's resizing behaviour
+@item I
+Respect/Ignore document structuring
+@item W
+Watch file / Don't watch file
+@item S
+Save the marked pages
+@item SC-S
+Save the current file
+@item P
+Print the marked pages
+@item C-P
+Print the current file
+@item S-P
+Switches to presentation mode by forking a new GNU gv process.
+@item c-L
+Reload the current page
+@item .
+Reload the current page
+@item SC-.
+Reopen the current file
+@item M
+Mark the current page
+@item N
+Unmark the current page
+@item Z
+append the current coordinate to a file whose name is given by the @code{GV.saveposFilename} resource.
+@item U
+enter a command with the current coordinate as its default parameter. By defalt it is 
+% TODO
+@cite{\PutAtPos(x,y)()}, where x,y are the current coordinate and the user can put needed commands into ().
+This command is appended to a file whose name is given by the @code{GV.saveposFilename} resource.
+@end table
+
+@node Orientation, Magnification, Miscellaneous keys, Key Bindings
+@subsection Orientation
+
+@table @key
+@item 7
+Orientation portrait
+@item 8
+Orientation landscape
+@item 9
+Orientation upside-down
+@item 0
+Orientation seascape
+@end table
+
+@node Magnification, Navigating, Orientation, Key Bindings
+@subsection Magnification
+
+@table @key
+@item SC-6
+Select the scale entry -6 relative to the scale 1.0
+@item SC-5
+Select the scale entry -5 relative to the scale 1.0
+@item SC-4
+Select the scale entry -4 relative to the scale 1.0
+@item SC-3
+Select the scale entry -3 relative to the scale 1.0
+@item SC-2
+Select the scale entry -2 relative to the scale 1.0
+@item SC-1
+Select the scale entry -1 relative to the scale 1.0
+@item ^
+Select the scale 1.0 (for german keyboard layout)
+@item `
+Select the scale 1.0
+@item 1
+Select the scale entry 1 relative to the scale 1.0
+@item 2
+Select the scale entry 2 relative to the scale 1.0
+@item 3
+Select the scale entry 3 relative to the scale 1.0
+@item 4
+Select the scale entry 4 relative to the scale 1.0
+@item 5
+Select the scale entry 5 relative to the scale 1.0
+@item 6
+Select the scale entry 6 relative to the scale 1.0
+@item +
+Select the next scale entry
+@item =
+Select the next scale entry
+@item -
+Select the previous scale entry
+@end table
+ 
+@node Navigating,  , Magnification, Key Bindings
+@subsection Navigating
+
+@table @key
+@item Arrow
+Scroll in the direction of the arrow
+@item S-Up
+Scroll columns up   or jump -1 pages
+@item S-Down
+Scroll columns down or jump  1 pages
+@item S-Left
+Scroll rows left    or jump -1 pages
+@item S-Right
+Scroll rows right   or jump  1 pages
+@item C-Up
+Jump -1 pages (to top/left corner)
+@item C-Down
+Jump  1 pages (to top/left corner)
+@item C-Left
+Jump -5 pages (to top/left corner)
+@item C-Right
+Jump  5 pages (to top/left corner)
+@item D
+Identical to arrow up
+@item X
+Identical to arrow down
+@item Z
+Identical to arrow left
+@item Y
+Identical to arrow left
+@item C
+Identical to arrow right
+@item V
+Center the page
+@item SC-Space
+Scroll columns up   or jump -1 pages
+@item Space
+Scroll columns down or jump  1 pages
+@item BackSpace
+Scroll columns up   or jump -1 pages
+@item Insert
+Jump  -5 pages
+@item Delete
+Jump   5 pages
+@item Home
+Go to the first page
+@item End
+Go to the last page
+@item Prior
+Jump  -1 pages
+@item Next
+Jump   1 pages
+@item Keypad 0-9
+Highlight a page number
+@item Keypad -
+Highlight previous page number
+@item Keypad +
+Highlight next page number
+@item Keypad Enter 
+Jump to the highlighted page
+@item C-Enter
+Scroll columns up
+@item S-Enter
+Scroll columns up
+@item Enter
+Scroll columns down
+@item B
+Jump  -1 pages
+@item F
+Jump   1 pages
+@end table
+
+@node Comments about the user interface, Frequently asked questions, Mouse and key bindings, Top
+@chapter Comments about the user interface
+
+@menu
+* Scales::                      
+* Scrolling::                   
+* Displaying new versions of a document::  
+@end menu
+
+@node Scales, Scrolling, Comments about the user interface, Comments about the user interface
+@section Scales
+
+The @emph{Scale} menu which allows to view the document
+at different sizes is divided into two parts. The first part
+shows a list of available scale bases, the second part,
+separated by a line, lists the relative scales which are applied
+with respect to the selected scale base.
+
+By default two scales bases are available, the @emph{Natural size}
+and the @emph{Pixel based} base.
+When choosing the @emph{Pixel based} scale base a relative scale 
+of 1.0 causes one postscript point to correspond to one pixel on the 
+screen.
+
+When viewing a document at a relative scale of 1.0
+using the @emph{Natural size} base the page should appear in its
+real size, as if printed on paper.
+For the @emph{Natural size} base to work properly gv has to know
+the correct size of the root window. Automatic detection
+of this size unfortunately only provides approximate results, therefore
+it is best if it is provided by the user. To do so the resource
+
+@verbatim
+   GV.screenSize:  <width> x <height>
+@end verbatim
+
+should be added to the @code{SCREEN_RESOURCES} property of the screen
+the document is viewed on, with @var{width} and @var{height}
+describing the width and height of the root window in units of millimeters.
+For instance by using the command
+
+@verbatim
+   echo "GV.screenSize: 396 x 291" | xrdb -override -screen
+@end verbatim
+
+a width of 346 mm and a height of 291 mm will be used for the
+@emph{Natural size} scale base.
+Alternatively the resource
+
+@verbatim
+   GV.screenSize_<machine>_<disp>_<scr>:  <width> x <height>
+@end verbatim
+
+may be added to a resource file read by gv. Here
+@var{machine} ,@var{disp} and @var{ANGLED} describe
+the display on which gv displays the document.
+For instance, if the display is set to @code{tic.tac.toe.wo:0.1}
+the resource should be specified as
+
+@verbatim
+   GV.screenSize_tic_0_1: 396 x 291
+@end verbatim
+
+Note that this method doesn't work on VMS.
+As a last alternative the resource
+
+@verbatim
+   GV.screenSize:  <width> x <height>
+@end verbatim
+
+may be added to one of the resource files. However, for obvious reasons
+this method should be used only on single user machines.
+
+@node Scrolling, Displaying new versions of a document, Scales, Comments about the user interface
+@section Scrolling
+
+It is probably a @emph{de facto} standard for user interfaces
+that windows are supposed to be scrolled by means of
+scrollbars attached to their sides.
+However, for various reasons the use of scrollbars
+has been minimized in gv.
+
+Instead, in all windows with obscured data, scrolling
+may be performed by
+
+@quotation
+   pressing button1, moving the mouse, then releasing button1
+@end quotation
+
+directly in the window. This includes the displayed page,
+zoom popups, the table of contents and the file and 
+directory lists displayed in the file selection popup.
+
+@node Displaying new versions of a document,  , Scrolling, Comments about the user interface
+@section Displaying new versions of a document
+
+During document creation it is usually desirable to
+always display the newest version of the document in work.
+
+Instead of explicitly loading it via the file selection
+popup the most recent version can be displayed by
+pressing the @strong{Reload} button in the main window.
+Choosing the @strong{Reload} entry in the menu that pops
+up when clicking with the third mouse button anywhere on the
+displayed page certainly has the same effect.
+
+More comfortable is the "Watch File" feature which may
+be switched on by selecting the corresponding entry in the
+@strong{State} menu. If activated gv will check
+every now and then if a new version of the displayed
+file exists. If so it will be displayed automatically.
+By default the file is checked about once every
+second.
+
+Finally it may also be left to the document creating program
+to trigger gv to update its display. To do so the
+program should send the SIGHUP signal to gv.
+For instance at the end of a shell script generating a
+postscript file from latex sources the line
+
+@verbatim
+   kill -SIGHUP <gv_pid>
+@end verbatim
+
+may be added (here @var{gv_pid} is the process id of
+gv). Executing the script and thereby creating a new
+version of the document will then also cause the
+result to be displayed instantaneously.
+Please note that this feature is available only on X11 R6
+based systems. 
+
+@node Frequently asked questions, gv internals, Comments about the user interface, Top
+@chapter Frequently asked questions
+
+@menu
+* What happened to the scroll bars?::  
+* How can I make even more room for the image?::  
+* Small characters are not very clear::  
+* The output is not refreshed automatically::  
+@end menu
+
+@node What happened to the scroll bars?, How can I make even more room for the image?, Frequently asked questions, Frequently asked questions
+@section What happened to the scroll bars?
+
+They have been removed in order to make more room for the image. The
+displayed portion of the image may be moved by dragging the image or
+the paner (panel between the "Save Marked" and <<  >> buttons) with the
+mouse. Alternatively, the cursor arrow keys can be used.
+
+@node How can I make even more room for the image?, Small characters are not very clear, What happened to the scroll bars?, Frequently asked questions
+@section How can I make even more room for the image?
+
+Use the "spartan" style by starting gv with the command
+
+@verbatim
+         gv --spartan
+@end verbatim
+
+This removes the "Open", "Print", "Save", "Reload", and page marking
+buttons (they are still available from the "File" and "Page" menus) and
+replaces them with the document attribute controls, which are normally
+along the top.
+
+
+@node Small characters are not very clear, The output is not refreshed automatically, How can I make even more room for the image?, Frequently asked questions
+@section Small characters are not very clear
+
+Antialiasing can improve the display of bitmapped fonts (eg. from TeX)
+when displayed on a colour or greyscale screen. The same technique is
+used by xdvi. Note that antialiasing requires at least Ghostscript
+version 4.x.
+
+Antialiasing can be turned on from the "State" menu, and can be made
+default by saving the setting in @code{State | gv Options...}.
+
+@node The output is not refreshed automatically,  , Small characters are not very clear, Frequently asked questions
+@section The output is not refreshed automatically
+
+There are two methods that can be used to save the contents of the
+window when it's not currently displayed: backing store and backing
+pixmap. Some X-servers seem to support only backing store (eg.
+VAXstations) and some only backing pixmap (eg. some X-terminals,
+including EWS).
+
+In order to force gv to use one method or the other, use the
+@code{State | Setup Options ...} menu and toggle the "Backing Pixmap" button.
+When selected/highlighted (normally the default), gv will use backing
+pixmap; otherwise it will use backing store. Select "Apply" to use a new
+setting and "Save" to make it the new default.
+
+
+@node gv internals, GNU General Public License, Frequently asked questions, Top
+@chapter gv internals
+
+@menu
+* Interface with ghostscript::  
+* Comments recognized by ghostview::  
+* Paper Keywords and paper size in points::  
+@end menu
+
+@node Interface with ghostscript, Comments recognized by ghostview, gv internals, gv internals
+@section Interface with ghostscript
+
+@menu
+* Ghostview interface to ghostscript::  
+* Drawing on a Window::         
+* Drawing on a Pixmap::         
+* The GHOSTVIEW environment variable::  
+* The GHOSTVIEW property::      
+* Events from ghostscript::     
+@end menu
+
+@node Ghostview interface to ghostscript, Drawing on a Window, Interface with ghostscript, Interface with ghostscript
+@subsection Ghostview interface to ghostscript
+
+When the @code{GHOSTVIEW} environment variable is set, ghostscript
+draws on an existing drawable rather than creating its own window.
+Ghostscript can be directed to draw on either a window or a pixmap.
+
+@node Drawing on a Window, Drawing on a Pixmap, Ghostview interface to ghostscript, Interface with ghostscript
+@subsection Drawing on a Window
+
+The @code{GHOSTVIEW} environment variable contains the window id of
+the target window.  The window id is an integer.  Ghostscript will use
+the attributes of the window to obtain the width, height, colormap,
+screen, and visual of the window. The remainder of the information is
+gotten from the GHOSTVIEW property on that window.
+
+@node Drawing on a Pixmap, The GHOSTVIEW environment variable, Drawing on a Window, Interface with ghostscript
+@subsection Drawing on a Pixmap
+
+The GHOSTVIEW environment variable contains a window id and a pixmap id.
+They are integers separated by white space.  Ghostscript will use the
+attributes of the window to obtain the colormap, screen, and visual to use.
+The width and height will be obtained from the pixmap. The remainder of the
+information, is gotten from the GHOSTVIEW property on the window.  In this
+case, the property is deleted when read.
+
+@node The GHOSTVIEW environment variable, The GHOSTVIEW property, Drawing on a Pixmap, Interface with ghostscript
+@subsection The GHOSTVIEW environment variable
+
+@table @strong
+@item parameters
+@code{window-id [pixmap-id]}
+@item scanf format
+@code{"%d %d"}
+@end table
+
+Explanation of parameters:
+
+@table @code
+@item window-id
+tells ghostscript where to
+@itemize
+@item read the GHOSTVIEW property
+@item send events
+@end itemize
+If pixmap-id is not present, ghostscript will draw on this window.
+@item pixmap-id
+If present, tells ghostscript that a pixmap will be used
+as the final destination for drawing.  The window will
+not be touched for drawing purposes.
+@end table
+
+@node The GHOSTVIEW property, Events from ghostscript, The GHOSTVIEW environment variable, Interface with ghostscript
+@subsection The GHOSTVIEW property
+
+@table @strong
+@item type
+STRING
+@item parameters
+
+@code{bpixmap orient llx lly urx ury xdpi ydpi [left bottom top right]}
+
+@item scanf format
+@code{"%d %d %d %d %d %d %f %f %d %d %d %d"}
+@end table
+
+Explanation of parameters:
+
+@table @code
+@item pixmap
+pixmap id of the backing pixmap for the window.  If no
+pixmap is to be used, this parameter should be zero.  This
+parameter must be zero when drawing on a pixmap.
+@item orient
+orientation of the page.  The number represents clockwise
+rotation of the paper in degrees.  Permitted values are
+0, 90, 180, 270.
+@item llx, lly, urx, ury
+Bounding box of the drawable.  The bounding box
+is specified in PostScript points in default user coordinates.
+@item xdpi, ydpi
+Resolution of window.  (This can be derived from the
+other parameters, but not without roundoff error.  These
+values are included to avoid this error.)
+@item left, bottom, top, right (optional)
+Margins around the window.  The margins extend the imageable
+area beyond the boundaries of the window.  This is primarily
+used for popup zoom windows.  I have encountered several
+instances of PostScript programs that position themselves
+with respect to the imageable area.  The margins are specified
+in PostScript points.  If omitted, the margins are assumed to
+be 0.
+@end table
+
+@node Events from ghostscript,  , The GHOSTVIEW property, Interface with ghostscript
+@subsection Events from ghostscript
+
+If the final destination is a pixmap, the client will get a property notify
+event when ghostscript reads the GHOSTVIEW property causing it to be deleted.
+
+Ghostscript sends events to the window where it read the GHOSTVIEW property.
+These events are of type ClientMessage.  The message_type is set to
+either PAGE or DONE.  The first long data value gives the window to be used
+to send replies to ghostscript.  The second long data value gives the primary
+drawable.  If rendering to a pixmap, it is the primary drawable.  If rendering
+to a window, the backing pixmap is the primary drawable.  If no backing pixmap
+is employed, then the window is the primary drawable.  This field is necessary
+to distinguish multiple ghostscripts rendering to separate pixmaps where the
+GHOSTVIEW property was placed on the same window.
+
+The PAGE message indicates that a "page" has completed.  Ghostscript will
+wait until it receives a ClientMessage whose message_type is NEXT before
+continuing.
+
+The DONE message indicates that ghostscript has finished processing.
+
+@node Comments recognized by ghostview, Paper Keywords and paper size in points, Interface with ghostscript, gv internals
+@section Comments recognized by ghostview
+
+@verbatim
+%!PS-Adobe-<real> [EPSF-<real>]
+%%BoundingBox: <int> <int> <int> <int>|(atend)
+%%CreationDate: <textline>
+%%Orientation: Portrait|Landscape|(atend)
+%%Pages: <uint>|(atend)
+%%PageOrder: Ascend|Descend|Special|(atend)
+%%Title: <textline>
+%%DocumentMedia: <text> <real> <real> <real> <text> <text>
+%%DocumentPageSizes: <text>
+%%EndComments
+@end verbatim
+
+Preview section:
+
+@verbatim
+%%BeginPreview
+%%EndPreview
+@end verbatim
+
+Defaults section:
+
+@verbatim
+%%BeginDefaults
+%%PageBoundingBox: <int> <int> <int> <int>|(atend)
+%%PageOrientation: Portrait|Landscape
+%%PageMedia: <text>
+%%EndDefaults
+@end verbatim
+
+Prolog section:
+
+@verbatim
+%%BeginProlog
+%%EndProlog
+@end verbatim
+
+Setup section:
+
+@verbatim
+%%BeginSetup
+%%PageBoundingBox: <int> <int> <int> <int>|(atend)
+%%PageOrientation: Portrait|Landscape
+%%PaperSize: <text>
+%%EndSetup
+@end verbatim
+
+Page properties:
+
+@verbatim
+%%Page: <text> <uint>
+%%PageBoundingBox: <int> <int> <int> <int>|(atend)
+%%PageOrientation: Portrait|Landscape
+%%PageMedia: <text>
+%%PaperSize: <text>
+@end verbatim
+
+@verbatim
+%%Trailer
+%%EOF
+@end verbatim
+
+Document section:
+
+@verbatim
+%%BeginDocument: <text> [<real>[<text>]]
+%%EndDocument
+@end verbatim
+
+Binary section:
+
+@verbatim
+%%BeginBinary: <uint>
+%%EndBinary
+@end verbatim
+
+Data section:
+
+@verbatim
+%%BeginData: <uint> [Hex|Binary|ASCII[Bytes|Lines]]
+%%EndData
+@end verbatim
+
+@node Paper Keywords and paper size in points,  , Comments recognized by ghostview, gv internals
+@section Paper Keywords and paper size in points
+
+@verbatim
+Letter		 612x792
+LetterSmall	 612x792
+Tabloid		 792x1224
+Ledger		1224x792
+Legal		 612x1008
+Statement	 396x612
+Executive	 540x720
+A0               2384x3371
+A1              1685x2384
+A2		1190x1684
+A3		 842x1190
+A4		 595x842
+A4Small		 595x842
+A5		 420x595
+B4		 729x1032
+B5		 516x729
+Envelope	 ???x???
+Folio		 612x936
+Quarto		 610x780
+10x14		 720x1008
+@end verbatim
+
+@node GNU General Public License,  , gv internals, Top
+@appendix GNU General Public License
+@include gpl.texi
+
+@c @node Index,  , GNU General Public License, Top
+@c @unnumbered Index
+
+
+@printindex cp
+
+@bye

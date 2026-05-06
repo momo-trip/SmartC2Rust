@@ -1,0 +1,31 @@
+chAg_circle.chem:
+.br
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+bond 120 ; C
+bond 60 ; C
+bond up ; Cl
+double bond 120 from C ; C
+bond 60 ; C
+bond 120 ; C
+bond 60 ; C
+bond up ; Cl
+double bond 120 from C ; C
+circle at C rad .08
+bond 60 from C ; C
+bond 120 ; C
+bond 60 ; C
+double bond 120 ; C
+bond down ; Cl
+bond 60 from C ; C
+bond 120
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

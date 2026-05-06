@@ -1,0 +1,37 @@
+cholesterol.chem:
+.cstart
+
+# Example file for chem:
+#   cholesterol or C27_H46_O or
+#   cholest-5-en-3β-ol (CAS-RN 57-88-5)
+
+# Ring names as in rule 3S-1.1 of IUPAC recommendations 1989 (see for
+# instance https://iupac.qmul.ac.uk/steroid/3S01.html)
+
+A:	ring6
+B:	ring6 with .V5 at A.V3 double 4,5
+C:	ring6 with .V5 at B.V1
+D:	ring5 pointing right with .V4 at C.V2
+
+	front bond up at A.V2
+	front bond -120 at A.V5 ; HO
+	back bond down at B.V1 ; H
+	front bond up at B.V2 ; H
+	front bond up at C.V2
+	back bond down at C.V3 ; H
+	back bond 60 at D.V5 ; H
+	bond up at D.V5
+B1:	back bond -60
+	bond 60 at B1.start
+	bond 120
+	bond 60
+	bond 120
+B2:	bond 60
+	bond down at B2.start
+
+# Local Variables:
+# fill-column: 72
+# mode: Nroff
+# End:
+# vim: set textwidth=72:
+.cend

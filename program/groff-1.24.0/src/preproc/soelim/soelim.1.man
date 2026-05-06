@@ -1,0 +1,497 @@
+'\" p
+.TH @g@soelim @MAN1EXT@ "@MDATE@" "groff @VERSION@"
+.SH Name
+@g@soelim \- recursively interpolate source requests in
+.I roff
+or other text files
+.
+.
+.\" ====================================================================
+.\" Legal Terms
+.\" ====================================================================
+.\"
+.\" Copyright (C) 1989-2024 Free Software Foundation, Inc.
+.\"
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of
+.\" this manual under the conditions for verbatim copying, provided that
+.\" the entire resulting derived work is distributed under the terms of
+.\" a permission notice identical to this one.
+.\"
+.\" Permission is granted to copy and distribute translations of this
+.\" manual into another language, under the above conditions for
+.\" modified versions, except that this permission notice may be
+.\" included in translations approved by the Free Software Foundation
+.\" instead of in the original English.
+.
+.
+.\" Save and disable compatibility mode (for, e.g., Solaris 10/11).
+.do nr *groff_soelim_1_man_C \n[.cp]
+.cp 0
+.
+.\" Define fallback for groff 1.23's MR macro if the system lacks it.
+.nr do-fallback 0
+.if !\n(.f           .nr do-fallback 1 \" mandoc
+.if  \n(.g .if !d MR .nr do-fallback 1 \" older groff
+.if !\n(.g           .nr do-fallback 1 \" non-groff *roff
+.if \n[do-fallback]  \{\
+.  de MR
+.    ie \\n(.$=1 \
+.      I \%\\$1
+.    el \
+.      IR \%\\$1 (\\$2)\\$3
+.  .
+.\}
+.rr do-fallback
+.\" Man pages are seldom preprocessed with pic(1).
+.mso pic.tmac
+.
+.
+.\" ====================================================================
+.\" Definitions
+.\" ====================================================================
+.
+.ie t .ds tx T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X
+.el   .ds tx TeX
+.
+.
+.\" ====================================================================
+.SH Synopsis
+.\" ====================================================================
+.
+.SY @g@soelim
+.RB [ \-Crt ]
+.RB [ \-I
+.IR dir ]
+.RI [ input-file\~ .\|.\|.]
+.YS
+.
+.
+.P
+.SY @g@soelim
+.B \-\-help
+.YS
+.
+.
+.P
+.SY @g@soelim
+.B \-v
+.YS
+.
+.SY @g@soelim
+.B \%\-\-version
+.YS
+.
+.
+.\" ====================================================================
+.SH Description
+.\" ====================================================================
+.
+GNU
+.I soelim \" GNU
+is a preprocessor for the
+.MR groff @MAN7EXT@
+document formatting system.
+.
+.I @g@soelim
+eliminates source requests in
+.MR roff @MAN7EXT@
+and other text files;
+that is,
+it replaces lines of the form
+.RB \[lq] .so
+.IR included-file \[rq]
+within each text
+.I input-file
+with the contents of
+.I included-file
+recursively,
+flattening a tree of documents.
+.
+By default,
+it writes
+.I roff
+.B lf
+requests as well to record the name and line number of each
+.I input-file
+and
+.IR included-file ,
+so that any diagnostics produced by later processing can be accurately
+traced to the original input.
+.
+Options allow this information to be suppressed
+.RB ( \-r )
+or supplied in \*[tx] comments instead
+.RB ( \-t ).
+.
+In the absence of
+.I input-file
+arguments,
+.I @g@soelim
+reads the standard input stream.
+.
+The program writes to the standard output stream.
+.
+.
+.PP
+.I @g@soelim
+reads the
+.I included-file
+argument as
+GNU
+.I troff \" GNU
+does.
+.
+It ignores spaces immediately after \[lq]so\[rq];
+to embed a sequence of one or more leading spaces in the argument,
+prefix the sequence with a neutral double quote
+.RB ( \[dq] ).
+.
+Non-leading spaces are interpreted literally.
+.
+A backslash followed by a space
+.RB (\[lq] \[rs]\~ \[rq])
+also encodes a space,
+for compatibility with earlier versions of
+GNU
+.IR soelim . \" GNU
+.
+If the included file name requires a backslash,
+use
+.B \[rs]\[rs]
+or
+.B \[rs]e
+to embed it.
+.
+Any other escape sequence in
+.IR included-file ,
+including
+.RB \[lq] \[rs][rs] \[rq],
+prevents
+.I @g@soelim
+from replacing the source request.
+.
+AT&T and descendant versions of
+.I soelim
+have no means of embedding spaces in file names;
+they replace the first space encountered with a newline
+and stop interpreting the request.
+.
+.
+.PP
+The dot must be at the beginning of a line and must be followed by
+.RB \[lq] so \[rq]
+without intervening spaces or tabs for
+.I @g@soelim
+to handle it.
+.
+This convention allows source requests to be \[lq]protected\[rq] from
+processing by
+.IR @g@soelim ,
+for instance as part of macro definitions or
+.RB \[lq] if \^\[rq]
+requests.
+.
+.
+.PP
+There must also be at least one space between
+.RB \[lq] so \[rq]
+and its
+.I included-file
+argument.
+.
+The
+.B \-C
+option overrides this requirement.
+.
+.
+.PP
+The foregoing is the limit of
+.IR @g@soelim 's
+understanding of the
+.I roff
+language;
+it does not,
+for example,
+replace the input line
+.
+.RS
+.EX
+\&.if 1 .so otherfile
+.EE
+.RE
+.
+with the contents of
+.IR otherfile .
+.
+With its
+.B \-r
+option,
+therefore,
+.I @g@soelim
+can be used to process text files in general.
+.
+.
+.PP
+.I soelim \" generic
+was designed to handle situations where the target of a
+.I roff \" generic
+source request requires a preprocessor such as
+.MR @g@eqn @MAN1EXT@ ,
+.MR @g@pic @MAN1EXT@ ,
+.MR @g@refer @MAN1EXT@ ,
+or
+.MR @g@tbl @MAN1EXT@ .
+.
+The usual processing sequence of
+.MR groff @MAN1EXT@
+is as follows.
+.
+.\" Does this groff installation use a command prefix?  In installed
+.\" pages, this comparison will not look like it needs to be dynamically
+.\" decided.
+.\"
+.\" This is done so that the box sizes (in the pic(1) diagram) and arrow
+.\" alignments (in the text alternative) can remain fixed.
+.if !'@g@'\%' \{\
+In the diagrams below,
+the traditional names for
+.I soelim
+and
+.I troff
+are used;
+on this system,
+the GNU versions are installed as
+.I @g@soelim
+and
+.IR @g@troff .
+.\}
+.
+.
+.PP
+.ie t \{\
+.PS
+.ps 10
+.vs 12
+box invisible width 0.5 height 0.4 "input" "file";
+move to last box .bottom;
+down;
+arrow 0.3;
+box invisible width 0.8 height 0.2 "preprocessor";
+move to last box .right
+right;
+arrow 0.3;
+A: box invisible width 0.35 height 0.2 "troff";
+move to last box .top;
+up;
+move 0.3;
+box invisible width 0.6 height 0.4 "sourced" "file";
+line <- up 0.3 from A.top;
+move to A.right;
+right;
+arrow 0.3;
+box invisible width 0.85 height 0.2 "postprocessor";
+move to last box .bottom;
+down;
+arrow 0.3;
+box invisible width 0.5 height 0.4 "output" "file"
+.ps
+.vs
+.PE
+.\}
+.el \{\
+.EX
+          input        sourced
+          file          file
+            \[bv]             \[bv]
+            \[da]             \[da]
+        preprocessor \[an]\[->] troff \[an]\[->] postprocessor
+                                      \[bv]
+                                      \[da]
+                                   output
+                                    file
+.EE
+.\}
+.PP
+That is,
+files sourced with
+.RB \[lq] so \[rq]
+are normally read
+.I only
+by the formatter,
+.MR @g@troff @MAN1EXT@ .
+.
+.I @g@soelim
+is
+.I not
+required for
+.I @g@troff
+to source files.
+.
+.
+.br
+.ne 2v
+.P
+If a file to be sourced should also be preprocessed,
+it must already be read
+.I before
+the input passes through the preprocessor.
+.
+.IR @g@soelim ,
+normally invoked via
+.IR groff 's
+.B \-s
+option,
+handles this.
+.
+.
+.PP
+.ie t \{\
+.PS
+.ps 10
+.vs 12
+box invisible width 0.5 height 0.4 "input" "file";
+move to last box .bottom;
+down;
+arrow 0.3;
+A: box invisible width 0.5 height 0.2 "soelim";
+line <- 0.3;
+box invisible width 0.5 height 0.4 "sourced" "file";
+move to A.right;
+right;
+arrow 0.3;
+box invisible width 0.8 height 0.2 "preprocessor";
+arrow 0.3;
+box invisible width 0.35 height 0.2 "troff";
+arrow 0.3
+box invisible width 0.85 height 0.2 "postprocessor";
+move to last box .bottom;
+down;
+arrow 0.3;
+box invisible width 0.5 height 0.4 "output" "file"
+.ps
+.vs
+.PE
+.\}
+.el \{\
+.EX
+          input
+          file
+            \[bv]
+            \[da]
+          soelim \[an]\[->] preprocessor \[an]\[->] troff \[an]\[->] \
+postprocessor
+            \[ua]                                     \[bv]
+            \[bv]                                     \[da]
+         sourced                               output
+          file                                  file
+.EE
+.\}
+.
+.
+.\" ====================================================================
+.SH Options
+.\" ====================================================================
+.
+.B \-\-help
+displays a usage message,
+while
+.B \-v
+and
+.B \%\-\-version
+show version information;
+all exit afterward.
+.
+.
+.TP 8n \" "-I dir" + 2n
+.B \-C
+Recognize an input line starting with
+.B .so
+even if a character other than a space or newline follows.
+.
+.TP
+.BI \-I\~ dir
+Search the directory
+.I dir
+for
+.I input-
+and
+.I included-files.
+.
+If specified more than once,
+each
+.I dir
+is searched in the given order.
+.
+To search the current working directory before others,
+add
+.RB \[lq] "\-I .\&" \[rq]
+at the desired place;
+it is otherwise searched last.
+.
+.
+.TP
+.B \-r
+Write files \[lq]raw\[rq];
+do not add
+.B lf
+requests.
+.
+.
+.TP
+.B \-t
+Emit \*[tx] comment lines starting with
+.RB \[lq] % \[rq]
+indicating the current file and line number,
+rather than
+.B lf
+requests for the same purpose.
+.
+.
+.PP
+If both
+.B \-r
+and
+.B \-t
+are given,
+the last one specified controls.
+.
+.
+.\" ====================================================================
+.SH "Exit status"
+.\" ====================================================================
+.
+.I @g@soelim
+exits with
+.RB status\~ 0
+on successful operation,
+.RB status\~ 2
+if the program cannot interpret its command-line arguments,
+and
+.RB status\~ 1
+if it encounters an error during operation.
+.
+.
+.\" ====================================================================
+.SH "See also"
+.\" ====================================================================
+.
+.MR groff @MAN1EXT@
+.
+.
+.\" Clean up.
+.rm tx
+.
+.\" Restore compatibility mode (for, e.g., Solaris 10/11).
+.cp \n[*groff_soelim_1_man_C]
+.do rr *groff_soelim_1_man_C
+.
+.
+.\" Local Variables:
+.\" fill-column: 72
+.\" mode: nroff
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

@@ -1,0 +1,2302 @@
+Dies ist gv.info, hergestellt von Makeinfo Version 4.8 aus gv.texi.
+
+   This is the First edition of the `GNU gv Manual', updated for gv
+version 3.7.4.
+
+   Copyright (C) 1995, 1996, 1997 Johannes Plass
+
+   Copyright (C) 2004 Jose' E. Marchesi
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License,
+     Version 3 or any later version published by the Free Software
+     Foundation.
+
+INFO-DIR-SECTION Viewers
+START-INFO-DIR-ENTRY
+* gv: (gv).     The GNU PostScript and PDF viewer.
+END-INFO-DIR-ENTRY
+
+
+File: gv.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
+
+GNU gv
+******
+
+GNU gv - View PostScript and PDF documents using ghostscript.
+
+   This is the First edition of the `GNU gv Manual', updated for gv
+version 3.7.4.
+
+   Copyright (C) 1995, 1996, 1997 Johannes Plass
+
+   Copyright (C) 2004 Jose' E. Marchesi
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License,
+     Version 3 or any later version published by the Free Software
+     Foundation.
+
+* Menu:
+
+* Introduction::
+* Invoking gv::
+* Resources::
+* Mouse and key bindings::
+* Comments about the user interface::
+* Frequently asked questions::
+* gv internals::
+* GNU General Public License::
+
+
+File: gv.info,  Node: Introduction,  Next: Invoking gv,  Prev: Top,  Up: Top
+
+1 Introduction
+**************
+
+GNU gv allows to view and navigate through PostScript and PDF documents
+on an X display by providing a user interface for the ghostscript
+interpreter.
+
+   Please note that gv is derived from Tim Theisen's ghostview.
+
+
+File: gv.info,  Node: Invoking gv,  Next: Resources,  Prev: Introduction,  Up: Top
+
+2 Invoking gv
+*************
+
+
+Usage: gv [OPTION]... [FILE]
+PostScript and PDF viewer.
+  [-]-monochrome                      display document using only black and white
+  [-]-grayscale                       display document without colors
+  [-]-color                           display document as usual
+  [-]-safer                           start ghostscript in safe mode
+  [-]-nosafer                         do not start ghostscript in safe mode
+  [-]-safedir                         start ghostscript from a safe diretory
+  [-]-nosafedir                       do not start ghostscript from a safe diretory
+  [-]-quiet                           start ghostscript with the -dQUIET option
+  [-]-noquiet                         do not start ghostscript with the -dQUIET option
+  [-]-infoSilent                      do not show any messages in the info popup window
+  [-]-infoErrors                      do not show warning messages in the info popup window
+  [-]-infoAll                         do show all messages in the info popup window
+  [-]-arguments=ARGS                  start ghostscript with additional options as specified
+                                      by the string ARGS
+  [-]-page=LABEL                      display the page with label LABEL first
+  [-]-center                          the page should be centered automatically
+  [-]-nocenter                        the page should not be centered automatically
+  [-]-media=MEDIA                     selects the paper size to be used
+  [-]-orientation=ORIENTATION         sets the orientation of the page
+  [-]-scale=N|f.f                     selects the scale N, or arbitrary scale f.f
+  [-]-scalebase=N                     selects the scale base N
+  [-]-swap                            interchange the meaning of the orientations landscape
+                                      and seascape
+  [-]-noswap                          do not interchange the meaning of the orientation
+                                      landscape and seascape
+  [-]-antialias                       use antialiasing
+  [-]-noantialias                     do not use antialiasing
+  [-]-dsc                             dsc comments are respected
+  [-]-nodsc                           dsc comments are not respected
+  [-]-eof                             ignore the postscript EOF comment while scanning
+                                      documents
+  [-]-noeof                           do not ignore the postscript EOF comment while
+                                      scanning documents
+  [-]-pixmap                          use backing pixmap
+  [-]-nopixmap                        do not use backing pixmap
+  [-]-watch                           watch the document file for changes
+  [-]-nowatch                         do not watch the document file for changes
+  [-]-help                            print a help message and exit
+  [-]-usage                           print a usage message and exit
+  [-]-resize                          fit the size of the window to the size of the page
+  [-]-noresize                        do not fit the size of the window to the size of the page
+  -geometry [<width>][x<height>][{+-}<xoffset>{+-}<yoffset>]
+  [-]-ad=FILE                         read and use additional resources from FILE
+  [-]-style=FILE                      read and use additional resources from FILE. These resources
+                                      have lower priority than those provided on the context of --ad
+  [-]-password=PASSWORD               Sets the password for opening encrypted PDF files
+  [-]-spartan                         shortcut for --style=gv_spartan.dat
+  [-]-widgetless                      shortcut for --style=gv_widgetless.dat
+  [-]-fullscreen                      start in fullscreen mode (needs support from WM)
+  [-]-presentation                    Presentation mode (fullscreen, Fit to window,
+                                      widgetless and no resizing of window)
+  [-]-version                         show gv version and exit
+
+`FILE'
+     The name of the file to be displayed.  The file ending `.ps' may
+     be omitted.  FILE may point to a compressed file (gzipped,
+     bzipped, zipped or compressed).  Viewing PDF files requires at
+     least ghostscript version 4.x.
+
+`--ad=FILE'
+     Read and use additional resources from the file FILE.  These
+     resources have higher priority than those provided in the context
+     of the `--style' option.
+
+`--antialias, --noantialias'
+     Whether to use antialiasing.
+
+`--arguments=ARGS'
+     Start ghostscrip with additional options as specified by the
+     string ARGS.
+
+`--center, --nocenter'
+     Whether the page should be centered automatically.
+
+`--dsc, --nodsc'
+     Determines if _document structuring convention_ (DSC) comments
+     should be respected or ignored. If `--nodsc' is used gv will not
+     attempt to examine the structure of the document but will pass the
+     file to the ghostscript interpreter as a whole. In this case no
+     page numbers are shown and freely moving around in the document is
+     not possible.  This option may help when viewing files not
+     conforming to the _document structuring conventions_.
+
+`--eof, --noeof'
+     Defines the behaviour of the postscript scanner used to examine the
+     structure of the document.  If `--noeof' is used the scanner will
+     ignore end of file (EOF) comments. This may help when viewing
+     documents which import other documents without enclosing them
+     within the proper "BeginDocument" and "EndDocument" comments.  If
+     `--eof' is used, the scanner treats an EOF comment as marking the
+     end of the file.
+
+`--fullscreen'
+     Selects the fullscreen mode.
+
+`--infoSilent'
+     Do not show any ghostscript messages in an info popup window.
+
+`--infoErrors'
+     Only show error messages from ghostscript in an info popup window.
+
+`--infoAll'
+     Shows all ghostscript messages in an info popup window.
+
+`--pixmap, --nopixmap'
+     If `--pixmap' is used gv tries to maintain off-screen regions of
+     the displayed page by allocating a sufficiently large pixmap.  If
+     `--nopixmap' is used the _X Server_ is responsible for maintaining
+     obscured portions of the displayed page (see also the
+     _useBackingPixmap_ resource).
+
+`--version'
+     Print the version number of gv to standard output and exit.
+
+`--help, --usage'
+     Display a short help message and exit.
+
+`--scale=N'
+     N must be an integer or a positive float.  In case N  is an
+     integer, N selects the scale entry N relative to the scale 1.0.
+     With the special value of `-1000' Fit to page is selected, and
+     likewise with the value of `-1001' Fit widthto page is selected.
+     In case N is a float, N selects an arbitrary scale.
+
+`--scalebase N'
+     Selects the scale base N.
+
+`--monochrome, --grayscale, --color'
+     Sets the color palette to be used.
+
+`--media=MEDIA'
+     Selects the paper size to be used. Valid values are names of paper
+     sizes that appear in the list of page medias as given by the
+     MEDIAS resource.
+
+`--page=LABEL'
+     Display the page with label LABEL first.
+
+`--orientation=ORIENTATION'
+     Sets the orientation.  Valid values for ORIENTATION are `portrait',
+     `landscape', `seascape' and `upsidedown'.
+
+`--quiet, --noquiet'
+     Whether to start ghostscript with the `-dQUIET' option.
+
+`--resize, --noresize'
+     Whether ghostscrip is allowed to automatically fit the size of its
+     window to the size of the displayed page.
+
+`--password=PASSWORD'
+     When opening a file, use PASSWORD to decrypt it. This Option is
+     usefull for viewing encrypted PDF files.
+
+`--presentation'
+     Is actually a shortcut for `--fullscreen --noresize --scale=-1000
+     --widgetless'.
+
+`--safer, --nosafer'
+     Whether to start ghostscript in safer mode (that includes he
+     `-dSAFER' option or the `-dDELAYSAFER' mode where appropriate) and
+     the `-P-' option.
+
+`--safedir, --nosafedir'
+     Whether to start ghostscript from a safe direcotry or not.
+
+`--spartan'
+     This is a shortcut for `--style=gv_spartan.dat'.
+
+`--style=FILE'
+     Read and use additional resources from the file FILE.  These
+     resources have  lower priority than those provided in the context
+     of the `--ad' option.
+
+`--swap, --noswap'
+     Whether to interchange the meaning of the orientations landscape
+     and seascape.
+
+`--watch, --nowatch'
+     The `--watch' option causes gv to check the document periodically.
+     If changes are detected gv will automatically display the newer
+     version of the file.  The document is by default checked once
+     every second.  This can be changed via the _watchFileFrequency_
+     resource.  Note that sending gv the *SIGHUP* signal also causes an
+     update of the displayed document. This method may be used by
+     document creators to trigger gv remotely.
+
+`--widgetless'
+     This is a shortcut for `--style=gv_widgetless.dat'.
+
+
+File: gv.info,  Node: Resources,  Next: Mouse and key bindings,  Prev: Invoking gv,  Up: Top
+
+3 Resources
+***********
+
+* Menu:
+
+* Resource files::
+* Resources of gv::
+
+
+File: gv.info,  Node: Resource files,  Next: Resources of gv,  Prev: Resources,  Up: Resources
+
+3.1 Resource files
+==================
+
+In general gv does not depend on any external resource files.  However,
+when starting gv, preferences are read from
+
+*a system specific resource file.*
+     The name of this file is GV and is installed on as part of gv's
+     architecture independent library. Usually the library files are
+     installed on `/usr/local/lib/gv'.
+
+     Administrators may want to modify this file in order to set up gv
+     according to the local needs of their system.
+
+*a user specific resource file.*
+     The name of this file is either `~/.gv' or as described by the
+     `XUSERFILESEARCHPATH' environment variable.
+
+   The files `gv_user.ad' and `gv_system.ad' (located in the library
+directory of gv, which is most probably either `/usr/local/lib/gv/' or
+`/usr/lib/gv/') may serve as a basis for constructing the user and
+system specific resource files.
+
+   Note that the user and system specific resource files are not the
+only sources of preferences taken into account when gv is started.
+However, in practice these are the most important.
+
+
+File: gv.info,  Node: Resources of gv,  Prev: Resource files,  Up: Resources
+
+3.2 Resources of gv
+===================
+
+The following describes some of the resources of gv.  The precise
+syntax of some of the resource values may be inferred from the appended
+default system specific resource file.
+
+*antialias*
+     Whether antialiasing should be used.  Valid values are `True' and
+     `False'.
+
+     It defaults to `True'.
+
+*autoCenter*
+     Whether the displayed page should automatically be centered (for
+     instance when opening a new file).  Valid values are `True' and
+     `False'.
+
+     It defaults to `True'.
+
+*autoResize*
+     Whether gv is allowed to resize the main window according to the
+     size of the current page.  Valid values are `True' and `False'.
+
+     It defaults to `True'.
+
+*confirmPrint*
+     Whether printing requires an extra confirmation.  Valid values are
+     `True' and `False'.
+
+     It defaults to `True'.
+
+*confirmQuit*
+     Whether leaving gv requires extra confirmation.  Valid values are
+     `0' (Never), `1' (When processing) and `2' (Always).  The default
+     value is `1', which causes a confirmation request when trying to
+     leave gv in the presence of pending PDF to Postscript conversions.
+
+*scrollingEyeGuide*
+     If this resource is `True' scrolling via the keyboard causes a
+     temporary border to be drawn around the previously visible area of
+     the page.  Allowed values are `True' and `False'.
+
+     It defaults to `True'.
+
+*infoVerbose*
+     Defines the behavior of the info popup which shows messages from
+     ghostscript. Valid values are `Silent' (Never), `Errors' (show
+     only errror messages) and `All' (Any message is being shown).
+
+     It defaults to `Errors'.
+
+*xinerama*
+     Defines whether the display resolution is determined by xinerama.
+     Valid values are `On' (use Xinerama if available),  `Off' (do not
+     use Xinerama) and `Auto' (heuristically decide whether to use
+     Xinerama or not).
+
+     It defaults to `Auto'.
+
+*ignoreEOF*
+     Defines the behaviour of the postscript scanner as described in
+     the Options section.  Valid values are `True' and `False'.
+
+     It defaults to `True'.
+
+*respectDSC*
+     Determines whether gv should attempt to respect document
+     structuring comments.  Valid values are `True' and `False'.
+
+     It defaults to `True'.
+
+*reverseScrolling*
+     Defines the interpretation of directions when scrolling with the
+     mouse.  Valid values are `True' and `False'.
+
+     It defaults to `False'.
+
+*swapLandscape*
+     Whether the meaning of `landscape' and `seacape' should be
+     interchanged.  Valid values are `True' and `False'.
+
+     It defaults to  `False'.
+
+*scratchDir*
+     Specifies a directory used to store temporary data.
+
+     It defaults to the invocation directory.
+
+*defaultSaveDir*
+     Specifies the default destination directory for files to be saved.
+
+     It defaults to the home directory, `~/'.
+
+*useBackingPixmap*
+     If the value of this resource is `False' the _X Server_ is advised
+     that saving off-screen pixels of the displayed page would be
+     beneficial (maintaining backing store). In this case gv does not
+     actively maintain the contents of the page but relies on the _X
+     Server_. The server is, however, always free to stop maintaining
+     backing backing store.  If the value of this resource is `True'
+     the _X Server_ is advised that maintaining backing store is not
+     useful.  In this case gv attempts to allocate a sufficiently large
+     pixmap to store the contents of the displayed page.
+
+     It defaults to `True'.
+
+*watchFile*
+     Whether the document should be checked periodically and updated
+     automatically if  changes are detected.  Valid values are `True'
+     and `False'.
+
+     It defaults to `False'.
+
+*watchFileFrequency*
+     Defines the time in milliseconds elapsing between successive
+     checks of the document when _watchFile_ is set to `True'.  Allowed
+     values must be larger than 500.
+
+     It defaults to `1000'.
+
+*printCommand*
+     The command used for printing a file.  The command may contain
+     multiple `%s' wildcards which will be replaced by the name of the
+     file to be printed.
+
+     It defaults to `lpr'.
+
+*saveposFilename*
+     This file is used for saving positions by the `z' and `u' keys.
+
+     It defaults to `~/gv.savepos'.
+
+*gsInterpreter*
+     The command used to start the ghostscript interpreter.
+
+     It defaults to `gv'.
+
+*gsCmdScanPDF*
+     The command used to extract document structuring comments from a
+     PDF file.
+
+     It defaults to `gs -dNODISPLAY -dQUIET -sPDFname=%s -sDSCname=%s
+     pdf2dsc.ps -c quit'
+
+*gsCmdConvPDF*
+     The command used to convert a PDF file to PostScript.
+
+     It defaults to `gs -dNODISPLAY -dQUIET  -dNOPAUSE -sPSFile=%s %s
+     -c quit'
+
+*gsX11Device*
+     The ghostscript command line option which activates the _X11_
+     device.
+
+     It defaults to `-sDEVICE=x11'
+
+*gsX11AlphaDevice*
+     The ghostscript command line option which activates the _X11_
+     device with antialiasing enabled.
+
+     It defaults to `-dNOPLATFONTS -sDEVICE=x11alpha'
+
+*gsSafeeDir*
+     Determines whether ghostscript should be started from a safe
+     directory.
+
+     It defaults to `True'.
+
+*gsSafer*
+     Determines whether ghostscript should be started with the
+     `-dSAFER' command line option.
+
+     It defaults to `True'.
+
+*gsQuiet*
+     Determines whether ghostscript should be started with the
+     `-dQUIET' command line option.
+
+     It defaults to `True'.
+
+*gsArguments*
+     May be used to provide additional command line options for the
+     ghostscript interpreter.  Starting gv with the `-arguments
+     ARGUMENTS' option will override this resource setting.
+
+     It defaults to the empty string.
+
+*magMenu*
+     Describes the menu that pops up when preparing to to zoom an area
+     of the displayed page.
+
+*dirs*
+     Defines a list of directories accessible via the `Directories'
+     menu in the file selection window.  The special value `Home'
+     corresponds to the users home directory, the value `Tmp'
+     corresponds to the scratch directory as defined by the
+     *scratchDir* resource.
+
+     It defaults to `Home Tmp /usr/doc /usr/local/doc'
+
+*filter*
+     Defines the default filter to be used when displaying a directory
+     contents in the file selection window.  A filter is specified
+     according to the syntax
+
+
+        <filter>    := [<filespecs>] [no <filespecs>]
+        <filespecs> := <filespec> [<filespecs>]
+        <filespec>  := filename possibly including wildcards '*'
+                       which match any character.
+
+     Example: The filter
+
+
+        GV*filter: *.ps *.pdf no .*
+
+     screens out all files with names starting with a dot    and keeps
+     of the remaining ones only those which end    on `.ps' or `.pdf'.
+
+     It defaults to `no .*'
+
+*filters*
+     Defines a list of filters offered in the _Filters_ menu of the
+     file selection window.  The filter `None' has a special meaning
+     causing all files to be displayed when the corresponding menu
+     entry is selected.
+
+*miscMenuEntries*
+     Describes the menu that pops up when clicking with the third mouse
+     button on the displayed page.  The value of this resource is a
+     list of menu entries.
+
+     Allowed entries are
+
+        * `update'
+
+        * `reload'
+
+        * `toggle_current'
+
+        * `toggle_even'
+
+        * `toggle_odd'
+
+        * `unmark'
+
+        * `stop'
+
+        * `print_all'
+
+        * `print_marked'
+
+        * `save_all'
+
+        * `save_marked'
+
+        * `line'
+
+*titleStyle*
+     Whether the name of the displayed document should be shown in the
+     title bar of the window. The name of gv's icon will also change
+     accordingly if this resource is set to `True'.
+
+     If this is `0', no title will be shown.  `1' means to show a the
+     document title or the file name if there is no document title.
+     Only the file name is shown with `2'.
+
+     It defaults to `1'.
+
+*maximumWidth, maximumHeight*
+     When resizing gv will not attempt to exceed the size specified by
+     these resources.  These resources may be specified as a positive
+     integer or as `screen', optionally combined with a positive or
+     negative offset.  The default values listed above provide examples
+     for this syntax.  `screen' will automatically be replaced by the
+     size of the screen.
+
+     `maximumWidth' defaults to `screen-20'.  `maximumHeight' defaults
+     to `screen-44'.
+
+*minimumWidth, minimumHeight*
+     Defines a minimum size for the main window.  Valid values for both
+     resources are positive integers larger than 200.
+
+     `minimumWidth' defaults to `400'.  `minimumHeight' defaults to
+     `430'.
+
+*scale*
+     Sets the initial scale. The value of this resource is the offset
+     of the scale to be selected relative to the scale 1.0 in the the
+     _Scale_ menu.
+
+     It defaults to `0'.
+
+*scaleBase*
+     Selects the initial scale base. The value of this resource should
+     be a positive integer.
+
+     It defaults to `1'.
+
+*scales*
+     Defines the available scales bases and scales in the _Scale_ menu.
+
+*orientation*
+     Sets the initial orientation. Valid values are
+        * `portrait'
+
+        * `landscape'
+
+        * `seascape'
+
+        * `upside-down'
+
+        * `automatic'
+
+     `automatic' causes gv to attempt to derive the correct orientation
+     from document structuring comments.
+
+     It defaults to `automatic'.
+
+*fallbackOrientation*
+     Defines the paper-size to be used when automatic orientation
+     detetction fails.  Valid values are `portrait', `landscape',
+     `seascape' and `upside-down'.
+
+     It defaults to `portrait'.
+
+*medias*
+     A list describing the page medias known to gv.  List entries
+     starting with `!' or `#' will not appear in the _Media_ menu but
+     will still be used for automatic paper size detection.
+
+*pageMedia*
+     Sets the paper size.  Allowd values are as given in the above list
+     of paper-sizes.  Specifying `automatic' causes gv to attempt to
+     derive the correct paper-size from document structuring comments.
+
+     It defaults to `automatic'.
+
+*fallbackPageMedia*
+     Defines the paper-size to be used when automatic paper-size
+     detetction fails.  Valid values are as given in the  above list of
+     paper-sizes.
+
+     It defaults to `a4'.
+
+*strings.**
+     Variuos strings for translating GNU gv.
+
+
+File: gv.info,  Node: Mouse and key bindings,  Next: Comments about the user interface,  Prev: Resources,  Up: Top
+
+4 Mouse and key bindings
+************************
+
+* Menu:
+
+* Mouse bindings in the Main and the Zoom window::
+* Mouse bindings in the File Selection popup::
+* Mouse bindings in the Table of Contents::
+* Mouse bindings in the Panner widget::
+* Mouse bindings in the << and >> button windows::
+* Key Bindings::
+
+
+File: gv.info,  Node: Mouse bindings in the Main and the Zoom window,  Next: Mouse bindings in the File Selection popup,  Prev: Mouse and key bindings,  Up: Mouse and key bindings
+
+4.1 Mouse bindings in the Main and the Zoom window
+==================================================
+
+The following mouse events are defined when the mouse pointer is either
+on the displayed page or on a zoomed area:
+
+*press button 1, move mouse, release button 1*
+     Scrolls the displayed page 'proportionally'.
+
+*press button 3, move mouse, release button 3*
+     Scrolls the displayed page 'absolutely'.
+
+*double-click with button 1*
+     In the main window this displays the previous/next page if the
+     double-click occured in the left/right half of the window.  In a
+     zoom window it does nothing.
+
+*press button 2, release button 2*
+     Pops up a small menu which allows to choose a magnification for a
+     certain area around the current mouse position.  After selecting a
+     magnification a zoom window pops up displaying the area at the
+     chosen scale.
+
+*press button 2, move mouse, release button 2*
+     This draws and thereby defines a rectangular region which can be
+     displayed in a zoom window. The magnification for the area can be
+     selected by means of a popup menu which appears after releasing
+     button 2.
+
+*press button 1, press button 2*
+     Reload the current page. This event sequence works only in the
+     main window.
+
+*press button 3, release button 3*
+     Pops up a small menu which offers a few standard actions like
+     'Reload', 'Mark Page', etc.
+
+
+File: gv.info,  Node: Mouse bindings in the File Selection popup,  Next: Mouse bindings in the Table of Contents,  Prev: Mouse bindings in the Main and the Zoom window,  Up: Mouse and key bindings
+
+4.2 Mouse bindings in the File Selection popup
+==============================================
+
+The following mouse events are defined when the mouse pointer is in the
+window of either a file or a directory list:
+
+*press button 1, move mouse, release button 1*
+     Scrolls a file or directory list 'proportionally'.
+
+*press button 2, move mouse, release button 2*
+     Scrolls a file or directory list 'absolutely'.
+
+*press button 2, release button 2*
+     Scrolls a file or directory list one page up/down if the button
+     was pressed in the upper/lower half of the list.
+
+*double-click with button 1 on a filename*
+     Selects the file and closes the File Selection popup.
+
+*click with button 1 on a directory name*
+     Causes the contents of this directory to be displayed.
+
+
+File: gv.info,  Node: Mouse bindings in the Table of Contents,  Next: Mouse bindings in the Panner widget,  Prev: Mouse bindings in the File Selection popup,  Up: Mouse and key bindings
+
+4.3 Mouse bindings in the Table of Contents
+===========================================
+
+The following mouse events are defined when the mouse pointer is in the
+window showing a list of page numbers of the current file (table of
+contents):
+
+*press button 1, move mouse, release button 1*
+     Scrolls the table of contents.
+
+*press button 1 on a page number*
+     Go to this page.
+
+*press button 2 on a page number*
+     Mark this page if it is unmarked, but unmark it if it is marked.
+
+*press button 2, move mouse, release button 2*
+     Marks/unmarks all unmarked/marked pages in the region crossed by
+     the mouse pointer during the movement.
+
+
+File: gv.info,  Node: Mouse bindings in the Panner widget,  Next: Mouse bindings in the << and >> button windows,  Prev: Mouse bindings in the Table of Contents,  Up: Mouse and key bindings
+
+4.4 Mouse bindings in the Panner widget
+=======================================
+
+The Panner widget is the rectangular region located close to the left
+edge of the main window. It indicates the size and the position of the
+visible area of the current page relative to the total page.
+
+   The following mouse events are defined when the mouse pointer is in
+this region:
+
+*press button 1, move mouse*
+     Scrolls the displayed page.
+
+*press button 2*
+     Display the previous page.
+
+*press button 3*
+     Display the next page.
+
+
+File: gv.info,  Node: Mouse bindings in the << and >> button windows,  Next: Key Bindings,  Prev: Mouse bindings in the Panner widget,  Up: Mouse and key bindings
+
+4.5 Mouse bindings in the << and >> button windows
+==================================================
+
+The << and >> buttons are used to move to another page. The following
+mouse events are defined:
+
+*press button 1*
+     Move 1 page forward/backwards.
+
+*press button 2*
+     Move 5 pages forward/backwards.
+
+*press button 3*
+     Move 10 pages forward/backwards.
+
+
+File: gv.info,  Node: Key Bindings,  Prev: Mouse bindings in the << and >> button windows,  Up: Mouse and key bindings
+
+4.6 Key Bindings
+================
+
+The following key events are defined in the main window. Those bindings
+scrolling the page are also defined in zoom popups.
+
+* Menu:
+
+* Notation::
+* Miscellaneous keys::
+* Orientation::
+* Magnification::
+* Navigating::
+
+
+File: gv.info,  Node: Notation,  Next: Miscellaneous keys,  Prev: Key Bindings,  Up: Key Bindings
+
+4.6.1 Notation
+--------------
+
+<S-X>
+     means press <Shift> and key <X>
+
+<C-X>
+     means press <Ctrl>  and key <X>
+
+<SC-X>
+     means press <Shift> or <Ctrl> and key <X>
+
+
+File: gv.info,  Node: Miscellaneous keys,  Next: Orientation,  Prev: Notation,  Up: Key Bindings
+
+4.6.2 Miscellaneous keys:
+-------------------------
+
+<A>
+     Toggle antialiasing on and off
+
+<O>
+     Open a new file
+
+<Q>
+     Quit gv
+
+<R>
+     Toggle gv's resizing behaviour
+
+<I>
+     Respect/Ignore document structuring
+
+<W>
+     Watch file / Don't watch file
+
+<S>
+     Save the marked pages
+
+<SC-S>
+     Save the current file
+
+<P>
+     Print the marked pages
+
+<C-P>
+     Print the current file
+
+<S-P>
+     Switches to presentation mode by forking a new GNU gv process.
+
+<c-L>
+     Reload the current page
+
+<.>
+     Reload the current page
+
+<SC-.>
+     Reopen the current file
+
+<M>
+     Mark the current page
+
+<N>
+     Unmark the current page
+
+<Z>
+     append the current coordinate to a file whose name is given by the
+     `GV.saveposFilename' resource.
+
+<U>
+     enter a command with the current coordinate as its default
+     parameter. By defalt it is % TODO `\PutAtPos(x,y)()', where x,y
+     are the current coordinate and the user can put needed commands
+     into ().  This command is appended to a file whose name is given
+     by the `GV.saveposFilename' resource.
+
+
+File: gv.info,  Node: Orientation,  Next: Magnification,  Prev: Miscellaneous keys,  Up: Key Bindings
+
+4.6.3 Orientation
+-----------------
+
+<7>
+     Orientation portrait
+
+<8>
+     Orientation landscape
+
+<9>
+     Orientation upside-down
+
+<0>
+     Orientation seascape
+
+
+File: gv.info,  Node: Magnification,  Next: Navigating,  Prev: Orientation,  Up: Key Bindings
+
+4.6.4 Magnification
+-------------------
+
+<SC-6>
+     Select the scale entry -6 relative to the scale 1.0
+
+<SC-5>
+     Select the scale entry -5 relative to the scale 1.0
+
+<SC-4>
+     Select the scale entry -4 relative to the scale 1.0
+
+<SC-3>
+     Select the scale entry -3 relative to the scale 1.0
+
+<SC-2>
+     Select the scale entry -2 relative to the scale 1.0
+
+<SC-1>
+     Select the scale entry -1 relative to the scale 1.0
+
+<^>
+     Select the scale 1.0 (for german keyboard layout)
+
+<`>
+     Select the scale 1.0
+
+<1>
+     Select the scale entry 1 relative to the scale 1.0
+
+<2>
+     Select the scale entry 2 relative to the scale 1.0
+
+<3>
+     Select the scale entry 3 relative to the scale 1.0
+
+<4>
+     Select the scale entry 4 relative to the scale 1.0
+
+<5>
+     Select the scale entry 5 relative to the scale 1.0
+
+<6>
+     Select the scale entry 6 relative to the scale 1.0
+
+<+>
+     Select the next scale entry
+
+<=>
+     Select the next scale entry
+
+<->
+     Select the previous scale entry
+
+
+File: gv.info,  Node: Navigating,  Prev: Magnification,  Up: Key Bindings
+
+4.6.5 Navigating
+----------------
+
+<Arrow>
+     Scroll in the direction of the arrow
+
+<S-Up>
+     Scroll columns up   or jump -1 pages
+
+<S-Down>
+     Scroll columns down or jump  1 pages
+
+<S-Left>
+     Scroll rows left    or jump -1 pages
+
+<S-Right>
+     Scroll rows right   or jump  1 pages
+
+<C-Up>
+     Jump -1 pages (to top/left corner)
+
+<C-Down>
+     Jump  1 pages (to top/left corner)
+
+<C-Left>
+     Jump -5 pages (to top/left corner)
+
+<C-Right>
+     Jump  5 pages (to top/left corner)
+
+<D>
+     Identical to arrow up
+
+<X>
+     Identical to arrow down
+
+<Z>
+     Identical to arrow left
+
+<Y>
+     Identical to arrow left
+
+<C>
+     Identical to arrow right
+
+<V>
+     Center the page
+
+<SC-Space>
+     Scroll columns up   or jump -1 pages
+
+<Space>
+     Scroll columns down or jump  1 pages
+
+<BackSpace>
+     Scroll columns up   or jump -1 pages
+
+<Insert>
+     Jump  -5 pages
+
+<Delete>
+     Jump   5 pages
+
+<Home>
+     Go to the first page
+
+<End>
+     Go to the last page
+
+<Prior>
+     Jump  -1 pages
+
+<Next>
+     Jump   1 pages
+
+<Keypad 0-9>
+     Highlight a page number
+
+<Keypad ->
+     Highlight previous page number
+
+<Keypad +>
+     Highlight next page number
+
+<Keypad Enter>
+     Jump to the highlighted page
+
+<C-Enter>
+     Scroll columns up
+
+<S-Enter>
+     Scroll columns up
+
+<Enter>
+     Scroll columns down
+
+<B>
+     Jump  -1 pages
+
+<F>
+     Jump   1 pages
+
+
+File: gv.info,  Node: Comments about the user interface,  Next: Frequently asked questions,  Prev: Mouse and key bindings,  Up: Top
+
+5 Comments about the user interface
+***********************************
+
+* Menu:
+
+* Scales::
+* Scrolling::
+* Displaying new versions of a document::
+
+
+File: gv.info,  Node: Scales,  Next: Scrolling,  Prev: Comments about the user interface,  Up: Comments about the user interface
+
+5.1 Scales
+==========
+
+The _Scale_ menu which allows to view the document at different sizes
+is divided into two parts. The first part shows a list of available
+scale bases, the second part, separated by a line, lists the relative
+scales which are applied with respect to the selected scale base.
+
+   By default two scales bases are available, the _Natural size_ and
+the _Pixel based_ base.  When choosing the _Pixel based_ scale base a
+relative scale of 1.0 causes one postscript point to correspond to one
+pixel on the screen.
+
+   When viewing a document at a relative scale of 1.0 using the
+_Natural size_ base the page should appear in its real size, as if
+printed on paper.  For the _Natural size_ base to work properly gv has
+to know the correct size of the root window. Automatic detection of
+this size unfortunately only provides approximate results, therefore it
+is best if it is provided by the user. To do so the resource
+
+
+   GV.screenSize:  <width> x <height>
+
+   should be added to the `SCREEN_RESOURCES' property of the screen the
+document is viewed on, with WIDTH and HEIGHT describing the width and
+height of the root window in units of millimeters.  For instance by
+using the command
+
+
+   echo "GV.screenSize: 396 x 291" | xrdb -override -screen
+
+   a width of 346 mm and a height of 291 mm will be used for the
+_Natural size_ scale base.  Alternatively the resource
+
+
+   GV.screenSize_<machine>_<disp>_<scr>:  <width> x <height>
+
+   may be added to a resource file read by gv. Here MACHINE ,DISP and
+ANGLED describe the display on which gv displays the document.  For
+instance, if the display is set to `tic.tac.toe.wo:0.1' the resource
+should be specified as
+
+
+   GV.screenSize_tic_0_1: 396 x 291
+
+   Note that this method doesn't work on VMS.  As a last alternative
+the resource
+
+
+   GV.screenSize:  <width> x <height>
+
+   may be added to one of the resource files. However, for obvious
+reasons this method should be used only on single user machines.
+
+
+File: gv.info,  Node: Scrolling,  Next: Displaying new versions of a document,  Prev: Scales,  Up: Comments about the user interface
+
+5.2 Scrolling
+=============
+
+It is probably a _de facto_ standard for user interfaces that windows
+are supposed to be scrolled by means of scrollbars attached to their
+sides.  However, for various reasons the use of scrollbars has been
+minimized in gv.
+
+   Instead, in all windows with obscured data, scrolling may be
+performed by
+
+        pressing button1, moving the mouse, then releasing button1
+
+   directly in the window. This includes the displayed page, zoom
+popups, the table of contents and the file and directory lists
+displayed in the file selection popup.
+
+
+File: gv.info,  Node: Displaying new versions of a document,  Prev: Scrolling,  Up: Comments about the user interface
+
+5.3 Displaying new versions of a document
+=========================================
+
+During document creation it is usually desirable to always display the
+newest version of the document in work.
+
+   Instead of explicitly loading it via the file selection popup the
+most recent version can be displayed by pressing the *Reload* button in
+the main window.  Choosing the *Reload* entry in the menu that pops up
+when clicking with the third mouse button anywhere on the displayed
+page certainly has the same effect.
+
+   More comfortable is the "Watch File" feature which may be switched
+on by selecting the corresponding entry in the *State* menu. If
+activated gv will check every now and then if a new version of the
+displayed file exists. If so it will be displayed automatically.  By
+default the file is checked about once every second.
+
+   Finally it may also be left to the document creating program to
+trigger gv to update its display. To do so the program should send the
+SIGHUP signal to gv.  For instance at the end of a shell script
+generating a postscript file from latex sources the line
+
+
+   kill -SIGHUP <gv_pid>
+
+   may be added (here GV_PID is the process id of gv). Executing the
+script and thereby creating a new version of the document will then
+also cause the result to be displayed instantaneously.  Please note
+that this feature is available only on X11 R6 based systems.
+
+
+File: gv.info,  Node: Frequently asked questions,  Next: gv internals,  Prev: Comments about the user interface,  Up: Top
+
+6 Frequently asked questions
+****************************
+
+* Menu:
+
+* What happened to the scroll bars?::
+* How can I make even more room for the image?::
+* Small characters are not very clear::
+* The output is not refreshed automatically::
+
+
+File: gv.info,  Node: What happened to the scroll bars?,  Next: How can I make even more room for the image?,  Prev: Frequently asked questions,  Up: Frequently asked questions
+
+6.1 What happened to the scroll bars?
+=====================================
+
+They have been removed in order to make more room for the image. The
+displayed portion of the image may be moved by dragging the image or
+the paner (panel between the "Save Marked" and <<  >> buttons) with the
+mouse. Alternatively, the cursor arrow keys can be used.
+
+
+File: gv.info,  Node: How can I make even more room for the image?,  Next: Small characters are not very clear,  Prev: What happened to the scroll bars?,  Up: Frequently asked questions
+
+6.2 How can I make even more room for the image?
+================================================
+
+Use the "spartan" style by starting gv with the command
+
+
+         gv --spartan
+
+   This removes the "Open", "Print", "Save", "Reload", and page marking
+buttons (they are still available from the "File" and "Page" menus) and
+replaces them with the document attribute controls, which are normally
+along the top.
+
+
+File: gv.info,  Node: Small characters are not very clear,  Next: The output is not refreshed automatically,  Prev: How can I make even more room for the image?,  Up: Frequently asked questions
+
+6.3 Small characters are not very clear
+=======================================
+
+Antialiasing can improve the display of bitmapped fonts (eg. from TeX)
+when displayed on a colour or greyscale screen. The same technique is
+used by xdvi. Note that antialiasing requires at least Ghostscript
+version 4.x.
+
+   Antialiasing can be turned on from the "State" menu, and can be made
+default by saving the setting in `State | gv Options...'.
+
+
+File: gv.info,  Node: The output is not refreshed automatically,  Prev: Small characters are not very clear,  Up: Frequently asked questions
+
+6.4 The output is not refreshed automatically
+=============================================
+
+There are two methods that can be used to save the contents of the
+window when it's not currently displayed: backing store and backing
+pixmap. Some X-servers seem to support only backing store (eg.
+VAXstations) and some only backing pixmap (eg. some X-terminals,
+including EWS).
+
+   In order to force gv to use one method or the other, use the `State
+| Setup Options ...' menu and toggle the "Backing Pixmap" button.  When
+selected/highlighted (normally the default), gv will use backing
+pixmap; otherwise it will use backing store. Select "Apply" to use a new
+setting and "Save" to make it the new default.
+
+
+File: gv.info,  Node: gv internals,  Next: GNU General Public License,  Prev: Frequently asked questions,  Up: Top
+
+7 gv internals
+**************
+
+* Menu:
+
+* Interface with ghostscript::
+* Comments recognized by ghostview::
+* Paper Keywords and paper size in points::
+
+
+File: gv.info,  Node: Interface with ghostscript,  Next: Comments recognized by ghostview,  Prev: gv internals,  Up: gv internals
+
+7.1 Interface with ghostscript
+==============================
+
+* Menu:
+
+* Ghostview interface to ghostscript::
+* Drawing on a Window::
+* Drawing on a Pixmap::
+* The GHOSTVIEW environment variable::
+* The GHOSTVIEW property::
+* Events from ghostscript::
+
+
+File: gv.info,  Node: Ghostview interface to ghostscript,  Next: Drawing on a Window,  Prev: Interface with ghostscript,  Up: Interface with ghostscript
+
+7.1.1 Ghostview interface to ghostscript
+----------------------------------------
+
+When the `GHOSTVIEW' environment variable is set, ghostscript draws on
+an existing drawable rather than creating its own window.  Ghostscript
+can be directed to draw on either a window or a pixmap.
+
+
+File: gv.info,  Node: Drawing on a Window,  Next: Drawing on a Pixmap,  Prev: Ghostview interface to ghostscript,  Up: Interface with ghostscript
+
+7.1.2 Drawing on a Window
+-------------------------
+
+The `GHOSTVIEW' environment variable contains the window id of the
+target window.  The window id is an integer.  Ghostscript will use the
+attributes of the window to obtain the width, height, colormap, screen,
+and visual of the window. The remainder of the information is gotten
+from the GHOSTVIEW property on that window.
+
+
+File: gv.info,  Node: Drawing on a Pixmap,  Next: The GHOSTVIEW environment variable,  Prev: Drawing on a Window,  Up: Interface with ghostscript
+
+7.1.3 Drawing on a Pixmap
+-------------------------
+
+The GHOSTVIEW environment variable contains a window id and a pixmap id.
+They are integers separated by white space.  Ghostscript will use the
+attributes of the window to obtain the colormap, screen, and visual to
+use.  The width and height will be obtained from the pixmap. The
+remainder of the information, is gotten from the GHOSTVIEW property on
+the window.  In this case, the property is deleted when read.
+
+
+File: gv.info,  Node: The GHOSTVIEW environment variable,  Next: The GHOSTVIEW property,  Prev: Drawing on a Pixmap,  Up: Interface with ghostscript
+
+7.1.4 The GHOSTVIEW environment variable
+----------------------------------------
+
+*parameters*
+     `window-id [pixmap-id]'
+
+*scanf format*
+     `"%d %d"'
+
+   Explanation of parameters:
+
+`window-id'
+     tells ghostscript where to
+        * read the GHOSTVIEW property
+
+        * send events
+     If pixmap-id is not present, ghostscript will draw on this window.
+
+`pixmap-id'
+     If present, tells ghostscript that a pixmap will be used as the
+     final destination for drawing.  The window will not be touched for
+     drawing purposes.
+
+
+File: gv.info,  Node: The GHOSTVIEW property,  Next: Events from ghostscript,  Prev: The GHOSTVIEW environment variable,  Up: Interface with ghostscript
+
+7.1.5 The GHOSTVIEW property
+----------------------------
+
+*type*
+     STRING
+
+*parameters*
+     `bpixmap orient llx lly urx ury xdpi ydpi [left bottom top right]'
+
+*scanf format*
+     `"%d %d %d %d %d %d %f %f %d %d %d %d"'
+
+   Explanation of parameters:
+
+`pixmap'
+     pixmap id of the backing pixmap for the window.  If no pixmap is
+     to be used, this parameter should be zero.  This parameter must be
+     zero when drawing on a pixmap.
+
+`orient'
+     orientation of the page.  The number represents clockwise rotation
+     of the paper in degrees.  Permitted values are 0, 90, 180, 270.
+
+`llx, lly, urx, ury'
+     Bounding box of the drawable.  The bounding box is specified in
+     PostScript points in default user coordinates.
+
+`xdpi, ydpi'
+     Resolution of window.  (This can be derived from the other
+     parameters, but not without roundoff error.  These values are
+     included to avoid this error.)
+
+`left, bottom, top, right (optional)'
+     Margins around the window.  The margins extend the imageable area
+     beyond the boundaries of the window.  This is primarily used for
+     popup zoom windows.  I have encountered several instances of
+     PostScript programs that position themselves with respect to the
+     imageable area.  The margins are specified in PostScript points.
+     If omitted, the margins are assumed to be 0.
+
+
+File: gv.info,  Node: Events from ghostscript,  Prev: The GHOSTVIEW property,  Up: Interface with ghostscript
+
+7.1.6 Events from ghostscript
+-----------------------------
+
+If the final destination is a pixmap, the client will get a property
+notify event when ghostscript reads the GHOSTVIEW property causing it
+to be deleted.
+
+   Ghostscript sends events to the window where it read the GHOSTVIEW
+property.  These events are of type ClientMessage.  The message_type is
+set to either PAGE or DONE.  The first long data value gives the window
+to be used to send replies to ghostscript.  The second long data value
+gives the primary drawable.  If rendering to a pixmap, it is the
+primary drawable.  If rendering to a window, the backing pixmap is the
+primary drawable.  If no backing pixmap is employed, then the window is
+the primary drawable.  This field is necessary to distinguish multiple
+ghostscripts rendering to separate pixmaps where the GHOSTVIEW property
+was placed on the same window.
+
+   The PAGE message indicates that a "page" has completed.  Ghostscript
+will wait until it receives a ClientMessage whose message_type is NEXT
+before continuing.
+
+   The DONE message indicates that ghostscript has finished processing.
+
+
+File: gv.info,  Node: Comments recognized by ghostview,  Next: Paper Keywords and paper size in points,  Prev: Interface with ghostscript,  Up: gv internals
+
+7.2 Comments recognized by ghostview
+====================================
+
+
+%!PS-Adobe-<real> [EPSF-<real>]
+%%BoundingBox: <int> <int> <int> <int>|(atend)
+%%CreationDate: <textline>
+%%Orientation: Portrait|Landscape|(atend)
+%%Pages: <uint>|(atend)
+%%PageOrder: Ascend|Descend|Special|(atend)
+%%Title: <textline>
+%%DocumentMedia: <text> <real> <real> <real> <text> <text>
+%%DocumentPageSizes: <text>
+%%EndComments
+
+Preview section:
+
+
+%%BeginPreview
+%%EndPreview
+
+   Defaults section:
+
+
+%%BeginDefaults
+%%PageBoundingBox: <int> <int> <int> <int>|(atend)
+%%PageOrientation: Portrait|Landscape
+%%PageMedia: <text>
+%%EndDefaults
+
+   Prolog section:
+
+
+%%BeginProlog
+%%EndProlog
+
+   Setup section:
+
+
+%%BeginSetup
+%%PageBoundingBox: <int> <int> <int> <int>|(atend)
+%%PageOrientation: Portrait|Landscape
+%%PaperSize: <text>
+%%EndSetup
+
+   Page properties:
+
+
+%%Page: <text> <uint>
+%%PageBoundingBox: <int> <int> <int> <int>|(atend)
+%%PageOrientation: Portrait|Landscape
+%%PageMedia: <text>
+%%PaperSize: <text>
+
+
+%%Trailer
+%%EOF
+
+   Document section:
+
+
+%%BeginDocument: <text> [<real>[<text>]]
+%%EndDocument
+
+   Binary section:
+
+
+%%BeginBinary: <uint>
+%%EndBinary
+
+   Data section:
+
+
+%%BeginData: <uint> [Hex|Binary|ASCII[Bytes|Lines]]
+%%EndData
+
+
+File: gv.info,  Node: Paper Keywords and paper size in points,  Prev: Comments recognized by ghostview,  Up: gv internals
+
+7.3 Paper Keywords and paper size in points
+===========================================
+
+
+Letter		 612x792
+LetterSmall	 612x792
+Tabloid		 792x1224
+Ledger		1224x792
+Legal		 612x1008
+Statement	 396x612
+Executive	 540x720
+A0               2384x3371
+A1              1685x2384
+A2		1190x1684
+A3		 842x1190
+A4		 595x842
+A4Small		 595x842
+A5		 420x595
+B4		 729x1032
+B5		 516x729
+Envelope	 ???x???
+Folio		 612x936
+Quarto		 610x780
+10x14		 720x1008
+
+
+File: gv.info,  Node: GNU General Public License,  Prev: gv internals,  Up: Top
+
+Anhang A GNU General Public License
+***********************************
+
+                        Version 3, 29 June 2007
+
+     Copyright (C) 2007 Free Software Foundation, Inc. `http://fsf.org/'
+
+     Everyone is permitted to copy and distribute verbatim copies of this
+     license document, but changing it is not allowed.
+
+Preamble
+========
+
+The GNU General Public License is a free, copyleft license for software
+and other kinds of works.
+
+   The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+the GNU General Public License is intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains
+free software for all its users.  We, the Free Software Foundation, use
+the GNU General Public License for most of our software; it applies
+also to any other work released this way by its authors.  You can apply
+it to your programs, too.
+
+   When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+them if you wish), that you receive source code or can get it if you
+want it, that you can change the software or use pieces of it in new
+free programs, and that you know you can do these things.
+
+   To protect your rights, we need to prevent others from denying you
+these rights or asking you to surrender the rights.  Therefore, you
+have certain responsibilities if you distribute copies of the software,
+or if you modify it: responsibilities to respect the freedom of others.
+
+   For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must pass on to the recipients the same
+freedoms that you received.  You must make sure that they, too, receive
+or can get the source code.  And you must show them these terms so they
+know their rights.
+
+   Developers that use the GNU GPL protect your rights with two steps:
+(1) assert copyright on the software, and (2) offer you this License
+giving you legal permission to copy, distribute and/or modify it.
+
+   For the developers' and authors' protection, the GPL clearly explains
+that there is no warranty for this free software.  For both users' and
+authors' sake, the GPL requires that modified versions be marked as
+changed, so that their problems will not be attributed erroneously to
+authors of previous versions.
+
+   Some devices are designed to deny users access to install or run
+modified versions of the software inside them, although the
+manufacturer can do so.  This is fundamentally incompatible with the
+aim of protecting users' freedom to change the software.  The
+systematic pattern of such abuse occurs in the area of products for
+individuals to use, which is precisely where it is most unacceptable.
+Therefore, we have designed this version of the GPL to prohibit the
+practice for those products.  If such problems arise substantially in
+other domains, we stand ready to extend this provision to those domains
+in future versions of the GPL, as needed to protect the freedom of
+users.
+
+   Finally, every program is threatened constantly by software patents.
+States should not allow patents to restrict development and use of
+software on general-purpose computers, but in those that do, we wish to
+avoid the special danger that patents applied to a free program could
+make it effectively proprietary.  To prevent this, the GPL assures that
+patents cannot be used to render the program non-free.
+
+   The precise terms and conditions for copying, distribution and
+modification follow.
+
+TERMS AND CONDITIONS
+====================
+
+  0. Definitions.
+
+     "This License" refers to version 3 of the GNU General Public
+     License.
+
+     "Copyright" also means copyright-like laws that apply to other
+     kinds of works, such as semiconductor masks.
+
+     "The Program" refers to any copyrightable work licensed under this
+     License.  Each licensee is addressed as "you".  "Licensees" and
+     "recipients" may be individuals or organizations.
+
+     To "modify" a work means to copy from or adapt all or part of the
+     work in a fashion requiring copyright permission, other than the
+     making of an exact copy.  The resulting work is called a "modified
+     version" of the earlier work or a work "based on" the earlier work.
+
+     A "covered work" means either the unmodified Program or a work
+     based on the Program.
+
+     To "propagate" a work means to do anything with it that, without
+     permission, would make you directly or secondarily liable for
+     infringement under applicable copyright law, except executing it
+     on a computer or modifying a private copy.  Propagation includes
+     copying, distribution (with or without modification), making
+     available to the public, and in some countries other activities as
+     well.
+
+     To "convey" a work means any kind of propagation that enables other
+     parties to make or receive copies.  Mere interaction with a user
+     through a computer network, with no transfer of a copy, is not
+     conveying.
+
+     An interactive user interface displays "Appropriate Legal Notices"
+     to the extent that it includes a convenient and prominently visible
+     feature that (1) displays an appropriate copyright notice, and (2)
+     tells the user that there is no warranty for the work (except to
+     the extent that warranties are provided), that licensees may
+     convey the work under this License, and how to view a copy of this
+     License.  If the interface presents a list of user commands or
+     options, such as a menu, a prominent item in the list meets this
+     criterion.
+
+  1. Source Code.
+
+     The "source code" for a work means the preferred form of the work
+     for making modifications to it.  "Object code" means any
+     non-source form of a work.
+
+     A "Standard Interface" means an interface that either is an
+     official standard defined by a recognized standards body, or, in
+     the case of interfaces specified for a particular programming
+     language, one that is widely used among developers working in that
+     language.
+
+     The "System Libraries" of an executable work include anything,
+     other than the work as a whole, that (a) is included in the normal
+     form of packaging a Major Component, but which is not part of that
+     Major Component, and (b) serves only to enable use of the work
+     with that Major Component, or to implement a Standard Interface
+     for which an implementation is available to the public in source
+     code form.  A "Major Component", in this context, means a major
+     essential component (kernel, window system, and so on) of the
+     specific operating system (if any) on which the executable work
+     runs, or a compiler used to produce the work, or an object code
+     interpreter used to run it.
+
+     The "Corresponding Source" for a work in object code form means all
+     the source code needed to generate, install, and (for an executable
+     work) run the object code and to modify the work, including
+     scripts to control those activities.  However, it does not include
+     the work's System Libraries, or general-purpose tools or generally
+     available free programs which are used unmodified in performing
+     those activities but which are not part of the work.  For example,
+     Corresponding Source includes interface definition files
+     associated with source files for the work, and the source code for
+     shared libraries and dynamically linked subprograms that the work
+     is specifically designed to require, such as by intimate data
+     communication or control flow between those subprograms and other
+     parts of the work.
+
+     The Corresponding Source need not include anything that users can
+     regenerate automatically from other parts of the Corresponding
+     Source.
+
+     The Corresponding Source for a work in source code form is that
+     same work.
+
+  2. Basic Permissions.
+
+     All rights granted under this License are granted for the term of
+     copyright on the Program, and are irrevocable provided the stated
+     conditions are met.  This License explicitly affirms your unlimited
+     permission to run the unmodified Program.  The output from running
+     a covered work is covered by this License only if the output,
+     given its content, constitutes a covered work.  This License
+     acknowledges your rights of fair use or other equivalent, as
+     provided by copyright law.
+
+     You may make, run and propagate covered works that you do not
+     convey, without conditions so long as your license otherwise
+     remains in force.  You may convey covered works to others for the
+     sole purpose of having them make modifications exclusively for
+     you, or provide you with facilities for running those works,
+     provided that you comply with the terms of this License in
+     conveying all material for which you do not control copyright.
+     Those thus making or running the covered works for you must do so
+     exclusively on your behalf, under your direction and control, on
+     terms that prohibit them from making any copies of your
+     copyrighted material outside their relationship with you.
+
+     Conveying under any other circumstances is permitted solely under
+     the conditions stated below.  Sublicensing is not allowed; section
+     10 makes it unnecessary.
+
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+
+     No covered work shall be deemed part of an effective technological
+     measure under any applicable law fulfilling obligations under
+     article 11 of the WIPO copyright treaty adopted on 20 December
+     1996, or similar laws prohibiting or restricting circumvention of
+     such measures.
+
+     When you convey a covered work, you waive any legal power to forbid
+     circumvention of technological measures to the extent such
+     circumvention is effected by exercising rights under this License
+     with respect to the covered work, and you disclaim any intention
+     to limit operation or modification of the work as a means of
+     enforcing, against the work's users, your or third parties' legal
+     rights to forbid circumvention of technological measures.
+
+  4. Conveying Verbatim Copies.
+
+     You may convey verbatim copies of the Program's source code as you
+     receive it, in any medium, provided that you conspicuously and
+     appropriately publish on each copy an appropriate copyright notice;
+     keep intact all notices stating that this License and any
+     non-permissive terms added in accord with section 7 apply to the
+     code; keep intact all notices of the absence of any warranty; and
+     give all recipients a copy of this License along with the Program.
+
+     You may charge any price or no price for each copy that you convey,
+     and you may offer support or warranty protection for a fee.
+
+  5. Conveying Modified Source Versions.
+
+     You may convey a work based on the Program, or the modifications to
+     produce it from the Program, in the form of source code under the
+     terms of section 4, provided that you also meet all of these
+     conditions:
+
+       a. The work must carry prominent notices stating that you
+          modified it, and giving a relevant date.
+
+       b. The work must carry prominent notices stating that it is
+          released under this License and any conditions added under
+          section 7.  This requirement modifies the requirement in
+          section 4 to "keep intact all notices".
+
+       c. You must license the entire work, as a whole, under this
+          License to anyone who comes into possession of a copy.  This
+          License will therefore apply, along with any applicable
+          section 7 additional terms, to the whole of the work, and all
+          its parts, regardless of how they are packaged.  This License
+          gives no permission to license the work in any other way, but
+          it does not invalidate such permission if you have separately
+          received it.
+
+       d. If the work has interactive user interfaces, each must display
+          Appropriate Legal Notices; however, if the Program has
+          interactive interfaces that do not display Appropriate Legal
+          Notices, your work need not make them do so.
+
+     A compilation of a covered work with other separate and independent
+     works, which are not by their nature extensions of the covered
+     work, and which are not combined with it such as to form a larger
+     program, in or on a volume of a storage or distribution medium, is
+     called an "aggregate" if the compilation and its resulting
+     copyright are not used to limit the access or legal rights of the
+     compilation's users beyond what the individual works permit.
+     Inclusion of a covered work in an aggregate does not cause this
+     License to apply to the other parts of the aggregate.
+
+  6. Conveying Non-Source Forms.
+
+     You may convey a covered work in object code form under the terms
+     of sections 4 and 5, provided that you also convey the
+     machine-readable Corresponding Source under the terms of this
+     License, in one of these ways:
+
+       a. Convey the object code in, or embodied in, a physical product
+          (including a physical distribution medium), accompanied by the
+          Corresponding Source fixed on a durable physical medium
+          customarily used for software interchange.
+
+       b. Convey the object code in, or embodied in, a physical product
+          (including a physical distribution medium), accompanied by a
+          written offer, valid for at least three years and valid for
+          as long as you offer spare parts or customer support for that
+          product model, to give anyone who possesses the object code
+          either (1) a copy of the Corresponding Source for all the
+          software in the product that is covered by this License, on a
+          durable physical medium customarily used for software
+          interchange, for a price no more than your reasonable cost of
+          physically performing this conveying of source, or (2) access
+          to copy the Corresponding Source from a network server at no
+          charge.
+
+       c. Convey individual copies of the object code with a copy of
+          the written offer to provide the Corresponding Source.  This
+          alternative is allowed only occasionally and noncommercially,
+          and only if you received the object code with such an offer,
+          in accord with subsection 6b.
+
+       d. Convey the object code by offering access from a designated
+          place (gratis or for a charge), and offer equivalent access
+          to the Corresponding Source in the same way through the same
+          place at no further charge.  You need not require recipients
+          to copy the Corresponding Source along with the object code.
+          If the place to copy the object code is a network server, the
+          Corresponding Source may be on a different server (operated
+          by you or a third party) that supports equivalent copying
+          facilities, provided you maintain clear directions next to
+          the object code saying where to find the Corresponding Source.
+          Regardless of what server hosts the Corresponding Source, you
+          remain obligated to ensure that it is available for as long
+          as needed to satisfy these requirements.
+
+       e. Convey the object code using peer-to-peer transmission,
+          provided you inform other peers where the object code and
+          Corresponding Source of the work are being offered to the
+          general public at no charge under subsection 6d.
+
+
+     A separable portion of the object code, whose source code is
+     excluded from the Corresponding Source as a System Library, need
+     not be included in conveying the object code work.
+
+     A "User Product" is either (1) a "consumer product", which means
+     any tangible personal property which is normally used for personal,
+     family, or household purposes, or (2) anything designed or sold for
+     incorporation into a dwelling.  In determining whether a product
+     is a consumer product, doubtful cases shall be resolved in favor of
+     coverage.  For a particular product received by a particular user,
+     "normally used" refers to a typical or common use of that class of
+     product, regardless of the status of the particular user or of the
+     way in which the particular user actually uses, or expects or is
+     expected to use, the product.  A product is a consumer product
+     regardless of whether the product has substantial commercial,
+     industrial or non-consumer uses, unless such uses represent the
+     only significant mode of use of the product.
+
+     "Installation Information" for a User Product means any methods,
+     procedures, authorization keys, or other information required to
+     install and execute modified versions of a covered work in that
+     User Product from a modified version of its Corresponding Source.
+     The information must suffice to ensure that the continued
+     functioning of the modified object code is in no case prevented or
+     interfered with solely because modification has been made.
+
+     If you convey an object code work under this section in, or with,
+     or specifically for use in, a User Product, and the conveying
+     occurs as part of a transaction in which the right of possession
+     and use of the User Product is transferred to the recipient in
+     perpetuity or for a fixed term (regardless of how the transaction
+     is characterized), the Corresponding Source conveyed under this
+     section must be accompanied by the Installation Information.  But
+     this requirement does not apply if neither you nor any third party
+     retains the ability to install modified object code on the User
+     Product (for example, the work has been installed in ROM).
+
+     The requirement to provide Installation Information does not
+     include a requirement to continue to provide support service,
+     warranty, or updates for a work that has been modified or
+     installed by the recipient, or for the User Product in which it
+     has been modified or installed.  Access to a network may be denied
+     when the modification itself materially and adversely affects the
+     operation of the network or violates the rules and protocols for
+     communication across the network.
+
+     Corresponding Source conveyed, and Installation Information
+     provided, in accord with this section must be in a format that is
+     publicly documented (and with an implementation available to the
+     public in source code form), and must require no special password
+     or key for unpacking, reading or copying.
+
+  7. Additional Terms.
+
+     "Additional permissions" are terms that supplement the terms of
+     this License by making exceptions from one or more of its
+     conditions.  Additional permissions that are applicable to the
+     entire Program shall be treated as though they were included in
+     this License, to the extent that they are valid under applicable
+     law.  If additional permissions apply only to part of the Program,
+     that part may be used separately under those permissions, but the
+     entire Program remains governed by this License without regard to
+     the additional permissions.
+
+     When you convey a copy of a covered work, you may at your option
+     remove any additional permissions from that copy, or from any part
+     of it.  (Additional permissions may be written to require their own
+     removal in certain cases when you modify the work.)  You may place
+     additional permissions on material, added by you to a covered work,
+     for which you have or can give appropriate copyright permission.
+
+     Notwithstanding any other provision of this License, for material
+     you add to a covered work, you may (if authorized by the copyright
+     holders of that material) supplement the terms of this License
+     with terms:
+
+       a. Disclaiming warranty or limiting liability differently from
+          the terms of sections 15 and 16 of this License; or
+
+       b. Requiring preservation of specified reasonable legal notices
+          or author attributions in that material or in the Appropriate
+          Legal Notices displayed by works containing it; or
+
+       c. Prohibiting misrepresentation of the origin of that material,
+          or requiring that modified versions of such material be
+          marked in reasonable ways as different from the original
+          version; or
+
+       d. Limiting the use for publicity purposes of names of licensors
+          or authors of the material; or
+
+       e. Declining to grant rights under trademark law for use of some
+          trade names, trademarks, or service marks; or
+
+       f. Requiring indemnification of licensors and authors of that
+          material by anyone who conveys the material (or modified
+          versions of it) with contractual assumptions of liability to
+          the recipient, for any liability that these contractual
+          assumptions directly impose on those licensors and authors.
+
+     All other non-permissive additional terms are considered "further
+     restrictions" within the meaning of section 10.  If the Program as
+     you received it, or any part of it, contains a notice stating that
+     it is governed by this License along with a term that is a further
+     restriction, you may remove that term.  If a license document
+     contains a further restriction but permits relicensing or
+     conveying under this License, you may add to a covered work
+     material governed by the terms of that license document, provided
+     that the further restriction does not survive such relicensing or
+     conveying.
+
+     If you add terms to a covered work in accord with this section, you
+     must place, in the relevant source files, a statement of the
+     additional terms that apply to those files, or a notice indicating
+     where to find the applicable terms.
+
+     Additional terms, permissive or non-permissive, may be stated in
+     the form of a separately written license, or stated as exceptions;
+     the above requirements apply either way.
+
+  8. Termination.
+
+     You may not propagate or modify a covered work except as expressly
+     provided under this License.  Any attempt otherwise to propagate or
+     modify it is void, and will automatically terminate your rights
+     under this License (including any patent licenses granted under
+     the third paragraph of section 11).
+
+     However, if you cease all violation of this License, then your
+     license from a particular copyright holder is reinstated (a)
+     provisionally, unless and until the copyright holder explicitly
+     and finally terminates your license, and (b) permanently, if the
+     copyright holder fails to notify you of the violation by some
+     reasonable means prior to 60 days after the cessation.
+
+     Moreover, your license from a particular copyright holder is
+     reinstated permanently if the copyright holder notifies you of the
+     violation by some reasonable means, this is the first time you have
+     received notice of violation of this License (for any work) from
+     that copyright holder, and you cure the violation prior to 30 days
+     after your receipt of the notice.
+
+     Termination of your rights under this section does not terminate
+     the licenses of parties who have received copies or rights from
+     you under this License.  If your rights have been terminated and
+     not permanently reinstated, you do not qualify to receive new
+     licenses for the same material under section 10.
+
+  9. Acceptance Not Required for Having Copies.
+
+     You are not required to accept this License in order to receive or
+     run a copy of the Program.  Ancillary propagation of a covered work
+     occurring solely as a consequence of using peer-to-peer
+     transmission to receive a copy likewise does not require
+     acceptance.  However, nothing other than this License grants you
+     permission to propagate or modify any covered work.  These actions
+     infringe copyright if you do not accept this License.  Therefore,
+     by modifying or propagating a covered work, you indicate your
+     acceptance of this License to do so.
+
+ 10. Automatic Licensing of Downstream Recipients.
+
+     Each time you convey a covered work, the recipient automatically
+     receives a license from the original licensors, to run, modify and
+     propagate that work, subject to this License.  You are not
+     responsible for enforcing compliance by third parties with this
+     License.
+
+     An "entity transaction" is a transaction transferring control of an
+     organization, or substantially all assets of one, or subdividing an
+     organization, or merging organizations.  If propagation of a
+     covered work results from an entity transaction, each party to that
+     transaction who receives a copy of the work also receives whatever
+     licenses to the work the party's predecessor in interest had or
+     could give under the previous paragraph, plus a right to
+     possession of the Corresponding Source of the work from the
+     predecessor in interest, if the predecessor has it or can get it
+     with reasonable efforts.
+
+     You may not impose any further restrictions on the exercise of the
+     rights granted or affirmed under this License.  For example, you
+     may not impose a license fee, royalty, or other charge for
+     exercise of rights granted under this License, and you may not
+     initiate litigation (including a cross-claim or counterclaim in a
+     lawsuit) alleging that any patent claim is infringed by making,
+     using, selling, offering for sale, or importing the Program or any
+     portion of it.
+
+ 11. Patents.
+
+     A "contributor" is a copyright holder who authorizes use under this
+     License of the Program or a work on which the Program is based.
+     The work thus licensed is called the contributor's "contributor
+     version".
+
+     A contributor's "essential patent claims" are all patent claims
+     owned or controlled by the contributor, whether already acquired or
+     hereafter acquired, that would be infringed by some manner,
+     permitted by this License, of making, using, or selling its
+     contributor version, but do not include claims that would be
+     infringed only as a consequence of further modification of the
+     contributor version.  For purposes of this definition, "control"
+     includes the right to grant patent sublicenses in a manner
+     consistent with the requirements of this License.
+
+     Each contributor grants you a non-exclusive, worldwide,
+     royalty-free patent license under the contributor's essential
+     patent claims, to make, use, sell, offer for sale, import and
+     otherwise run, modify and propagate the contents of its
+     contributor version.
+
+     In the following three paragraphs, a "patent license" is any
+     express agreement or commitment, however denominated, not to
+     enforce a patent (such as an express permission to practice a
+     patent or covenant not to sue for patent infringement).  To
+     "grant" such a patent license to a party means to make such an
+     agreement or commitment not to enforce a patent against the party.
+
+     If you convey a covered work, knowingly relying on a patent
+     license, and the Corresponding Source of the work is not available
+     for anyone to copy, free of charge and under the terms of this
+     License, through a publicly available network server or other
+     readily accessible means, then you must either (1) cause the
+     Corresponding Source to be so available, or (2) arrange to deprive
+     yourself of the benefit of the patent license for this particular
+     work, or (3) arrange, in a manner consistent with the requirements
+     of this License, to extend the patent license to downstream
+     recipients.  "Knowingly relying" means you have actual knowledge
+     that, but for the patent license, your conveying the covered work
+     in a country, or your recipient's use of the covered work in a
+     country, would infringe one or more identifiable patents in that
+     country that you have reason to believe are valid.
+
+     If, pursuant to or in connection with a single transaction or
+     arrangement, you convey, or propagate by procuring conveyance of, a
+     covered work, and grant a patent license to some of the parties
+     receiving the covered work authorizing them to use, propagate,
+     modify or convey a specific copy of the covered work, then the
+     patent license you grant is automatically extended to all
+     recipients of the covered work and works based on it.
+
+     A patent license is "discriminatory" if it does not include within
+     the scope of its coverage, prohibits the exercise of, or is
+     conditioned on the non-exercise of one or more of the rights that
+     are specifically granted under this License.  You may not convey a
+     covered work if you are a party to an arrangement with a third
+     party that is in the business of distributing software, under
+     which you make payment to the third party based on the extent of
+     your activity of conveying the work, and under which the third
+     party grants, to any of the parties who would receive the covered
+     work from you, a discriminatory patent license (a) in connection
+     with copies of the covered work conveyed by you (or copies made
+     from those copies), or (b) primarily for and in connection with
+     specific products or compilations that contain the covered work,
+     unless you entered into that arrangement, or that patent license
+     was granted, prior to 28 March 2007.
+
+     Nothing in this License shall be construed as excluding or limiting
+     any implied license or other defenses to infringement that may
+     otherwise be available to you under applicable patent law.
+
+ 12. No Surrender of Others' Freedom.
+
+     If conditions are imposed on you (whether by court order,
+     agreement or otherwise) that contradict the conditions of this
+     License, they do not excuse you from the conditions of this
+     License.  If you cannot convey a covered work so as to satisfy
+     simultaneously your obligations under this License and any other
+     pertinent obligations, then as a consequence you may not convey it
+     at all.  For example, if you agree to terms that obligate you to
+     collect a royalty for further conveying from those to whom you
+     convey the Program, the only way you could satisfy both those
+     terms and this License would be to refrain entirely from conveying
+     the Program.
+
+ 13. Use with the GNU Affero General Public License.
+
+     Notwithstanding any other provision of this License, you have
+     permission to link or combine any covered work with a work licensed
+     under version 3 of the GNU Affero General Public License into a
+     single combined work, and to convey the resulting work.  The terms
+     of this License will continue to apply to the part which is the
+     covered work, but the special requirements of the GNU Affero
+     General Public License, section 13, concerning interaction through
+     a network will apply to the combination as such.
+
+ 14. Revised Versions of this License.
+
+     The Free Software Foundation may publish revised and/or new
+     versions of the GNU General Public License from time to time.
+     Such new versions will be similar in spirit to the present
+     version, but may differ in detail to address new problems or
+     concerns.
+
+     Each version is given a distinguishing version number.  If the
+     Program specifies that a certain numbered version of the GNU
+     General Public License "or any later version" applies to it, you
+     have the option of following the terms and conditions either of
+     that numbered version or of any later version published by the
+     Free Software Foundation.  If the Program does not specify a
+     version number of the GNU General Public License, you may choose
+     any version ever published by the Free Software Foundation.
+
+     If the Program specifies that a proxy can decide which future
+     versions of the GNU General Public License can be used, that
+     proxy's public statement of acceptance of a version permanently
+     authorizes you to choose that version for the Program.
+
+     Later license versions may give you additional or different
+     permissions.  However, no additional obligations are imposed on any
+     author or copyright holder as a result of your choosing to follow a
+     later version.
+
+ 15. Disclaimer of Warranty.
+
+     THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+     APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE
+     COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
+     WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE
+     RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.
+     SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+     NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+ 16. Limitation of Liability.
+
+     IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+     WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES
+     AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU
+     FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR
+     CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+     THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA
+     BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+     PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+     PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF
+     THE POSSIBILITY OF SUCH DAMAGES.
+
+ 17. Interpretation of Sections 15 and 16.
+
+     If the disclaimer of warranty and limitation of liability provided
+     above cannot be given local legal effect according to their terms,
+     reviewing courts shall apply local law that most closely
+     approximates an absolute waiver of all civil liability in
+     connection with the Program, unless a warranty or assumption of
+     liability accompanies a copy of the Program in return for a fee.
+
+
+END OF TERMS AND CONDITIONS
+===========================
+
+How to Apply These Terms to Your New Programs
+=============================================
+
+If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these
+terms.
+
+   To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+state the exclusion of warranty; and each file should have at least the
+"copyright" line and a pointer to where the full notice is found.
+
+     ONE LINE TO GIVE THE PROGRAM'S NAME AND A BRIEF IDEA OF WHAT IT DOES.
+     Copyright (C) YEAR NAME OF AUTHOR
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or (at
+     your option) any later version.
+
+     This program is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+     General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see `http://www.gnu.org/licenses/'.
+
+   Also add information on how to contact you by electronic and paper
+mail.
+
+   If the program does terminal interaction, make it output a short
+notice like this when it starts in an interactive mode:
+
+     PROGRAM Copyright (C) YEAR NAME OF AUTHOR
+     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+     This is free software, and you are welcome to redistribute it
+     under certain conditions; type `show c' for details.
+
+   The hypothetical commands `show w' and `show c' should show the
+appropriate parts of the General Public License.  Of course, your
+program's commands might be different; for a GUI interface, you would
+use an "about box".
+
+   You should also get your employer (if you work as a programmer) or
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  For more information on this, and how to apply and follow
+the GNU GPL, see `http://www.gnu.org/licenses/'.
+
+   The GNU General Public License does not permit incorporating your
+program into proprietary programs.  If your program is a subroutine
+library, you may consider it more useful to permit linking proprietary
+applications with the library.  If this is what you want to do, use the
+GNU Lesser General Public License instead of this License.  But first,
+please read `http://www.gnu.org/philosophy/why-not-lgpl.html'.
+
+ [index ]
+* Menu:
+
+
+Tag Table:
+Node: Top577
+Node: Introduction1323
+Node: Invoking gv1651
+Node: Resources10675
+Node: Resource files10845
+Node: Resources of gv12014
+Node: Mouse and key bindings22465
+Node: Mouse bindings in the Main and the Zoom window22894
+Node: Mouse bindings in the File Selection popup24485
+Node: Mouse bindings in the Table of Contents25467
+Node: Mouse bindings in the Panner widget26305
+Node: Mouse bindings in the << and >> button windows27026
+Node: Key Bindings27557
+Node: Notation27934
+Node: Miscellaneous keys28209
+Node: Orientation29390
+Node: Magnification29660
+Node: Navigating30763
+Node: Comments about the user interface32207
+Node: Scales32492
+Node: Scrolling34598
+Node: Displaying new versions of a document35303
+Node: Frequently asked questions36816
+Node: What happened to the scroll bars?37183
+Node: How can I make even more room for the image?37708
+Node: Small characters are not very clear38308
+Node: The output is not refreshed automatically38939
+Node: gv internals39785
+Node: Interface with ghostscript40056
+Node: Ghostview interface to ghostscript40443
+Node: Drawing on a Window40881
+Node: Drawing on a Pixmap41407
+Node: The GHOSTVIEW environment variable42022
+Node: The GHOSTVIEW property42717
+Node: Events from ghostscript44229
+Node: Comments recognized by ghostview45462
+Node: Paper Keywords and paper size in points46858
+Node: GNU General Public License47423
+
+End Tag Table

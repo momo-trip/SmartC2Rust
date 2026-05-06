@@ -1,0 +1,676 @@
+
+!########################################
+!##### Layouts
+!########################################
+
+!##### Main Layout
+
+GV*viewControl.layout:\
+|v{\
+  4<+[1]>\
+  |h{\
+    4<+[1]>\
+    page\
+    4<+[1]>\
+  }\
+  4<+[1]>\
+}
+
+GV*control.layout:\
+|v{\
+  f=8\
+  s=8\
+  ss=4\
+  sss=2\
+  a=6\
+  pbw=(10*(|width processButton))\
+  pbss=($ss*($pbw/($pbw+1)))\
+  $f\
+  |h{\
+    $f\
+    |v{\
+      fileButton<+[1]*>\
+      $s\
+      |h{\
+        0<+[1]>\
+        |v{\
+          autoResize<+30*>\
+          $a\
+          |h{\
+            1<+[1]>\
+            locator\
+            1<+[1]>\
+          }\
+          $a\
+          openFile<+30*>\
+          1\
+          printAll<+30*>\
+          1\
+          printMarked<+30*>\
+          1\
+          saveAll<+30*>\
+          1\
+          saveMarked<+30*>\
+          $a\
+          |h{\
+            0<+[1]>\
+            pannerFrame\
+            0<+[1]>\
+          }\
+          $a\
+          |h{\
+            prevPage<+30*>\
+            1\
+            nextPage<+30*>\
+          }\
+          1\
+          redisplay<+30*>\
+        }\
+        0<+[1]>\
+      }\
+      $a\
+      |h{\
+        0<+[1]>\
+        toggleOdd\
+        1\
+        toggleEven\
+        1\
+        toggleCurrent\
+        1\
+        unmarkAll\
+        0<+[1]>\
+      }\
+      $a\
+      |h{\
+        0<+30>\
+        newtocScroll<*+200[1]-[1]>\
+        $ss\
+        newtocFrame<-[2]*+200[1]-[1]>\
+        0<+30>\
+      }\
+    }\
+    $s\
+    |v{\
+      |h{\
+        stateButton<-90%*>\
+        $ss<-90%>\
+        pageButton<-90%*>\
+        $ss<-90%>\
+        orientationButton<-90%*>\
+        $ss<-90%>\
+        scaleButton<-90%*>\
+        $ss<-90%>\
+        pagemediaButton<-90%*>\
+        $pbss<-90%>\
+        |v{\
+          0<+[1]>\
+          processButton<-90%*>\
+          0<+[1]>\
+        }\
+        $ss<-90%>\
+        |v{\
+          0<+[1]>\
+          |h{\
+             titleButton<+5[1]-(100%)[1]*>\
+             $ss<-90%>\
+             dateButton<+[1]-(100%)[1]*>\
+          }\
+          0<+[1]>\
+        }\
+      }\
+      $s\
+      |h{\
+         viewFrame<+9999-100%*+9999-100%>\
+      }\
+    }\
+    $f\
+  }\
+  $f\
+}
+
+!##### Table of contents
+
+GV*newtocControl.layout:\
+|v{\
+  |h{\
+    newtoc\
+    0<+[1]>\
+  }\
+  0<+[1]>\
+}
+
+!##### Zoom Popup Layout
+
+GV*zviewControl.layout:\
+|v{\
+  4<+[1]>\
+  |h{\
+    4<+[1]>\
+    page<-100%*-100%>\
+    4<+[1]>\
+  }\
+  4<+[1]>\
+}
+
+GV*zoomControl.layout:\
+|h{ \
+  s=8\
+  $s\
+  |v{ \
+    $s\
+    zviewFrame<+[2]-100%*+[2]-100%>\
+    $s\
+    dismiss<+[1]-100%*>\
+    $s\
+  }\
+  $s\
+}
+
+!##### OptionsGV Popup Layout
+
+GV*optiongvPopup*layout:\
+|v{ \
+  bs=8\
+  s=4\
+  ss=3\
+  sss=2\
+  $bs\
+  |h{\
+    $bs\
+    |v{\
+      orientLabel\
+      $sss\
+      orientButton\
+      $sss\
+      forientLabel\
+      $sss\
+      forientButton\
+      $sss\
+      scalesLabel\
+      $sss\
+      scalesButton\
+      (2*$bs)\
+      swapLandscape<+[1]*>\
+      $sss\
+      autoResize<+[1]*>\
+      $sss\
+      watch<+[1]*>\
+      $sss\
+      infoVerboseLabel<+[1]*>\
+      $sss\
+      infoVerboseButton<+[1]*>\
+    }\
+    $ss\
+    |v{\
+      mediaLabel\
+      $sss\
+      mediaButton\
+      $sss\
+      fmediaLabel\
+      $sss\
+      fmediaButton\
+      $sss\
+      scaleBaseLabel\
+      $sss\
+      scaleBaseButton\
+      (2*$bs)\
+      respectDSC<+[1]*>\
+      $sss\
+      eof<+[1]*>\
+      $sss\
+      antialias<+[1]*>\
+      $sss\
+      ascaleLabel<+[1]*>\
+      $sss\
+      ascaleFrame<+[1]*>\
+    }\
+    $bs\
+  }\
+  (2*$bs)\
+  |h{\
+    (3*$bs)<-90%>\
+    apply\
+    $bs<+[1]-100%>\
+    save\
+    $bs<+[1]-100%>\
+    dismiss\
+    (3*$bs)<-90%>\
+  }\
+  $bs\
+}
+
+!##### OptionsSetup Popup Layout
+
+GV*optionsetupPopup*layout:\
+|v{ \
+  bs=8\
+  s=4\
+  ss=3\
+  sss=2\
+  $bs\
+  |h{\
+    $bs\
+    |v{\
+      confirmLabel<+[1]*>\
+      $sss\
+      confirmButton<+[1]*>\
+      $sss\
+      titleLabel<+[1]*>\
+      $sss\
+      titleButton<+[1]*>\
+      $sss\
+      misc<+[1]*>\
+      $sss\
+      scrolling<+[1]*>\
+      $sss\
+      eyeGuide<+[1]*>\
+      $sss\
+      confirmPrint<+[1]*>\
+      $sss\
+      autoCenter<+[1]*>\
+      $sss\
+      pixmap<+[1]*>\
+      $sss\
+      magmenuLabel<+[1]*>\
+      $sss\
+      magmenuFrame<+[1]*+[1]>\
+      $sss\
+      miscmenuLabel<+[1]*>\
+      $sss\
+      miscmenuFrame<+[1]*+[1]>\
+    }\
+    $s\
+    |v{\
+      scalesLabel<+[2]-100%*>\
+      $ss\
+      scalesFrame<+[2]-100%*+[1]>\
+      $s\
+      |h{\
+        |v{\
+          $s\
+          screenSizeLabel<+[1]*>\
+          $bs\
+          printCommandLabel<+[1]*>\
+        }\
+        $s\
+        |v{\
+          screenSizeFrame<+[2]-100%*>\
+          $s\
+          printCommandFrame<+[2]-100%*>\
+        }\
+      }\
+    }\
+    $s\
+    |v{\
+      mediasLabel<+[2]-100%*>\
+      $ss\
+      mediasFrame<+[2]-100%*+[1]>\
+    }\
+    $bs\
+  }\
+  (2*$bs)\
+  |h{\
+    (3*$bs)<+[1]-90%>\
+    apply\
+    $bs<+[1]-100%>\
+    save\
+    $bs<+[1]-100%>\
+    dismiss\
+    (3*$bs)<+[1]-90%>\
+  }\
+  $bs\
+}
+
+!##### OptionsFS Popup Layout
+
+GV*optionfsPopup*layout:\
+|v{ \
+  bs=8\
+  s=4\
+  ss=3\
+  sss=2\
+  $bs\
+  |h{\
+    $bs\
+    |v{\
+      filtersLabel<+[2]-100%*>\
+      $ss\
+      filtersFrame<+[2]-100%*+[1]>\
+    }\
+    $bs\
+    |v{\
+      dirsLabel<+[2]-100%*>\
+      $ss\
+      dirsFrame<+[2]-100%*+[1]>\
+    }\
+    $bs\
+  }\
+  $bs\
+  |h{\
+    $bs\
+    |v{\
+      $s\
+      filterLabel<+[1]*>\
+      $bs\
+      scratchDirLabel<+[1]*>\
+      $bs\
+      saveDirLabel<+[1]*>\
+    }\
+    $s\
+    |v{\
+      filterFrame<+[2]-100%*>\
+      $s\
+      scratchDirFrame<+[2]-100%*>\
+      $s\
+      saveDirFrame<+[2]-100%*>\
+    }\
+    $bs\
+  }\
+  (2*$bs)\
+  |h{\
+    (3*$bs)<-90%>\
+    apply\
+    $bs<+[1]-100%>\
+    save\
+    $bs<+[1]-100%>\
+    dismiss\
+    (3*$bs)<-90%>\
+  }\
+  $bs\
+}
+
+!##### OptionsGS Popup Layout
+
+GV*optiongsPopup*layout:\
+|v{\
+  ls=15\
+  bs=8\
+  ss=3\
+  s=4\
+  sss=2\
+  $bs\
+  |h{\
+    $bs\
+    gsLabel\
+    0<+[1]>\
+  }\
+  |h{\
+    $bs\
+    gsFrame<+[1]-95%*>\
+    $ss\
+    safeDir\
+    $ss\
+    safer\
+    $ss\
+    quiet\
+    $bs\
+  }\
+  $sss\
+  |h{\
+    $bs\
+    argumentsLabel\
+    0<+[1]>\
+  }\
+  |h{\
+    $bs\
+    argumentsFrame<+[1]-95%*>\
+    $bs\
+  }\
+  $sss\
+  |h{\
+    $bs\
+    |v{\
+      |h{\
+        x11devLabel\
+        0<+[1]>\
+      }\
+      x11devFrame<+[1]-95%*>\
+    }\
+    $ss\
+    |v{\
+      |h{\
+        x11alphadevLabel\
+        0<+[1]>\
+      }\
+      x11alphadevFrame<+[1]-95%*>\
+    }\
+    $bs\
+  }\
+  $sss\
+  |h{\
+    $bs\
+    scanLabel\
+    0<+[1]>\
+  }\
+  |h{\
+    $bs\
+    scanFrame<+[1]-50%*+[1]>\
+    $bs\
+  }\
+  $sss\
+  |h{\
+    $bs\
+    convLabel<+50*>\
+    0<+[1]>\
+  }\
+  |h{\
+    $bs\
+    convFrame<+[1]-50%*+[1]>\
+    $bs\
+  }\
+  (2*$bs)\
+  |h{\
+    (4*$bs)<-90%>\
+    apply\
+    $bs<+[1]-100%>\
+    save\
+    $bs<+[1]-100%>\
+    defaults\
+    $bs<+[1]-100%>\
+    dismiss\
+    (4*$bs)<-90%>\
+  }\
+  $bs\
+}
+
+!##### Note Popup Layout
+
+GV*notePopup*layout:\
+|v{ \
+  vs=8\
+  $vs<+[1]>\
+  |h{ \
+    $vs<+[1]>\
+    message<+[1]-100%*+[1]-100%>\
+    $vs<+[1]>\
+  }\
+  $vs<+[1]>\
+  |h{\
+    $vs<+[1]>\
+    done<-100%*>\
+    $vs<+[1]>\
+  }\
+  $vs<+[1]>\
+}
+
+!##### Dialog Popup Layout
+
+GV*dialogPopup*layout:\
+|v{ \
+  s=7\
+  bs=14\
+  $bs\
+  |h{ \
+    (2*$bs)\
+    message<+[1]*>\
+    (2*$bs)\
+  }\
+  $bs\
+  |h{\
+    $bs\
+    dialog_textLabel\
+    $s \
+    dialog_textFrame<+[1]-100%*>\
+    $bs\
+  }\
+  $bs\
+  |h{\
+    (2*$bs)<+[1]>\
+    done\
+    $bs<+[1]>\
+    cancel\
+    (2*$bs)<+[1]>\
+  }\
+  $bs\
+}
+
+!##### Confirm Popup Layout
+
+GV*confirmPopup*layout:\
+|v{ \
+  h2 =(|height message2)\
+  h3 =(|height message3)\
+  s2 =(4*($h2/($h2+1)))\
+  s3 =(8*($h3/($h3+1)))\
+  vs=10\
+  (2*$vs)\
+  |h{\
+    $vs\
+    |v{\
+      message2<+[1]*>\
+      (2*$s2)\
+      message3<+[1]*>\
+      $s3\
+    }\
+    $vs\
+  }\
+  $vs\
+  |h{\
+    (2*$vs)<+[1]>\
+    done\
+    $vs<+[1]>\
+    cancel\
+    (2*$vs)<+[1]>\
+  }\
+  $vs\
+}
+
+!##### Version Popup Layout
+
+GV*versionPopup*layout:\
+|v{ \
+  vs=8\
+  (3*$vs)<+[1]-100%>\
+  |h{ \
+    $vs<+[1]>\
+    |h{\
+      |v{ \
+        versionTexta\
+        (|height versionTextb)\
+        $vs\
+      }\
+      $vs\
+      |v{ \
+        0<+[1]>\
+        versionTextb\
+      }\
+      $vs\
+    }\
+    $vs\
+    $vs<+2[1]>\
+    |v{ 0<+[1]> versionDone  0<+[1]> }\
+    $vs<+[1]>\
+  }\
+  (3*$vs)\
+  |h{ $vs<+[1]> license $vs <+[1]> }\
+  (3*$vs)\
+  |h{ $vs<+[1]> authora $vs<+[1]> }\
+  $vs\
+  |h{ $vs<+[1]> authorb $vs<+[1]> }\
+  $vs\
+  |h{ $vs<+[1]> authorc $vs <+[1]> }\
+  (3*$vs)\
+  |h{ $vs<+[1]> authord $vs <+[1]> }\
+  (2*$vs)\
+}
+
+!##### FileSelection Widget Layout
+
+GV*fileSel*Clip*Aaa.layout:\
+|v{\
+  list<+[1]*>\
+  0<+[1]>\
+}
+
+GV*fileSel.layout:\
+|v{\
+  bs  = 8\
+  s   = 4\
+  hs2 =(|height button2)\
+  hs3 =(|height button3)\
+  hs4 =(|height button4)\
+  bs2 =($bs*($hs2/($hs2+1)))\
+  bs3 =($bs*($hs3/($hs3+1)))\
+  bs4 =($bs*($hs4/($hs4+1)))\
+  $bs\
+  |h{\
+    $bs\
+    pathframe<+[1]-95%*>\
+    $bs\
+  }\
+  $bs\
+  |h{\
+    $bs\
+    |v{\
+      topframe<+200-95%*-90%>\
+      2\
+      subframe<+[1]-[1]*+[1]-[1]>\
+    }\
+    $s\
+    |v{\
+      |h{\
+        |v{\
+          |h{\
+            rescan<+[1]-100%*>\
+            $s\
+            dirs<+[1]-100%*>\
+          }\
+          $s\
+          |h{\
+	    filters\
+            $s\
+            filterframe<+[1]-95%*>\
+          }\
+        }\
+      }\
+      $s\
+      |h{\
+        subscroll<*+[1]-[1]>\
+        $s\
+        curframe<+[1]-[1]*+[1]-[1]>\
+        $s\
+        curscroll<*+[1]-[1]>\
+      }\
+    }\
+    $bs\
+  }\
+  $bs\
+  |h{\
+    0<+[1]>\
+    (6*$bs)<-95%>\
+    button2\
+    0<+[1]>\
+    $bs2<+($bs2)-90%>\
+    button3\
+    0<+[1]>\
+    $bs3<+($bs3)-90%>\
+    button4\
+    0<+[1]>\
+    $bs4<+($bs3)-90%>\
+    button1\
+    0<+[1]>\
+    (6*$bs)<-95%>\
+  }\
+  $bs\
+}
+

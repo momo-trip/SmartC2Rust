@@ -1,0 +1,324 @@
+2025-11-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.am (EXTRA_DIST): Ship "COPYRIGHT" file in distribution
+	archive.
+
+2025-08-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh (Usage): Update description, (roughly) syncing it
+	with man page.
+
+2024-12-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Track revisions to groff Autotools usage, prompted by the fact
+	that "test -ef" is now a POSIX-conforming usage.
+
+	* gdiffmk.am (gdiffmk): Textually replace Autofoo macro
+	`POSIX_SHELL_PROG` instead of `HAVE_TEST_EF_OPTION` and
+	`BASH_PROG`.
+	* gdiffmk.sh: Migrate shebang line from `BASH_PROG` to
+	`POSIX_SHELL_PROG`.
+	(WouldClobber): Test for `test -ef` functionality ourselves,
+	using `POSIX_SHELL_PROG`.  Not only does this reduce a point of
+	contact between gdiffmk and groff's Autotoolage, but it
+	accommodates scenarios where the build environment has a
+	POSIX-conforming "test -ef" (perhaps because GNU Bash was
+	installed and used as the shell), but the installation
+	environment does not.
+
+2023-12-25  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/runtests.sh: Test for "diff -D" support as gdiffmk
+	itself does, and skip test if such support is lacking.
+
+2023-12-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh (RequiresArgument): Refactor to use shell parameter
+	expansion instead of expr(1), to avoid potential use of external
+	command and quirk in FreeBSD's implementation.
+
+2023-12-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh (FileRead, main): Revise wording of diagnostic
+	messages.
+
+2023-12-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh (WouldClobber, main): Drop obsolescent (per POSIX)
+	use of test(1)'s `-a` and `-o` operators.  See <https://pubs.\
+	opengroup.org/onlinepubs/9699919799/utilities/test.html>.
+
+2023-12-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh: Tweak output in error scenarios.  Add `want_help`
+	variable to track whether `--help` option was specified.
+	(Usage): Stop writing a blank line after a usage error; omitting
+	it is more consistent with other groff programs.  Omit the
+	descriptive paragraph unless help is requested.
+
+2023-12-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh (Usage): Abbreviate usage message to just a
+	synopsis, a brief (recast) description, and a cross reference to
+	the man page, like groff(1) and grops(1).
+	* gdiffmk.1.man (Synopsis, Description): Align language with
+	usage message (except that the latter uses the imperative mood,
+	and the man page the indicative).
+
+2023-12-19  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh: Refactor.
+	(Diagnose): New function writes arguments to the standard error
+	stream.
+	(Usage): Stop unconditionally writing to the standard error
+	stream.  If given arguments, there is a usage error: use
+	`Diagnose` to write the error and identify problem explicitly as
+	a "usage error", set the exit status to 2, not 255 (which is not
+	good practice per POSIX[1]--shells use the eighth bit of the
+	exit status to indicate that a signal was received), redirect
+	output to the standard error stream, and put a blank line on the
+	output to separate the diagnostic from the lengthy help message
+	that follows.  Otherwise, write only the "help message" to the
+	standard output stream and exit with status 0.  Use a here
+	document instead of `echo` and escaped newlines.
+	(WouldClobber): Exit with status 4 instead of 3 if the output
+	operand would clobber one of the inputs.
+	(RequiresArgument): Exit with status 2 instead of (an attempt
+	at) 255 if a required argument is missing.
+	(main): Drop now-unnecessary prefix from `$BADOPTION`.  Exit
+	with status 3 if the diff(1) command doesn't support the `-D`
+	option instead of treating this as a usage error (status 3 is
+	also used if the shell's `test` doesn't support `-ef`).  Add
+	period to end of sentence.
+	* gdiffmk.1.man (Exit status): Add section.
+
+	[1] https://pubs.opengroup.org/onlinepubs/9699919799/utilities/\
+	      V3_chap02.html#tag_18_08_02
+
+2023-12-19  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh: Use only one space after {command name, colon}
+	sequence in diagnostic messages, not two.  This aligns better
+	with the GNU Coding Standards.
+	* tests/baseline.7: Update test expectations.
+
+2023-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/runtests.sh: Stop endorsing shebang line space myth.
+	See <https://savannah.gnu.org/bugs/?64058>.
+
+2023-02-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Revise test regime.  Reduce amount of indirection required to
+	run a test, and directly use the same script for standalone and
+	Automake-integrated testing.
+
+	* tests/gdiffmk_tests.sh: Delete.
+	* tests/runtests.sh: Revise to search for test artifact input
+	and output directories (source vs. build).  Drop argument
+	processing, converting two modes ("run" and "clean") into one
+	{run, with cleaning afterward}.  Also ensure we use the build
+	directory to construct "tmp_file.7".  Update authorship credit
+	so that Mike Bianchi isn't asked to support it.
+
+	* tests/baseline.7: Update expected test output.
+
+	* gdiffmk.am (TESTS): Run "runtests.sh" instead of
+	"gdiffmk_tests.sh".
+	(clean-local, clean_gdiffmk_check): Drop targets now that the
+	test script cleans up after itself.
+
+2023-02-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/runtests.sh: Refactor file handling.  Use narrower globs
+	to match the file names actually used; they are suffixed with a
+	dot and a number, not a number alone.  Honor $TMPDIR when
+	creating the even-more-temporary file.  Revise trap setup so
+	that the trap handler cannot be interrupted if it is already
+	running.  Call the handler, then commit suicide with SIGINT.
+	Use symbolic names for signals, not numbers.  Call new CleanUp
+	function before exiting normally.
+	(CleanUp): Pull temporary file clean-up logic into new function.
+	Also delete the even-more-temporary file used in test 1.
+
+2022-10-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gdiffmk.sh: Drop "GNU" from version information, since this
+	program resides in groff's "contrib" directory.
+
+2018-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	* gdiffmk.am (gdiffmk): Use $(AM_V_GEN) to silence file generation.
+
+2015-08-22  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gdiffmk.1.man: Rename `gdiffmk.man'.
+
+	* gdiffmk.am: Include renaming.
+
+2015-08-05  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gdiffmk.am: Add `Last update'.  Setup Emacs mode.
+
+2015-04-13  Mike Bianchi <MBianchi@Foveal.com>
+	More fixes to Savannah bug #44768.
+
+	* gdiffmk.sh:
+		replace
+			for OPTION   with  while [ $# -gt 0 ]
+
+			test -e ...  with  test -f
+
+			use  ${DIFFCMD}  for the last  diff
+		add
+			-s SEDCMD  option
+			OPTION="$1"
+
+		many other cosmetic changes documented in the bug Discussion.
+		especially:
+			capitalize variables  e.g.  CMD=`basename $0`
+
+	fix  make check  tests within gdiffmk
+	* tests/gdiffmk_tests.sh
+		add  set -e
+			fails if ${abs_top_builddir} not set or incorrect
+
+	* tests/runtests.sh
+		add test 6a
+			# Different values for addmark, changemark, deletemark
+			# Alternate format of -a -c and -d flag arguments
+
+		add test 9a
+			# Test -D  and  -M  options
+			# Alternate format of -M argument.
+
+		add printout of failure count
+		add exit with failure exit_code if any test fails
+
+2015-04-10  Werner LEMBERG  <wl@gnu.org>
+
+	Fix Savannah bug #44768.
+
+	* gdiffmk.sh: Remove bash's $(...) with classic `...`.
+	Patch by Peter Bray.
+
+2015-04-03  Werner LEMBERG  <wl@gnu.org
+
+	* gdiffmk.man: Make it work in compatibility mode.
+
+2014-09-03  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* all `gdiffmk' source files: Add and improve the copying
+	information.  Remove last update. Add Emacs setting if necessary.
+
+2014-03-30  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* Makefile.sub: Put straight error-prevention prefixes for `rm'.
+
+2009-09-22  Colin Watson  <cjwatson@debian.org>
+
+	* gdiffmk.sh: Don't use bash specific syntax.
+
+2008-01-04  Werner LEMBERG  <wl@gnu.org>
+
+	* gdiffmk.man: Replace .URL with .UR/.UE.
+	Replace .MTO with .MT/.ME.
+	Don't include www.tmac.
+
+2006-09-13  Werner LEMBERG  <wl@gnu.org>
+
+	* tests/test_baseline*: Renamed to...
+	* tests/baseline.*: This.
+
+	* tests/runtests.in: Updated.
+
+2006-02-26  Claudio Fontana  <claudio@gnu.org>
+
+	* Makefile.sub: Add DESTDIR to install and uninstall targets
+	to support staged installations.
+
+2005-05-16  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	* gdiffmk.sh: Add space in shebang, conforming
+	to portability recommendation in autoconf docs.
+	* tests/runtests.in: Likewise.
+
+2005-01-16  Mike Bianchi  <MBianchi@Foveal.com>
+
+	* gdiffmk.sh (Usage): Fix typos.
+	<top>: Allow `-M<arg1> <arg2>' also.
+
+	* gdiffmk.man: Updated.
+
+2005-01-13  Mike Bianchi  <MBianchi@Foveal.com>
+
+	* gdiffmk.sh: Add the -D, -M, and -B options, which provide actions
+	akin to nrchbar.
+	Thanks to Larry Kollar (http://home.alltel.net/kollar/groff/).
+
+	* gdiffmk.man: Updated.
+
+	* tests/runtests.in: Added tests for gdiffmk's -D, -M, and -B
+	options.
+
+	* tests/baseline8, tests/baseline9, tests/baseline10: New files.
+
+2004-12-16  Mike Bianchi  <MBianchi@Foveal.com>
+
+	* tests/runtests.in: Fix typo (s/$(srcdir)/${srcdir}/).
+
+2004-12-15  Werner LEMBERG  <wl@gnu.org>
+
+	The configure script now generates tests/runtests.
+
+	* tests/tests.sh: Renamed to...
+	* tests/runtests.in: This.
+	Add proper $srcdir prefixes to make it run from build directory.
+	* README, Makefile.sub (CLEANADD), tests/test_baseline7: Updated.
+
+2004-12-14  Werner LEMBERG  <wl@gnu.org>
+
+	* gdiffmk.sh: Make sed pattern work with alternate result of GNU
+	diff's -D option, using `!' instead of `not' in #endif comments.
+	(Exit): Use prefix for each emitted message line.
+
+2004-12-14  Mike Bianchi  <MBianchi@Foveal.com>
+
+	* tests/*: New files for testing gdiffmk.
+
+	* README, gdiffmk.man, gdiffmk.sh: Updated.
+	Minor fixes.
+
+2004-12-13  Mike Bianchi  <MBianchi@Foveal.com>
+
+	Add `-x' command line option to select a diff program.
+
+	* gdiffmk.sh: Add code to handle `-x'.
+	Move test for working `diff' down.
+	Fix sed pattern -- `.mc *' needs to be followed by `.mc .'.
+	(Usage): Updated.
+	* gdiffmk.man: Updated.
+
+2004-12-12  Mike Bianchi  <MBianchi@Foveal.com>
+
+	* README: New file.
+
+2004-12-11  Mike Bianchi  <MBianchi@Foveal.com>
+
+	First import of gdiffmk files.
+
+________________________________________________________________________
+
+Copyright 2004-2018 Free Software Foundation, Inc.
+Copyright 2023-2024 G. Branden Robinson
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

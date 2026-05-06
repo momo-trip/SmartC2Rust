@@ -1,0 +1,37 @@
+# Copyright (C) 2014-2020 Free Software Foundation, Inc.
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+bin_PROGRAMS += preconv
+preconv_LDADD = libgroff.a $(LIBM) $(LIBICONV) $(UCHARDET_LIBS) \
+  lib/libgnu.a
+preconv_SOURCES = src/preproc/preconv/preconv.cpp
+preconv_CPPFLAGS = $(AM_CPPFLAGS) $(UCHARDET_CFLAGS)
+man1_MANS += src/preproc/preconv/preconv.1
+EXTRA_DIST += src/preproc/preconv/preconv.1.man
+
+preconv_TESTS = \
+  src/preproc/preconv/tests/do-not-seek-the-unseekable.sh \
+  src/preproc/preconv/tests/smoke-test.sh
+TESTS += $(preconv_TESTS)
+EXTRA_DIST += $(preconv_TESTS)
+
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

@@ -1,0 +1,297 @@
+.\" Define fallbacks for glyphs unavailable to GNU troff(1).
+.\"
+.\" These are designed such that "troffrc" loads them early, after
+.\" composite character mapping setup but before any device-specific
+.\" fallbacks.  Macro files specific to an output device can therefore
+.\" override the definitions below as necessary.
+.
+.do nr *groff_fallbacks_tmac_C \n[.cp]
+.cp 0
+.
+.\" The early loading observation above also means that the conditional
+.\" expressions 'n' and 't' are not reliable.  Define ersatz substitute.
+.nr fallbacks*troff-mode 1
+.if '\?\*[.T]\?'\?ascii\?'  .nr fallbacks*troff-mode 0
+.if '\?\*[.T]\?'\?latin1\?' .nr fallbacks*troff-mode 0
+.if '\?\*[.T]\?'\?utf8\?'   .nr fallbacks*troff-mode 0
+.
+.\" MODIFIER LETTER CIRCUMFLEX ACCENT -> CIRCUMFLEX ACCENT
+.fchar \[u02C6] ^
+.\" SMALL TILDE -> TILDE
+.fchar \[u02DC] ~
+.\" INCREMENT -> GREEK CAPITAL LETTER DELTA
+.fchar \[u2206] \[u0394]
+.
+.
+.\" NB: as per http://unicode.org/Public/UNIDATA/NamesList.txt
+.\"
+.\" #!/usr/bin/perl
+.\" ## Ivan Shmakov, 2012.
+.\" ## This code is in the public-domain.
+.\" my $u;
+.\" while (<>) {
+.\"   $u = oct ("0x" . $1)
+.\"       if (/^([[:xdigit:]]{4})/);
+.\"   next unless (defined ($u) && $u >= 0x2160 && $u <= 0x217F);
+.\"   if (/^\s+#\s+([[:xdigit:][:blank:]]+)(\s.*)?$/) {
+.\"     ## NB: may make sense to map to \[uXXXX]'s instead
+.\"     printf (".fchar \\[u%04X] %s\n", $u,
+.\"             pack ("U*", map { oct ("0x" . $_); } split (/ /, $1)));
+.\"     $u = undef;
+.\"   }
+.\" }
+.
+.fchar \[u2160] I
+.fchar \[u2161] II
+.fchar \[u2162] III
+.fchar \[u2163] IV
+.fchar \[u2164] V
+.fchar \[u2165] VI
+.fchar \[u2166] VII
+.fchar \[u2167] VIII
+.fchar \[u2168] IX
+.fchar \[u2169] X
+.fchar \[u216A] XI
+.fchar \[u216B] XII
+.fchar \[u216C] L
+.fchar \[u216D] C
+.fchar \[u216E] D
+.fchar \[u216F] M
+.fchar \[u2170] i
+.fchar \[u2171] ii
+.fchar \[u2172] iii
+.fchar \[u2173] iv
+.fchar \[u2174] v
+.fchar \[u2175] vi
+.fchar \[u2176] vii
+.fchar \[u2177] viii
+.fchar \[u2178] ix
+.fchar \[u2179] x
+.fchar \[u217A] xi
+.fchar \[u217B] xii
+.fchar \[u217C] l
+.fchar \[u217D] c
+.fchar \[u217E] d
+.fchar \[u217F] m
+.
+.\" Fonts often lack precomposed glyphs for accented Latin letters that
+.\" were not defined in ISO 8859-1 (Latin-1).
+.\"
+.\" Some of these can be ugly; on typesetter devices, much depends on
+.\" the design of the fonts used.
+.\"
+.\" groff defines no dot-above accent so we cannot construct some
+.\" composite glyphs in this way.  Turkish is an especial challenge
+.\" because dotting an I (or not) results in a different base glyph.
+.\" In any case, dotless 'i' base glyphs are rare in old fonts.
+.\"
+.\" We use separate fallbacks for nroff-mode and troff-mode devices
+.\" because we assume that the former can't constructively overstrike
+.\" and the latter can.
+.\"
+.\" On troff-mode devices, it can make sense to use the `asciify`
+.\" request to serialize special characters in device extension
+.\" commands, and in that case we want to write the base glyph before
+.\" any combining ones.
+.\"
+.\" On non-constructively overstriking devices, the last character
+.\" written at the drawing position "wins"; we want that to be the base
+.\" glyph.
+.\"
+.\" Latin-2 fallbacks
+.ie n \{\
+.  fchar \[A ab] \z\[ab]A
+.  fchar \[A ho] \z\[ho]A
+.  fchar \[C aa] \z\[aa]C
+.  fchar \[C ah] \z\[ah]C
+.  fchar \[D ah] \z\[ah]D
+.  fchar \[u0110] \z-D\" capital letter d with stroke
+.  fchar \[E ah] \z\[ah]E
+.  fchar \[E ho] \z\[ho]E
+.  fchar \[/L]   \z/L
+.  fchar \[L aa] \z\[aa]L
+.  fchar \[L ho] \z\[ho]L
+.  fchar \[N aa] \z\[aa]N
+.  fchar \[N ah] \z\[ah]N
+.  fchar \[O a"] \z\[a"]O
+.  fchar \[R aa] \z\[aa]R
+.  fchar \[R ah] \z\[ah]R
+.  fchar \[S aa] \z\[aa]S
+.  fchar \[S ac] \z\[ac]S
+.  fchar \[vS]   \z\[ah]S
+.  fchar \[T ac] \z\[ac]T
+.  fchar \[T ah] \z\[ah]T
+.  fchar \[U ao] \z\[ao]U
+.  fchar \[U a"] \z\[a"]U
+.  fchar \[Z aa] \z\[aa]Z
+.  fchar \[Z a.] \z\[a.]Z
+.  fchar \[vZ]   \z\[ah]Z
+.
+.  fchar \[a ab] \z\[ab]a
+.  fchar \[a ho] \z\[ho]a
+.  fchar \[c aa] \z\[aa]c
+.  fchar \[c ah] \z\[ah]c
+.  fchar \[d ah] \z\[ah]d
+.  fchar \[u0111] \z-d\" small letter d with stroke
+.  fchar \[e ah] \z\[ah]e
+.  fchar \[e ho] \z\[ho]e
+.  fchar \[/l]   \z/l
+.  fchar \[l aa] \z\[aa]l
+.  fchar \[l ho] \z\[ho]l
+.  fchar \[n aa] \z\[aa]n
+.  fchar \[n ah] \z\[ah]n
+.  fchar \[o a"] \z\[a"]o
+.  fchar \[r aa] \z\[aa]r
+.  fchar \[r ah] \z\[ah]r
+.  fchar \[s aa] \z\[aa]s
+.  fchar \[s ac] \z\[ac]s
+.  fchar \[vs]   \z\[ah]s
+.  fchar \[t ac] \z\[ac]t
+.  fchar \[t ah] \z\[ah]t
+.  fchar \[u ao] \z\[ao]u
+.  fchar \[u a"] \z\[a"]u
+.  fchar \[z aa] \z\[aa]z
+.  fchar \[z a.] \z\[a.]z
+.  fchar \[vz]   \z\[ah]z
+.\}
+.el \{\
+.  fchar \[A ab] \zA\[ab]
+.  fchar \[A ho] \zA\[ho]
+.  fchar \[C aa] \zC\[aa]
+.  fchar \[C ah] \zC\[ah]
+.  fchar \[D ah] \zD\[ah]
+.  fchar \[u0110] \zD-\" capital letter d with stroke
+.  fchar \[E ah] \zE\[ah]
+.  fchar \[E ho] \zE\[ho]
+.  fchar \[/L]   \zL/
+.  fchar \[L aa] \zL\[aa]
+.  fchar \[L ho] \zL\[ho]
+.  fchar \[N aa] \zN\[aa]
+.  fchar \[N ah] \zN\[ah]
+.  fchar \[O a"] \zO\[a"]
+.  fchar \[R aa] \zR\[aa]
+.  fchar \[R ah] \zR\[ah]
+.  fchar \[S aa] \zS\[aa]
+.  fchar \[S ac] \zS\[ac]
+.  fchar \[vS]   \zS\[ah]
+.  fchar \[T ac] \zT\[ac]
+.  fchar \[T ah] \zT\[ah]
+.  fchar \[U ao] \zU\[ao]
+.  fchar \[U a"] \zU\[a"]
+.  fchar \[Z aa] \zZ\[aa]
+.  fchar \[Z a.] \zZ\[a.]
+.  fchar \[vZ]   \zZ\[ah]
+.
+.  fchar \[a ab] \za\[ab]
+.  fchar \[a ho] \za\[ho]
+.  fchar \[c aa] \zc\[aa]
+.  fchar \[c ah] \zc\[ah]
+.  fchar \[d ah] \zd\[ah]
+.  fchar \[u0111] \zd-\" small letter d with stroke
+.  fchar \[e ah] \ze\[ah]
+.  fchar \[e ho] \ze\[ho]
+.  fchar \[/l]   \zl/
+.  fchar \[l aa] \zl\[aa]
+.  fchar \[l ho] \zl\[ho]
+.  fchar \[n aa] \zn\[aa]
+.  fchar \[n ah] \zn\[ah]
+.  fchar \[o a"] \zo\[a"]
+.  fchar \[r aa] \zr\[aa]
+.  fchar \[r ah] \zr\[ah]
+.  fchar \[s aa] \zs\[aa]
+.  fchar \[s ac] \zs\[ac]
+.  fchar \[vs]   \zs\[ah]
+.  fchar \[t ac] \zt\[ac]
+.  fchar \[t ah] \zt\[ah]
+.  fchar \[u ao] \zu\[ao]
+.  fchar \[u a"] \zu\[a"]
+.  fchar \[z aa] \zz\[aa]
+.  fchar \[z a.] \zz\[a.]
+.  fchar \[vz]   \zz\[ah]
+.\}
+.
+.\" Latin-5 fallbacks
+.ie n \{\
+.  fchar \[G ab] \z\[ab]G
+.  fchar \[g ab] \z\[ab]g
+.\}
+.el \{\
+.  fchar \[G ab] \zG\[ab]
+.  fchar \[g ab] \zg\[ab]
+.\}
+.
+.\" Latin-9 fallbacks
+.fchar \[OE] OE
+.fchar \[oe] oe
+.ie n .fchar \[:Y] \z\[ad]Y
+.el   .fchar \[:Y] \zY\[ad]
+.
+.fchar \[u2000] \[u2002]\" en quad
+.fchar \[u2001] \[u2003]\" em quad
+.fchar \[u2002] \h'1/2u'\" en space
+.fchar \[u2003] \h'1'\" em space
+.fchar \[u2004] \h'1/3u'\" three-per-em space
+.fchar \[u2005] \h'1/4u'\" four-per-em space
+.fchar \[u2006] \h'1/6u'\" six-per-em space
+.fchar \[u2007] \0\" figure space
+.ie \n[fallbacks*troff-mode] .fchar \[u2008] \|\" punctuation space
+.el                          .fchar \[u2008] " \" punctuation space
+.fchar \[u2009] \|\" thin space
+.fchar \[u200A] \^\" hair space
+.\" U+200B and its historical C1 control synonym, U+0082, have the semantics
+.\" of groff's \: escape.
+.\" Mapping these awaits resolution of Savannah #58958.
+.\"fchar \[u200B] \:\" zero-width space
+.\"fchar \[u0082] \:\" break permitted here
+.\" \[u2010] is always defined thanks to uniglyph.cpp.
+.\" Mapping U+2011 awaits resolution of Savannah #63360.
+.\"fchar \[u2011] -\" non-breaking hyphen (won't break w/o .hcode or \:)
+.fchar \[u2012] \o'-\0'\" figure dash
+.fchar \[u2013] \[en]\" en dash
+.fchar \[u2014] \[em]\" em dash
+.fchar \[u2015] \[em]\" horizontal bar (quotation dash)
+.fchar \[u2016] \[ba]\[ba]\" double vertical line (matrix norm)
+.if \n[fallbacks*troff-mode] \
+.  fchar \[u2017] \Z'\[ul]'\v'+.1m'\[ul]\v'-.1m'\" double low line
+.\" Mapping U+201[89CD] awaits resolution of Savannah #59932.
+.\"fchar \[u2018] \[oq]\" left single quotation mark
+.\"fchar \[u2019] \[cq]\" right single quotation mark
+.\"fchar \[u201C] \[lq]\" left double quotation mark
+.\"fchar \[u201D] \[rq]\" right double quotation mark
+.\" XXX: The next two are troublesome in nroff; see Savannah #63332.
+.if \n[fallbacks*troff-mode] .fchar \[u2020] \[dg]\" dagger
+.if \n[fallbacks*troff-mode] .fchar \[u2021] \[dd]\" double dagger
+.fchar \[u2022] \[bu]\" bullet
+.fchar \[u2024] .\" one dot leader
+.fchar \[u2025] .\|.\" two dot leader
+.fchar \[u2026] .\|.\|.\" horizontal ellipsis
+.fchar \[u2027] \[pc]\" hyphenation point
+.fchar \[u202F] \|\" narrow no-break space
+.if \n[fallbacks*troff-mode] \
+.  fchar \[u2030] \[%0]\" per mille sign \" Savannah #63332 again
+.fchar \[u2032] \[fm]\" prime
+.fchar \[u2033] \[sd]\" double prime
+.fchar \[u2039] \[fo]\" left single chevron
+.fchar \[u203A] \[fc]\" right single chevron
+.ie \n[fallbacks*troff-mode] \
+.  fchar \[u203D] \o'?!'\" interrobang
+.el \
+.  fchar \[u203D] !?
+.if \n[fallbacks*troff-mode] \
+.  fchar \[u203E] \[rn]\" overline \" Savannah #63332 again
+.fchar \[u2044] \[f/]\" fraction slash
+.\" Using `\[u0025]` instead of `%` below would better guard against the
+.\" use of `.tr` to redefine `%`, but Savannah #63334 prevents this.
+.fchar \[u2052] %\" commercial minus sign
+.fchar \[u2053] \[ti]\" swung dash
+.
+.rr fallbacks*troff-mode
+.
+.cp \n[*groff_fallbacks_tmac_C]
+.do rr *groff_fallbacks_tmac_C
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" fill-column: 72
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

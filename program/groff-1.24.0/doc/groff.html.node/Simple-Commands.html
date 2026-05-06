@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Simple Commands (The GNU troff Manual)</title>
+
+<meta name="description" content="Simple Commands (The GNU troff Manual)">
+<meta name="keywords" content="Simple Commands (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Command-Reference.html" rel="up" title="Command Reference">
+<link href="Graphics-Commands.html" rel="next" title="Graphics Commands">
+<link href="Comment-Command.html" rel="prev" title="Comment Command">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Simple-Commands"></span><div class="header">
+<p>
+Next: <a href="Graphics-Commands.html" accesskey="n" rel="next">Graphics Commands</a>, Previous: <a href="Comment-Command.html" accesskey="p" rel="prev">Comment Command</a>, Up: <a href="Command-Reference.html" accesskey="u" rel="up">Command Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Simple-Commands-1"></span><h4 class="subsubsection">6.2.2.2 Simple Commands</h4>
+
+<p>The commands in this subsection have a command code consisting of a
+single character, taking a fixed number of arguments.  Most of them are
+commands for positioning and text writing.  These commands are tolerant
+of whitespace.  Optionally, syntactical space can be inserted before,
+after, and between the command letter and its arguments.  All of these
+commands are stackable; i.e., they can be preceded by other simple
+commands or followed by arbitrary other commands on the same line.  A
+separating syntactical space is necessary only when two integer
+arguments would clash or if the preceding argument ends with a string
+argument.
+</p>
+<dl compact="compact">
+<dt><code>C <var>id</var>&lsaquo;<span class="roman">whitespace</span>&rsaquo;</code></dt>
+<dd><p>Typeset the glyph of the special character <var>id</var>.  Trailing
+syntactical space is necessary to allow special character names of
+arbitrary length.  The drawing position is not advanced.
+</p>
+</dd>
+<dt><code>c <var>g</var></code></dt>
+<dd><p>Typeset the glyph of the ordinary character&nbsp;<var>c</var>.  The drawing
+position is not advanced.
+</p>
+</dd>
+<dt><code>f <var>n</var></code></dt>
+<dd><p>Select the font mounted at position&nbsp;<var>n</var>.  <var>n</var>&nbsp;cannot
+be negative.
+</p>
+</dd>
+<dt><code>H <var>n</var></code></dt>
+<dd><p>Horizontally move the drawing position to <var>n</var>&nbsp;basic units from
+the left edge of the page.  <var>n</var>&nbsp;cannot be negative.
+</p>
+</dd>
+<dt><code>h <var>n</var></code></dt>
+<dd><p>Move the drawing position right <var>n</var> basic units.  <acronym>AT&amp;T</acronym>
+<code>troff</code> allowed negative <var>n</var>; GNU <code>troff</code> does not produce
+such values, but <code>groff</code>&rsquo;s output driver library handles them.
+</p>
+</dd>
+<dt><code>m <var>color-scheme</var> <span class="roman">[</span><var>component</var> &hellip;<span class="roman">]</span></code></dt>
+<dd><p>Select the stroke color using the <var>component</var>s in the color space
+<var>scheme</var>.  Each <var>component</var> is an integer between 0 and 65535.
+The quantity of components and their meanings vary with each
+<var>scheme</var>.  This command is a <code>groff</code> extension.
+</p>
+<dl compact="compact">
+<dt><code>mc <var>cyan</var> <var>magenta</var> <var>yellow</var></code></dt>
+<dd><p>Use the CMY color scheme with components cyan, magenta, and yellow.
+</p>
+</dd>
+<dt><code>md</code></dt>
+<dd><p>Use the default color (no components; black in most cases).
+</p>
+</dd>
+<dt><code>mg <var>gray</var></code></dt>
+<dd><p>Use a grayscale color scheme with a component ranging between 0 (black)
+and 65535 (white).
+</p>
+</dd>
+<dt><code>mk <var>cyan</var> <var>magenta</var> <var>yellow</var> <var>black</var></code></dt>
+<dd><p>Use the CMYK color scheme with components cyan, magenta, yellow, and
+black.
+</p>
+</dd>
+<dt><code>mr <var>red</var> <var>green</var> <var>blue</var></code></dt>
+<dd><p>Use the RGB color scheme with components red, green, and blue.
+</p></dd>
+</dl>
+
+</dd>
+<dt><code>N <var>n</var></code></dt>
+<dd><p>Typeset the glyph with index&nbsp;<var>n</var> in the current font.
+<var>n</var>&nbsp;is normally a non-negative integer.  The drawing position
+is not advanced.  The <code>html</code> and <code>xhtml</code> devices use this
+command with negative&nbsp;<var>n</var> to produce unbreakable space; the
+absolute value of <var>n</var> is taken and interpreted in basic units.
+</p>
+</dd>
+<dt><code>n <var>b</var> <var>a</var></code></dt>
+<dd><p>Indicate a break.  No action is performed; the command is present to
+make the output more easily parsed.  The integers <var>b</var>
+and&nbsp;<var>a</var> describe the vertical space amounts before and after
+the break, respectively.  GNU <code>troff</code> issues this command but
+<code>groff</code>&rsquo;s output driver library ignores it.  See <code>v</code> and
+<code>V</code> below.
+</p>
+</dd>
+<dt><code>p <var>n</var></code></dt>
+<dd><p>Begin a new page, setting its number to&nbsp;<var>n</var>.  Each page is
+independent, even from those using the same number.  The vertical
+drawing position is set to&nbsp;0.  All positioning, writing, and
+drawing commands are interpreted in the context of a page, so a
+<code>p</code>&nbsp;command must precede them.
+</p>
+</dd>
+<dt><code>s <var>n</var></code></dt>
+<dd><p>Set type size to <var>n</var> scaled points (unit&nbsp;<code>z</code> in GNU
+<code>troff</code>.
+<acronym>AT&amp;T</acronym> <code>troff</code> used unscaled points <code>p</code> instead;
+see <a href="Output-Language-Compatibility.html">Output Language Compatibility</a>.
+</p>
+</dd>
+<dt><code>t <var>xyz</var>&lsaquo;<span class="roman">whitespace</span>&rsaquo;</code></dt>
+<dt><code>t <var>xyz</var> <var>dummy-arg</var>&lsaquo;<span class="roman">whitespace</span>&rsaquo;</code></dt>
+<dd><p>Typeset a word <var>xyz</var>; that is, set a sequence of ordinary glyphs
+named <var>x</var>, <var>y</var>, <var>z</var>, &hellip;, terminated by a space
+character or a line break; an optional second integer argument is
+ignored (this allows the formatter to generate an even number of
+arguments). Each glyph is set at the current drawing position, and the position is
+then advanced horizontally by the glyph&rsquo;s width.  A glyph&rsquo;s width is
+read from its metrics in the font description file, scaled to the
+current type size, and rounded to a multiple of the horizontal motion
+quantum.  Use the <code>C</code> command to emplace glyphs of special
+characters.  The <code>t</code>&nbsp;command is a <code>groff</code> extension and
+is output only for devices whose <samp>DESC</samp> file contains the
+<code>tcommand</code> directive; see <a href="DESC-File-Format.html">DESC File Format</a>.
+</p>
+</dd>
+<dt><code>u <var>n</var> <var>xyz</var>&lsaquo;<span class="roman">whitespace</span>&rsaquo;</code></dt>
+<dd><p>Typeset word <var>xyz</var> with track kerning.  As <code>t</code>, but after
+placing each glyph, the drawing position is further advanced
+horizontally by&nbsp;<var>n</var> basic units (<code>u</code>).  The
+<code>u</code>&nbsp;command is a <code>groff</code> extension and is output only for
+devices whose <samp>DESC</samp> file contains the <code>tcommand</code> directive;
+see <a href="DESC-File-Format.html">DESC File Format</a>.
+</p>
+</dd>
+<dt><code>V <var>n</var></code></dt>
+<dd><p>Vertically move the drawing position to <var>n</var>&nbsp;basic units from
+the top edge of the page.  <var>n</var>&nbsp;cannot be negative.
+</p>
+</dd>
+<dt><code>v <var>n</var></code></dt>
+<dd><p>Move the drawing position down <var>n</var> basic units.  <acronym>AT&amp;T</acronym>
+<code>troff</code> allowed negative <var>n</var>; GNU <code>troff</code> does not produce
+such values, but <code>groff</code>&rsquo;s output driver library handles them.
+</p>
+</dd>
+<dt><code>w</code></dt>
+<dd><p>Indicate an inter-word space.  No action is performed; the command is
+present to make the output more easily parsed.  Only inter-word spaces
+on an output line (be they breakable or not) are thus described; those
+resulting from horizontal motion escape sequences are not.  GNU
+<code>troff</code> issues this command but <code>groff</code>&rsquo;s output driver
+library ignores it.  See <code>h</code> and <code>H</code> above.
+</p></dd>
+</dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Graphics-Commands.html" accesskey="n" rel="next">Graphics Commands</a>, Previous: <a href="Comment-Command.html" accesskey="p" rel="prev">Comment Command</a>, Up: <a href="Command-Reference.html" accesskey="u" rel="up">Command Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

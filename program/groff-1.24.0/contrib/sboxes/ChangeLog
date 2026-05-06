@@ -1,0 +1,229 @@
+2026-02-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am: Populate `sboxespdfdocdir` and
+	`nodist_sboxesotherdoc_DATA` unconditionally.  We now build the
+	"msboxes.pdf" document regardless of gropdf(1)'s service level
+	{see its man page}.
+	(uninstall_sboxes): De-parameterize uninstallation of the
+	document as well (attempting to remove the installation's
+	"examples" directory, which becomes empty if the document was
+	the last file to be removed from it in make's nondeterminstic
+	ordering).
+
+2026-01-20  Bruno Haible <bruno@clisp.org>
+
+	* sboxes.am: Fix portability problem involving BSD Make.  Define
+	`sboxes_builddir` macro without interpolating `top_builddir`.
+	groff does not use recursive make; all file specifications are
+	resolved relative to the top of the build tree, so the
+	interpolation is unnecessary, and with BSD Make it causes
+	spurious failures because that implementation uses strings, not
+	file identities, as the nodes of its dependency graph.  So if
+	you ask for "foo" to be built but have only a rule for a target
+	named "./foo", BSD Make fails, whereas GNU Make does not.
+
+2025-12-31  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am (EXTRA_DIST): Ship "COPYRIGHT" file in distribution
+	archive.
+
+2023-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am (uninstall_sboxes): Clean more fastidiously; try to
+	remove the configured `sboxespdfdocdir` in the event it is
+	empty, but do not fail if it isn't.  (It can be a directory
+	shared with other groff components; we don't know in what order
+	the uninstall targets will serialize, but the last one run
+	should succeed.)
+
+2022-10-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac: Escape newline after opening conditional block.
+
+2022-05-20  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am: Rename `BUILD_PDFDOC` to `USE_GROPDF`.
+
+2022-05-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am ($(sboxes_builddir)/msboxes.pdf): Depend on new name
+	for devpdf stamp file.
+
+2022-04-03  Ingo Schwarze <schwarze@openbsd.org>
+
+	* sboxes.am: msboxes.ms is documentation, not merely an example.
+	Consequently, install msboxes.ms unconditionally and msboxes.pdf
+	if BUILD_PDFDOC is enabled, both to the documentation directory
+	rather than to the examples directory.
+
+2022-04-02  Ingo Schwarze <schwarze@openbsd.org>
+
+	* sboxes.am: Stop installing msboxes.ms.in;
+	installing msboxes.ms and msboxes.pdf is enough.
+
+2022-03-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am: Track rename of `DOC_GROFF_ONLY` to `DOC_GROFF`.
+
+2022-03-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* msboxes.ms.in: Tweak sboxes documentation to imply ms
+	dependency.
+
+	Fixes <https://savannah.gnu.org/bugs/?62062>.
+
+2022-03-22  Ingo Schwarze <schwarze@openbsd.org>
+
+	* sboxes.am: fix non-portable syntax in the msboxes.pdf target
+	by using DOC_GROFF_ONLY rather than DOC_GROFF in order to not
+	use $< outside a suffix rule; DOC_GROFF functionality is not
+	needed here in the first place.
+
+2022-03-22  Ingo Schwarze <schwarze@openbsd.org>
+
+	* sboxes.am: make the build of msboxes.{ms,pdf} work with BSD
+	make by using $(sboxes_builddir) consistently to prevent
+	variations in target names.
+
+2022-02-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac: Prefix early diagnostics with package file name
+	literally.  (We don't yet know if we can use \*[] string
+	interpolation.)  It is better to violate DRY a little here than
+	to obscure from the user what is emitting the diagnostic.
+
+2022-02-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac: Skip macro package instead of aborting if there
+	are prerequisite problems.  This is an auxiliary package; it is
+	not necessarily fatal to the user's purposes if it doesn't load.
+
+2022-02-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* notquine.sed: Convert tilde to special character when inlining
+	document source (\~ is used).
+
+2021-11-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* msboxes.ms.in: Retitle document to "Using PDF Boxes with
+	_groff and_ the ms macros" (emphasis added) to make it clearer
+	that this package does not _require_ ms.
+
+2021-10-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* notquine.sed: Improve portability and tighten logic.  Thanks
+	to Axel Kielhorn for the report and Andreas Kusalananda Kähäri
+	for the suggested improvements.
+
+2021-10-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac: Rename strings and macro I introduced so that
+	they fit Deri's selection within the name space (prefix "bx").
+	Rename existing macros to use the groff ms(7) naming convention.
+	None of the macros in this "module" seem meant to be visible to
+	other modules, so suffix the module name with '*' instead of
+	'@'.  Drop unused 7th argument in a `pdfbackground` call.
+
+2021-10-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac: Define GSBOX register as 0, then redefine it as 1
+	only if the output device is `pdf`.  (This way a document author
+	can easily and separately test the presence of the package and
+	whether the device-specific feature is likely to work.)
+	(pdfbackground): Only define (overriding `pdf.tmac`) if GSBOX is
+	false.
+	* msboxes.ms.in: Document this aspect of the package interface.
+
+2021-10-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am (SBOXES_FLAGS): Drop variable since we only expand
+	it in one place.
+	($(sboxes_builddir)/msboxes.pdf): Be more consistent with the
+	rest of our build, particularly documentation generated in the
+	groff `doc` directory.  Use `GROFF_V` instead of `AM_V_GEN` to
+	control output (since it is in fact groff producing the target).
+	Use `DOC_GROFF` to produce the document rather than
+	`test-groff`.  Use the former `SBOXES_FLAGS` here.
+
+2021-10-20  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am ($(sboxes_builddir)/msboxes.ms,
+	$(sboxes_builddir)/msboxes.pdf): Be quieter by default; use
+	$(AM_V_at) and $(AM_V_GEN) more consistently with the rest of
+	the build.
+
+2021-10-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac: Rename macros to get out of user name space.  Our
+	ms package documentation says that externally visible names will
+	consist only of uppercase letters and digits.
+	(BoxStart): Rename to BOXSTART.
+	(BoxStop): Rename to BOXSTOP.
+	* msboxes.ms.in: Document and use new names.
+
+2021-10-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac: Add more prerequisite checking.  Check `GS`
+	register for groff ms macros specifically.  Check installed
+	version of groff since the gropdf in earlier versions won't
+	implement the underlying feature.  Add new string to introduce
+	diagnostic messages now that we have more than one (that we can
+	emit without limp-along AT&T compatibility mode).
+	(sboxes*error): Use new string in diagnostic message.
+
+2021-10-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.tmac (sboxes*error): Add new macro to produce
+	diagnostic message in a standard format.
+	(BoxStart): Use it.
+
+2021-10-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Make msboxes.ms quote its own source through a
+	self-interpolation process (with help from sed and the build
+	system), avoiding the need to manually keep the source document
+	and its quoted form in sync.
+
+	* msboxes.ms: Rename to...
+	* msboxes.ms.in: ...this.
+	* notquine.sed: New file; this sed script performs quotation of
+	roff syntax characters (and hyphens), inserts the quoted form of
+	the document's source into itself, and reproduces Deri's
+	Schrödinger's footnote trick.
+	* sboxes.am: Introduce new variables `sboxes_builddir` and
+	`sboxesnotquine` for convenience.  Update value of
+	$(SBOXES_EXAMPLEFILES) to point to the new .in source file.  Add
+	the generated ms document to $(SBOXES_PROCESSEDEXAMPLEFILES) and
+	$(MOSTLYCLEANFILES).  Add the `notquine` sed script to the
+	distribution archive via $(EXTRA_DIST).
+	($(sboxes_builddir)/msboxes.ms): New rule produces the ms
+	document from msboxes.ms.in, constructing it with sed.
+	($(sboxes_builddir)/msboxes.pdf): Update rule to add dependency
+	on source document, use new `sboxes_builddir` variable, and look
+	for source document in the build tree instead of the source.
+
+2021-10-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am: Add this ChangeLog to `EXTRA_DIST`.
+
+2021-10-11  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* sboxes.am (MOSTLYCLEANFILES): Add
+	`$(SBOXES_PROCESSEDEXAMPLEFILES)`; allows `distcheck` target to
+	succeed.
+
+________________________________________________________________________
+
+Copyright 2021-2022 G. Branden Robinson
+Copyright      2022 Ingo Schwarze
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

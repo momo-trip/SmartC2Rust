@@ -1,0 +1,30 @@
+ch4z2_text.chem:
+.br
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+    bond 120 dotted
+    bond 120 length .3 ; BP
+    back bond -120 length .25 from BP ; H
+    front bond 120 length .25 from BP ; CH3
+    bond 60 length .5 from BP ; BP
+    bond -60 length .25 from BP ; H
+# note the pic move command to position the text
+    move left .35 ; "(ANTI)"
+    front bond 60 length .25 from BP ; H
+# another positioning of text
+    move right .35 ; "(SYN)"
+    bond 120 length .4 from BP ; BP
+    back bond -120 length .25 from BP ; H
+    front bond 120 length .25 from BP ; CH3
+    bond 60 length .5 from BP
+    bond 60 dotted
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend

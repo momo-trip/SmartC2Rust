@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Setting Registers (The GNU troff Manual)</title>
+
+<meta name="description" content="Setting Registers (The GNU troff Manual)">
+<meta name="keywords" content="Setting Registers (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Registers.html" rel="up" title="Registers">
+<link href="Interpolating-Registers.html" rel="next" title="Interpolating Registers">
+<link href="Registers.html" rel="prev" title="Registers">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Setting-Registers"></span><div class="header">
+<p>
+Next: <a href="Interpolating-Registers.html" accesskey="n" rel="next">Interpolating Registers</a>, Up: <a href="Registers.html" accesskey="u" rel="up">Registers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Setting-Registers-1"></span><h4 class="subsection">5.8.1 Setting Registers</h4>
+<span id="index-setting-registers-_0028nr_002c-_005cR_0029"></span>
+<span id="index-registers_002c-setting-_0028nr_002c-_005cR_0029"></span>
+
+<p>Define registers and update their values with the <code>nr</code> request or
+the <code>\R</code> escape sequence.
+</p>
+<dl>
+<dt id="index-_002enr-1">Request: <strong><tt>.nr</tt></strong> <em>ident value</em></dt>
+<dd><span id="index-nr-1"></span>
+</dd><dt id="index-_005cR_0027ident-value_0027">Escape&nbsp;sequence: <strong><tt>\R<code>'</code></tt><span class="roman"><i>ident value</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cR"></span>
+<p>Set register <var>ident</var> to <var>value</var>.  If <var>ident</var> doesn&rsquo;t exist,
+GNU <code>troff</code> creates it.  In the <code>\R</code> escape sequence, the
+delimiter need not be a neutral apostrophe; see <a href="Delimiters.html">Delimiters</a>.
+</p>
+<div class="example">
+<pre class="example">.nr a (((17 + (3 * 4))) % 4)
+\n[a]
+.\R'a (((17 + (3 * 4))) % 4)'
+\n[a]
+    &rArr; 1 1
+</pre></div>
+
+<p>(Later, we will discuss additional forms of <code>nr</code> and <code>\R</code> that
+can change a register&rsquo;s value after it is dereferenced but before it is
+interpolated.  See <a href="Auto_002dincrement.html">Auto-increment</a>.)
+</p>
+<span id="index-_005cR-escape-sequence_002c-untokenized-on-input"></span>
+<span id="index-untokenized-escape-sequence_002c-_005cR"></span>
+<p>GNU
+<code>troff</code> does not tokenize
+<code>\R</code>
+when reading it;
+the escape sequence updates only the formatter&rsquo;s register dictionary
+and does not contribute (directly) to output.
+See <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.
+</p>
+<p>Further surprise can occur if you use registers like
+<code>.k</code>,<a id="DOCF72" href="groff.html_fot.html#FOOT72"><sup>72</sup></a> whose values are not
+determined until they are interpolated.
+</p>
+<div class="example">
+<pre class="example">.ll 1.6i
+.
+aaa bbb ccc ddd eee fff ggg hhh\R':k \n[.k]'
+.tm :k == \n[:k]
+    &rArr; :k == 126950
+.
+.br
+.
+aaa bbb ccc ddd eee fff ggg hhh\h'0'\R':k \n[.k]'
+.tm :k == \n[:k]
+    &rArr; :k == 15000
+</pre></div>
+
+<p>If you process this with the PostScript device (<code>-T ps</code>), there
+will be a line break eventually after <code>ggg</code> in both input lines.
+However, after processing the space after <code>ggg</code>, the partially
+collected line is not overfull yet, so GNU <code>troff</code> continues to
+collect input until it sees the space (or in this case, the newline)
+after <code>hhh</code>.  At this point, the line is longer than the line
+length, and the line gets broken.
+</p>
+<p>In the first input line, since the <code>\R</code> escape sequence leaves no
+traces, the check for the overfull line hasn&rsquo;t been done yet at the
+point where <code>\R</code> gets handled, and you get a value for the
+<code>.k</code> register that is even greater than the current line length.
+</p>
+<p>In the second input line, the insertion of <code>\h'0'</code> to cause a
+zero-width motion forces GNU <code>troff</code> to check the line length,
+which in turn causes the start of a new output line.  Now <code>.k</code>
+returns the expected value.
+</p></dd></dl>
+
+<p><code>nr</code> and <code>\R</code> each have two additional special forms to
+increment or decrement a register.
+</p>
+<dl>
+<dt id="index-_002enr-2">Request: <strong><tt>.nr</tt></strong> <em>ident <tt>+</tt><span class="roman"><i>value</i></span></em></dt>
+<dd><span id="index-nr-2"></span>
+</dd><dt id="index-_002enr-3">Request: <strong><tt>.nr</tt></strong> <em>ident <tt>-</tt><span class="roman"><i>value</i></span></em></dt>
+<dt id="index-_005cR_0027ident-_002bvalue_0027">Escape&nbsp;sequence: <strong><tt>\R<code>'</code></tt><span class="roman"><i>ident <tt>+</tt>value</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cR-1"></span>
+</dd><dt id="index-_005cR_0027ident-_002dvalue_0027">Escape&nbsp;sequence: <strong><tt>\R<code>'</code></tt><span class="roman"><i>ident <tt>-</tt>value</i></span><tt><code>'</code></tt></strong></dt>
+<dd><p>Increment (decrement) register <var>ident</var> by <var>value</var>.  In the
+<code>\R</code> escape sequence, the delimiter need not be a neutral
+apostrophe; see <a href="Delimiters.html">Delimiters</a>.
+</p>
+<div class="example">
+<pre class="example">.nr a 1
+.nr a +1
+\na
+    &rArr; 2
+</pre></div>
+
+<span id="index-negating-register-values"></span>
+<p>A
+<code>roff</code>
+formatter always interprets a leading minus sign in
+<var>value</var>
+as a decrementation operator,
+not an algebraic sign.
+To assign a register a negative value
+or the negated value of another register,
+you must force the formatter to interpret
+&lsquo;<samp>-</samp>&rsquo;
+as a negation or minus,
+rather than decrementation,
+operator:
+enclose the
+&lsquo;<samp>-</samp>&rsquo;
+with its operand in parentheses
+or subtract the expression of interest from zero.
+</p>
+<div class="example">
+<pre class="example">.nr a 7
+.nr b 3
+.nr a -\nb
+\na
+    &rArr; 4
+.nr a (-\nb)
+\na
+    &rArr; -3
+.nr a 0-\nb
+\na
+    &rArr; -3
+</pre></div>
+
+<p>If a register&rsquo;s prior value does not exist&mdash;the
+register was undefined&mdash;an increment or decrement is applied as if
+to&nbsp;0.
+</p></dd></dl>
+
+<span id="index-CSTR-_002354-errata"></span>
+<span id="index-CSTR-_002354-erratum_002c-rr-request"></span>
+<dl>
+<dt id="index-_002err">Request: <strong><tt>.rr</tt></strong> <em>reg &hellip;</em></dt>
+<dd><span id="index-rr"></span>
+<span id="index-removing-a-register-_0028rr_0029"></span>
+<span id="index-register_002c-removing-_0028rr_0029"></span>
+<p>Remove each register <var>reg</var>.  If <var>reg</var> doesn&rsquo;t exist, the request
+is ignored.  Technically, only the name is removed; the register&rsquo;s
+contents are still accessible under aliases created with <code>aln</code>, if
+any.
+</p>
+<p>This request is incorrectly documented in the <acronym>AT&amp;T</acronym>
+<code>troff</code> manual as accepting only one argument.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ernn">Request: <strong><tt>.rnn</tt></strong> <em>ident1 ident2</em></dt>
+<dd><span id="index-rnn"></span>
+<span id="index-renaming-a-register-_0028rnn_0029"></span>
+<span id="index-register_002c-renaming-_0028rnn_0029"></span>
+<p>Rename register <var>ident1</var> to <var>ident2</var>.  If <var>ident1</var> doesn&rsquo;t
+exist, the request is ignored.  Renaming a built-in register does not
+otherwise alter its properties.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ealn">Request: <strong><tt>.aln</tt></strong> <em>new-register old-register</em></dt>
+<dd><span id="index-aln"></span>
+<span id="index-alias_002c-register_002c-creating-_0028aln_0029"></span>
+<span id="index-creating-alias-of-register-_0028aln_0029"></span>
+<span id="index-register_002c-creating-alias-of-_0028aln_0029"></span>
+<p>Create alias
+(additional name)
+<var>new-register</var>
+of
+<var>existing-register</var>,
+causing the names to refer to the same stored object.
+If
+<var>existing-register</var>
+is undefined,
+the formatter ignores the request.<a id="DOCF73" href="groff.html_fot.html#FOOT73"><sup>73</sup></a>
+</p>
+<span id="index-alias_002c-register_002c-removing-_0028rr_0029"></span>
+<span id="index-removing-alias-of-register-_0028rr_0029"></span>
+<span id="index-register_002c-removing-alias-of-_0028rr_0029"></span>
+<p>To remove a register alias,
+invoke
+<code>rr</code>
+on its name.
+A register&rsquo;s contents do not become inaccessible until it has no more
+names.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Interpolating-Registers.html" accesskey="n" rel="next">Interpolating Registers</a>, Up: <a href="Registers.html" accesskey="u" rel="up">Registers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

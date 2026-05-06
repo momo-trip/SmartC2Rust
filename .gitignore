@@ -16,6 +16,10 @@ test_out/
 c_code*/
 program/sample
 program/commands.txt
+program/*.tar.gz
+program/*.tar.xz
+program/*.tar.bz2
+
 trans/previous_*/
 *output*/
 tmp*.json

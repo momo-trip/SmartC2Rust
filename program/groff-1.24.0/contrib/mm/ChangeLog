@@ -1,0 +1,3572 @@
+2026-02-19  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/LB-mark-format-works.sh: Rename this...
+	* tests/LB-mark-or-format-argument-works.sh: ...to this, for
+	clarity.  The `LB` macro's optional fifth argument does not
+	configure the format _of_ a mark, but rather is ambiguously
+	typed; it can be a mark string _or_ an argument to the `af`
+	request.
+	* mm.am (mm_TESTS): Track rename.
+
+2026-02-19  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ML): Remove temporary string under its correct name.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ML): Honor third argument again.
+
+	Fixes <https://savannah.gnu.org/bugs/?68059>.  Problem
+	introduced by me in commit 512b749f4e, 2 July 2024.  Thanks to
+	Alexis Hildebrandt for the report.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add regression test for Savannah #68059.  Marked list (`ML`)
+	macro calls were not paying any attention to an (optional) third
+	argument, the presence of which suppresses pre-item vertical
+	space.
+
+	* tests/ML-honors-third-argument.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ML): Handle explicitly empty second argument.
+
+	Fixes <https://savannah.gnu.org/bugs/?68065>.  Problem
+	introduced by me in commit 512b749f4e, 2 July 2024.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add regression test for Savannah #68065.  Marked list (`ML`)
+	macro calls were not treating an explicitly empty second
+	argument (text indentation amount) as implying the computed
+	default.  This matters when a third argument, the presence of
+	which suppresses vertical spacing before each list item, is
+	desired.
+
+	* tests/ML-accepts-empty-second-argument.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ML): Refactor to ease further bug fixing.  Call the
+	`LB` macro that this macro wraps in one place, not three.
+	Introduce new temporary `li*pad-amount` register to manage the
+	third argument we pass to `LB`, which varies depending on
+	whether `ML` itself is given a (numeric expression as a) second
+	argument or not.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LB): Fix spurious warnings.  Refactor to clarify
+	logic, since I proved inadequate to the task of penetrating its
+	dialect before.  Annotate expected range of fourth macro
+	argument.  Assign register format to registers used as list item
+	enumerators in one place instead of three.  Introduce new
+	temporary register `li*mf-is-mark` to elucidate the peculiar
+	status of macro's fifth argument as an untagged union type.
+	{Why is it that _bad_ ideas are adopted so much more
+	aggressively than _good_ ones?}  Rearrange logic that parses
+	this fifth argument (tracked as `li*mf`) for validity as a
+	register format.  Replace highly specific check for `\&` as an
+	argument using GNU troff's "string comparison" extension with a
+	simple test for nonempty formatted output.  It's more
+	{traditionally} idiomatic and captures any other synonymous ways
+	that the fifth macro argument might be "nothing".  Assemble
+	lengthy diagnostic message into a temporary string, simplifying
+	its emission.
+
+	Fixes <https://savannah.gnu.org/bugs/?68066>.  Problem
+	introduced by me in commit ae66055171, 3 August 2025.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/lists-indent-correctly.sh: Add test for quantity of
+	diagnostic message lines produced by input.  We expect exactly
+	one.  Also wrangle the standard error stream so as to dump all
+	such diagnostics _after_ the (voluminous) formatted output,
+	where they're harder to miss.
+
+2026-02-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Fix truncated diagnostic messages caused by macro
+	programmer forgetting to name the string to which the `as`
+	request is meant to append.
+	(MULN): Fix truncated fatal error diagnostic arising from
+	disordered internal state when an undefined column width is
+	encountered when using groff mm's extended multi-column layout
+	feature.
+	(ML): Fix truncated error diagnostic when 2nd argument to macro
+	is not numeric.
+
+2026-02-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (li@pop): When popping a nested list level, restore
+	attribute saved in `li*mark-list!n` array to module-local string
+	`li*mf`, not `li*mark`; the distinction matters when lists of
+	type "zero" are nested, in practice that value describes only
+	marked item (`ML`) lists.
+
+	Fixes <https://savannah.gnu.org/bugs/?68052>.  Problem
+	introduced by me in commit d9209295a3, 9 October 2024.  Thanks
+	to Alexis Hildebrandt for the report.  The commit characterized
+	itself as a "trivial refactoring": "Rename internal string
+	`li*mark` to `li*mf`, since it can be _either_ an arbitrary
+	string _or_ an argument to the `af` request."  I'd characterize
+	the root cause of this problem as follows.  The `LB` macro's
+	optional fifth argument is the *roff equivalent of an untagged
+	union per the foregoing.  (But we're stuck with it because it's
+	a DWB 3.3 [or earlier] mm feature.)  When a list nesting level
+	is popped, we don't recover all of the information that the `LB`
+	macro's internals computed; instead we rely on stashing some.
+	When renaming `li*mf` to `li*mark`, I did not realize that this
+	stashing logic needed to save the pre-interpretation form of the
+	"mark-or-list" argument, not a post-interpretation,
+	unambiguously typed string to use as the item mark.  A better
+	implementation of `LB` would stash as many distinct, and
+	unambiguously typed, data as warranted to recover necessary
+	state when a "pop" occurs.  I predict that doing so would, in
+	turn, make the `LI` macro's job simpler and easier, leaving less
+	room for bugs.
+
+2026-02-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add regression test for Savannah #68052.  Nested marked lists
+	{`ML`} were using incorrect item marks after popping a nesting
+	level with `LE`.
+
+	* tests/marks-in-nested-ML-lists-are-correct.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2026-01-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/Captc-translates.sh: Rename this...
+	* tests/Captc-string-translates.sh: ...to this, for better
+	consistency with test script naming scheme, which parallels the
+	interface description practice in groff_mm(7).
+
+2026-01-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/Np-register-works.sh:
+	* tests/date-localization-works.sh:
+	* tests/nP-works.sh: Avoid use of "cat -s" in test scripts.
+	It's not portable.  Omit entirely or replace with (not
+	equivalent but close enough for our purposes) "sed '/^$/d'".
+	Fixes spurious test failure on Alpine Linux.  Thanks to Bruno
+	Haible for the report.
+
+2026-01-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm.am: Drop unused macro `mm_builddir`.  Automake itself
+	doesn't require it, and we never interpolate it.
+
+2026-01-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Initialize register `Le` to `1`, not `0`.  This makes
+	its default consistent with the `Lf`, `Lt`, and `Lx` registers
+	of similar purpose, but inconsistent with DWB 3.3 mm.
+	Explicitly assigning the `Le` register in a document's preamble
+	continues to work as it always has.
+
+	* groff_mm.7.man (Description): Document it.
+
+	* tests/toc-captions-ident-correctly.sh: Update test input to
+	omit explicit `Le` assignment, and thereby regression-test this
+	change.
+
+	Fixes <https://savannah.gnu.org/bugs/?67907>.
+
+2026-01-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (AST, ISODATE, GETHN, GETPN, GETR, IND, INDP, FC, AV)
+	(AVL): Fix botched diagnostic argument dumping, which caused
+	spurious output to the standard error stream with any use of
+	these macros.
+	(IE, WE): Same, but also sequence the argument dump _after_
+	these macro's `ec` invokations so we can accurately dump them.
+	See "Punning Names" in our Texinfo manual or in groff(7).
+
+2026-01-13  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (lix@print-ds): Simplify fix for Savannah #67903; as I
+	see it, once `TC` begins operating, it takes over the page
+	layout, so we can unconditionally set the indentation to zero
+	safely.  In any case, use of the `in` request by a document is
+	not licensed by the DWB 3.3 mm manual (see §3.8).
+
+2026-01-10  Alexis Hildebrandt <afh@surryhill.net>
+
+	* m.tmac (lix@print-ds): If indentation is greater than zero at
+	the time we start setting the table of contents, reset it.
+
+	Fixes <https://savannah.gnu.org/bugs/?67903>.  [Problem
+	reproducible as far back as groff 1.22.3 and appears to be an
+	oversight dating back to the introduction of groff mm in 1991.
+	--GBR]
+
+2026-01-13  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test for Savannah #67903.  Indentation of the caption
+	strings produced by the `TC` macro is erratic.
+
+	* tests/toc-captions-ident-correctly.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2026-01-11  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: (LT): Define `@cover` string as `\\$0`, not "LT"
+	literally.  Conceivably, a document could rename or alias the
+	`LT` macro; in a diagnostic prompted by an invalid attempt to
+	combine multiple cover page schemes, we want to report the name
+	that had actual effect.
+
+	Fixes <https://savannah.gnu.org/bugs/?67889>.  Thanks to Alexis
+	Hildebrandt for the report.
+
+2026-01-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: (PGFORM, pg@enable-trap): Invoke page location trap
+	dumping request under its new name, `pwh`, not `ptr`.
+
+2026-01-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test (the defect reported in) Savannah #67830.  The
+	package's `Captc` string was not getting translated.
+
+	* tests/Captc-translates.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2026-01-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (SP, SA, TAB, MOVE, SM, HC, VERBOFF, PIC, EPIC, HM)
+	(PGNH, BS, BE, VM, 1C, 2C, MC, NCOL, SK, MULB, MULN, MULE, OP)
+	(FD, DE, DF, DS, TS, TH, TE, T&, PS, PY, EQ, EN, TC, FG, TB, EC)
+	(EX, B, I, R, IB, BI, IR, RI, RB, BR, B1, B2, RF, APP, APPSK)
+	(AU, AST, ISODATE, MT, COVER, GETST, GETHN, GETPN, GETR, IND)
+	(INDP, FC, AV, AVL, IE, WE): Enable diagnostic argument dumping
+	at appropriately high debugging levels (`-rD5` or greater).
+
+2026-01-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (H): Throw error diagnostic if not given mandatory
+	argument, or the first argument ("level") is not an arithmetic
+	expression.
+
+2025-12-23  Alexis Hildebrandt <afh@surryhill.net>
+
+	[mm]: Fix Savannah #67857.
+
+	Reading through mse.tmac and LT.se as a preparation to take on
+	bug #65861 I noticed that the layout does not seem right (see
+	attachment LT.se-before.pdf).  The main issues I notice are as
+	follows.
+	-  The main body text is offset very far to the right and
+	   overflows the right paper edge.
+	-  The lines of the main body text are not filled, i.e., line
+	   breaks in the source are present in the rendered output.
+	-  Once the first item is fixed, the `SVH` letter type main body
+	   line length also overflows the right paper edge.
+
+	* mse.tmac (let@init_SVH): Drop spurious `in` and `ll` requests.
+	(let@print_SV): Set indentation to zero and enable filling.
+	* examples/LT.se: Make both the `SVH` and `SVH` letter types
+	demonstrable by adding a `lT` string to select between them
+	{much the way "memorandum.mm" works}.  Update introductory
+	comments.
+
+	Fixes <https://savannah.gnu.org/bugs/?67857>.
+
+2026-01-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add tests of footnote area layout and vertical margins.
+
+	* tests/footnote-area-layout-is-correct.sh:
+	* tests/vertical-margins-are-correct.sh: Do it.
+	* mm.am (mm_TESTS): Run tests.
+
+2026-01-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Revise page layout computations.
+
+	* m.tmac: Add new register `pg*below-text-gap` to track the size
+	of the gap we want below the text area regardless of any other
+	material that follows (footnotes, bottom blocks, secondary
+	footers, or primary footers).  Initialize it to `1v` (stealing
+	this amount from `ft*margin-below` when it is nonzero).
+	(hd@set-page): Compute `pg*foot-trap` using it, and report this
+	computation at appropriate debugging level.
+	(FE): Reduce `ft*margin-below` to 1v.
+	(ft@check-old): When a footnote is _not_ still pending after a
+	page break, set `ft*margin-below` back to zero and update trap
+	locations.
+	(pg@header): Revise computation to include `pg*below-text-gap`.
+	If a page is insufficiently long, report how much the package
+	needs.
+	* tests/short-pages-do-not-overflow-stack.sh: Update test
+	expectations.
+
+2026-01-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Put a two-vee margin between the footnote area and
+	page footers.  New register `ft*margin-below` stores this
+	measurement, which initalizes to zero because a page does not
+	always bear footnotes.
+	(hd@set-page): Compute `pg*foot-trap` using it, and report this
+	computation at appropriate debugging level.
+	(FE): Set `ft*margin-below` to 2v.
+
+	Fixes <https://savannah.gnu.org/bugs/?67875>.
+
+2026-01-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (pg@header): Drop spurious quotation marks from
+	argument to `tl` request.
+
+	Fixes <https://savannah.gnu.org/bugs/?67874>.  Problem
+	introduced by me in commit 88cd50aa3c, 27 October 2024.
+
+2026-01-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/PH-PF-OH-OF-EH-EF-work.sh: Unit-test the named macros.
+	* mm.am (mm_TESTS): Run test.
+
+2026-01-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ft@init-footnote): Draw footnote separator with
+	em dash `\[em]` in nroff mode, for better cosmetics.
+	(let*mt-sign): Annotate why we don't do the same here.
+
+2025-12-31  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm.am (EXTRA_DIST): Ship "COPYRIGHT" file in distribution
+	archive.
+
+2025-12-21  Alexis Hildebrandt <afh@surryhill.net>
+
+	* groff_mm.7.man (Macros) <WA>: Fix typo.
+
+	Fixes <https://savannah.gnu.org/bugs/?67840>.
+
+2025-12-05  Alexis Hildebrandt <afh@surryhill.net>
+
+	* m.tmac (TC, lix*print-line): Use the new `Cap*` string names
+	instead of the old `Li*` ones.
+
+	[Continues (completes?) changes overlooked by me in November of
+	last year and again in August of this one. --GBR]
+
+2025-12-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (B2): In nroff mode, space by one vee before and after
+	interpolating the `box*div` boxed text diversion.  This prevents
+	the box lines and text from overprinting.
+
+	Fixes <https://savannah.gnu.org/bugs/?67811>.
+
+2025-12-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (B1): In the environment we set up for boxed text,
+	shorten the line length of title lines.  This (a) makes sense
+	and (b) parallelizes more closely with the `B1` and `B2` macros
+	in the ms(7) package.
+
+2025-12-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (B1, B2): Break on all calls, even erroneous ones.
+
+2025-12-09  Alexis Hildebrandt <afh@surryhill.net>
+
+	* mm/0.MT: In troff mode, use default character for drawing
+	rules under the default affiliated firm letterhead, leaving use
+	of the em dash `\[em]` for nroff mode.
+
+	Fixes <https://savannah.gnu.org/bugs/?67791>.
+
+2025-12-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Rename scalar `want_only_xref_update` to
+	`want_only_ref_update` for clarity; the script deals with
+	references internal to the document, not cross references to
+	others.
+
+2025-10-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (debug@big-dump): Report value of `debug*m` since we go
+	to the trouble of defining it.  Delete temporary registers
+	`debug*n` and `debug*m` after reporting them.
+
+2025-10-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Improve usage diagnostics by not uselessly repeating
+	the file name and line number of the package itself when
+	diagnosing an invalid command-line setting, and not emitting a
+	backtrace if debugging is enabled via the `D` register.
+	(@usage): New macro throws diagnostic without reporting `\n[.F]`
+	or `\n[.c]`.
+	([initialization]): Call `@usage` instead of `@warning` when
+	validating `D`, `E`, `L`, `O`, `W`, `S`, and `V` register
+	values.
+
+2025-08-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Rename API string `Capcon` (formerly `Licon`) to
+	`Captc` to align with the naming convention used by `Capec`,
+	`Capex`, `Capfg`, and `Captb`; the "Cap" ("caption") prefix is
+	followed by the downcased name of the macro that interpolates
+	the caption.
+	* groff_mm.7.man (Strings): Document it.
+
+2025-08-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Add new aliases `Ftnum` and `Rfnum` for the internal
+	register names `ft*nr` and `ref*nr`, respectively.
+	* groff_mm.7.man (Registers): Document them.
+
+2025-08-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Rename API string `Tcst` to `Tcstatus` to make its
+	purpose less obscure.  Its new name is no more lengthy than
+	`Letnsdef`, and the package elsewhere uses "st" to abbreviate
+	"string", as in the `GETST` macro.  Retain the old name as an
+	alias.
+	* groff_mm.7.man (Strings): Document it.
+
+2025-08-05  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initializtion): Configure a 3v margin (one half-inch
+	when typesetting using the defaults of 10 point type on 12 point
+	spacing) below the footer, instead of 2v.
+	* tests/artifacts/letter_with_bottom_block:
+	* tests/artifacts/memorandum.0:
+	* tests/artifacts/memorandum.1:
+	* tests/artifacts/memorandum.2:
+	* tests/artifacts/memorandum.3:
+	* tests/artifacts/memorandum.custom:
+	* tests/short-pages-do-not-overflow-stack.sh: Update test
+	expectations.
+
+2025-08-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT: Let right-most column of document heading stretch to
+	the configured text width (the `W` register), but only if it is
+	defined and greater than the default.
+
+2025-08-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT:
+	* mm/4.MT: Drop extraneous escape characters from register
+	interpolation; we're not in a macro definition.
+
+2025-08-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LB): Fix bugs.  (1) Fix copy-and-paste error that
+	prevented "I" from being recognized as a valid register format;
+	next (2) in a *roff numeric expression, `&` doesn't have
+	short-circuit semantics like C's `&&` or Ada's `and then`, so
+	use nested `if` requests to prevent interpolation of a
+	non-number as an operand to a comparison; and finally (3)
+	actually assign the valid format to the appropriate register for
+	the (nested) list.
+
+	Fixes <https://savannah.gnu.org/bugs/?67388>.  Problems
+	introduced by me in commit c243961bce, 9 October.
+
+2025-08-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/LB-mark-format-works.sh: Unit-test handling of `LB`
+	macro's `mark-format` argument.
+	* mm.am (mm_TESTS): Run test.
+
+2025-08-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (debug@little-dump, debug@big-dump, S): In debugging
+	output, report units associated with value of `.s` register as
+	`z` ("typographical" points), not `p` ("spacing" points}.
+
+2025-07-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Rename scalar `no_exec` to `want_only_xref_update`
+	for clarity.  Manipulate it like a Boolean, not a counter.
+
+2025-07-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Better parallelize usage message with man page.
+
+2025-02-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (BS, BE): Use box diversion instead of a regular one to
+	populate the bottom block.  This fixes interaction of the bottom
+	block feature--when `BS` and `BE` are called prior to formatting
+	any other text--with `LT` letters specifically but might also
+	resolve other similar problems with BS/BE use.  Using a regular
+	diversion moved the vertical drawing position from its
+	"pre-page" location of "-1" (because the `BS` macro invoked `br`
+	to ensure that the bottom block didn't absorb any partially
+	collected line).  That in turn sprung the default header trap
+	that writes a centered page number.  The `LT` macro is written
+	such that if the drawing position is not at the top of the page
+	when called, it fails to format the pre-body letter material
+	{writer's address, date, inside address, salutation, etc.}.
+	{Because the first page had already started and the drawing
+	position was non-negative, the `LT` macro was also too late to
+	turn off the default header on the first page.}
+	(BE): Annotate explicit `br` retained here; we don't want to
+	silently discard a partially collected line when closing the box
+	diversion.  The document author should delete from a bottom
+	block any undesired content on a partially collected line.
+
+	Fixes <https://savannah.gnu.org/bugs/?66439>.  Thanks to Oliver
+	Corff for prompting detection of this bug.
+
+2025-02-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #66439 (the bottom block feature BS/BE
+	should work with LT letters).
+
+	* tests/letter-with-bottom-block-works.sh: Do it.
+	* tests/artifacts/letter_with_bottom_block: Add expected
+	rendering.
+	* mm.am (mm_TESTS): Run test.
+
+2025-02-08  Colin Watson <cjwatson@debian.org>
+
+	* m.tmac (pg@print-footer): Fix missing brace escape sequence.
+
+	Fixes <https://savannah.gnu.org/bugs/?66758>.  [Problem
+	introduced by me in commit 88cd50aa, 27 October.  Thanks to Deri
+	James for the report and tracking down the (huge) offending
+	commit.  --GBR]
+
+2025-02-08  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Trace use of user-defined hooks.
+
+	* m.tmac (pg@print-footer): ...for `EOP`.
+	(ref@print-refs): ...for `RPX`.
+	* mm/0.MT:
+	* mm/4.MT: ...and for `AFX`.
+
+2024-12-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: If asked for `--help`, summarize command purpose in
+	message.
+
+2024-12-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm.am (uninstall_mm): Attempt to remove
+	`$(DESTDIR)/$(tmacdir)` directory, ignoring failure, in case we
+	just removed the last thing in it.
+
+2024-12-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/letters-format-correctly.sh:
+	* tests/memoranda-format-correctly.sh: Adapt tests to feeble
+	systems lacking a cksum conforming to POSIX Issue 4 (1994).
+
+2024-11-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* Makefile.sim: Rename Makefile macro `DEVICE` to
+	`DEFAULT_DEVICE`.
+
+2024-11-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Refactor date format localization.
+
+	* m.tmac: New string `cov*local-date-format` does what it says,
+	using `\E` to delay interpretation of relevant registers and
+	strings.  New string `cov*iso-date-format` works similarly, but
+	is not expected to be overriden by localization files.
+	(cov*set-date): Use one or the other of the foregoing strings.
+
+	* tests/date-localization-works.sh: Add unit test.
+	* mm.am (mm_TESTS): Run test.
+
+2024-11-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Trivially refactor: rename registers `cov*mm` and
+	`cov*dd` to `cov*iso-mm` and `cov*iso-dd`, respectively.
+
+2024-11-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Assign a number format to the `cov*mm` and `cov*dd`
+	registers only once instead of each time `cov*set-date` is
+	called.  These are internal registers that a document shouldn't
+	meddle with.
+
+2024-11-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Trivially refactor: rename string `cov*new-date` to
+	`cov*date`.  There is no "old date" to which we might refer.
+	* mm/0.MT:
+	* mm/5.MT:
+	* mm/ms.cov: Track the change.
+	* NOTES: Update documentation of internals.
+
+2024-11-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mse.tmac: Stop calling deprecated `ISODATE` macro.
+
+2024-11-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Refactor approval line handling: move baseline lengths
+	and corresponding strings, and the minimum width of the gap
+	between them, into named parameters.
+	(AV): Adjust macro cosmetics to more closely resemble DWB 3.3
+	mm.  Center the "Date" label below the baseline rule drawn for
+	it, and make the proportions of the name and date baseline rules
+	better resemble DWB's.
+	(AV, AVL): Use the same logic in troff and nroff modes instead
+	of writing out literal long sequences of underscore character in
+	nroff mode.  Use `nop` request instead of text lines.
+
+2024-11-07  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (let@print-head): Fix code style nit: use `nop` request
+	instead of text line in macro definition.
+
+2024-11-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Rename several strings to make their purposes less
+	obscure; they determine the content of captions, not list items.
+	     `Licon` -> `Capcon`
+	     `Liec`  -> `Capec`
+	     `Liex`  -> `Capex`
+	     `Lifg`  -> `Capfg`
+	     `Litb`  -> `Captb`
+	The old names remain as aliases.
+
+	* groff_mm.7.man (Macros) <EC, EX, FG, TB, TC>
+	(Strings) <Capcon, Capec, Capex, Capfg, Captb>
+	<Licon, Liec, Liex, Lifg, Litb>: Update.
+
+2024-11-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/SETR:
+	* mm/ms.cov:
+	* refer-mm.tmac: Select fonts by mounting position, not style
+	name.  Continues a 28 March 2006 change by Nick Stoughton.
+
+2024-10-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Fix initialization errors.  Specify `aln` request
+	arguments in the correct order.  Set up `DT` alias of
+	`cov*new-date` string only once the latter is defined.
+
+2024-10-28  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initialization]): Rename `Iso` register to `Isodate`
+	to make its meaning less ambiguous.  Retain `Iso` as an
+	undocumented alias.  Call `ND` to initialize date.
+	(ISODATE): Throw warning if called, but honor the instruction
+	{using existing internal macro `cov*set-date`}.
+	(ND): Accept leading space(s) in argument.  If no argument, call
+	`cov*set-date`.
+
+	* groff_mm.7.man (Macros) <ISODATE>: Delete.
+	(Strings) <DT>: Cross reference `Isodate` register, not
+	`ISODATE` macro or old `Iso` register.
+	(Registers) <Iso>: Replace this...
+	(Registers) <Isodate>: ...with this.  Recast.
+
+	Fixes <https://savannah.gnu.org/bugs/?66327>.
+
+2024-10-28  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initialization], RP): Rename `Rpe` register to
+	`Rpej`, for better symmetry with `Ej` register.  Retain `Rpe` as
+	an undocumented alias.
+
+	* groff_mm.7.man (Macros) <RP>:
+	(Registers) <Rpej>: Document under new name.
+
+2024-10-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (VERBON): Improve argument validation.  Error out if
+	{optional} first argument is non-numeric, otherwise populate
+	`misc*verb` register as before.
+	(VERBON, VERBOFF): Stop prefixing `misc*verb` register
+	interpolations with literal zeroes.
+
+2024-10-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/ms.cov (cov@print-authors): Stop erroring out if no authors
+	are defined; `AU` can be called simply to end title collection,
+	no authors need be specified, and nothing breaks if they aren't.
+
+2024-10-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Revamp debugging system.  The existing one was
+	undocumented except in vaguest terms, and this one remains so.
+	However, some broad principles are articulable.
+
+	  A sketch of debugging level meanings:
+	    0: no non-diagnostic output
+	    1: gross formatting progress: report each page start
+	    2: report output of conditional structural elements{*}
+	    3: report output of headers/footers
+	    4: report init, EOI macro, population and emission of
+	       diversions
+	    5: trace API macro calls, sprung traps, and init/shutdown
+	    6: dump internal computations
+
+	  {*} headings, footnotes, captioned items, references
+
+2024-10-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Slightly refactor; the entirety of a letter's header
+	was being formatted in the `pg*tl-ev` environment.  This seemed
+	unnecessary and with pending changes, caused the body text of
+	the letter to be set in that environment too, which is quite
+	wrong.
+	(pg@header): If `let@header` is defined, delegate any required
+	environment switching to it.
+	(let@print-head): Don't bother switching environments, but do
+	enable filling before starting the body text.
+
+2024-10-26  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (let@print-head): Accept new second argument indicating
+	whether a blank line is desired before formatting the date.
+	(let@head_BL): Call `let@print-head` with that second argument.
+	This is more consistent with DWB 3.3 mm behavior.
+
+	* tests/artifacts/letter.BL: Update.
+
+	Fixes <https://savannah.gnu.org/bugs/?66380>.
+
+2024-10-26  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #66380 (blocked letters should put a
+	blank line before the date).
+
+	* tests/LT-BL-spaces-before-date.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2024-10-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Trivially refactor.  Organize groff mm extensions
+	together more cleanly with respect to `HF` and `HP` strings.
+
+2024-10-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Trivially refactor.  Rename internal register
+	`ref*flag` to `ref*was-RS-used`, which has the startling
+	property of documenting what it's for.
+	(TC, B2, RS, ref@eot-print, ref@print-refs): Do it.
+	(ref@print-refs): Also drop autoincrement amount from register
+	redefinition.  Autoincrementation was never used with it, and it
+	looks like a copy-and-paste error from an `RP` call in `TC`.
+
+2024-10-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (EM): Simplify string definition: interpolate only the
+	`\[em]` special character always, even in nroff mode, and
+	without leading space.  It's the output device's responsibility
+	to fall back gracefully when encountering this Ossanna troff
+	special character.  This also makes the indentation of `DL`
+	list items consistent with those of other lists on nroff
+	devices.
+
+2024-10-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mmse.7.man: Add old-style Emacs file-local variable to
+	supply preconv(1) a "coding tag".  Doing so throws that program
+	a bone if the "uchardet" library is not available and the
+	program is asked to guess the file's input encoding.
+
+	Fixes <https://savannah.gnu.org/bugs/?66287> (2/2).  Thanks to
+	Dave Kemper for the report.
+
+2024-10-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mmse.7.man: Convert file encoding from Latin-1 to UTF-8.
+
+2024-10-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Handle `nP` paragraphs more compatibly with DWB 3.3 mm.
+
+	* m.tmac (nP): Apply a temporary indentation to the second
+	output line of a paragraph to align it with the start of the
+	paragraph text (not the tag/label) in the first.
+	(H): Reset the `nP` paragraph counter when the first- or
+	second-level section heading number increments.
+
+	* groff_mm.7.man (Description): Drop notice of difference
+	between DWB 3.3 and groff mm `nP` behavior.
+	(Macros <H>, Registers <Hb>): Document interaction of `nP` and
+	`Np` features with run-in headings.
+
+	Fixes <https://savannah.gnu.org/bugs/?63739>.
+
+2024-10-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #63739 (unit-test `nP` macro).
+
+	* tests/nP-works.sh: Add unit test.
+	* mm.am (mm_TESTS): Run test.
+
+2024-10-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Trivially refactor.  Rename registers for clarity.
+	    `par*number`  -> `par*nP-counter`
+	    `par*number2` -> `par*Np-counter`
+
+2024-10-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initialization]): Refactor.  Drop never-interpolated
+	register `par*num-counter`.
+	(par@reset-num): This macro was called in only one place, so
+	delete it...
+	(H): ...and open-code its logic at its lone call site.  Format
+	complex numeric expressions in conditionals using the dense and
+	AT&T-compatible manner of the rest of the package, omitting
+	parentheses and spaces where possible.
+
+2024-10-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/Np-register-works.sh: Add unit test.
+	* mm.am (mm_TESTS): Run test.
+
+2024-10-11  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Fix nits in new `Rfstyle` feature.
+
+	* m.tmac (@reset, par@doit): Call `ref*set-mark-style`.
+	(RS): Assign to string named in argument using the _current_
+	values of `ref*(` and `ref*)`, not those at package
+	initialization time.
+
+	* groff_mm.7.man (Registers) <Rfstyle>: Document that the effect
+	of changing the register value is not necessarily immediate.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Support new `Rpfmt` string specifying the `LB` macro
+	arguments that the package uses to format the items in a
+	reference list.
+	([initialization]): Define it.
+	(ref@start-print): Use it.
+
+	* groff_mm.7.man (Macros) <RS>: Cross reference `Rpfmt` register
+	description and recast.
+	(Strings) <Rpfmt>: Document it.
+
+2024-10-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Make new `LB`-based approach to reference page work both with
+	documents that use refer(1) to collect references and those that
+	use only mm(7)'s own facilities.
+
+	* m.tmac (ref@start-print): Change `LB` list "type" argument
+	from 1 (enumerated) to 0 (string-based).  This is because the
+	reference marks are self-enumerating.  However, this loses their
+	trailing dots, so update `LI` call to add them back in.
+	* refer-mm.tmac (ref*biblio-item-sfx): Define as empty,
+	overriding "refer.tmac"'s default.  As shown above, our own
+	infrastructure supplies the dot suffix now.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ref@start-print): Employ dummy character as "empty"
+	fifth argument to `LB` as prepared for.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LB): Accept a dummy character escape sequence as a
+	synonym for an empty fifth argument.
+
+	* groff_mm.7.man (Macros) <LB>: Document this.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LB): Validate fifth (mark-or-format) argument.
+	Getting it wrong leads to surprising formatter diagnostics.
+	Since we're (ultimately) passing it to the `af` request, ensure
+	that it's a nonnegative integer or in the set {a,A,i,I}.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Refactor reference list formatting.
+	(RS): Drop trailing dot from list item mark.
+	(ref@start-print): Format list in terms of mm `LB` and `LI`
+	macros instead of `in`, `ti`, and `sp` *roff requests.  This
+	includes setting `LB`'s "type" argument to "1", putting a
+	trailing dot after the mark.
+	(ref@stop-print): Call `LE` macro instead of invoking `br`
+	request.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	The package no longer superscripts _and_ brackets a reference
+	mark (the `Rf` string).  Instead, the new `Rfstyle` register
+	controls its formatting.  The default, 0, selects bracketing in
+	nroff mode and superscripting in troff mode.  Set `Rfstyle` to 3
+	in a document to obtain groff mm's previous mark formatting
+	behavior.
+
+	* m.tmac ([initialization]): Assign zero to `Rfstyle`.  Define
+	new `ref*{n,t}roff-{(,)}` strings.  Define `Rf` in terms of new
+	`ref*(` and `ref*)` strings below.  Call `ref*set-mark-style`.
+	(ref*set-mark-style): New macro maps a `Rfstyle` to 1
+	{nroff-style} or 2 {troff-style} as described above and defines
+	`ref*(` and `ref*)` strings per that value.
+	(RS): Call `ref*set-mark-style`, handling the case where the
+	document changes its reference mark formatting style midstream.
+
+	* refer-mm.tmac ([., .]): Use new `ref*(` and `ref*)` strings.
+
+	* groff_mm.7.man (Macros) <RS>: Cross reference `Rfstyle`
+	register description.
+	(Strings) <Rf>: Drop incorrect (oversimplified) description of
+	how the reference mark is formatted.
+	(Registers) <Rfstyle>: Document it.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Refactor.  Define new internal strings `ref*(` and
+	`ref*)` to bracket reference marks.  Define `Rf` string in terms
+	of these.
+	(RS): If given an argument, use the new strings in the named
+	string's contents instead of repeating the literal content now
+	stored in the new strings.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT: Stop putting a blank line between author names in the
+	document heading for memorandum types 0-3 and 6 if no
+	further data for each author is formatted.  This change more
+	accurately reproduces London & Reiser's 1978 paper describing
+	the porting of Unix to the VAX-11/780.
+	(cov@print-authors): New internal register `cov*au-line-counter`
+	tracks how many output lines (more like items of per-author
+	data) have been emitted for the current author.  Only if it ends
+	up being more than one, call `SP 1` as before.  Remove register
+	when done.
+	(cov@print-au1, cov@print-au2): Increment `cov*au-line-counter`.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (RP): Move `SP 2` call (spacing before reference list
+	caption) from here...
+	(ref@print-refs): ...to here.  Bracket the formatting of the
+	caption in a conditional; if an `RPX` macro is defined, call
+	that instead.
+	* groff_mm.7.man (Macros) <RPX>: Document facility.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (RP): Validate macro arguments.
+
+2024-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initialization], LB, LI): Trivially refactor.  Rename
+	internal string `li*mark` to `li*mf`, since it can be _either_
+	an arbitrary string _or_ an argument to the `af` request.
+
+2024-09-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT: Support an `Aumt` string to suppress the appearance
+	of positional arguments to the `AU` macro in the document
+	heading used by memorandum types 0-3 and 6.  By default, all
+	such arguments appear, except the second (author initials).  For
+	example, a value of "3 4" more accurately reproduces London &
+	Reiser's 1978 paper describing the porting of Unix to the
+	VAX-11/780.
+	(cov*suppress-au-fields): New macro interprets `Aumt` string, if
+	defined.
+	(cov*print-authors): Format `AU` arguments only if not
+	suppressed.
+	* groff_mm.7.man (Strings) <Aumt>: Document facility.
+
+2024-09-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT (cov*print-authors): Fix code style nit: define
+	register closer to its point of use.
+
+2024-09-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Use value of GNU troff `.R` register instead of "99"
+	{an "arbitrary large number"} as `Ls` register default.
+
+2024-08-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ds@output-float, ds@end): Use value of GNU troff `.R`
+	register instead of "9999" to indicate an arbitrary large
+	integer.
+
+2024-07-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT:
+	* mm/4.MT:
+	* mm/ms.cov: Call `AFX` hook macro if defined, instead of
+	default formatting of affiliated firm.
+	* groff_mm.7.man (Macros) <AFX>: Document facility.
+
+2024-07-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/4.MT (cov@print-abstract):
+	* mm/ms.cov (cov@print-title, cov@print-abstract): Migrate to
+	new name for macro--`@reset`, not `init@reset`.
+
+	Fixes <https://savannah.gnu.org/bugs/?65990>.  Problem
+	introduced by me in commit 2d31563b19b33, 22 June.  Thanks to
+	Bjarni Ingi Gislason for the report.
+
+2024-07-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (SP): Remove extraneous parenthesis in argument check.
+
+	Fixes <https://savannah.gnu.org/bugs/?65989>.  Problem
+	introduced by me in commit 5da71ef6ef, 6 July.  Thanks to Bjarni
+	Ingi Gislason for the report.
+
+2024-07-13  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initialization], LI): Unsupport `Limsp` register.
+	* groff_mm.7.man (Macros) <LI>
+	(Registers) <Limsp>: De-document it.
+
+2024-07-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/lists-indent-correctly.sh: Test `.mgm` register to gate
+	groffisms; the extensions we're exercising are in mm itself, not
+	the formatter.
+
+2024-07-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Drop scaling unit from diagnostic message reporting
+	dimensionless quantity.
+
+2024-07-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Simplify `BU` string definition by eliminating branch;
+	`\s` escape sequences are ignored in nroff mode anyway.
+
+2024-07-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Sort `BU` and `EM` string definitions in lexicographic
+	order.  Add annotations.
+
+2024-07-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Format complex numeric expressions in conditionals
+	using the dense and AT&T-compatible manner of the rest of the
+	package, omitting parentheses and spaces where possible.
+
+2024-07-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ML): Right-align mark within its indentation when a
+	text indentation is specified.  Problem introduced by me in
+	commit 512b749f4e, 2 July.
+
+	* tests/lists-indent-correctly.sh: Update test expectations.
+
+2024-07-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (DL): Use the `EM` string as the mark instead of an em
+	dash special character literal.
+
+	* groff_mm.7.man (Macros) <DL>:
+	(Strings) <EM>: Document this.
+
+2024-07-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/lists-indent-correctly.sh: Add unit test.
+	* mm.am (mm_TESTS): Run test.
+
+2024-07-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/ML-marks-work.sh: Add unit test.
+	* mm.am (mm_TESTS): Run test.
+
+2024-07-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Tweak diagnostic message wording.
+	(P, SP, EPIC, LC, ML): Parallelize wording of diagnostics about
+	macro arguments that are invalid numeric expressions.  Where a
+	macro takes multiple arguments, identify the one we're
+	complaining about by its purpose.
+	(qrf*validate-identifier): Say "string identifier" rather than
+	"roff string name".
+	(INITI): Parallelize wording with `INITR`, `GETR`, and `IND`.
+
+	* m.tmac: Fix code style nits.  Rename `mm-msg` string in
+	initialization to `@msg`, for consistency with package naming
+	scheme.
+	(P, SA): Format complex numeric expressions in the dense and
+	AT&T-compatible manner most of the rest of the package uses,
+	omitting parentheses where possible and eschewing space.
+	(DF): Construct lengthy diagnostic strings in a consistent
+	manner.
+	(AL, RL, VL, BVL, BL, DL, ML): Use `\$0` for macro
+	self-reference instead of a literal in debugging diagnostics.
+	(AL, ML): Emit debugging report of argument list before other
+	diagnostics, as the other list macros do.
+	(VL, BVL, ML): Remove `li*text-indent` register when finished.
+
+2024-07-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Interpret a second argument not just as
+	indicating that the specified mark should be applied as a
+	prefix, but as a Boolean indicating whether to put space between
+	the prefix and the mark.  Thus, where formerly one would use "2"
+	as the second argument to eliminate the space, one would now use
+	"0".  We continue to recognize "2" specially, but throw a
+	warning in anticipation of future removal of this handling.
+
+2024-07-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Refactor logic that constructs the item mark, its
+	prefix (if any), and the padding space between the two (if any).
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (VL): Make first argument optional.  If omitted, use
+	the paragraph indentation amount (register `Pi`) for the list
+	item's text indentation.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Improve overlong mark detection: count the
+	padding since it can throw off the alignment of indented text.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (AL, RL): Reduce "pad" argument to `LB` call from 2
+	to 1.  This keeps marks in `AL` list items from oversetting even
+	when prefixed (with intra-mark padding), if the enumerator and
+	prefix are only one character in nroff mode (and similarly thin
+	in troff mode).  `RL` oversets under the same circumstances
+	{because two brackets "[" and "]" are wider than a dot "."}.
+	This change however makes the macros more consistent with each
+	other, and `RL` more consistent with DWB 3.3 mm, whose manual
+	doesn't document the macros' behavior in this much detail; I
+	thus regard the alteration as cosmetic.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (RL): Honor `Li` setting for list items' text
+	indentation as `AL` does instead of using a hard-coded value of
+	6 ens.
+	* groff_mm.7.man (Description): Document this difference.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Initialize register `Li` to 5, not 6, for better
+	alignment with (1) the default value of `Pi` and (2) DWB 3.3 mm
+	behavior.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ML): Fix bug in text indentation computation; it was
+	1n too short when no explicit indentation (a second argument)
+	was given.  Yet another problem introduced by me in commit
+	e0332c122e, 14 June.  (Oddly, DWB 3.3 mm misbehaves the same way
+	in nroff mode.)
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Revise debugging output.
+	(AL, ML, VL, BL, DL, RL, BVL): Add escape characters so that
+	actual arguments are reported, not just a literal "$*".  Problem
+	dates back to groff 1.06, September 1992.
+	(PGFORM, AL, ML, VL, BL, DL, RL, BVL): Report arguments using
+	`$@` instead of `$*` for clarity when they contain whitespace.
+	(LB): Report arguments passed to macro using `$@`.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Fix computation of item's text indentation when
+	the mark (plus any padding) exceeds that of the list.  Problem
+	introduced by me in commit e0332c122e, 14 June.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Reduce padding after overlong mark from 2n to 1n.
+	This is more consistent with DWB mm behavior, though unspecified
+	in the 3.3 manual.
+	* tests/VL-accommodates-overlong-mark.sh: Update test
+	expectations.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man (Macros) <ML>: Fix error; the default
+	text indentation is computed from the width of the specified
+	mark, and uses neither register `Li` nor `Pi` as other list
+	types do.  Incorrect claim appears to date back to groff 1.10,
+	26 November 1995.
+
+2024-07-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (BVL): Trivially refactor.  Rename and retype `list*ti`
+	string to `li*text-indent` register.  Fix internal
+	documentation; the name of the "module" is "li", not "list".
+
+2024-06-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LB): Don't throw an overlong mark warning when the
+	line is to be broken after the mark, as in `BVL` lists.
+
+2024-06-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man (Macros) <LB>: Document behavior when fourth
+	argument ("type") is -1.  The groff mm `BVL` macro relies on it.
+
+2024-06-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (BVL): Make first argument optional.  If omitted, use
+	the paragraph indentation amount (register `Pi`) for the list
+	item's text indentation.
+
+2024-06-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (Rg, Sm, Tm): Favor registered sign, service
+	mark sign, and trade mark sign font glyphs on typesetters when
+	present.  Annotate a limitation of this approach.
+
+2024-06-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (Sm, Tm): Tweak string definitions to use half-line
+	motions in nroff mode when the font lacks a dedicated glyph.
+	At present no nroff device supports half-line motions, but this
+	prepares us if we ever do, and DWB 3.3 mm does specify this
+	behavior on page A-2 of its manual.
+
+2024-06-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Handle command-line (or pre-`mso` request) register
+	settings earlier when initializing, and validate their values.
+
+2024-06-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Move definitions of diagnostic macros earlier.  Also
+	test for existence of `D` register before testing its value to
+	determine emission of backtrace (this way `-wreg` doesn't warn
+	about it).  This enables the `@warning` macro to be used in
+	validation of command-line registers (C, D, E, L, W, and so on).
+
+2024-06-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (DE): Fix corrupted error message.  Problem introduced
+	by me in commit 97a1e260b3, 22 June.
+
+2024-06-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initialization]): Fix regression in initialization of
+	undocumented `C`/`@copy_type` register.  Problem
+	introduced by me in commit 4b2f6de31e, 22 June.
+
+2024-06-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac ([initialization], VERBON, VERBOFF, pg@footer):
+	Trivially refactor.  Rename internal register `@verbose-flag` to
+	`@in-verbatim-region`, fixing linguistic solecism and clarifying
+	the register's purpose.  Update comments accordingly.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Manipulate automatic hyphenation using
+	locale-appropriate modes, not those particular to English.
+	(@enable-hyphenation): New macro restores hyphenation using
+	groff 1.24 `hy` behavior if available, and registers defined by
+	locale tmac files otherwise (see groff_tmac(5)).
+	(@reset, pg@header): Replace explicit setting of hyphenation
+	mode 14 with call of `@enable-hyphenation`.
+	(MULB, ft@init): Replace explicit setting of hyphenation mode 6
+	with call of `@enable-hyphenation`.
+	(B1): Replace no-op request with call of `@enable-hyphenation`.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (PIC): Reckon optional indentation argument in ens by
+	default.
+
+	* groff_mm.7.man (Macros) <PIC>: Document this.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Rename macros to get out of user name space.
+
+	* m.tmac (debug): Rename this macro...
+	(debug@little-dump): ...to this.
+	(debug-all): ...and this one...
+	(debug@big-dump): ...to this.
+	(pg@next-page, pg@disable-trap, pg@footnotes): Update
+	{commented-out} call sites.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (init@reset): Rename this macro...
+	(@reset): ...to this.  The init "module" had no other contents.
+	(H, BS, DF, df@eot-print, DS, PY, lix@print-text)
+	(lix@embedded-text, ref@eot-print, IA, WA, [initialization]):
+	Update call sites.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (init@reset, debug, debug-all, SA, pg@header)
+	(pg@set-env, ft@init): Fix code style nit.  Invoke requests that
+	don't break with the normal control character.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Trivially refactor.  Reorganize initialization logic
+	and update its internal documentation.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (MULN, DF): Fix code style nit, favoring assembly of
+	long strings with both `ds` and `as` instead of using input line
+	continuation.  Refer to displays as such in comments and
+	diagnostic messages, not as "keeps"; mm tradition seems not to
+	use the latter term.
+
+2024-06-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Actually remove temporary register `*vs-default`.
+
+2024-06-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (NCOL): Validate package state, throwing warning if
+	called when not in multi-column mode.
+	(MULN): Validate package state, aborting with error if not in
+	multi-column mode, rather than accessing undefined registers and
+	spewing much noise about internal parameters if `-wreg` enabled.
+
+2024-06-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/story.mm: New file illustrates a "normal" document,
+	neither a letter nor memorandum.
+	* groff_mm.7.man (Files): Document it.
+	* mm.am (MMEXAMPLEFILES): Ship it.
+
+2024-06-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (hd*trap): New macro shuts off suppression of paragraph
+	indentation.
+	(H): Stop trying to figure out whether we should suppress
+	indentation based on whether the heading is run-in or not; that
+	is not the relevant criterion.  What matters is whether
+	formatted output (such as implied paragraph text) follows the
+	heading call.  To that end, set a 1-line input trap calling the
+	new macro `hd*trap`.
+
+	Fixes <https://savannah.gnu.org/bugs/?65884>.  Problem
+	introduced by me in commit 814e204d16, 24 January 2023.
+
+2024-06-15  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #65884.
+
+	* tests/P-indentation-works.sh: Do it.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm.am (MMEXAMPLEFILES): Ship new "memorandum.mm" example in
+	distribution archive.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Fix code style nits.  Rename `li*in` to
+	`li*mark-begin`, to parallel existing `li*text-begin`.  Use
+	`nop` for clarity.  Remove registers and strings that are no
+	longer needed at the end of the macro definition.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Fix Savannah #65843.  Introduce list-item-local
+	register `li*c-pad`, for use in overriding a single item's
+	padding amount.  Initialize it to the list's padding amount
+	{`li*pad`}.  Calculate whether the mark is overlong using the
+	padding amount rather than an unadjustable space escape sequence
+	embedded in a `\w` width computation.  If the mark is overlong,
+	override that, setting it to 2n.  Use `li*c-pad` instead of
+	`li*pad` for further computations.  Remove the new register at
+	the end of the macro definition.
+
+	Fixes <https://savannah.gnu.org/bugs/?65843>.  Problem may date
+	back to commit af2d6f8e58, 26 December 1999 (groff 1.14), which
+	introduced the `Limsp` register.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #65843.
+
+	* tests/VL-accommodates-overlong-mark.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Throw warning if a list item mark is overlong.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (LI): Improve diagnostic message; name _all_ of the
+	macros that begin lists.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Test letter output more rigorously.
+
+	* tests/artifacts/letter.BL:
+	* tests/artifacts/letter.SB:
+	* tests/artifacts/letter.FB:
+	* tests/artifacts/letter.SP: Add expected renderings.
+	* mm.am (EXTRA_DIST): Ship them.
+
+	* tests/letters-format-correctly.sh: Add test.
+	* mm.am (mm_TESTS): Run test.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Test memorandum output more rigorously.
+
+	* tests/artifacts/memorandum.0:
+	* tests/artifacts/memorandum.1:
+	* tests/artifacts/memorandum.2:
+	* tests/artifacts/memorandum.3:
+	* tests/artifacts/memorandum.4:
+	* tests/artifacts/memorandum.5:
+	* tests/artifacts/memorandum.custom: Add expected renderings.
+	* mm.am (EXTRA_DIST): Ship them.
+
+	* tests/cover-page-info-is-present.sh: Replace this test...
+	* tests/memoranda-format-correctly.sh: ...with this one.
+	* mm.am (mm_TESTS): Run the new test instead of the old one.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT: Revise to more closely approximate DWB 3.3 troff
+	output.
+	(cov@print-title): Use `SP` macro instead of `MOVE`.  Honor
+	argument instead of ignoring it.  Save and restore the
+	adjustment mode, and left-align text instead of turning off
+	filling.  The latter (1) lost track of whether filling was
+	enabled in the document already (though it _probably_ was) and
+	more importantly (2) permitted lengthy charging or filing case
+	numbers to overprint author information.  Use `nop` to maintain
+	logical indentation when formatting output.  Use `br` requests
+	to separate title/subject and the charging and filing case
+	numbers.  Favor font selection requests over escape sequences.
+	(cov@print-authors): Use `rt` request instead of `MOVE` macro,
+	to return to the vertical position marked at the end of the
+	`cov@print-date` macro (which could format more than one line of
+	output).  Suspend and restore hyphenation since the context is
+	crowded, not all names follow English hyphenation patterns, and
+	arguments after the first to `AU` are often codes or
+	abbreviations.  Avoid disabling filling using same technique as
+	above.  Arrange `AU` arguments 3-6 as DWB 3.3 does.  Stop
+	formatting a literal "TM" in the output; DWB 3.3 didn't do this.
+	{Worse, we were putting it there even if no technical memorandum
+	numbers were defined.}  Drop unnecessary `PGFORM` call.
+	(cov@print-au1, cov@print-au2): Internally document what these
+	macros are for (formatting `AU` arguments, some of which get
+	special treatment), and align with DWB 3.3 output.
+	(cov@print-date): Use `sp` request instead of `MOVE` macro; we
+	can't call `SP` because this motion is negative (upward).  Avoid
+	disabling filling using same technique as above.  Drop
+	unnecessary `PGFORM` call.  Use `mk` to mark the bottom of the
+	date output.
+	(cov@print-firm): Return early if no firm name defined.  Use
+	`sp` request instead of `MOVE` macro; we can't call `SP` because
+	this motion is negative (upward).  Align firm name left instead
+	of right.  Set firm name in sans serif family `H` if it is
+	available; in nroff mode, use bold.  Use `nop` to maintain
+	logical indentation when formatting output.
+	(cov@print-abstract):  Favor font selection requests over escape
+	sequences.
+	([initialization]): Define several registers to vertically and
+	horizontally arrange the document metadata.  Adjust vertical
+	spacing around abstract and its caption.  Favor font selection
+	requests over escape sequences.
+
+	* m.tmac (let*mt-sign): Set signatures, except for the
+	secretarial annotation, using the metadata font.
+
+	* tests/cover-page-info-is-present.sh: Update test expectations.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (SP): Validate argument.  It must be numeric and can't
+	be negative.
+	* groff_mm.7.man (Macros) <SP>: Document restrictions.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (VERBON): Check for font availability before switching.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/memorandum.mm: New file illustrates `MT` documents.
+	* groff_mm.7.man (Files): Document it.
+
+2024-06-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/letter.mm: Parameterize the letter in its `LT` type,
+	making it easy to render in any of the four supported styles by
+	defining a *roff string on the command line.
+
+2024-06-13  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/5.MT: Revise to more closely approximate DWB 3.3 troff
+	output.  Initialize `let*sg-suppress-annotation` true.  Set
+	document title (and charging and filing case numbers, if any)
+	closer to where DWB 3.3 puts it.  Put the date where DWB 3.3
+	does, but let it shift down if the title et al. are too
+	garrulous, as DWB 3.3 does.  Put less space between the date and
+	the document body.
+	(cov@print-title): Adjust line length.  Stop turning on fill
+	mode unnecessarily.  It should already be on at the start of a
+	document.  Save and restore adjustment mode instead of
+	clobbering it.  Use the "metadata font" for the charging and
+	filing case numbers, not necessarily bold.
+	(cov@print-date): Drop unnecessary break request.
+
+2024-06-13  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/4.MT: Revise to more closely approximate DWB 3.3 troff
+	output.  Initialize `let*sg-suppress-all` and `let*ns-suppress`
+	true.
+	(cov@print-title): Set document title closer to where DWB 3.3
+	puts it.  Stop enabling filling unnecessarily.  It should
+	already be on at the start of a document.  Save and restore
+	adjustment mode instead of clobbering it.
+	(cov@print-authors): In nroff mode, space by a full vee before
+	and after setting authors, since most nroff devices are
+	incapable of the half-line motions used in troff mode.
+	(cov@print-firm): Space by two vees before setting the
+	document's affiliated firm name.
+	(cov@print-abstract): Use mm macros instead of formatter
+	requests to change fonts.
+
+2024-06-13  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Support suppression of `SG`, `NS` features.  In DWB 3.3 mm,
+	signatures (`SG`) and notations (`NS`/`NE`) are suppressed from
+	output in memorandum type 4 (".MT 4").
+
+	* m.tmac: Add new registers `let*sg-suppress-all`,
+	`let*sg-suppress-annotation`, and `let*ns-suppress`.  Initialize
+	them false.
+	(SG): Return immediately if `let*sg-suppress-all` is true.
+	Otherwise, check value of `let*sg-suppress-annotation` before
+	emitting the secretarial annotation.  (I don't have a better
+	term for this.)
+	(NS): If given arguments, return immediately if
+	`let*ns-suppress`.  Otherwise, begin box diversion
+	`let*ns-discard`.
+	(NE): If `let*ns-suppress`, end box diversion and return.
+
+2024-06-13  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Trivially refactor.
+	(let*mt-sign): Rename string `let*tmp` to `let*anno`, reflecting
+	its purpose as collector of the "secretarial annotation" used by
+	some letter and memorandum types.  Use `nop` to maintain logical
+	indentation when formatting output.  Break long lines for
+	clarity.  Add comments to illuminate material laden with syntax.
+
+2024-06-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/4.MT (cov*print-title):
+	* mm/5.MT (cov*print-title): Apply metadata font as DWB mm does
+	in memorandum types 4 and 5.
+
+2024-06-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Rename internal register `@sdf_font` to `@metadata-font` for
+	greater clarity and (forthcoming) accuracy.  In DWB mm, the font
+	style configured by the `E` register applies not just to the
+	"subject" (document title), "date", and "from" (author name)
+	metadata, but the signature lines produced by `SG`, and
+	auxiliary author information optionally present in `AU` macro
+	calls.
+
+	* m.tmac ([initialization], AV, let@print-head):
+	* mm/0.MT (cov@print-title, cov@print-authors, cov@print-date):
+	* mm/5.MT (cov@print-date):
+	* mm/ms.cov (cov@print-date): Do it.
+
+2024-06-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Complete (mostly already existing) support for DWB mm
+	`E` register.
+	* groff_mm.7.man (Description, Registers): Document it.
+
+2024-06-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT:
+	* mm/4.MT (cov@print-authors, cov@print-firm)
+	(cov@print-abstract):
+	* mm/5.MT (cov@print-date): Fix code style nits.  Favor font
+	selection requests over escape sequences.  Employ `nop` request
+	to clarify control and macro structures.
+
+	* mm/0.MT (cov*print-authors): Drop unnecessary `br` request
+	adjacently to invoking (with the normal control character) a
+	request that implies a break.
+
+2024-06-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Define `Litb` string using mixed case instead of full
+	caps.  This is more consistent with (1) `Liec`, `Liex`, and
+	`Lifg`; and (2) DWB 3.3 mm rendering.
+	* groff_mm.7.man (Strings) <Litb>: Document this.
+
+2024-06-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Replace `AST` macro and `cov*abs-name` string with `Abstract`
+	string.
+
+	* m.tmac: Define `Abstract` instead of `cov*abs-name` string at
+	initialization.
+	(AST): Throw warning if called, but honor the instruction (using
+	new string name).
+	* mm/0.MT:
+	* mm/4.MT (cov*print-abstract):
+	* mm/ms.cov (COVEND): Use new string name.
+
+	* groff_mm.7.man (Macros) <AST>: De-document.
+	(Strings) <Abstract>: Document.
+
+	* NOTES: De-document `cov*abs-name`.
+
+2024-06-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac:
+	* mm/0.MT:
+	* mm/4.MT:
+	* mm/ms.cov: Rename `cov*abs-arg` to `cov*abstract-placement`.
+	Rename `cov*abs-ind` to `cov*abstract-indent`.
+
+	* NOTES: Update (internal) documentation.
+
+2024-06-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT: Align memorandum captions with DWB 3.3 mm.
+	* groff_mm.7.man <MT>: Document this.  Also fix error; omitting
+	the argument implies memorandum type 1, not 0.
+	* tests/cover-page-info-is-present.sh: Update test expectations.
+
+2024-06-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (AF): Drop unnecessary macro call.  `AU` performs the
+	requisite cleanup.
+
+2024-06-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT: Move `cov@print-firm` call to where it works.
+	Annotate the fairly subtle point revealed.
+
+	Fixes <https://savannah.gnu.org/bugs/?65865>.  Problem appears
+	to date back to commit bd5385e4ea, 17 November 1991 (groff 1.04,
+	the first that shipped an implementation of mm).
+
+2024-06-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #65865.
+
+	* tests/cover-page-info-is-present.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2024-06-05  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (ML): Throw error if mandatory first argument missing.
+
+2024-03-26  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/letter.mm: Replace with idiomatic content.
+
+2024-02-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (EPIC): Reckon width argument in ens by default, and
+	height argument in vees.
+	* m.tmac (ds@set-format): Reckon right-indentation argument in
+	ens by default.  This is a difference from DWB 3.3 mm, which
+	used ems (because it passed the argument as-is to the `ll`
+	request), but groff has been using basic units for 30 years
+	without apparent complaint, even though on the PostScript device
+	this threw off the amount by five orders of magnitude instead of
+	one half.  Thus, take this opportunity to be more consistent
+	than DWB by more rigorously using ens for horizontal
+	measurement and vees for vertical ones.
+
+2023-12-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Support pic(1) pictures when formatting HTML.
+
+	* m.tmac (PS): Call `HTML-IMAGE` at end of macro definition.
+	* m.tmac (PY): Call `HTML-IMAGE-END` at end of macro definition.
+	{`PE` calls `PY`, and so is also handled.}
+
+	Fixes https://savannah.gnu.org/bugs/?65047> (1/2).  Thanks to
+	Hans Bezemer and Dave Kemper for the report.
+
+2023-08-31  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Rename test scripts for consistency.
+
+	* tests/LT_SP_AU_without_AT_works.sh:
+	* tests/LT_SP_multi-word_LO_SJ_works.sh:
+	* tests/MT_5_includes_AT_in_SG.sh:
+	* tests/ms_cover_sheet_robust_to_missing_AF.sh: Rename these...
+	* tests/LT-SP-AU-without-AT-works.sh:
+	* tests/LT-SP-multi-word-LO-SJ-works.sh:
+	* tests/MT-5-includes-AT-in-SG.sh:
+	* tests/ms-cover-sheet-robust-to-missing-AF.sh: ...to these.
+
+	* mm.am (mm_TESTS): Reflect renames.
+
+2023-08-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (Qrf): Define string contents using `\E` instead of
+	`\\` for better robustness.  See our Texinfo manual,
+	node/section "Copy mode".
+
+2023-08-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Fix code style nits; resolve Perl warnings.
+	Initialize scalars `max_height` and `max_width` before using
+	them.  Add to `cur` hash instead of reinitializing it when
+	reading "PIC id" comment from input.
+	(ps_calc): Return early if bounding box keys in `cur` hash not
+	populated.
+	(psbb): Use `return` instead of `next` to exit early from
+	non-loop.  Improve diagnostic message: identify who is speaking,
+	what operation failed, and end with newline.
+
+	Fixes <https://savannah.gnu.org/bugs/?64312>.
+
+2023-08-23  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Validate reference system state and user input.
+
+	* m.tmac (qrf*validate-identifier): New macro tests argument for
+	validity as roff identifier, since user input is applied to this
+	purpose.
+	(INITR): Throw error if mandatory argument omitted; keeps us
+	from creating a (likely unwanted) dotfile, ".qrf".
+	(SETR, GETST, GETHN, GETPN, GETR): Throw error if reference
+	system macros used without initialization.
+	(SETR, GETST, GETHN, GETPN): Validate arguments to be used as
+	string identifiers.
+
+2023-08-19  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Flush displays at end of input even if they cause page
+	breaks.  Inspection of source code suggests that the problem
+	dates back to the introduction of the package in groff 1.04,
+	1991-11-17.  Our mm stumbled into a pitfall of AT&T
+	compatibility.  Our Texinfo manual (which did not exist yet in
+	1991) says: "For historical reasons (compatibility with AT&T
+	'troff'), the end-of-input macro exits as soon as it causes a
+	page break if no partially collected line remains. ..."
+
+	Fixes <https://savannah.gnu.org/bugs/?64336>.
+
+2023-08-19  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #64336.
+
+	* tests/flush-long-displays-at-end-of-input.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2023-08-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man: Document difference from DWB in paragraph
+	indentation for semi-blocked letter style.  Correct
+	mischaracterization of it in `LT` macro descriptions.
+
+	Fixes <https://savannah.gnu.org/bugs/?64315>.
+
+2023-07-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Stop suppressing warnings if Boolean register `Ref` is
+	true.  Diagnostic output does not interfere with index/reference
+	output, the lines of which are prefixed in a way that is not
+	confusable with warnings.
+
+2023-06-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (IND): Throw error if vertical drawing position is
+	negative.  (What page number can be recorded when that is the
+	case?)  Thanks to Damian McGuckin for raising this scenario.
+
+2023-06-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Trivially refactor.
+
+	* m.tmac (let@mt-closing): Rename this...
+	(let@formal-closing): ...to this, since it has nothing to do
+	with memorandum types.
+	(FC, let@fc_BL, let@fc_SB): Update call and alias sites.
+
+2023-05-25  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (let@print-head): Unconditionally put one vee of space
+	on the output before returning.
+
+	Fixes <https://savannah.gnu.org/bugs/?63695>.
+
+2023-05-25  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #63695.
+
+	* tests/LT-should-space-after-inside-address.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2023-05-25  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Accept a second argument to `HU`.
+
+	* m.tmac (HU): Pass `H` all of our arguments.  Also validate
+	quantity of arguments and throw error if called with none.
+
+	Fixes <https://savannah.gnu.org/bugs/?64204>.
+
+2023-05-25  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Slightly revise index output.
+
+	* m.tmac (INDP): Call `SK` if `TXIND` is not defined, instead of
+	as the first thing if `TYIND` is not defined.  This is easier to
+	rationalize in the documentation as something that happens
+	before the index caption is written.  This way any page breaking
+	or spacing prior to the index is strictly `TXIND`'s
+	responsibility, and the formatting of the index caption itself,
+	followed by any formatting changes appropriate to the index
+	entries, belongs to `TYIND`.
+
+2023-07-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (IND): Use `hd@mark-trimmed` instead of `hd*mark` in
+	index entries, just as is done with references; we don't want
+	trailing spaces in them.
+
+2023-05-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Improve input validation of `INITI`, `IND` macros.
+
+	* m.tmac (INITI): Validate the index type (first argument) here
+	instead of only later when `IND` is called.  Actually verify
+	that the second argument is present and usable.
+	(IND): Verify that we're given arguments.
+
+	Fixes <https://savannah.gnu.org/bugs/?64205>.
+
+2023-05-18  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (Indcmd): Drop relic string.  Nothing interpolates it;
+	it hasn't been used since before groff 1.16 (February 2000).
+
+2023-05-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (let@print-head): Unconditionally `sp`ace after setting
+	the text produced by ".LO SJ", instead of only doing so if the
+	letter type was not "simplified" (".LT SP").
+
+	Fixes <https://savannah.gnu.org/bugs/?64209>.
+
+2023-05-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (pg@next-page): Break the line before `ne`eding a large
+	amount of space to force a page (or column) break.
+
+	Fixes <https://savannah.gnu.org/bugs/?64207>.
+
+2023-07-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Honor `GROFF_BIN_PATH` environment variable.
+	* mmroff.1.man (Environment): Add section documenting this.
+
+2023-07-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Trivially refactor.  Rename scalars.
+	- `check_macro` -> `first_pass`
+	- `run_macro` -> `second_pass`
+
+2023-04-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Document `--help` and `--version` options in usage
+	message.
+
+2023-06-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* tests/indexing-works.sh: Add unit test.
+	* mm.am (mm_TESTS): Run test.
+
+2023-05-25  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man (Macros) <INDP>: Clarify operation.
+
+	Fixes <https://savannah.gnu.org/bugs/?64206>.
+
+2023-02-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add `--help` option support to mmroff.
+
+	* mmroff.pl: Recognize `--help` option.
+	* mmroff.1.man (Synopsis, Options): Document.
+
+2023-02-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (H, SETR): Trivially refactor.  Rename register to
+	conform to convention: `hd-mark-trimmed` -> `hd@mark-trimmed`.
+	This register is used outside of its "module", "hd".
+
+2023-02-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (H, LI): Trivially refactor.  Annotate and test
+	threshold registers consistently.
+
+2023-02-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Fix code style nit.  Except for initial register
+	tests for GNU troff formatter and compatibility mode, migrate
+	special character, register, and string interpolation escape
+	sequences from `(xx` form to `[xx]`.  Also rewrite an instance
+	of `\nP` to `\n[P]`.
+
+2023-01-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	When register `Pt` was 2, paragraphs immediately following
+	displays and lists were being indented, contrary to DWB mm
+	behavior.
+
+	* m.tmac: Replace `par@ind-flag` register with two separate
+	state bits, `par*indentation-eligible` and
+	`par@suppress-indentation`.
+	(P, nP): Remove complex test for deciding whether the current
+	paragraph is being set immediately after a heading.
+	(P): Set `par*indentation-eligible` to the logical complement of
+	`par@suppress-indentation`.  Call `par@doit` (which underlies
+	both `P` and `nP`) unconditionally.
+	(nP): Force `par*indentation-eligible` off, since numbered
+	paragraphs are not influenced by a `Pt` value of "2" in DWB mm.
+	{The paragraph number occupies the indentation space.}
+	(par@doit): Introduce local register `par*do-indent`,
+	manipulate it, and use it to control `ti` request instead of
+	scattering the request across multiple locations.  Remove this
+	register when done.  Clear `par@suppress-indentation` at end,
+	since after indentation is suppressed once, it should not happen
+	again until a special circumstance (the setting of a heading,
+	display, or list) arises.
+	(H): Convert test of `hd*htype` register, which tells us if
+	we're setting a run-in heading or not, from `if` to `ie`.  (The
+	first paragraphing macro call after a run-in heading should
+	_not_ have its indentation suppressed, because the material
+	after the heading title constitutes a first pagraph.)  In the
+	true arm, set `par@suppress-indentation`; in the new else arm,
+	clear it.  This replaces the "complex test" above, and seems
+	much more straightforward and reliable.  Stop manipulating
+	`par@ind-flag`.
+	(df@end, ds@end, LC): Set `par@suppress-indentation` instead of
+	clearing `par@ind-flag`.
+	(LE): Set `par@suppress-indentation`.
+
+	Fixes <https://savannah.gnu.org/bugs/?54909>.  Thanks to Jeff
+	Conrad for the report.
+
+2023-01-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #54909.
+
+	* tests/P-indentation-works.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2023-01-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (df@print-float): Eliminate spew at high debug levels.
+	This macro gets called even when there aren't any floating
+	displays pending, so we cannot assume that related registers are
+	defined.
+
+2023-01-24  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (P): Fix missing backslash after brace escape sequence.
+	Problem introduced by me in 3b1afbdb8e, 6 January.
+
+2023-01-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Help user navigate the document type macros.  Stop
+	setting up the formatter to throw "unrecognized macro"
+	diagnostics for macros that are plainly documented in
+	groff_mm(7).
+	(@disable): New macro takes a list of macros whose definitions
+	are replaced with a warning diagnostic about how they're no
+	longer unavailable due to use of another document type macro
+	already called, identified by new string `@cover`.
+	(TL, MT, COVER, LT, LO): Define `@cover` and call `@disable`.
+	Drop existing diagnostics that did a similar thing as above,
+	more verbosely.
+
+2023-01-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Revise diagnostic messages.  Use a consistent message
+	format, including a space after a colon and the name of the
+	complaining macro.
+	(pg@header): Drop unnecessary empty comment at end of macro
+	call.  Macro call syntax differs from `ds` request syntax.
+	(2C, MC, FD, FS, FE, DF, LB, LI, LE, LC, AL, ML, VL, BL, DL, RL)
+	(BVL, TH, TE, PS, B1, B2, APPSK, AS, SETR, GETST, GETHN, GETPN)
+	(INITI, IND, LT, LO): Refer to self with `\$0` escape sequence
+	instead of a literal.
+	(2C, MC, PS): Throw fatal error immediately instead of doing
+	other processing first.
+	(2C, MC, FD, FS, FE, DF, ds@set-format, ds@end, LB, LI, LE, LC)
+	(AL, ML, VL, BL, DL, RL, BVL, TH, TE, B1, B2, APPSK, AS, SETR)
+	(GETST, GETHN, GETPN, INITI, IND, let*lt-sign, LT, LO): Stop
+	unnecessarily quoting arguments to @error macro.
+	(FD, LB, VL, BVL, APPSK, SETR, GETST, GETHN, GETPN, INITI):
+	State quantities of expected and actual arguments.
+	(FS, FE, LC, B1, INITI): Clarify message.
+	(DF, DS): Store macro name in `ds@macro` for use in later
+	diagnostics thrown by internal macros.
+	(DS): Drop dead store to register `XXX`; debugging detritus?
+	(ds@set-format): Use `ds@macro`.
+	(ds@set-format, let*lt-sign, LT, LO): Bracket unrecognized
+	argument in single quotes.
+	(ds@set-format): Characterize argument as "unrecognized", not
+	"wrong".  Similarly with the fill style.
+	(LI, LE, IND): Offer advice.
+	(LE): Describe problem in same terms as `LI` ("no list active").
+	(LC): Validate argument as numeric expression and die with
+	diagnostic if it isn't one.
+	(AL, ML, VL, BL, DL, RL, BVL): Weaken fatal diagnostic to
+	warning; excess arguments are not a serious problem.
+	(PS): Simplify control flow; since @error does not return,
+	convert `ie` request to `if` and make `el` branch unconditional.
+	(RP): Weaken fatal diagnostic to warning and return early;
+	calling this macro without any references defined does no
+	structural damage to a document.
+	(INITI): Remove redundant conditional.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (IX): Delete.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (MC): Throw internal error if we don't leave
+	`pg*cols-per-page` in a valid state after invalidating it to
+	count columns.  Also simplify expression.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (1C): Warn and return early instead of bombing out if
+	called when multiple columnation is inactive.  A no-op should
+	not be a fatal error.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (@abort): Introduce macro for internal errors,
+	unconditionally reporting a backtrace...
+	(misc@pop-set, hd@split, MULN, df@print-float, IND): ..and use
+	it instead of `@error` for problems with internal state.
+	(IND): Also fix botch in reported error.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (SA): Reject an argument value > 1 as invalid.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (P): Quote unrecognized argument in warning diagnostic.
+	(OK, PM): Refactor to use `\$0`.
+	(1C): Clarify that formatting can go wrong if you suppress a
+	page break when returning from multi- to single-column mode with
+	a footnote pending.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (Tm): Align with definition of `Sm`, with analogous
+	fallback definitions.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (Sm): Implement string for service mark, for DWB mm
+	compatibility.
+	* groff_mm.7.man: Document it.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (CS): Define to throw diagnostic when used without ".MT
+	4".  (Later, if the "4.MT" file is sourced, this definition is
+	replaced.)
+	* groff_mm.7.man (Description): Clarify `CS` support status.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (MOVE, SM, AT, LO): Weaken diagnostics when given no
+	arguments from (fatal) errors to warnings, then return.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (PIC): Bomb out (with diagnostic) if either of the
+	width or height arguments are not numeric expressions.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (EPIC): Handle and shift off a leading "-L" argument
+	before checking argument count.  Then, if fewer than two
+	arguments remain, throw warning diagnostic and return early
+	instead of bombing out.  Do bomb out (with diagnostic) if either
+	of the width or height arguments are not numeric expressions.
+	Fix bug which prevented third argument from being interpreted.
+	Annotate potential future development.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (AU): Partially revert commit 4fd984adc9, 2021-07-17.
+	`AU` can be called for the sole purpose of "closing" a document
+	title "opened" with `TL`.
+	* groff_mm.7.man (Macros) <AU>: Update description.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (TM): Warn if called without arguments.
+
+2023-01-16  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (AST): Preserve any user-specified leading spaces in
+	argument.
+
+2023-01-06  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (P): Warn if argument is non-numeric, and discard it.
+	Also warn if argument is out of range; people accustomed to
+	setting the `Pt` register to 2 might mistakenly believe it to be
+	meaningful here.
+
+2023-01-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/0.MT:
+	* mm/5.MT: Drop never-read register `cov*mt0-ind`.
+
+2023-01-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Improve cover sheet diagnostics.
+
+	* m.tmac (MT): Warn and ignore if `COVER` or self already
+	called.
+	(COVER): Warn and ignore if `MT` already called.
+	* mm/0.MT (cov@print-title): Abort if title not defined; tell
+	user how to use the macros.
+	(cov@print-authors): Add similar paranoid diagnostic that I
+	don't think is reachable (since you _have_ to call `AU` to
+	"close" `TL`).
+	* mm/4.MT (cov@print-title, cov@print-authors):
+	* mm/5.MT (cov@print-title): As "0.MT".
+
+	* mm/4.MT: Get rid of spurious blank line in file.
+
+2023-01-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Fix Savannah #63613.
+
+	* mm/0.MT (cov*print-authors): Iterate through _all_ technical
+	memorandum numbers instead of stopping one shy of the last.
+	Problem appears to date back to introduction of TM support for
+	memorandum type 1 in commit a48ab7b6d (groff 1.05, 1992-03-18).
+
+	Fixes <https://savannah.gnu.org/bugs/?63613>.
+
+2023-01-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #63613.
+
+	* tests/MT-1-reports-all-TM-numbers.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2022-12-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (let*mt-sign): Check strings populated by optional
+	arguments to `AU` macro for existence before interpolating them.
+
+	Fixes <https://savannah.gnu.org/bugs/?24049>.  Thanks to Werner
+	Lemberg for the report.
+
+2022-11-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mse.tmac: Set `pg*footer-size` to four vees, not four basic
+	units; the latter is too small by orders of magnitude on
+	typesetting output devices.
+
+	Fixes <https://savannah.gnu.org/bugs/?63398>.  Thanks to Hans
+	Bezemer for the report.
+
+2022-11-21  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #63398.
+
+	* tests/mse_has-sufficient-footnote-space.sh: Do it.
+	* mm.am (mm_TESTS): Run test.
+
+2022-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add `--version` option support to mmroff.
+
+	* mm.am (mmroff): Replace `@VERSION@` token in script.
+	* mmroff.pl: Recognize `--version` option.
+	* mmroff.1.man (Synopsis, Options): Document.
+
+2022-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Add proper diagnostic subroutine.  Add "progname"
+	scalar to store the name of the program.
+	(Die): New subroutine.
+	(print_index, top level): Call Die() when encountering
+	prohibitive problems instead of flinging a string into a void
+	context.
+
+2022-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mmroff.pl: Enable Perl warnings.
+
+2022-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Refactor generation of "mmroff" script.
+
+	* mmroff.pl: Replace absolute filespec with `@PERL@` replacement
+	token.  This is documentary; the filespec was getting replaced
+	anyway.
+	* mm.am (mmroff): Use more idiomatic token replacement strategy.
+	Also create target as a .tmp-suffixed file at first since it is
+	not initially executable, so that we don't race against anything
+	needing to run it in a parallelized build.  (This is a
+	hypothetical concern; at present, nothing runs mmroff during the
+	build.)
+
+2022-10-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (pg@header): Add page length sufficiency check.
+
+	Fixes <https://savannah.gnu.org/bugs/?24048>.  Thanks to Werner
+	Lemberg for the report.
+
+2022-10-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #24048.
+
+	* tests/short-pages-do-not-overflow-stack.sh: Test it.
+	* mm.am (mm_TESTS): Run test.
+
+2022-09-17  Nikita Ivanov <nikita.vyach.ivanov@gmail.com>
+
+	* mm/ms.cov (cov@print-title, cov@print-authors): Escape
+	newlines when beginning conditional blocks.
+
+	Fixes <https://savannah.gnu.org/bugs/?63075>.  [Problems
+	introduced by me in commits 59d1fd7a5e and 4fd984adc9, both
+	2021-07-17. --GBR]
+
+2022-09-16  Nikita Ivanov <nikita.vyach.ivanov@gmail.com>
+
+	* m.tmac (misc@ev-keep): Select configured default font family,
+	as with `.fam H` at the top of the document, for example, when
+	switching to new environment.
+
+	Fixes <https://savannah.gnu.org/bugs/?63067>.
+
+2022-08-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (PY): Add new macro.
+	(PE): Replace `init@reset` call with `PY` (and then space by
+	half a vee as before).
+
+	* groff_mm.7.man (PY): Document it.
+
+	Fixes <https://savannah.gnu.org/bugs/?62900>.
+
+2022-08-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (@warning, @error): Stop pointlessly using no-break
+	control character when invoking the `tm` request, which never
+	causes a break in formatted output.  (Management of the standard
+	output and standard error streams is the user's responsibility.)
+	(@error): Drop old-fashioned asterisk banners around error
+	diagnostics.  Stop invoking `ab` with redundant and sometimes
+	misleading arguments.  In groff 1.23, `ab` exits silently if
+	given none.  We've already issued a diagnostic and moreover not
+	all problems are with "syntax"; some are semantic.
+
+2022-08-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (PS): Validate better; check for 2 arguments exactly.
+
+2022-08-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (PS): Refactor; drop dead code.  The `pic*in` register
+	was used only for dead stores; it was never read or tested.
+
+2022-08-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (initialization): In nroff mode, surround automatically
+	numbered footnote markers in body text with square brackets, as
+	groff me(7) and ms(7) do.
+
+2022-08-04  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (initialization): Recognize new register `V` for
+	setting the vertical spacing from the command line, instead of
+	blindly setting the vertical spacing two points larger than the
+	type size.  Handle setting of `V` and type size `S` in case they
+	are given with an appended scaling unit, using the same
+	technique as groff ms(7)--if the values are over 1,000, assume
+	that conversion to basic units by the formatter has already
+	taken place.
+	* groff_mm.7.man (Registers) <S, V>: Document it.
+
+2022-08-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (:p): Define register as an alias of `ft*nr`; the
+	former name is a documented DWB mm feature.
+
+2022-08-01  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man: Document more features.
+	(Macros) <)E, VM>: Document these DWB mm internals as exposed by
+	groff mm.
+	(Macros) <B1, B2, MC>: Document as GNU extensions.
+	(Strings) <BU, Ci, F>: Document.
+	(Registers) <:R, Au, Ex, Fg, H8...H14, Oc, S>: Document.
+
+2022-07-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man: Document further differences between DWB mm
+	and groff mm, including several unimplemented features.
+
+2022-07-29  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Remove pointless conditionals in initialization.
+	Simplify if-else request pairs that did the same thing in both
+	branches.
+
+2022-07-28  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man: Document `NE` macro.
+
+2022-03-15  Damian McGuckin <damianm@esi.com.au>
+
+	* m.tmac (eq@check): Compensate for display indentation when
+	setting equation label.
+
+	Fixes <https://savannah.gnu.org/bugs/?62190>.
+
+2022-04-27  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Regression-test Savannah #62190.
+
+	* tests/place-equation-labels-correctly-in-displays.sh: Test it.
+	* mm.am (mm_TESTS): Run test.
+
+2021-08-12  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac (R): Alter to work analogously to `B` and `I` macros;
+	accept multiple arguments if given, and alternate roman with
+	previous font.  Stop explicitly turning off underlining.
+
+2021-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Refactor author title handling.
+
+	* m.tmac (AU): Initialize `cov*at!` array element to zero for
+	current author number (`AT` already updates it).
+
+	* mm/ms.cov (cov@print-authors): Enforce requirement documented
+	in groff_mm(7) that .AU is mandatory if .COVER is used.  Emit
+	diagnostic if `cov*au` is not defined, and skip remainder of
+	macro definition.  Test for existence of authors' titles
+	differently; now that `cov*at!` (a count of titles for the
+	current author) is guaranteed to be initialized, we can use it
+	as part of a while loop condition, instead of the hard-coded "9"
+	as an arbitrary limit on the allowed quantity of author titles
+	{though surely even that is obnoxiously high in practice}, and
+	more importantly avoid using a \w escape to measure the width of
+	the interpolation of a potentially undefined string.  Use `nop`
+	to indent text output.  Delete apparent typo causing `mac`
+	warning with respect to undefined `.` macro.  Introduce
+	temporary strings for the author and author title "loop indices"
+	to shorten and clarify logic.  Remove them when done.
+
+	Fixes <https://savannah.gnu.org/bugs/?60926>.
+
+2021-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/ms.cov (cov@print-title): Enforce requirement documented in
+	groff_mm(7) that .TL is mandatory if .COVER is used.  Emit
+	diagnostic if `cov*title` is not defined, and skip remainder of
+	macro definition.
+
+2021-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/ms.cov (COVEND): Fix thinko; test for existence of
+	`cov*abs-arg` register with `r` conditional expression operator,
+	not `d`.
+
+2021-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Stop emitting debugging diagnostic using undefined
+	string.  Problem exposed by commit
+	d6d98d2b3e0ad070037073bb288bbaee3fc04cf0, 8 December 2013.
+
+	Fixes <https://savannah.gnu.org/bugs/?60397>.
+
+2021-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Stop installing empty macro files.
+
+	* mm.am: Delete variable `MMLOCALE`.
+	(install_mm): Delete `for` loop that touches the files.
+	(uninstall_mm): Delete `for` loop that deletes the files.
+	* m.tmac: Update initializtion.
+	  - Load the `\*[@country]_locale` file with `msoquiet` instead
+	    of `mso`.
+	  - Add version check to require groff 1.23 or later, since
+	    the `msoquiet` request is now being used.
+	  - Move "include guard" to follow the compatibility mode and
+	    groff version checks.  Remove its `do` prefix.
+	* groff_mm.7.man (Localization): Migrate topic into its own
+	subsection and update discussion.
+
+	Fixes <https://savannah.gnu.org/bugs/?60700>.
+
+2021-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* mm/ms.cov (cov@print-firm): Do nothing if the `cov*firm`
+	string is not defined.  Silences a `mac` warning and prevents
+	the document date from being incorrectly aligned.
+
+	* tests/ms_cover_sheet_robust_to_missing_AF.sh: Test it.
+	* mm.am (mm_TESTS): Run test.
+
+	Fixes <https://savannah.gnu.org/bugs/?60915>.
+
+2021-07-14  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Rename `cov*mt-addresse` to `cov*mt-addressee`.
+	* NOTES: Update the only place the foregoing is documented.
+
+2021-05-31  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* groff_mm.7.man (Description/Macros) <LT>: Document the "SP"
+	{simplified} letter style more completely.  Salutations and
+	formal closings are omitted.
+
+	Solves the remaining part of bug #60373, "the formal closing is
+	omitted completely".  And, regarding the salutation, #60390.
+
+	Fixes <https://savannah.gnu.org/bugs/?60373> and
+	<https://savannah.gnu.org/bugs/?60390>.
+
+2021-05-30  Bjarni Ingi Gislason <bjarniig@rhi.hi.is>
+
+	* m.tmac (let@sg_SP): Stop placing a comma after the first
+	argument (an author name set by AU) if the second argument is
+	empty (an author title set by AT).
+
+	Solves another part of bug #60373, "the writer's name at the
+	bottom is followed by a trailing comma".
+
+	Fixes <https://savannah.gnu.org/bugs/?60389>.
+
+2021-05-30  Bjarni Ingi Gislason <bjarniig@rhi.hi.is>
+
+	* m.tmac (let@print-head): Quote the interpolation of the string
+	`let*lo-SJ`.
+
+	Solves part of bug #60373, "[t]he subject line shows only the
+	first word".
+
+	Fixes <https://savannah.gnu.org/bugs/?60388>.
+
+2021-05-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add regression tests for Savannah #60373.
+
+	* tests/LT_SP_AU_without_AT_works.sh:
+	* tests/LT_SP_multi-word_LO_SJ_works.sh: Add tests.
+	* mm.am (mm_TESTS): Run tests.
+
+2021-05-30  Tadziu Hoffman <hoffmann@usm.uni-muenchen.de>
+
+	Fix Savannah #57034.
+
+	* m.tmac (AT): Count author title declarations.
+	(let*mt-sign): Use correct index when iterating author names.
+	Prevent page break between author names and titles.  Iterate
+	author titles and write them.
+
+	Fixes <https://savannah.gnu.org/bugs/?57034>.
+
+2021-05-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Add regression test for Savannah #57034.
+
+	* tests/MT_5_includes_AT_in_SG.sh: Test it.  Thanks to Ken
+	Mandelberg for the reproducer.
+	* mm.am (mm_TESTS): Add variable storing script name.
+	(TESTS): Append `mm_TESTS` to run it.
+	(EXTRA_DIST):  Append `mm_TESTS` to ship it.
+
+2021-05-30  Bjarni Ingi Gislason <bjarniig@rhi.hi.is>
+
+	* mm/5.MT (cov@print-title): Fix missing diagnostic.  Memorandum
+	type 5 now requires a title to be declared with .TL.
+
+	Fixes <https://savannah.gnu.org/bugs/?59563>.
+
+2021-05-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	Cease warning level manipulation.
+
+	* m.tmac: Remove code that attempted to enable all warnings if
+	none were given on the command line.  It did this by simply
+	comparing the value of the warning register (\n[.warn]) against
+	the default value; but of course, a user could specify -w
+	options that exactly matched the default and the test would not
+	be able to tell, causing puzzling and undesired behavior.
+	Furthermore, the hard-coded default was out of date and did not
+	correspond to recent releases of groff.  If you want all
+	warnings on, use the ".warn" request with no arguments in your
+	mm document or pass "-w w" to groff (see troff(1) or the Texinfo
+	manual for more on warnings).
+
+	See commit 5aa934e7, 20 February 2020.
+
+2021-05-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/letter.mm: Revise to be a better example: use macro
+	package more effectively, follow *roff input conventions more
+	carefully, and incorporate more accurate comments.
+
+2021-05-30  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* m.tmac: Update diagnostics.  When aborting, explicitly tell
+	the user we are doing so (see
+	a334cc97abbdfb9c41e28fcd7c187b81a0a3ceac, 25 September 2020).
+	(@mm): Define new string to hold prefix for diagnostic messages.
+	(@warning, @error): Use @mm.  Reorder diagnostic messages to
+	conform with GNU Coding Standards.
+	(OK, PM): Use @warning instead of `tm` request directly.
+
+2019-09-10  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* Makefile.sim: Delete sed transformation of @G@.  It is no
+	longer needed.
+
+2018-03-01  Werner LEMBERG  <wl@gnu.org>
+
+	* m.tmac: Fix `.hy' value.
+
+	* groff_mm.7.man: Updated.
+
+2018-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	* mm.am (mmroff): Use $(AM_V_GEN) to silence file generation.
+
+2017-11-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* examples/letter.mm: New; simple example of mm usage.
+	* mm.am: Ship the file.
+
+2015-08-22  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* mmroff.1.man: Rename `mmroff.man'.
+
+	* groff_mm.7.man: Rename `groff_mm.man'.
+
+	* groff_mmse.7.man: Rename `groff_mmse.man'.
+
+	* mm.am: Include renamings.
+
+2015-08-05  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* mm.am, Makefile.sim: Add `Last update'.  Setup Emacs mode.
+
+Thu Jul 16 11:52:03 2015  Carsten Kunze  <carsten.kunze@arcor.de>
+
+	Fix line length of `.DS' with indentation (#45452).
+
+	If `.DS' with first argument `1' or `I' is used the output should
+	use an indentation of `\n[Si]n'.  To make this work, the line length
+	within the `.DS' diversion must be set to zero, otherwise the
+	effective line length is too large.
+
+	* m.tmac (DS): Call `ds@set-new-ev' with correct indentation value.
+
+Fri Apr  3 16:33:22 2015  Werner LEMBERG  <wl@gnu.org>
+
+	Make man pages work in compatibility mode.
+
+	* groff_mm.man, groff_mmse.man, mmroff.man: Do it.
+
+Wed Sep  3 21:29:00 2014  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* all files in contrib/mm: Copying and Emacs setting.
+
+Thu Aug 28 07:20:00 2014  Werner LEMBERG  <wl@gnu.org>
+
+	* m.tmac (misc@tag): Fix horizontal position.
+	Problem reported by Blake McBride <blake@mcbride.name>.
+
+Sun Mar 30 21:45:00 2014  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* Makefile.sim, Makefile.sub: Put straight error-prevention prefixes
+	for `rm'.
+
+Wed Mar  6 22:18:00 2013  Deri James  <deri@chuzzlewit.myzen.co.uk>
+
+	* groff_mm.man: Document .PIC flag -B (box). Default position of
+	picture is left (-L)
+
+Fri Mar  1 08:41:18 2013  Jim Avera  <james_avera@yahoo.com>
+
+	* m.tmac (ds@set-format, LI): s/.ie/.if/ if no else clause.
+
+Sat Nov 17 18:36:56 2012  Anton Shepelev  <anton.txt@gmail.com>
+
+	Fixed the format of header numbers in references.
+
+	* m.tmac (hd-mark-trimmed): New string to hold `hd-mark' without
+	spaces.
+	(SETR): Use it.
+
+Sun Aug 14 07:36:29 2011  Anton Shepelev  <anton.txt@gmail.com>
+
+	Fix indents in nested static displays.
+
+	* m.tmac (DS, ds@end): Save indent with a stack.
+	See http://lists.gnu.org/archive/html/groff/2011-07/msg00068.html
+	for an example.
+
+Sun Mar 27 09:25:01 2011  Anton Shepelev  <anton.txt@gmail.com>
+
+	* m.tmac (misc@tag): Fix last patch.
+
+Sat Mar 19 13:46:50 2011  James Avera  <jimav>
+
+	* m.tmac (RD): Don't use `.ie' but `.if'.
+
+Fri Mar 18 09:10:19 2011  Anton Shepelev  <anton.txt@gmail.com>
+
+	* m.tmac (misc@tag): Retain temporary indentation.
+
+Sat Feb  5 08:06:39 2011  Anton Shepelev  <anton.txt@gmail.com>
+
+	Fix vertical space around displays.
+
+	* m.tmac (ds@end): Use `.SP', not `.sp'.
+
+Fri Jan 28 11:15:29 2011  Werner LEMBERG  <wl@gnu.org>
+
+	Handle `refer-mm.tmac' file.
+
+	* refer-mm.tmac: New file.
+	* Makefile.sub (install_data, uninstall_sub): Handle it.
+
+Fri Jan 28 10:56:29 2011  Werner LEMBERG  <wl@gnu.org>
+
+	Add `refer' support.
+
+	* m.tmac: Include `refer-mm.tmac'.
+
+Fri Jan 28 10:26:29 2011  Werner LEMBERG  <wl@gnu.org>
+
+	Prepare `refer' support.
+
+	* m.tmac (\n[Rpe]): New register to control page eject status of the
+	`RP' macro.
+	(RP): Updated.
+	(ref@start-print): Move the trailing full stop in reference number
+	to...
+	(RS): This macro.
+
+	* groff_mm.man: Document `Rpe' register.
+
+Fri Jan 28 10:05:29 2011  Werner LEMBERG  <wl@gnu.org>
+
+	* mmroff.man, groff_mm.man: s/reference/cross reference/ where
+	appropriate.
+
+Wed Jan  5 15:05:47 2011  Werner LEMBERG  <wl@gnu.org>
+
+	Fix use of .DEVTAG-* macros.
+	Reported by Anton Shepelev <anton.txt@gmail.com>.
+
+	* m.tmac (misc@tag): Wrapper around .DEVTAG-* to compensate unwanted
+	vertical space.
+	(H): Use it.
+
+Mon Dec 27 09:39:20 2010  Werner LEMBERG  <wl@gnu.org>
+
+	* groff_mm.man: Fix indentation.
+
+Thu Jun 24 12:43:27 2010  Tadziu Hoffmann  <hoffmann@usm.uni-muenchen.de>
+
+	* m.tmac (misc@pop-nr): Fix assignment.
+	Reported as
+	http://lists.gnu.org/archive/html/groff/2010-06/msg00096.html
+
+Sat Jun  5 08:06:21 2010  Larry Jones <lawrence.jones@siemens.com>
+
+	* m.tmac (\*[BU]): Always define.
+
+Sat Jun  5 08:00:10 2010  Larry Jones <lawrence.jones@siemens.com>
+
+	Improve compatibility.
+
+	* m.tmac (}b, }f, }p): Define aliases for orthogonality with the
+	already available }t, }e, and }o for page headers.
+
+Wed Jun  2 16:03:39 2010  Larry Jones <lawrence.jones@siemens.com>
+
+	Fix .EOP handling and non-numeric format of \n[P].
+
+	* m.tmac (pg@header): Set `.af' temporarily to numeric format.
+	(pg@print-footer): Disable vertical traps for call to .EOP also.
+
+Wed Jun  2 16:03:39 2010  Larry Jones <lawrence.jones@siemens.com>
+
+	* m.tmac (toc@entry): Use MM page number (\nP).
+
+Sun May 30 07:14:15 2010  Larry Jones  <lawrence.jones@siemens.com>
+
+	* m.tmac (P, nP): Fix handling of short paragraphs.
+	Otherwise,
+
+	  .H 1 Bug
+	  .P
+	  one
+	  .P
+	  two
+	  .P
+	  three
+
+	results in:
+
+	  1.  Bug
+
+	  one two three
+
+	whereas it should, of course, produce:
+
+	  1.  Bug
+
+	  one
+
+	  two
+
+	  three
+
+Sat Jan  3 08:55:15 2009  Werner LEMBERG  <wl@gnu.org>
+
+	* groff_mm.man: Use new `x' table modifier for all tables which use
+	T{...T}.  This greatly improves formatting.
+
+Tue Feb  6 00:00:00 2007  Eric S. Raymond  <esr@snark.thyrsus.com>
+
+	* groff_mm.man: Typo fix.
+
+Sat Feb  3 00:00:00 2007  Eric S. Raymond  <esr@snark.thyrsus.com>
+
+	* groff_mm.man: Eliminate nonportable macro hackery in the
+	definition of T2 in favor or TBL tables.
+
+Fri Jan  5 14:35:35 2007  Werner LEMBERG  <wl@gnu.org>
+
+	Fix installation.  Reported by Jennifer Sayers.
+
+	* Makefile.sub (install, install_mm): Remove.
+	(install_bin, install_data): New targets.
+
+Sat Aug 12 23:33:45 2006  Nick Stoughton  <nick@msbit.com>
+
+	* m.tmac (P): Ignore P after H, as documented.
+
+Tue Apr 4 07:19:57 2006  Werner LEMBERG  <wl@gnu.org>
+
+	* groff_mm.man: Document strings TPh, TPeh, and TPoh.
+
+Wed Mar 29 06:58:24 2006  Werner LEMBERG  <wl@gnu.org>
+
+	* m.tmac (pg@print-footer): Disable vertical traps while emitting
+	the footer.  This fixes an endless loop caused by
+
+	  .S 27 59
+	  foo
+	  .SK
+
+	Problem reported by Bill Brelsford <k2di2@att.net>.
+
+	(LI): Remove superfluous line which sets number register `x' without
+	reason.  Problem reported by Morris Stern <mstern@mail.utexas.edu>.
+
+	(eq@check): Correctly flush labels to the right.
+	Problem reported by Morris Stern <mstern@mail.utexas.edu>.
+	Fix vertical positions of labels.
+
+	(ds@end): Emit pre-display space earlier.
+
+	* groff_mm.man: Document that only the last equation label of
+	.EQ/.EN blocks within .DS/.DE is printed.
+
+Tue Mar 28 14:00:06 2006  Werner LEMBERG  <wl@gnu.org>
+
+	. Hardwire first four font positions with R, I, B, and BI -- the
+	  documentation explicitly refers to this feature (cf. the `HF'
+	  string register).
+
+	. Don't use `%' register in numeric calculations because it is
+	  affected by `.af'.
+
+	Patches for both problems have been contributed by Nick Stoughton
+	<nick@usenix.org>.
+
+	* m.tmac: s/@language/@country/.
+	s/\n[%]/\n[P]/ where appropriate.
+	s/\fR/\f1/.
+	s/.ft R/.ft 1/.
+	s/\fI/\f2/.
+	s/.ft I/.ft 2/.
+	s/\fB/\f3/.
+	s/.ft B/.ft 3/.
+
+	* mse.tmac: s/@language/@country/.
+
+	* groff_mm.man (Fonts): New subsection.
+
+	* groff_mmse.man: Load `sv.tmac'.
+	Reformatted.
+
+	examples/README: Cleanups and updates.
+
+Mon Mar 27 15:44:24 2006  Werner LEMBERG  <wl@gnu.org>
+
+	* groff_mm.man: Completely revised and reformatted to use as many
+	man macros as possible.
+
+Thu Mar 2 09:12:06 2006  Werner LEMBERG  <wl@gnu.org>
+
+	* mse.tmac: Remove common Swedish strings and load sv.tmac instead.
+
+Sun Feb 26 13:57:13 2006  Claudio Fontana  <claudio@gnu.org>
+
+	* Makefile.sub: Add DESTDIR to install and uninstall targets
+	to support staged installations.
+
+Fri Nov 25 14:31:02 2005  Werner LEMBERG  <wl@gnu.org>
+
+	* mm/ms.cov (COVEND): Protect argument for `cov@print-abstract'
+	with doublequotes.  Reported by Fabrice Ménard
+	<menard.fabrice@wanadoo.fr>.
+
+Tue Oct 25 21:59:04 2005  Bob Diertens  <bobd@science.uva.nl>
+
+	* m.tmac (lix@print-line): Add parentheses to if-else clause to
+	fix logic.
+
+Thu May 26 08:23:40 2005  Werner LEMBERG  <wl@gnu.org>
+
+	* m.tmac: Load devtag.tmac.
+
+Mon May 16 00:00:00 CEST 2005  Keith Marshall <keith.d.marshall@ntlworld.com>
+
+	* mmroff.pl: Add space in shebang prototype for generated
+	conftest.sh script, conforming to portability recommendation in
+	autoconf docs.
+
+Wed Mar 16 06:56:02 2005  Larry Kollar  <kollar@alltel.net>
+
+	Add rudimentary support for grohtml.
+
+	* m.tmac (H): Call DEVTAG-NH and DEVTAG-EO-H.
+	(pg@enable-trap, pg@header): Do nothing for devhtml.
+
+Sun Mar 7 16:34:46 2004  Jeff Conrad <jeff_conrad@msn.com>
+
+	* m.tmac (S): Improve debug message.
+
+Wed Mar 05:38:57 2004  Joergen Haegg <jh@axis.com>
+
+	* Changed default value for Hy in manual to 0
+	* Check Hy at each new page
+
+Mon Mar 1 22:16:38 2004  Jeff Conrad <jeff_conrad@msn.com>
+
+	* m.tmac (S): Fix scaling indicator for vertical spacing.
+
+Tue Nov 05:14:45 2003  Joergen Haegg <jh@axis.com>
+
+	* another patch from ulrich lauther to fix the
+	  TOC up to 14 heading levels.
+
+Mon Oct 13:48:25 2003  Joergen Haegg <jh@axis.com>
+
+	* problem with more than 7 levels of headings fixed with
+	  patch from ulrich lauther.
+
+Wed Apr 06:42:35 2003  Joergen Haegg <jh@axis.com>
+
+	* the footer was not adjusted by VM due to a missing
+	  pg*extra-footer-size in the calculation of pg*last-pos
+
+Wed Apr 06:04:58 2003  Joergen Haegg <jh@axis.com>
+
+	* space adjustments in 4.MT to make it more like
+	  the original
+
+Sun Mar 21:45:10 2003  Joergen Haegg <jh@axis.com>
+
+	* removed error check i 4.MT, .AF is not mandatory anymore
+
+Sat Mar 21:56:57 2003  Joergen Haegg <jh@axis.com>
+
+	* cov*firm now defined only if arg to AF is non-empty
+	  That will also enable cov*default-firm from the mm locale-file
+	  to work.
+
+Sat Mar 21:05:29 2003  Joergen Haegg <jh@axis.com>
+
+	* added .ll in pg@set-env to initialize the
+	  header environment properly
+
+Wed Mar 19 23:02:16 2003  Werner LEMBERG  <wl@gnu.org>
+
+	* groff_mm.man: Some fixes from Robert D. Goulding
+	<goulding@Princeton.EDU>.
+
+Wed Sep 09:53:06 2002  Joergen Haegg <jh@axis.com>
+
+	* added implicit -mm to mmroff, it's now possible
+	  to use mmroff with or without -mm as argument.
+
+Thu Aug 08 00:31:00  Bob Diertens <bobd@science.uva.nl>
+
+	* m.tmac (VM): Add missing backslash.
+
+Fri Jun 10:37:58 2002  Joergen Haegg <jh@axis.com>
+
+	* added init@reset for LT-macros so .S works for letters
+
+Thu May 06:30:06 2002  Joergen Haegg <jh@axis.com>
+
+	* adding -T to VM for setting the total
+	  header and footer size.
+	* changing pg*extra-header-size unit from v to u in DS-size
+	  calculation
+
+Mon May 05:40:16 2002  Joergen Haegg <jh@axis.com>
+
+	* All lists now get an empty line before the list
+	  even if there is no empty lines between the items (bug in LB)
+
+Sat May 07:36:08 2002  Joergen Haegg <jh@axis.com>
+
+	* PIC is now drawn 1v higher, making it
+	  possible to put a picture at 0,0.
+	* Indentbug in P fixed, Pt=2 now behaves as it should
+
+Wed May 10:18:26 2002  Joergen Haegg <jh@axis.com>
+
+	* added L, W and O in groff_mm.man
+	* extra space in expression removed in EPIC
+	* EPIC can leftadjust with -L
+	* EPIC was drawing 1v down
+	* forgot to add mmse.tmac and mm.tmac to cvs
+
+Fri May 20:35:32 2002  Joergen Haegg <jh@axis.com>
+
+	* Clarified manual about INITR
+	* Added mm.tmac and mmse.tmac wrappers
+	* Fixed bug in mmroff so a .qrf-file always will be created
+	* .EQ mark was not correctly positioned anymore.
+	* changed SP to sp in DS/DE to further correct .EQ
+
+Sun Dec 9 00:00:00 2001 Werner LEMBERG  (wl@gnu.org)
+
+	* Makefile.sim, groff_mm.man, groff_mmse.man: Minor fixes.
+	* mmroff.man: This is a section 1 man page.
+	Minor fixes.
+	* Makefile.sub: Install mmroff.man in section 1.
+
+Wed Nov 28 00:00:00 2001 Werner LEMBERG (wl@gnu.org)
+
+	* m.tmac: Assure that the macro package is loaded only once.
+
+Wed Sep 5 00:00:00 2001 Werner LEMBERG (wl@gnu.org)
+
+	* m.tmac: Enable all warnings only if no -W or -w option is given on
+	  the command line (or rather, if only the default warnings are
+	  set).
+
+Mon Sep 3 00:00:00 2001 Werner LEMBERG (wl@gnu.org)
+
+	* groff_mm.man: Don't use .ne for TTY devices.
+
+Thu Jul 26 00:00:00 2001 Werner LEMBERG (wl@gnu.org)
+
+	* groff_mm.man: Start always a new line after end of sentence.  Add
+	  some compatibility info to the HF variable.
+
+Thu Jul 26 00:00:00 2001 Larry Jones (larry.jones@sdrc.com)
+
+	* m.tmac: Fix initialization of Hps1 and Hps2.
+
+Wed May 16 00:00:00 2001 Bruce Lilly (blilly@erols.com)
+
+	* m.tmac (TH): Fix incorrect error message.
+
+Thu Apr 12 00:00:00 2001 Ruslan Ermilov (ru@FreeBSD.org)
+
+	* groff_mm.man: Fixing some typos.
+
+Mon Mar 5 09:30:18 2001 Jörgen Hägg (jh@axis.com)
+
+	* S didn't reset to default point size
+	* (dummy line to force cvs update...)
+
+Sat Jan 06 10:30:00 2001 Werner LEMBERG (wl@gnu.org)
+
+	* Fixed assignment of page offset given as a command line argument.
+
+Fri Nov 17 05:34:17 2000 Jörgen Hägg (jh@axis.com)
+
+	* Renamed tmac.m and tmac.mse to m.tmac and mse.tmac
+
+Thu Sep 14 05:52:48 2000 Jörgen Hägg (jh@axis.com)
+
+	* New Changelog-format, it will show changes better.
+	  Easier for other to use. (Somehow I didn't really
+	  understand why the e-mail address was supposed to be
+	  'jh at axis.com' in the Changelog. :-)
+
+Mon Aug 28 00:00:00 2000 Bruno Haible (haible at clisp.cons.org)
+
+	* Makefile.sub: New target 'all', makes all prerequisites of
+	'install'.
+
+Thu Sep 7 06:17:42 2000 Jörgen Hägg (jh at axis.com)
+
+	* version 2.0
+	* Had to do something about my version numbering.
+	  The main CVS archive was not in sync with mine.
+	  So, now it is 2.0. :-)
+
+Sat Jun 17 23:00:00 2000 Eli Zaretskii (eliz@is.elta.co.il)
+
+	* Makefile.sim (.man.n): Replace `;' with `|', since DOS/Windows
+	  path lists use the semicolon as a separator.
+
+Sun Jun 4 21:39:00 2000 Kaneda Hiroshi (vanitas at ma3.seikyou.ne.jp)
+
+	* Fixing a lot of typos in groff_mm.man
+
+Tue Mar 7 00:00:00 2000 OKAZAKI Tetsurou (okazaki at be.to)
+
+	* Makefile.sub: Use $(INSTALL_SCRIPT) for script files.
+
+Sun Jan 30 22:52:20 2000 Jörgen Hägg (jh at axis.com)
+
+	* version 1.34
+	* Changed the version number in the CVS repository
+	* MC had a bug in column calculation, (thanks to T. Kurt Bond)
+
+Fri Sep 3 07:33:14 1999 Jörgen Hägg (jh at axis.com)
+
+	* version 1.33
+	* At last! I finally tracked down the PGFORM bug!
+	  It didn't setup the @pl, @ll and @po as it should, now it does.
+	* mgm_ref/mgm_roff renamed to mmroff [-x]
+	* fixed y2k-bug in \*[DT]
+	* \n[cov*year] removed, hope no one used that.
+	* ISODATE added with Iso as command line flag
+		(iso-date suggested by Paul Eggert)
+	* Added ISODATE to tmac.mse and removed local settings
+	  of new-date.
+	* INITI syntax changed and enhanced. Index processing is now
+	  done with mmroff.
+	* A few examples has been added, new subdirectory 'examples'.
+	* Fixed bug with SETR, header references are now only saved
+	  when Ref > 0
+	* Problem with register H1h fixed
+	* Added test for missing abstract in 4.MT
+	* Updated Makefile.sub, using tmac_m_prefix.
+
+Mon Mar 15 22:22:42 1999 Jörgen Hägg (jh at axis.com)
+
+	* OK, let's release this as a beta, 1.33 will be better. :-)
+	* version 1.32
+	* fixed .el-error
+	* Added number variable Hss
+	* Changed Hps1 and Hps2 to units
+	* added hd*h1-text to be used in user defined macro TP.
+	* -U needed for SETR (I really need 'mv', 'echo', 'rm'
+	  and 'test' builtin!)
+	* Rewritten the reference system, SETR now prints to stderr
+	  if the number register Qrf > 0. Store in the filename
+	  that is the argument to .INITR
+	  The old behaviour is returned if number register Initr > 0.
+	* Fixed bug with List of XXXX, long lines messed up the result.
+	* added number register H1dot.
+	* added string variable H1txt
+	* added string variable Tcst
+	* added number register Dsp.
+	* added alias APPX for user-defined appendix title.
+	* added string variable Apptxt
+	* added H1h for use in TP in headers
+	* added macro EPIC
+	* added macro PIC (safe replacement for PSPIC)
+	* fixed Hps-bug, should be 1, not 1v.
+	* fixed bug with APPSK, variable not set.
+
+Wed Feb 4 15:46:04 1998 Jörgen Hägg (jh at axis.se)
+
+	* version 1.31
+	* .LI will now honor a space mark.
+	* Another fix for .AU to let it be used without arguments.
+	* uninitialized eq*label fixed
+
+Fri Sep 6 07:13:07 1996 Jörgen Hägg (jh at axis.se)
+
+	* version 1.30
+	* This is more like a beta-release, bugs might pop up. :-)
+	* last line in TOC was not correctly terminated (missing .br)
+	* changed the indentation for displays, it will now
+	  indent to the current indent, not the one at the definition
+	  of the display.
+	* Equation marks should now work better, indentation also.
+	* included these bug fixes from Larry Jones:
+	*   The documentation for the argument to .AS was incorrect for MT 4.
+	*   \*(EM should be a double-dash for nroff.
+	*   \nS is in points, not units.
+	*   If \nO isn't set, the default page offset should be .75i for nroff
+		and .963i for troff.
+	*   .S D should set the point size to \nS, not 10.
+	*   .S was setting the vertical spacing based on the old point size
+		instead of the new point size.
+	*   Got rid of a spurious .br that prevented run-in headings from
+		working.
+	*   Reset the .SP counters in pg@header so that spacing on one page
+		won't affect spacing on subsequent pages.
+	*   Allow .AU and .AF with no arguments (real mm does, even though it
+		isn't documented).
+	*   Do .init@reset first thing to initialize the default environment.
+	*   For MT 4, the title should be 4 points larger than the default size,
+		not 12 point.
+	*   The cover environment needs to be initialized.
+	*   Printing the abstract on the first page needs to be controlled by
+		the .AS argument.
+	*   Heading eject should be suppressed if the heading immediately
+		follows the first page stuff (title, author, etc.).
+	*   support for table of contents numbering style (.nr Oc)
+	*   changes the troff empty line height from .25v to .5v
+	*   fixed section page numbering
+	*   fixed a really nasty bug in footnotes that could cause you
+		to lose the page footer completely if the very first
+		footnote on the page occurred at just the wrong place
+
+
+Wed May 15 07:39:32 1996 Jörgen Hägg (jh at axis.se)
+
+	* version 1.29
+	* Syntax and scaling error fixed, (thanks to Frazer Williams)
+	* DF/DE will now do a line-break before printing the display.
+	* Updated the manual for TB,FG,EX and EC.
+	* Added support for the ms- (and mgs-)macro .IX
+	* Added indexmacro IX, INITI, IND and INDP, support for
+	  TXIND, TYIND and TZIND.
+	* PGFORM will now always really reset to the default
+	  values for unspecified arguments.
+	* Floating displays tested and repaired, it should
+	  now (finanlly) work exactly as the original (I hope :-).
+	* Should now set year correctly even after 2000.
+	* Stupid bug in PGNH fixed.
+	* Corrected line length for figure caption (FG and friends)
+
+
+Mon Apr 24 07:37:52 1995 Jörgen Hägg (jh at axis.se)
+
+	* version 1.28
+	* Added AVL (AV without date)
+	* Fixed nroff scaling for W and L.
+	* Added support for register E and roman/bold
+	  for all Subject/Date/From strings.
+	* Added support for register C (1-4), (for DRAFTs and other types)
+	* Will protest if not used with groff.
+	* Change of the internal number registers @ps and @vs, they
+	  are now in units, and is set in the new macros .@ps and .@vs.
+	  @ps and @vs is now corrected to the real point and vertical size.
+	* Macro EQ has now correct pointsize.
+	* Figures should now get the right page number in the index.
+	* User-defined macros can now be defined for list of
+	  figures, tables, equations and exhibits (T{X,Y}{FG,TB,EC,EX}.
+	* Space may be omitted between prefix and mark in automatic lists (.AL)
+	  See .LI
+
+Tue Jan 10 07:51:37 1995 Jörgen Hägg (jh at axis.se)
+
+	* version 1.27
+	* Manual updated
+	* More bugs fixed in DS/DF
+	* added alias for :g
+	* LC can now be used without argument (as the manual says. :-)
+	* Register :R now supported (RS/RF)
+	* footnote line was printed even if there was no room for
+	  any footnotes. Fixed.
+	* Fixed 1C so that it can be used without page eject
+	* Added support for EOP (TPs twin)
+	* Hyphenation turned off by default. (Hy == 0)
+
+Fri Nov 4 08:14:50 1994 Jörgen Hägg (jh at axis.se)
+
+	* version 1.25
+	* DS/DF separated and several bugs fixed. Watch out for new though. :-)
+	* string DT was emptied by mistake in the previous version.
+	* RD made prettier.
+	* typo in AV and let@print-head fixed.
+
+Mon Oct 31 08:19:24 1994 Jörgen Hägg (jh at axis.se)
+
+	* version 1.24
+	* Bug fixed and format extended in .SG and .FC.
+	* date is always printed unless .ND without argument is used.
+	  (I wonder what's the right thing to do, this might change.)
+	* Swedish letter-standards implemented in tmac.mse.
+	* .ND can be used to turn off the date. (Empty argument)
+
+Mon Oct 31 08:14:09 1994 Jörgen Hägg (jh at axis.se)
+
+	* version 1.23
+	* An attempt to get in sync with RCS. This is the distributed
+	  version.
+
+Thu Oct 27 08:29:34 1994 Jörgen Hägg (jh at axis.se)
+
+	* version 1.22
+	* (version 1.21 lost... :-)
+	* Letter macros added!!
+	* The following macros are added:
+	* AV, FC, IA ,IE, LT, LO, NE, NS, SG, WA, WE
+	* nP also added.
+
+Tue Dec 14 16:26:36 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.20
+	* spelling-corrections
+	* Makefile.sim updated to the correct version, and a uninstall
+	  target added.
+	* @cur-lib removed from tmac.m (obsolete)
+	* fixed check for references i .TC, .RP now resets the flag correctly.
+	* floating display should now be printed if there is space.
+	* first version using RCS. I've been avoiding version control until it
+	  became necessary.
+	* WC WD now works in two-column-mode.
+
+Tue Sep 7 08:37:00 1993 Jörgen Hägg (jh at efd.lth.se)
+
+	* version 1.19
+	* .lt is called in the header for .TP also.
+	* Variable Pgps added to control the header and footer point-size.
+	* Error-text printed with .APP removed.
+	* Error with .FG, .TB, .EC and .EX indentation fixed.
+	* header and footer line-length is not changed by MC or 2C.
+	* Default for page-length and page-offset is now taken from
+	  \n[.p] and \n[.o].
+	* Argument to .ab (abort) is supplied.
+	* Argument to .1C added.
+	* Argument to .PGFORM added.
+	* RP/RS/RF totally rewritten. Should work with 2C now.
+
+Fri Apr 23 10:37:25 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.18
+	* Height of display is now more exactly calculated.
+	* tabs and blankspaces where wrong in .VERBON.
+	* error in manual for escape-character in VERBON.
+	* Makefile.sub: installed tmac.m as tmac.m and tmac.mse
+	* Installation of tmac.mse now supports TMAC_M.
+	* bug with N fixed.
+
+Mon Apr 5 09:36:01 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.17
+	* MULB preserves size.
+	* bug in VERBON fixed, causing strange errors.
+	* section-page footer fixed.
+	* added support for numberregister S
+	* fixed bug with floating displays which made floats to
+	  generate space on a page, but broke page anyway.
+	* end-of-page trap reinstalled.
+
+Mon Mar 29 10:53:13 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.16
+	* MUL* now use the previous font and family.
+	* extra blank page at end-of-text eliminated.
+
+Mon Mar 8 10:27:47 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.15
+	* Didn't restore pointsize to current size in .H.
+	* B1/B2 did not work with indent. (MULE and friends)
+	* fixed old problem with trailing empty pages.
+
+Fri Mar 5 15:20:49 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.14
+	* Sigh. Amazing what a missing \} can do. If the string
+	  HP was set, then all text disappeared...
+
+Fri Mar 5 14:12:43 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.13
+	* Fixed bug with handling ps/vs in .H. (again, sigh... )
+
+Wed Mar 3 09:21:20 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.12
+	* Line-break added to PGFORM.
+	* added more features to VERBON
+	* .S is not used anymore in H, it caused confusion with
+	  normal text, but it will still set .vs.
+	* SK was broken, will now produce the requested number of
+	  empty pages.
+	* dotted lines added to LIST OF FIGURES and friends.
+	  Also better linespacing.
+
+Mon Feb 22 12:41:06 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.11
+	* missing left-parenthesis gave ") .sp" when N=4.
+	* N=4 removed user-specified header also.
+	* MOVE made linelength pageoffset wider than wanted.
+	* fixed (again) parenthesis in RP.
+
+Thu Jan 21 12:10:39 1993 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.10
+	* changed PROG_PREFIX to g in the manual-pages.
+	* Better check if new page is needed in .H, when Ej>0.
+	* Usage of variable Lsp now more complete.
+	* Space added in TOC when mark is equal to size.
+	* Usermacro HY moved after font-calulations.
+	* .S used instead of .ps, which will use .vs correct.
+	* Now possible to set Hps1/2 inside HX.
+	* .FD "" 1 is now fixed.
+	* section-page numbering bug fixed.
+	* several bugs in VERBON/OFF fixed.
+
+Tue Dec 8 16:43:15 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.09
+	* N==4 gives no default header
+
+Sat Nov 21 14:28:20 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.08
+	* Escape-character disabled between 
+	  VERBON/VERBOFF (turned on by an argument).
+	  Pointsize and fontchange also added as arguments.
+	* MULB, MULN and MULE added to get multicolumn output
+	  with different width.
+	* Number register N can now use 1-5.
+	* Register Sectp and Sectf added.
+	* Register P is now updated correctly for "section-page" numbering.
+
+Thu Nov 19 11:19:33 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.07
+	* .OP fixed to eject a blank page if not odd.
+
+Fri Nov 13 09:46:09 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.06
+	* Macro TL rewritten. TL depends now on a following .AU.
+	* NOTES updated.
+	* .lt is now used more frequent when linelength is changed.
+	* macro AST added.
+	* removed PH/EH/OH not needed in ?.MT.
+
+Wed Oct 28 14:35:43 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.05
+	* .VM implemented.
+	* Possible bug in page heading fixed. Changed .sp to 'sp in HEADER.
+
+Thu Aug 20 13:56:31 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.04
+	* page-break in .EQ moved.
+	* changed unit for footer-size and header-size from units to lines.
+	  Fixes problems with .S and page-breaks.
+	* \n[%] is now treated as a string, which makes it possible
+	  to assign new formats to it. Unfortunately, it was necessary
+	  to change the page-number-variable in GETPN to a string.
+	* Makefile.sub included. (Thank you, James)
+
+Thu May 7 16:14:10 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.03
+	* Typo and centering in DS/DE fixed. 
+	  Even and odd pageheaders were reversed.
+	* LI: pad and mark-indent was lost in some earlier versions. Now fixed.
+	* fixed bug in reference to .FG, .TB, ...
+	* APP did not clear headercounters.
+	* Pointsize in titles is now only set at the beginning and
+	  when PH, PF, OH, OF, EH and EF are used.
+
+Thu May 6 16:01:35 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.02
+	* OP fixed.
+
+Fri Mar 6 09:36:09 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.01
+	* two .LI without text between should not be printed
+	  on the same row. Now fixed.
+	* figure titles and friends fixed, now possible with many .FG
+	  in a DS/DE. Didn't always position correctly in previous version,
+	  but is now always printed as it should.
+	* Makefile fixed for Ultrix.
+	* DS/DF could not handle empty arguments correct
+	* Missing .br i EQ added.
+
+Sat Jan 25 15:47:21 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 1.00
+	* No betaversion anymore!
+	* Fixed headernumbers within appendixes.
+	* DS did not keep the same font as before DS.
+	* mmse did a line break.
+
+Fri Jan 24 14:38:16 1992 Joergen Haegg (jh at efd.lth.se)
+
+	* version 0.16
+	* bug in TC, multiple line headers did not wrap correctly.
+	* added support for mm/locale and mm/language_locale.
+	* cov*default-firm in locale sets name of firm in the MT covers.
+	* cov*location-xxxx in locale sets location xxxx to the contents
+	  of cov*location-xxxx. Used in the MT covers.
+	* hanging indent in lists fixed.
+	* use larger empty lines if .nroff is defined.
+	* macros, like .P, can now be used inside abstracts.
+	* .S do not reset indentation anymore.
+	* .RS aA now sets a string, not an integer.
+	* appendix with .APP or .APPSK added.
+
+Thu Nov 28 22:00:59 1991 Joergen Haegg (jh at efd.lth.se)
+
+	* version 0.15
+	* Fixed .AU in MT 0-3, added support for variable Au.
+	* Bug in the positioning of the foot-notes.
+	* lists not indented properly.
+	* Hps1 and Hps2 added.
+	* COVER had to have an argument.
+	* table of contents can now have multiline header.
+	* .HU now increments headingvariable H?
+	* added the inclusion of a locale file. 
+
+Sat Nov 23 14:40:17 1991 Joergen Haegg (jh at efd.lth.se)
+
+	* version 0.14
+	* bug when using -rO fixed.
+	* MT 1-4 added. 
+	* default is now MT 1
+	* .EQ/.EN can be used outside of .DS/.DE without complaints. But
+	  I don't recommend it. Neither does the DWB books.
+	* LI don't break lines now if arg too big.
+	* PGFORM did not reset indent.
+	* Added the numbervariable Hps.
+	* Rewritten and added MT 0-5 + "string".
+	* Added TM.
+	* Indent to AS added
+
+Wed Nov 6 15:18:40 1991 Joergen Haegg (jh at efd.lth.se)
+
+	* version 0.13
+	* ds*format nod defined if PS/PE is used without DS/DE.
+	* GETST added, fourth argument to EX, FG, TB and EC added.
+
+Mon Nov 4 13:38:01 1991 Joergen Haegg (jh at efd.lth.se)
+
+	* version 0.12
+	* Fixed C,D,P,+-size in .S
+
+Sun Jan 1 00:00:00 1991 Joergen Haegg (jh at efd.lth.se)
+	* Next version will have ChangeLog entries...
+	* Bug in INITR fixed.
+	* VERBON/VERBOFF added to include programlistings
+	* Bug in .DE fixed, addition overflow
+Sun Jan 1 00:00:00 1991 Joergen Haegg (jh at efd.lth.se)
+	* spelling error in month-names.
+	* WC should work now (no warranty :-)
+	* FD almost finished, some details missing.
+	* incorrect calculation of foot-notes fixed.
+	* DS/DE did not break page when the size was smaller than the paper
+	* Forward/backward referencesystem added. Se .INITR in README.
+	* mgmsw changed name to mgmse.
+Sun Jan 1 00:00:00 1991 Joergen Haegg (jh at efd.lth.se)
+	* embarrassing bug in .P fixed 
+	* .H did always eject page, now fixed.
+	* lost floating displays now found.
+	* accents added (from mgs)
+	* empty line in .EQ/.EN removed
+	* indentation in .TC corrected.
+	* indentation of DS/DE in lists fixed.
+	* .TB and friends now work inside DS/DE and outside.
+	* .WC partially implemented (WF and WD). Still working on it.
+	* .mso used if version>=1.02
+Sun Jan 1 00:00:00 1991 Joergen Haegg (jh at efd.lth.se)
+	* register P was not working.
+	* support for register Fg, Tb, Ec and Ex.
+	* list items was left on the previous page at a page break.
+	* tlevel in .TC now defaults to 2.
+	* string DT, EM and Tm supported.
+	* new macro: PGNH, see comments.
+	* bug in MOVE fixed.
+	* pagenumber in .TC fixed.
+	* a blank page was ejected if Ej==1, now fixed
+	* bug in floating display fixed (did break and SP wrong)
+	* bug in .SP fixed, no lines is now printed at top of page
+	* There are still problems with footnotes and displays in two column mode.
+Sun Jan 1 00:00:00 1991 Joergen Haegg (jh at efd.lth.se)
+	* register P added (same as %)
+	* bug in floating displays fixed
+	* MOVE	added
+	* MT	added, see comment below
+	* COVER/COVEND	added
+	* fixed bug in figure titles
+	* extended S, se comment below
+	* MT 0	added
+	* ms-cover added (COVER ms)
+Sun Jan 1 00:00:00 1991 Joergen Haegg (jh at efd.lth.se)
+	* bugs in RD and comb. fonts fixed
+Sun Jan 1 00:00:00 1991 Joergen Haegg (jh at efd.lth.se)
+	* HC	added
+	* Combined fonts (IB,BI...)
+	* HM	added
+	* RD	added
+	* OP	added
+	* TP&PX	supported
+	* warnings for unimplemented macros
+
+________________________________________________________________________
+
+Copyright 1991-2021 Free Software Foundation, Inc.
+Copyright 2021-2026 G. Branden Robinson
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+coding: latin-1
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

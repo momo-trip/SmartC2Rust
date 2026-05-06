@@ -1,0 +1,137 @@
+# Copyright 2014-2023 Free Software Foundation, Inc.
+#           2021-2024 G. Branden Robinson
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+GXDITVIEWSOURCES = \
+  src/devices/xditview/device.c \
+  src/devices/xditview/draw.c \
+  src/devices/xditview/draw.h \
+  src/devices/xditview/Dvi.c \
+  src/devices/xditview/font.c \
+  src/devices/xditview/font.h \
+  src/devices/xditview/lex.c \
+  src/devices/xditview/lex.h \
+  src/devices/xditview/page.c \
+  src/devices/xditview/page.h \
+  src/devices/xditview/parse.c \
+  src/devices/xditview/parse.h \
+  src/devices/xditview/xditview.c \
+  src/devices/xditview/device.h \
+  src/devices/xditview/DviP.h \
+  src/devices/xditview/Menu.h \
+  src/devices/xditview/Dvi.h
+
+GXDITVIEW_GROFF_VERSION_H=src/devices/xditview/groff_version.h
+
+$(GXDITVIEW_GROFF_VERSION_H): .version
+	$(AM_V_at)$(MKDIR_P) `dirname $@`
+	$(AM_V_GEN)printf \
+	  'const char *Version_string = "%s";\n' '@VERSION@' > $@
+
+if WITHOUT_X11
+GXDITVIEW_MAN1 =
+EXTRA_DIST += $(GXDITVIEWSOURCES)
+else
+GXDITVIEW_MAN1 = src/devices/xditview/gxditview.1
+xditview_srcdir = $(top_srcdir)/src/devices/xditview
+bin_PROGRAMS += gxditview
+gxditview_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS) -Dlint \
+  -I$(top_builddir)/src/devices/xditview
+gxditview_LDADD = $(X_LIBS) $(X_PRE_LIBS) -lXaw -lXmu $(X_AW_DEPS) \
+  -lXt -lX11 $(X_EXTRA_LIBS) $(LIBM) libxutil.a lib/libgnu.a
+XDITVIEW_GENHDRS = \
+ src/devices/xditview/GXditview-ad.h \
+ $(GXDITVIEW_GROFF_VERSION_H)
+gxditview_SOURCES = $(GXDITVIEWSOURCES)
+nodist_gxditview_SOURCES = $(XDITVIEW_GENHDRS)
+CLEANFILES += $(XDITVIEW_GENHDRS)
+
+GXDITVIEWTMACFILES = \
+  tmac/tty.tmac \
+  tmac/tty-char.tmac
+gxditviewtmacdir = $(tmacdir)
+dist_gxditviewtmac_DATA = $(GXDITVIEWTMACFILES)
+
+man1_MANS += $(GXDITVIEW_MAN1)
+
+# Because we defined gxditview_CPPFLAGS, automake renames all of
+# xditview's objects, adding an "gxditview-" prefix.
+src/devices/xditview/gxditview-device.$(OBJEXT): defs.h
+src/devices/xditview/gxditview-xditview.$(OBJEXT): $(XDITVIEW_GENHDRS)
+
+src/devices/xditview/GXditview-ad.h: $(xditview_srcdir)/GXditview.ad
+	$(AM_V_at)$(MKDIR_P) $(top_builddir)/src/devices/xditview
+	$(AM_V_GEN)$(SHELL) $(xditview_srcdir)/ad2c \
+	  $(xditview_srcdir)/GXditview.ad > $@
+endif
+
+EXTRA_DIST += \
+  src/devices/xditview/ad2c \
+  src/devices/xditview/ChangeLog \
+  src/devices/xditview/DESC.in \
+  src/devices/xditview/FontMap-X11 \
+  src/devices/xditview/GXditview-color.ad \
+  src/devices/xditview/GXditview.ad \
+  src/devices/xditview/README \
+  src/devices/xditview/TODO \
+  src/devices/xditview/gray1.bm \
+  src/devices/xditview/gray2.bm \
+  src/devices/xditview/gray3.bm \
+  src/devices/xditview/gray4.bm \
+  src/devices/xditview/gray5.bm \
+  src/devices/xditview/gray6.bm \
+  src/devices/xditview/gray7.bm \
+  src/devices/xditview/gray8.bm \
+  src/devices/xditview/xdit.bm \
+  src/devices/xditview/xdit_mask.bm \
+  src/devices/xditview/gxditview.1.man
+
+# Custom installation of GXditview.ad and GXditview-color.ad
+install-data-local: install_xditview
+uninstall-local: uninstall_xditview
+
+if WITHOUT_X11
+install_xditview:
+uninstall_xditview:
+else
+install_xditview: \
+  $(xditview_srcdir)/FontMap-X11 \
+  $(xditview_srcdir)/GXditview.ad \
+  $(xditview_srcdir)/GXditview-color.ad
+	$(MKDIR_P) $(DESTDIR)$(fontdir)
+	$(INSTALL_DATA) $(xditview_srcdir)/FontMap-X11 \
+	  $(DESTDIR)$(fontdir)/FontMap-X11
+	-test -d $(DESTDIR)$(appdefdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(appdefdir)
+	$(INSTALL_DATA) $(xditview_srcdir)/GXditview.ad \
+	  $(DESTDIR)$(appdefdir)/GXditview
+	$(INSTALL_DATA) $(xditview_srcdir)/GXditview-color.ad \
+	  $(DESTDIR)$(appdefdir)/GXditview-color
+
+uninstall_xditview:
+	$(RM) $(DESTDIR)$(appdefdir)/GXditview
+	$(RM) $(DESTDIR)$(appdefdir)/GXditview-color
+	$(RM) $(DESTDIR)$(fontdir)/FontMap-X11
+	-rmdir $(DESTDIR)$(fontdir) 2>/dev/null
+	-rmdir $(DESTDIR)$(tmacdir) 2>/dev/null
+endif
+
+# Local Variables:
+# fill-column: 72
+# mode: makefile-automake
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

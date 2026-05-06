@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Using Escape Sequences (The GNU troff Manual)</title>
+
+<meta name="description" content="Using Escape Sequences (The GNU troff Manual)">
+<meta name="keywords" content="Using Escape Sequences (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Formatter-Instructions.html" rel="up" title="Formatter Instructions">
+<link href="Delimiters.html" rel="next" title="Delimiters">
+<link href="Calling-Macros.html" rel="prev" title="Calling Macros">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Using-Escape-Sequences"></span><div class="header">
+<p>
+Next: <a href="Delimiters.html" accesskey="n" rel="next">Delimiters</a>, Previous: <a href="Calling-Macros.html" accesskey="p" rel="prev">Calling Macros</a>, Up: <a href="Formatter-Instructions.html" accesskey="u" rel="up">Formatter Instructions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Using-Escape-Sequences-1"></span><h4 class="subsection">5.6.4 Using Escape Sequences</h4>
+<span id="index-using-escape-sequences"></span>
+<span id="index-escape-sequences"></span>
+
+<p>Whereas requests must occur on control lines, escape sequences can occur
+intermixed with text and may appear in arguments to requests, macros,
+and other escape sequences.
+<span id="index-_005c"></span>
+An escape sequence is introduced by the escape character, a backslash
+<code>\</code> (but see the <code>ec</code> request below).  The next character
+selects the escape&rsquo;s function.
+</p>
+<p>Escape sequences vary in length.  Some take an argument, and of those,
+some have different syntactical forms for a one-character,
+two-character, or arbitrary-length argument.  Others accept <em>only</em>
+an arbitrary-length argument.  In the former scheme, a one-character
+argument follows the function character immediately, an opening
+parenthesis &lsquo;<samp>(</samp>&rsquo; introduces a two-character argument (no closing
+parenthesis is used), and an argument of arbitrary length is enclosed in
+brackets &lsquo;<samp>[]</samp>&rsquo;.  In the latter scheme, the user selects a delimiter
+character.  A few escape sequences are idiosyncratic, and support both
+of the foregoing conventions (<code>\s</code>), designate their own
+termination sequence (<code>\?</code>), consume input until the next newline
+(<code>\!</code>, <code>\&quot;</code>, <code>\#</code>), or support an additional modifier
+character (<code>\s</code> again, and <code>\n</code>).  In no case can an escape
+sequence parameter contain an unescaped newline.  As with requests, use
+of some escape sequences in source documents may interact poorly with a
+macro package you use; consult its documentation to learn of &ldquo;safe&rdquo;
+sequences or alternative facilities it provides to achieve the desired
+result.
+</p>
+<p>If the character that follows the escape character
+does not identify a valid operation,
+the formatter ignores the escape character.<a id="DOCF60" href="groff.html_fot.html#FOOT60"><sup>60</sup></a>
+</p>
+<div class="example">
+<pre class="example">$ groff -T ps -ww
+.nr N 12
+.ds co white
+.ds animal elephant
+I have \fI\nN \*(co \*[animal]s,\f[]
+said \P.\&amp;\~Pseudo Pachyderm.
+    error&rarr; warning: ignoring escape character before 'P'
+    &rArr; I have <i>12 white elephants,</i> said P. Pseudo Pachyderm.
+</pre></div>
+
+<p>Escape sequence interpolation is of higher precedence than escape
+sequence argument interpretation.  This rule affords flexibility in
+using escape sequences to construct parameters to other escape
+sequences.
+</p>
+<div class="example">
+<pre class="example">.ds family C\&quot; Courier
+.ds style I\&quot; oblique
+Choose a typeface \f(\*[family]\*[style]wisely.
+    &rArr; Choose a typeface <i>wisely.</i>
+</pre></div>
+
+<p>In the above, the syntax form &lsquo;<samp>\f(</samp>&rsquo; accepts only two characters for
+an argument; the example works because the subsequent escape sequences
+are interpolated before the selection escape sequence argument is
+processed, and strings <code>family</code> and <code>style</code> interpolate one
+character each.<a id="DOCF61" href="groff.html_fot.html#FOOT61"><sup>61</sup></a>
+</p>
+<p>The escape character is nearly always interpreted when encountered; it
+is therefore desirable to have a way to interpolate it, disable it, or
+change it.
+</p>
+<span id="index-formatting-the-escape-character-_0028_005ce_0029"></span>
+<span id="index-escape-character_002c-formatting-_0028_005ce_0029"></span>
+<dl>
+<dt id="index-_005ce-1">Escape&nbsp;sequence: <strong><tt>\e</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005ce"></span>
+<p>Interpolate the escape character.
+<span id="index-_005ce_002c-interpretation-in-copy-mode"></span>
+<code>\e</code> is interpreted even in copy mode (see <a href="Copy-Mode.html">Copy Mode</a>).
+</p></dd></dl>
+
+<span id="index-formatting-a-backslash-glyph-_0028_005c_005brs_005d_0029"></span>
+<span id="index-backslash-glyph_002c-formatting-_0028_005c_005brs_005d_0029"></span>
+<p>The <code>\[rs]</code> special character escape sequence formats a backslash
+glyph.  In macro and string definitions, the input sequences <code>\\</code>
+and <code>\E</code> defer interpretation of escape sequences.  See <a href="Copy-Mode.html">Copy Mode</a>.
+</p>
+<dl>
+<dt id="index-_002eeo">Request: <strong><tt>.eo</tt></strong></dt>
+<dd><span id="index-eo"></span>
+<span id="index-disabling-_005c-_0028eo_0029"></span>
+<span id="index-_005c_002c-disabling-_0028eo_0029"></span>
+<p>Disable the escape mechanism except in copy mode.  Once this request is
+invoked, no input character is recognized as starting an escape
+sequence in interpretation mode.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002eec">Request: <strong><tt>.ec</tt></strong> <em>[<span class="roman"><i>o</i></span>]</em></dt>
+<dd><span id="index-ec"></span>
+<span id="index-escape-character_002c-changing-_0028ec_0029"></span>
+<span id="index-character_002c-escape_002c-changing-_0028ec_0029"></span>
+<p>Recognize the ordinary character&nbsp;<var>o</var> as the escape character.
+If&nbsp;<var>o</var> is absent or invalid, the default escape character
+&lsquo;<samp>\</samp>&rsquo; is selected.  If <var>o</var> (or &lsquo;<samp>\</samp>&rsquo; if <var>o</var> is invalid) is
+already the control or no-break control character, an error is diagnosed
+and the request ignored.
+</p></dd></dl>
+
+<p>Switching escape sequence interpretation off to define a macro and back
+on afterward can obviate the need to double the escape character within
+the definition.  See <a href="Writing-Macros.html">Writing Macros</a>.  This technique is not available
+if your macro needs to interpolate values at the time it is
+<em>defined</em>&mdash;but many do not.
+</p>
+<div class="example">
+<pre class="example">.\&quot; simplified `BR` macro from the man(7) macro package
+.eo
+.de BR
+.  ds result \&amp;
+.  while (\n[.$] &gt;= 2) \{\
+.    as result \fB\$1\fR\$2\&quot;
+.    shift 2
+.  \}
+.  if \n[.$] .as result \fB\$1\&quot;
+\*[result]
+.  rm result
+.  ft R
+..
+.ec
+</pre></div>
+
+<dl>
+<dt id="index-_002eecs">Request: <strong><tt>.ecs</tt></strong></dt>
+<dd><span id="index-ecs"></span>
+</dd><dt id="index-_002eecr">Request: <strong><tt>.ecr</tt></strong></dt>
+<dd><span id="index-ecr"></span>
+<p>The <code>ecs</code> request stores the escape character for recall with
+<code>ecr</code>.  <code>ecr</code> sets the escape character to &lsquo;<samp>\</samp>&rsquo; if none
+has been saved.
+</p>
+<p>Use these requests together to temporarily change the escape character.
+</p></dd></dl>
+
+<p>Using a different escape character, or disabling it, when calling macros
+not under your control will likely cause errors, since GNU <code>troff</code>
+has no mechanism to &ldquo;intern&rdquo; macros&mdash;that is, to convert a macro
+definition into a form independent of its
+representation.<a id="DOCF62" href="groff.html_fot.html#FOOT62"><sup>62</sup></a>  When a
+macro is called, its contents are interpreted literally.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Delimiters.html" accesskey="n" rel="next">Delimiters</a>, Previous: <a href="Calling-Macros.html" accesskey="p" rel="prev">Calling Macros</a>, Up: <a href="Formatter-Instructions.html" accesskey="u" rel="up">Formatter Instructions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

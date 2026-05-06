@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Deferring Output (The GNU troff Manual)</title>
+
+<meta name="description" content="Deferring Output (The GNU troff Manual)">
+<meta name="keywords" content="Deferring Output (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Traps.html" rel="next" title="Traps">
+<link href="Drawing-Geometric-Objects.html" rel="prev" title="Drawing Geometric Objects">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Deferring-Output"></span><div class="header">
+<p>
+Next: <a href="Traps.html" accesskey="n" rel="next">Traps</a>, Previous: <a href="Drawing-Geometric-Objects.html" accesskey="p" rel="prev">Drawing Geometric Objects</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Deferring-Output-1"></span><h3 class="section">5.28 Deferring Output</h3>
+<span id="index-deferred-output"></span>
+
+<span id="index-environment"></span>
+<span id="index-diversion"></span>
+<span id="index-trap"></span>
+<p>A few <code>roff</code> language elements are generally not used in simple
+documents, but arise as page layouts become more sophisticated and
+demanding.  <em>Environments</em> collect formatting parameters like line
+length and typeface.  A <em>diversion</em> stores formatted output for
+later use.  A <em>trap</em> is a condition on the input or output, tested
+automatically by the formatter, that is associated with a macro:
+fulfilling the condition <em>springs</em> the trap&mdash;calls the macro.
+</p>
+<p>Footnote support often exercises all three of the foregoing features.
+A simple implementation might work as follows.
+The author writes a pair of macros:
+one starts a footnote and the other ends it.
+They further set a trap a small distance above the page bottom,
+reserving a footnote area.
+The author calls the first macro where a footnote mark is desired.
+The macro establishes a diversion so that the footnote text is collected
+at the place in the body text where its corresponding mark appears.
+It further creates an environment for the footnote so that it
+sets using a smaller typeface.
+The footnote text is formatted in the diversion using that environment
+but it does not yet appear in the output.
+The document author calls the footnote end macro,
+which returns to the previous environment and ends the diversion.
+Later,
+after body
+text nearly fills the page, the trap springs.
+The macro called by the trap draws a line across the page
+and emits the stored diversion by calling it like a macro.
+Thus,
+the footnote renders.
+</p>
+<p>Diversions and traps make the text formatting process non-linear.  Let
+us imagine a set of text lines or paragraphs labelled &lsquo;<samp>A</samp>&rsquo;,
+&lsquo;<samp>B</samp>&rsquo;, and so on.  If we set up a trap that produces text &lsquo;<samp>T</samp>&rsquo;
+(as a page footer, say), and we also use a diversion to store the
+formatted text &lsquo;<samp>D</samp>&rsquo;, then a document with input text in the order
+&lsquo;<samp>A B C D E F</samp>&rsquo; might render as &lsquo;<samp>A B C E T F</samp>&rsquo;.
+The diversion
+&lsquo;<samp>D</samp>&rsquo;
+is never output if we do not call it.
+</p>
+<p>Environments of themselves are not a source of non-linearity in document
+formatting: environment switches have immediate effect.  One could
+always write a macro to change as many formatting parameters as desired
+with a single convenient call.  But because diversions can be nested and
+macros called by traps that are sprung by other trap-called macros, they
+may be interpolated in varying contexts.  For example, consider a page
+header that is always to be set in Helvetica.  A document that uses
+Times for most of its body text, but Courier for displayed code
+examples, poses a challenge if a page break occurs in the middle of a
+code display; if the header trap assumes that the &ldquo;previous font&rdquo; is
+always Times, the rest of the example will be formatted in the wrong
+typeface.  One could carefully save all formatting parameters upon
+entering the trap and restore them upon leaving it, but this is verbose,
+error-prone, and not future-proof as the <code>groff</code> language develops.
+Environments save us considerable effort.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Traps.html" accesskey="n" rel="next">Traps</a>, Previous: <a href="Drawing-Geometric-Objects.html" accesskey="p" rel="prev">Drawing Geometric Objects</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

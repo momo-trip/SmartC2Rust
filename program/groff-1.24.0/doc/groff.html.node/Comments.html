@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Comments (The GNU troff Manual)</title>
+
+<meta name="description" content="Comments (The GNU troff Manual)">
+<meta name="keywords" content="Comments (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Registers.html" rel="next" title="Registers">
+<link href="Delimiters.html" rel="prev" title="Delimiters">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Comments"></span><div class="header">
+<p>
+Next: <a href="Registers.html" accesskey="n" rel="next">Registers</a>, Previous: <a href="Formatter-Instructions.html" accesskey="p" rel="prev">Formatter Instructions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Comments-1"></span><h3 class="section">5.7 Comments</h3>
+<span id="index-comments"></span>
+
+<p>One of the most common forms of escape sequence is the
+comment.<a id="DOCF67" href="groff.html_fot.html#FOOT67"><sup>67</sup></a>
+</p>
+<dl>
+<dt id="index-_005c_0022-1">Escape&nbsp;sequence: <strong><tt>\&quot;</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_0022"></span>
+<p>Start a comment; read everything up to the next newline in copy mode
+(see <a href="Copy-Mode.html">Copy Mode</a>) and discard it.
+<span id="index-_005c_0022_002c-interpretation-in-copy-mode"></span>
+<code>\&quot;</code> is interpreted even in copy mode.
+</p>
+<p>It can be tricky to keep the comments from interfering with the
+appearance of the output.
+If the escape sequence is to the right of some text or a request, that
+portion of the line is ignored, but GNU <code>troff</code> processes spaces
+preceding it normally.  This affects requests that read the remainder of
+the control line as a single argument, including <code>ds</code>, <code>as</code>,
+<code>tm</code>, and <code>char</code>; their variants; as well as <code>ab</code>,
+<code>device</code>, <code>length</code>, <code>output</code>, <code>pi</code>, <code>pso</code>,
+<code>rd</code>, <code>sy</code>, <code>write</code>, and <code>writec</code>.
+</p>
+<span id="index-tabs_002c-before-comments"></span>
+<span id="index-comments_002c-lining-up-with-tabs"></span>
+<p>One possibly irritating idiosyncrasy is that tabs should not be used to
+vertically align comments in the source document.  Tab characters are
+not treated as separators between a request name and its first argument,
+nor between arguments.
+</p>
+<span id="index-undefined-request"></span>
+<span id="index-request_002c-undefined"></span>
+<p>The formatter handles a
+<code>\&quot;</code>
+comment on a line by itself as a blank line,
+because after eliminating the comment,
+that is all that remains.
+</p>
+<div class="example">
+<pre class="example">apples bananas
+\&quot; cantaloupes
+durians
+    &rArr; apples bananas
+    &rArr;
+    &rArr; durians
+</pre></div>
+
+<p>To compensate,
+it is common to combine the empty request
+with the comment escape sequence as
+&lsquo;<samp>.\&quot;</samp>&rsquo;,
+causing the input line to be ignored.
+</p>
+<span id="index-_0027_002c-as-a-comment"></span>
+<p>Another commenting scheme sometimes seen
+is three consecutive neutral apostrophes
+(<code>'''</code>)
+at the beginning of an input line.
+This works,<a id="DOCF68" href="groff.html_fot.html#FOOT68"><sup>68</sup></a> but GNU
+<code>troff</code> emits a warning diagnostic
+(if enabled)
+about an undefined macro
+(namely
+&lsquo;<samp>''</samp>&rsquo;).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005c_0023-1">Escape&nbsp;sequence: <strong><tt>\#</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_0023"></span>
+<p>Start a whole-line comment;
+read everything up to and including the next newline
+in copy mode<a id="DOCF69" href="groff.html_fot.html#FOOT69"><sup>69</sup></a>
+and discard it.
+GNU
+<code>troff</code> introduced this extension to avoid the problems described above.
+(<code>\&quot;</code>
+is still widely seen,
+and remains useful for partial-line comments on control lines.)
+<span id="index-_005c_0023_002c-interpretation-in-copy-mode"></span>
+<code>\#</code> is interpreted even in copy mode.
+</p>
+<div class="example">
+<pre class="example">.nr in-indonesia 1
+apples bananas \&quot; common favorites
+\# cantaloupes
+.ie \n[in-indonesia] durians \&quot; Borneo, Sumatra
+.el                  elderberries \&quot; England, France
+    &rArr; apples bananas durians
+</pre></div>
+
+<p>If we change the comment escape sequence from
+<code>\&quot;</code>
+to
+<code>\#</code>
+on the line with the <code>ie</code> request,
+we get the following undesired output.
+</p>
+<div class="example">
+<pre class="example">    &rArr; apples bananas durians .el elderberries
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002eig">Request: <strong><tt>.ig</tt></strong> <em>[<span class="roman"><i>end</i></span>]</em></dt>
+<dd><span id="index-ig"></span>
+<p>Ignore input until, in the current conditional block (if
+any),<a id="DOCF70" href="groff.html_fot.html#FOOT70"><sup>70</sup></a> the macro <var>end</var> is called
+at the start of a control line, or the control line &lsquo;<samp>..</samp>&rsquo; is
+encountered if <var>end</var> is not specified.  <code>ig</code> is parsed as if it
+were a macro definition, but its contents are discarded, not
+stored.<a id="DOCF71" href="groff.html_fot.html#FOOT71"><sup>71</sup></a>
+</p>
+<div class="example">
+<pre class="example">.ll 45n
+hand\c
+.de TX
+fasting
+..
+.ig TX
+This is part of a large block of input that has been
+temporarily(?) commented out.
+.TX
+shake
+</pre></div>
+<div class="example">
+<pre class="example">    &rArr; handfasting shake
+</pre></div>
+
+<p>Observe the result if we remove the
+<code>ig</code>
+request and the call of its end macro.
+</p>
+<div class="example">
+<pre class="example">    &rArr; handThis  is  part  of a large block of input
+    &rArr; that has been temporarily(?)  commented  out.
+    &rArr; shake
+</pre></div>
+</dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Registers.html" accesskey="n" rel="next">Registers</a>, Previous: <a href="Formatter-Instructions.html" accesskey="p" rel="prev">Formatter Instructions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

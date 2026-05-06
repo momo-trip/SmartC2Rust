@@ -1,0 +1,35 @@
+.\" Configure groff output device "lj4".  See grolj4(1).
+.
+.do nr *groff_lj4_tmac_C \n[.cp]
+.cp 0
+.
+.\" The device doesn't offer Helvetica per se.  In groff, "H" means
+.\" "whatever sans serif family is available".  Here, that is "U".
+.ftr HR UR
+.ftr HI UI
+.ftr HB UB
+.ftr HBI UBI
+.
+.char \[or] \h'.1m'\Z'\D'l 0 -.675m''\h'.1m'
+.
+.\" This is designed so that \[ul], \[rn], and \[br] form corners.
+.char \[br] \Z'\v'.25m'\D'R .04m -1m''
+.char \[rn] \Z'\v'-.77m'\D'R .54m .04m''\h'.5m'
+.char \[ul] \Z'\v'.23m'\D'R .54m .04m''\h'.5m'
+.
+.char \[ru] \Z'\v'-.02m'\D'R .54m .04m''\h'.5m'
+.
+.fchar \[OK] \s[\En[.s]*6u/10u]\[rs]\s[0]/
+.
+.fchar \[sqrtex] \[radicalex]
+.
+.mso latin1.tmac
+.
+.cp \n[*groff_lj4_tmac_C]
+.do rr *groff_lj4_tmac_C
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" fill-column: 72
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

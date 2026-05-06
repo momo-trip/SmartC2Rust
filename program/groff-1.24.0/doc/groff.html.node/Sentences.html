@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Sentences (The GNU troff Manual)</title>
+
+<meta name="description" content="Sentences (The GNU troff Manual)">
+<meta name="keywords" content="Sentences (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Text.html" rel="up" title="Text">
+<link href="Hyphenation.html" rel="next" title="Hyphenation">
+<link href="Filling.html" rel="prev" title="Filling">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Sentences"></span><div class="header">
+<p>
+Next: <a href="Hyphenation.html" accesskey="n" rel="next">Hyphenation</a>, Previous: <a href="Filling.html" accesskey="p" rel="prev">Filling</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Sentences-1"></span><h4 class="subsection">5.1.2 Sentences</h4>
+<span id="index-sentences"></span>
+
+<p>A passionate debate has raged for decades among writers of the English
+language over whether more space should appear between adjacent
+sentences than between words within a sentence, and if so, how much, and
+what other circumstances should influence this spacing.<a id="DOCF23" href="groff.html_fot.html#FOOT23"><sup>23</sup></a>
+GNU
+<code>troff</code> follows the example of <acronym>AT&amp;T</acronym>
+<code>troff</code>; it attempts to detect the boundaries between sentences, and supplements
+them with inter-sentence space.
+</p>
+<div class="example">
+<pre class="example">Hello, world!
+Welcome to groff.
+    &rArr; Hello, world!  Welcome to groff.
+</pre></div>
+
+<span id="index-end_002dof_002dsentence-characters"></span>
+<span id="index-sentence_002dending-punctuation"></span>
+<span id="index-inter_002dsentence-space"></span>
+<span id="index-space-between-sentences"></span>
+<span id="index-French-spacing"></span>
+<p>GNU
+<code>troff</code> flags certain characters
+(normally
+&lsquo;<samp>!</samp>&rsquo;,
+&lsquo;<samp>?</samp>&rsquo;,
+and
+&lsquo;<samp>.</samp>&rsquo;)
+as potentially ending a sentence.
+When
+GNU
+<code>troff</code> encounters one of these
+<em>end-of-sentence characters</em>
+at the end of an input line,
+or one of them is followed by two
+(unescaped)
+spaces on the same input line,
+it appends an inter-word space
+followed by an inter-sentence space in the output.
+</p>
+<div class="example">
+<pre class="example">R. Harper subscribes to a maxim of P. T. Barnum.
+    &rArr; R. Harper subscribes to a maxim of P. T. Barnum.
+</pre></div>
+
+<p>In the above example, inter-sentence space is not added after &lsquo;<samp>P.</samp>&rsquo;
+or &lsquo;<samp>T.</samp>&rsquo; because the periods do not occur at the end of an input
+line, nor are they followed by two or more spaces.  Let&rsquo;s imagine that
+we&rsquo;ve heard something about defamation from Mr. Harper&rsquo;s attorney,
+recast the sentence, and reflowed it in our text editor.
+</p>
+<div class="example">
+<pre class="example">I submit that R. Harper subscribes to a maxim of P. T.
+Barnum.
+    &rArr; I submit that R. Harper subscribes to a maxim of
+    &rArr; P. T.  Barnum.
+</pre></div>
+
+<p>&ldquo;Barnum&rdquo; doesn&rsquo;t begin a sentence!
+What to do?
+Let us meet our first
+<em>escape sequence</em>,
+a series of input characters that give instructions to
+GNU
+<code>troff</code> instead of being used to construct output device glyphs.<a id="DOCF24" href="groff.html_fot.html#FOOT24"><sup>24</sup></a>
+An escape sequence begins with the backslash character
+<code>\</code>
+by default,
+an uncommon character in natural language text,
+and is
+<em>always</em>
+followed by at least one other character,
+hence the term &ldquo;sequence&rdquo;.
+</p>
+<span id="index-_005c_0026_002c-at-end-of-sentence"></span>
+<p>The dummy character escape sequence <code>\&amp;</code> can be used after an
+end-of-sentence character to defeat end-of-sentence detection on a
+per-instance basis.  We can therefore rewrite our input more
+defensively.
+</p>
+<div class="example">
+<pre class="example">I submit that R.\&amp; Harper subscribes to a maxim of P.\&amp;
+T.\&amp; Barnum.
+    &rArr; I submit that R. Harper subscribes to a maxim of
+    &rArr; P. T. Barnum.
+</pre></div>
+
+<p>Adding text caused our input to wrap; now, we don&rsquo;t need <code>\&amp;</code> after
+&lsquo;<samp>T.</samp>&rsquo; but we do after &lsquo;<samp>P.</samp>&rsquo;.  Consistent use of the escape
+sequence ensures that potential sentence boundaries are robust to
+editing activities.  Further advice along these lines follows in
+<a href="Input-Conventions.html">Input Conventions</a>.
+</p>
+<span id="index-end_002dof_002dsentence-transparent-characters"></span>
+<span id="index-characters_002c-end_002dof_002dsentence-transparent"></span>
+<span id="index-dg-glyph_002c-at-end-of-sentence"></span>
+<span id="index-dd-glyph_002c-at-end-of-sentence"></span>
+<span id="index-rq-glyph_002c-at-end-of-sentence"></span>
+<span id="index-cq-glyph_002c-at-end-of-sentence"></span>
+<span id="index-_0022_002c-at-end-of-sentence"></span>
+<span id="index-_0027_002c-at-end-of-sentence"></span>
+<span id="index-_0029_002c-at-end-of-sentence"></span>
+<span id="index-_005d_002c-at-end-of-sentence"></span>
+<span id="index-_002a_002c-at-end-of-sentence"></span>
+<span id="index-special-characters"></span>
+<span id="index-characters_002c-special"></span>
+<p>Normally, the occurrence of a visible non-end-of-sentence character (as
+opposed to a space or tab) immediately after an end-of-sentence
+character cancels detection of the end of a sentence.
+For example,
+it would be incorrect for the formatter to infer the end of a sentence
+after the dot in &lsquo;<samp>3.14159</samp>&rsquo;.
+However,
+it treats several characters
+<em>transparently</em>
+after the occurrence of an end-of-sentence character&mdash;it does not
+cancel end-of-sentence status upon encountering them.
+Such characters are often used as footnote marks
+or to close quotations and parentheticals.
+The default set is &lsquo;<samp>&quot;</samp>&rsquo;, &lsquo;<samp>'</samp>&rsquo;, &lsquo;<samp>)</samp>&rsquo;,
+&lsquo;<samp>]</samp>&rsquo;, &lsquo;<samp>*</samp>&rsquo;, <code>\[dg]</code>, <code>\[dd]</code>, <code>\[rq]</code>, and
+<code>\[cq]</code>.
+The last four are examples of
+<em>special characters</em>,
+escape sequences whose purpose is to obtain glyphs
+that are not easily typed at the keyboard,
+or which have special meaning to the formatter
+(like <code>\</code> itself).<a id="DOCF25" href="groff.html_fot.html#FOOT25"><sup>25</sup></a>
+</p>
+<div class="example">
+<pre class="example">\[lq]The idea that the poor should have leisure has always
+been shocking to the rich.\[rq]
+(Bertrand Russell, 1935)
+    &rArr; &quot;The idea that the poor should have
+    &rArr; leisure has always been shocking to
+    &rArr; the rich.&quot;  (Bertrand Russell, 1935)
+</pre></div>
+
+<p>Configure the sets of characters that potentially end sentences
+or are transparent to sentence endings
+with the
+<code>cflags</code>
+request
+(see <a href="Characters-and-Glyphs.html">Characters and Glyphs</a>).
+Use the
+<code>ss</code>
+request
+to change&mdash;or eliminate&mdash;supplemental inter-sentence space
+(see <a href="Manipulating-Filling-and-Adjustment.html">Manipulating Filling and Adjustment</a>).
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Hyphenation.html" accesskey="n" rel="next">Hyphenation</a>, Previous: <a href="Filling.html" accesskey="p" rel="prev">Filling</a>, Up: <a href="Text.html" accesskey="u" rel="up">Text</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

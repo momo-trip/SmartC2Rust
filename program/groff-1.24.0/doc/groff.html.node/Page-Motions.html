@@ -1,0 +1,519 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Page Motions (The GNU troff Manual)</title>
+
+<meta name="description" content="Page Motions (The GNU troff Manual)">
+<meta name="keywords" content="Page Motions (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Output-Line-Annotation.html" rel="next" title="Output Line Annotation">
+<link href="Copy-Mode.html" rel="prev" title="Copy Mode">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Page-Motions"></span><div class="header">
+<p>
+Next: <a href="Output-Line-Annotation.html" accesskey="n" rel="next">Output Line Annotation</a>, Previous: <a href="Writing-Macros.html" accesskey="p" rel="prev">Writing Macros</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Page-Motions-1"></span><h3 class="section">5.25 Page Motions</h3>
+<span id="index-page-motions"></span>
+<span id="index-motions_002c-page"></span>
+
+<p>See <a href="Manipulating-Spacing.html">Manipulating Spacing</a>, for a discussion of the most commonly used
+request for vertical motion, <code>sp</code>.
+</p>
+<dl>
+<dt id="index-_002emk">Request: <strong><tt>.mk</tt></strong> <em>[<span class="roman"><i>reg</i></span>]</em></dt>
+<dd><span id="index-mk"></span>
+</dd><dt id="index-_002ert">Request: <strong><tt>.rt</tt></strong> <em>[<span class="roman"><i>dist</i></span>]</em></dt>
+<dd><span id="index-rt"></span>
+<span id="index-marking-vertical-page-location-_0028mk_0029"></span>
+<span id="index-page-location_002c-vertical_002c-marking-_0028mk_0029"></span>
+<span id="index-location_002c-vertical_002c-page_002c-marking-_0028mk_0029"></span>
+<span id="index-vertical-page-location_002c-marking-_0028mk_0029"></span>
+<span id="index-returning-to-marked-vertical-page-location-_0028rt_0029"></span>
+<span id="index-page-location_002c-vertical_002c-returning-to-marked-_0028rt_0029"></span>
+<span id="index-location_002c-vertical_002c-page_002c-returning-to-marked-_0028rt_0029"></span>
+<span id="index-vertical-page-location_002c-returning-to-marked-_0028rt_0029"></span>
+<p>You can <em>mark</em> a location on a page for subsequent <em>return</em>.
+<code>mk</code> takes an argument, a register name in which to store the
+current page location.  If given no argument, it stores the location in
+an internal register.  This location can be used later by the <code>rt</code>
+or the <code>sp</code> requests (or the <code>\v</code> escape sequence).
+</p>
+<p>The <code>rt</code> request returns <em>upward</em> to the location marked with
+the last <code>mk</code> request.  If used with an argument, it returns to a
+vertical position&nbsp;<var>dist</var> from the top of the page (no previous
+call to <code>mk</code> is necessary in this case).  The default scaling
+unit is &lsquo;<samp>v</samp>&rsquo;.
+</p>
+<p>If a page break occurs between a <code>mk</code> request and its matching
+<code>rt</code> request, the <code>rt</code> request is silently ignored.
+</p>
+<p>A simple implementation of a macro to set text in two columns follows.
+This example also defines a macro to be called when a trap is
+sprung;<a id="DOCF158" href="groff.html_fot.html#FOOT158"><sup>158</sup></a> this trap macro performs
+the motion to the next column.
+</p>
+<div class="example">
+<pre class="example">.nr column-length 1.5i
+.nr column-gap 4m
+.nr bottom-margin 1m
+.
+.de 2c
+.  br
+.  mk
+.  ll \\n[column-length]u
+.  wh -\\n[bottom-margin]u 2c-trap
+.  nr right-side 0
+..
+.
+.de 2c-trap
+.  ie \\n[right-side] \{\
+.    nr right-side 0
+.    po -(\\n[column-length]u + \\n[column-gap]u)
+.    \&quot; remove trap
+.    wh -\\n[bottom-margin]u
+.  \}
+.  el \{\
+.    \&quot; switch to right side
+.    nr right-side 1
+.    po +(\\n[column-length]u + \\n[column-gap]u)
+.    rt
+.  \}
+..
+</pre></div>
+
+<p>Now let us apply our two-column macro.
+</p>
+<div class="example">
+<pre class="example">.pl 1.5i
+.ll 4i
+This is a small test that shows how the
+rt request works in combination with mk.
+
+.2c
+Starting here, text is typeset in two columns.
+Note that this implementation isn't robust
+and thus not suited for a real two-column
+macro.
+    &rArr; This is a small test that shows how the
+    &rArr; rt request works in combination with mk.
+    &rArr;
+    &rArr; Starting  here,    isn&rsquo;t    robust
+    &rArr; text is typeset    and   thus  not
+    &rArr; in two columns.    suited  for   a
+    &rArr; Note that  this    real two-column
+    &rArr; implementation     macro.
+</pre></div>
+</dd></dl>
+
+<p>Several escape sequences enable fine control of movement about the page.
+</p>
+<dl>
+<dt id="index-_005cv_0027expr_0027">Escape&nbsp;sequence: <strong><tt>\v<code>'</code></tt><span class="roman"><i>expr</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cv"></span>
+<span id="index-vertical-motion-_0028_005cv_0029"></span>
+<span id="index-motion_002c-vertical-_0028_005cv_0029"></span>
+<p>Vertically move the drawing position.  <var>expr</var> indicates the
+magnitude of motion: positive is downward and and negative upward.  The
+default scaling unit is &lsquo;<samp>v</samp>&rsquo;.  The motion is relative to the current
+drawing position unless <var>expr</var> begins with the boundary-relative
+measurement operator &lsquo;<samp>|</samp>&rsquo;.  See <a href="Numeric-Expressions.html">Numeric Expressions</a>.
+</p>
+<p>Text processing continues at the new drawing position; usually, vertical
+motions should be in balanced pairs to avoid a confusing page layout.
+</p>
+<p><code>\v</code>
+does not spring a vertical position trap.
+This can be useful;
+for example,
+consider a page bottom trap macro
+that prints a mark in the margin
+to indicate continuation of a footnote.
+See <a href="Traps.html">Traps</a>.
+</p></dd></dl>
+
+<p>A few escape sequences that produce vertical motion are unusual.  They
+are thought to originate early in AT&amp;T <code>nroff</code> history to achieve
+super- and subscripting by half-line motions on line printers and
+teletypewriters before the phototypesetter made more precise positioning
+available.  They are reckoned in ems&mdash;not vees&mdash;to maintain continuity
+with their original purpose of moving relative to the size of the type
+rather than the distance between text baselines (vees).<a id="DOCF159" href="groff.html_fot.html#FOOT159"><sup>159</sup></a>
+</p>
+<dl>
+<dt id="index-_005cr-1">Escape&nbsp;sequence: <strong><tt>\r</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cr"></span>
+</dd><dt id="index-_005cu-1">Escape&nbsp;sequence: <strong><tt>\u</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cu"></span>
+</dd><dt id="index-_005cd-1">Escape&nbsp;sequence: <strong><tt>\d</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cd"></span>
+<p>Move upward&nbsp;1m, upward&nbsp;.5m, and
+downward&nbsp;.5m, respectively.
+</p></dd></dl>
+
+<p>Let us see these escape sequences in use.
+</p>
+<div class="example">
+<pre class="example">Obtain 100 cm\u3\d of \ka\d\092\h'|\nau'\r233\dU.
+</pre></div>
+
+<p>In the foregoing we have paired <code>\u</code> and <code>\d</code> to typeset a
+superscript, and later a full em negative (&ldquo;reverse&rdquo;) motion to place
+a superscript above a subscript.  A numeral-width horizontal motion
+escape sequence aligns the proton and nucleon numbers, while <code>\k</code>
+marks a horizontal position to which <code>\h</code> returns so that we could
+stack them.  (We shall discuss these horizontal motion escape sequences
+presently.)  In serious applications, we often want to alter the type
+size of the -scripts and to fine-tune the vertical motions, as the
+<code>groff</code> <samp>ms</samp> package does with its super- and subscripting
+string definitions.
+</p>
+<dl>
+<dt id="index-_005ch_0027expr_0027">Escape&nbsp;sequence: <strong><tt>\h<code>'</code></tt><span class="roman"><i>expr</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005ch"></span>
+<span id="index-inserting-horizontal-space-_0028_005ch_0029"></span>
+<span id="index-horizontal-space-_0028_005ch_0029"></span>
+<span id="index-space_002c-horizontal-_0028_005ch_0029"></span>
+<span id="index-horizontal-motion-_0028_005ch_0029"></span>
+<span id="index-motion_002c-horizontal-_0028_005ch_0029"></span>
+<p>Horizontally move the drawing position.  <var>expr</var> indicates the
+magnitude of motion: positive is rightward and negative leftward.  The
+default scaling unit is &lsquo;<samp>m</samp>&rsquo;.  The motion is relative to the current
+drawing position unless <var>expr</var> begins with the boundary-relative
+measurement operator &lsquo;<samp>|</samp>&rsquo;.  See <a href="Numeric-Expressions.html">Numeric Expressions</a>.
+</p></dd></dl>
+
+<p>The following string definition sets the TeX logo.
+Recall
+<a href="Strings.html">Strings</a>
+regarding the trailing
+&lsquo;<samp>\&quot;</samp>&rsquo;.
+</p>
+<div class="example">
+<pre class="example">.ds TeX T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X\&quot;
+</pre></div>
+
+<span id="index-backspace-character"></span>
+<span id="index-character_002c-backspace"></span>
+<p>An input backspace becomes a negative horizontal motion
+of one word space;
+recall <a href="Manipulating-Filling-and-Adjustment.html">Manipulating Filling and Adjustment</a>.
+This feature persists for backward compatibiity
+with early formatters that predate
+<code>nroff</code> and even Unix itself,
+and which used it to facilitate user-directed overstriking
+for character composition,
+boldfacing,
+and
+underlining.
+GNU
+<code>troff</code> has explicit features to support each of these;
+use them instead.
+</p>
+<p>Several escape sequences support special cases of horizontal motion.
+</p>
+<dl>
+<dt id="index-_005cSPC-1">Escape&nbsp;sequence: <strong><tt>\<span class="key">SPC</span></tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cSPC"></span>
+<span id="index-space_002c-unbreakable-and-unadjustable-_0028_005cSPC_0029"></span>
+<span id="index-unbreakable-and-unadjustable-space-_0028_005cSPC_0029"></span>
+<span id="index-unadjustable-and-unbreakable-space-_0028_005cSPC_0029"></span>
+<span id="index-_005cspace"></span>
+<p>Move right one word space.  (The input is a backslash followed by a
+space.)  This escape sequence can be thought of as a non-adjustable,
+unbreakable space.  Usually you want <code>\~</code> instead; see
+<a href="Manipulating-Filling-and-Adjustment.html">Manipulating Filling and Adjustment</a>.
+</p></dd></dl>
+
+<span id="index-thin-space-_0028_005c_007c_0029"></span>
+<span id="index-space_002c-thin-_0028_005c_007c_0029"></span>
+<dl>
+<dt id="index-_005c_007c-1">Escape&nbsp;sequence: <strong><tt>\|</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_007c"></span>
+<p>Move one-sixth em to the right on typesetting output devices.  If
+a glyph named &lsquo;<samp>\|</samp>&rsquo; is defined in the current font, its width is
+used instead, even on terminal output devices.
+</p></dd></dl>
+
+<span id="index-hair-space-_0028_005c_005e_0029"></span>
+<span id="index-space_002c-hair-_0028_005c_005e_0029"></span>
+<dl>
+<dt id="index-_005c_005e-1">Escape&nbsp;sequence: <strong><tt>\^</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_005e"></span>
+<p>Move one-twelfth em to the right on typesetting output devices.
+If a glyph named &lsquo;<samp>\^</samp>&rsquo; is defined in the current font, its width is
+used instead, even on terminal output devices.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005c0-1">Escape&nbsp;sequence: <strong><tt>\0</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c0"></span>
+<span id="index-space_002c-width-of-a-digit-_0028numeral_0029-_0028_005c0_0029"></span>
+<span id="index-digit_002dwidth-space-_0028_005c0_0029"></span>
+<span id="index-figure-space-_0028_005c0_0029"></span>
+<span id="index-numeral_002dwidth-space-_0028_005c0_0029"></span>
+<p>Move right by the width of a numeral in the current font.
+</p></dd></dl>
+
+<p>Horizontal motions are not discarded at the end of an output line as
+word spaces are;
+recall <a href="Breaking.html">Breaking</a>.
+</p>
+<dl>
+<dt id="index-_005cw_0027input_0027">Escape&nbsp;sequence: <strong><tt>\w<code>'</code></tt><span class="roman"><i>input</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005cw"></span>
+</dd><dt id="index-_005cn_005bst_005d">Register: <strong><tt>\n[st]</tt></strong></dt>
+<dd><span id="index-st"></span>
+</dd><dt id="index-_005cn_005bsb_005d">Register: <strong><tt>\n[sb]</tt></strong></dt>
+<dd><span id="index-sb"></span>
+</dd><dt id="index-_005cn_005brst_005d">Register: <strong><tt>\n[rst]</tt></strong></dt>
+<dd><span id="index-rst"></span>
+</dd><dt id="index-_005cn_005brsb_005d">Register: <strong><tt>\n[rsb]</tt></strong></dt>
+<dd><span id="index-rsb"></span>
+</dd><dt id="index-_005cn_005bct_005d">Register: <strong><tt>\n[ct]</tt></strong></dt>
+<dd><span id="index-ct"></span>
+</dd><dt id="index-_005cn_005bssc_005d">Register: <strong><tt>\n[ssc]</tt></strong></dt>
+<dd><span id="index-ssc"></span>
+</dd><dt id="index-_005cn_005bskw_005d">Register: <strong><tt>\n[skw]</tt></strong></dt>
+<dd><span id="index-skw"></span>
+<span id="index-width-computation-escape-sequence-_0028_005cw_0029"></span>
+<p>Interpolate the width of
+<var>input</var>,
+as interpreted,
+in basic units.
+This escape sequence
+allows several properties of formatted output to be measured
+without writing it out.
+</p>
+<div class="example">
+<pre class="example">The length of the string 'abc' is \w'abc'u.
+    &rArr; The length of the string 'abc' is 72u.
+</pre></div>
+
+<span id="index-dummy-environment_002c-used-by-_005cw-escape-sequence"></span>
+<span id="index-environment_002c-dummy_002c-used-by-_005cw-escape-sequence"></span>
+<p>The formatter processes
+<var>input</var>
+in a dummy environment:
+this means that font and type size changes,
+for example,
+may occur within it without affecting subsequent output.
+</p>
+<p>After each use, <code>\w</code> sets several registers.
+</p>
+<span id="index-CSTR-_002354-errata-7"></span>
+<span id="index-CSTR-_002354-erratum_002c-sb-register"></span>
+<span id="index-CSTR-_002354-erratum_002c-st-register"></span>
+<dl compact="compact">
+<dt><code>st</code></dt>
+<dt><code>sb</code></dt>
+<dd><p>The maximum vertical displacements of the text baseline above and below,
+respectively.  The sign convention is opposite that of relative vertical
+motions; that is, depth below the (original) baseline is negative.
+These registers are incorrectly documented in the <acronym>AT&amp;T</acronym>
+<code>troff</code> manual as &ldquo;the highest and lowest extent of [the argument
+to <code>\w</code>] relative to the baseline&rdquo;.
+</p>
+</dd>
+<dt><code>rst</code></dt>
+<dt><code>rsb</code></dt>
+<dd><p>Like
+<code>st</code>
+and
+<code>sb</code>,
+but taking account of the heights and depths of glyphs.
+In other words,
+these registers store
+the highest and lowest vertical positions attained by
+<var>input</var>,
+doing what
+<acronym>AT&amp;T</acronym>
+<code>troff</code> documented
+<code>st</code>
+and
+<code>sb</code> as doing.
+</p>
+</dd>
+<dt><code>ct</code></dt>
+<dd><p>Characterizes the geometry of glyphs occurring in
+<var>input</var>.
+</p>
+<dl compact="compact">
+<dt>0</dt>
+<dd><p>only short glyphs, no descenders or tall glyphs
+</p>
+</dd>
+<dt>1</dt>
+<dd><p>at least one descender
+</p>
+</dd>
+<dt>2</dt>
+<dd><p>at least one tall glyph
+</p>
+</dd>
+<dt>3</dt>
+<dd><p>at least one each of a descender and a tall glyph
+</p></dd>
+</dl>
+
+</dd>
+<dt><code>ssc</code></dt>
+<dd><p>The amount of horizontal space (possibly negative) that should be added
+to the last glyph before a subscript.
+</p>
+</dd>
+<dt><code>skw</code></dt>
+<dd><p>How far to right of the center of the last glyph in the <code>\w</code>
+argument, the center of an accent from a roman font should be placed
+over that glyph.
+</p></dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="index-_005ckp">Escape&nbsp;sequence: <strong><tt>\k</tt><span class="roman"><i>p</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005ck"></span>
+</dd><dt id="index-_005ck_0028ps">Escape&nbsp;sequence: <strong><tt>\k(</tt><span class="roman"><i>ps</i></span><tt></tt></strong></dt>
+<dt id="index-_005ck_005bposition_005d">Escape&nbsp;sequence: <strong><tt>\k[</tt><span class="roman"><i>position</i></span><tt>]</tt></strong></dt>
+<dd><span id="index-saving-horizontal-input-line-position-_0028_005ck_0029"></span>
+<span id="index-horizontal-input-line-position_002c-saving-_0028_005ck_0029"></span>
+<span id="index-input-line-position_002c-horizontal_002c-saving-_0028_005ck_0029"></span>
+<span id="index-position_002c-horizontal-input-line_002c-saving-_0028_005ck_0029"></span>
+<span id="index-line_002c-input_002c-horizontal-position_002c-saving-_0028_005ck_0029"></span>
+<p>Store the horizontal drawing position,
+relative to that corresponding to the start of the input line
+(ignoring page offset and indentation),
+in a register with the name
+<var>position</var>
+(one-character name&nbsp;<var>p</var>,
+two-character name
+<var>ps</var>).
+Use this,
+for example,
+to later move to the beginning of a word
+for highlighting or other decoration.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005bhp_005d">Register: <strong><tt>\n[hp]</tt></strong></dt>
+<dd><span id="index-hp"></span>
+<span id="index-horizontal-input-line-position-register-_0028hp_0029"></span>
+<span id="index-input-line_002c-horizontal-position_002c-register-_0028hp_0029"></span>
+<span id="index-position_002c-horizontal_002c-in-input-line_002c-register-_0028hp_0029"></span>
+<span id="index-line_002c-input_002c-horizontal-position_002c-register-_0028hp_0029"></span>
+<p>The horizontal position relative to that at the start of the input line.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002ek_005d">Register: <strong><tt>\n[.k]</tt></strong></dt>
+<dd><span id="index-_002ek"></span>
+<span id="index-horizontal-output-line-position-register-_0028_002ek_0029"></span>
+<span id="index-output-line_002c-horizontal-position_002c-register-_0028_002ek_0029"></span>
+<span id="index-position_002c-horizontal_002c-in-output-line_002c-register-_0028_002ek_0029"></span>
+<span id="index-line_002c-output_002c-horizontal-position_002c-register-_0028_002ek_0029"></span>
+<p>A read-only register containing the current horizontal output position
+(relative to the current indentation).
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005co_0027abc_2026_0027">Escape&nbsp;sequence: <strong><tt>\o<code>'</code></tt><span class="roman"><i>abc&hellip;</i></span><tt><code>'</code></tt></strong></dt>
+<dd><span id="index-_005co"></span>
+<span id="index-overstriking-glyphs-_0028_005co_0029"></span>
+<span id="index-glyphs_002c-overstriking-_0028_005co_0029"></span>
+<p>Overstrike the glyphs of characters <var>a</var>, <var>b</var>, <var>c</var>, &hellip;;
+the glyphs are centered, written, and the drawing position advanced by
+the widest of the glyphs.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005czc">Escape&nbsp;sequence: <strong><tt>\z</tt><span class="roman"><i>c</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cz"></span>
+<span id="index-zero_002dwidth-printing-_0028_005cz_002c-_005cZ_0029"></span>
+<span id="index-printing_002c-zero_002dwidth-_0028_005cz_002c-_005cZ_0029"></span>
+<p>Format the character <var>c</var> with zero width; that is, without advancing
+the drawing position.  Use <code>\z</code> to overstrike glyphs aligned to
+their left edges, in contrast to <code>\o</code>&rsquo;s centering.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cZ_0027input">Escape&nbsp;sequence: <strong><tt>\Z<code>'</code></tt><span class="roman"><i>input</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cZ"></span>
+<span id="index-zero_002dwidth-printing-_0028_005cz_002c-_005cZ_0029-1"></span>
+<span id="index-printing_002c-zero_002dwidth-_0028_005cz_002c-_005cZ_0029-1"></span>
+<p>Save the drawing position,
+format
+<var>input</var>,
+then restore it.
+GNU
+<code>troff</code> ignores tabs and leaders in
+<var>input</var>
+with an error diagnostic.
+</p>
+<p>We might implement a strike-through macro thus.
+</p>
+<div class="example">
+<pre class="example">.de strikeout
+.nr width \w'\\$1'
+\Z@\v'-.25m'\l'\\n[width]u'@\\$1
+..
+.
+This is
+.strikeout &quot;a test&quot;
+an actual emergency!
+</pre></div>
+</dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Output-Line-Annotation.html" accesskey="n" rel="next">Output Line Annotation</a>, Previous: <a href="Writing-Macros.html" accesskey="p" rel="prev">Writing Macros</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

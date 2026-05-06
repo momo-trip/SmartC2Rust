@@ -1,0 +1,45 @@
+atp.chem:
+.cstart
+
+# Example file for chem:
+#   ATP or C10_H16_N5_O13_P3 or
+#   [[[5-(6-aminopurin-9-yl)-3,4-dihydroxy-oxolan-2-yl]methoxy-hydroxy-
+#     phosphoryl]oxy-hydroxy-phosphoryl]oxyphosphonic acid
+#
+# Found at http://www.chemindustry.com/apps/chemicals.
+#
+# Prepared by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Missing nitrogen atom corrected by Norwid Behrnd <nbehrnd@yahoo.com>.
+
+R1:	ring5 pointing left double 1,2 put N at 2 put N at 5
+B:	ring6 put N at 2 put N at 4 double 1,2 3,4 5,6 \
+		with .V6 at R1.V3 with .V5 at R1.V4
+	bond up ; NH2
+	backbond 170 length .7 from R1.V5
+R2:	ring5 pointing down with .V2 put O at 1
+	bond down at R2.V2 ; H
+	bond down length .1 at R2.V3 ; H
+	bond up length .1 at R2.V3 ; OH
+	bond down length .1 at R2.V4 ; H
+	bond up length .1 at R2.V4 ; OH
+	frontbond 70 at R2.V5
+	bond 110 ; O
+	bond right ; P
+	doublebond up ; O
+	bond down from P ; OH
+	bond right from P ; O
+	bond right ; P
+	doublebond up ; O
+	bond down from P ; OH
+	bond right from P ; O
+	bond right ; P
+	doublebond up ; O
+	bond down from P ; OH
+	bond right from P ; OH
+
+# Local Variables:
+# fill-column: 72
+# mode: Nroff
+# End:
+# vim: set textwidth=72:
+.cend

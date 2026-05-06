@@ -1,0 +1,36 @@
+Version 1.15 released
+=====================
+
+1999-12-28  Werner LEMBERG  <wl@gnu.org>
+
+	* NEWS, VERSION: Changed to 1.15
+
+1999-12-27  Paul Eggert  <eggert@twinsun.com>
+
+	* nroff/nroff.man: -S is safer, not safe.
+
+	* groff/groff.cc (main): Use `safer', not `safe', in variable
+	names.  This does not change the behavior.
+
+	* troff/input.cc (main): Likewise.
+
+	* nroff/nroff.sh: Likewise.
+
+	* troff/input.cc (prepend_string): New function.
+	(main): Prepend -msafer, so that we check macro libraries for
+	safety.
+
+	* PROBLEMS: Report problem with Sun C++ 5.0 and 5.1.
+
+Copyright 1999 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

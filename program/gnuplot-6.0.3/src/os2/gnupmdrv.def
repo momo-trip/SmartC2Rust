@@ -1,0 +1,10 @@
+NAME        gnupmdrv
+WINDOWAPI
+
+DESCRIPTION 'gnuplot PM driver'
+
+CODE        MOVEABLE
+DATA        MOVEABLE MULTIPLE
+
+STACKSIZE 98304
+

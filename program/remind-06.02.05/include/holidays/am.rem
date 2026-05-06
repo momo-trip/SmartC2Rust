@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Armenia
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Նոր տարվա օր%" %! %b.
+OMIT 2 January MSG %"Նոր տարվա օր%" %! %b.
+OMIT 6 January MSG %"Սուրբ Ծնունդ եւ Հայտնություն%" %! %b.
+OMIT 28 January MSG %"Բանակի օր%" %! %b.
+OMIT 8 March MSG %"Կանանց տոն%" %! %b.
+OMIT 24 April MSG %"Եղեռնի զոհերի հիշատակի օր%" %! %b.
+OMIT 1 May MSG %"Աշխատանքի օր%" %! %b.
+OMIT 9 May MSG %"Հաղթանակի և Խաղաղության տոն%" %! %b.
+OMIT 28 May MSG %"Հանրապետության օր%" %! %b.
+OMIT 5 July MSG %"Սահմանադրության օր%" %! %b.
+OMIT 21 September MSG %"Անկախության օր%" %! %b.
+OMIT 31 December MSG %"Նոր տարվա գիշեր%" %! %b.

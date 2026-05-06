@@ -1,0 +1,79 @@
+
+!########################################
+!##### Layouts
+!########################################
+
+GV.control.MButton.font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*orientationButton*forcedWidth:	72
+GV*upsidedown.Label:			Up-Down
+GV.?.processButton.label:		\ working
+
+!##### Main Layout
+
+GV*control.layout:			\
+|v{					\
+  f=4					\
+  sss=2					\
+  pbh=(100*(|height processButton))	\
+  pbs1=($pbh/($pbh+1))			\
+  $f					\
+  |h{					\
+    $f					\
+    |v{ 				\
+      titleButton<+200-[1]*-100%>	\
+      1					\
+      dateButton<+200-[1]*-100%>	\
+      4					\
+      |h{				\
+        2<+[1]>				\
+        locator<*-100%>			\
+        1<+[1]>				\
+      }					\
+      4					\
+      fileButton<+50*-100%>		\
+      1					\
+      stateButton<+50*-100%>		\
+      1					\
+      pageButton<+50*-100%>		\
+      1					\
+      orientationButton<+50-100*-100%>	\
+      1					\
+      scaleButton<+50*-100%>		\
+      1					\
+      pagemediaButton<+50-[1]*-100%>	\
+      (4*$pbs1)				\
+      |h{				\
+        0<+[1]>				\
+        processButton<+50*-100%>	\
+        0<+[1]>				\
+      }					\
+      4					\
+      |h{				\
+        0<+[1]>				\
+        pannerFrame<*-100%>		\
+        0<+[1]>				\
+      }					\
+      4					\
+      |h{				\
+        prevPage<+60*-100%>		\
+        1				\
+        nextPage<+60*-100%>		\
+      }					\
+      4					\
+      |h{				\
+        0<+30>				\
+        newtocScroll<*+200[1]-[1]>	\
+        4				\
+        newtocFrame<-[1]*+200[1]-[1]>	\
+        0<+30>				\
+      }					\
+    }					\
+    $f					\
+    |v{					\
+      viewFrame<+[2]-100%*+9999-100%>	\
+    }					\
+    $f					\
+  }					\
+  $f					\
+}
+

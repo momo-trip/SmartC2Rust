@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Hungary
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Újév%" %! %b.
+OMIT 15 March MSG %"Nemzeti ünnep%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Nagypéntek%" %! %b.
+OMIT [easterdate($Uy)] MSG %"Húsvét%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Húsvét Hétfő%" %! %b.
+OMIT 1 May MSG %"A Munka ünnepe%" %! %b.
+OMIT [easterdate($Uy)+49] MSG %"Pünkösd%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Pünkösdhétfő%" %! %b.
+OMIT 20 August MSG %"Az államalapítás ünnepe%" %! %b.
+OMIT 23 October MSG %"Nemzeti ünnep%" %! %b.
+OMIT 1 November MSG %"Mindenszentek%" %! %b.
+OMIT 25 December MSG %"Karácsony%" %! %b.
+OMIT 26 December MSG %"Karácsony másnapja%" %! %b.

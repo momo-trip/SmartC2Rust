@@ -1,0 +1,253 @@
+#! /usr/bin/perl
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU gv; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+# 
+# Author:   Markus Steinborn (see CONTRIBUTORS for the e-mail address)
+
+# This program updates ~/.gv by removing all incompatible entries.
+
+
+@res = ();
+%res = ();
+%resDefault = ();
+
+$saveUnchanged = 1;
+$help = 0;
+$altNavigation = 0;
+$replaceNavigation = 0;
+$i18n = 0;
+
+for $i (@ARGV)
+{
+   $saveUnchanged = 0  if $i eq "-r";
+   $altNavigation = $replaceNavigation = 1 if $i eq "-n";
+   $altNavigation = $replaceNavigation = 2 if $i eq "-N";
+   $replaceNavigation = 1 if $i eq "-s";
+   $i18n = 1 if $i eq "-i";
+   $help = 1 if $i eq "-h";
+   $help = 1 if $i eq "--help";
+   $help = 1 if $i eq "--usage";
+   print "Ignoring further filename $i\n" if $i !~ /^-/ && defined $filename;
+   $filename = $i if $i !~ /^-/ && !defined $filename;
+}
+
+if ($help)
+{
+   print "Syntax: gv-update-userconfig [-r] [-n] [-N] [-s] [filename]\n\n";
+   print "filename: specifies file to update. Defaults to '~/.gv'\n";
+   print "-r : Remove resources that have default value, too\n";
+   print "-n : Switch to alternative navigation\n";
+   print "-N : Switch to standard navigation\n";
+   print "-s : Remove navigation resources\n\n";
+   print "gv-update-userconfig is a simple script to update an .gv config file to\n";
+   print "the current version of gv by removing all entries known to cause problems\n";
+   print "with the current version of gv.\n\n";
+   exit(0);
+}
+
+$filename = "$ENV{HOME}/.gv" unless defined $filename;
+
+open ($file, "<", $filename) or die "Cannot open $filename for reading.\n";
+while (<$file>)
+{
+   chomp;
+   $read = $_;
+   $line = $read;
+   while ( $read =~ /\\$/ )
+   {
+      $read = <$file>;
+      chomp $read;
+      $line .= "\n$read";
+   }
+   
+   push (@res, $line);
+   
+   if ($line =~ /^([^:]+):/ )
+   {
+      $res{$1} = $line;
+   }
+}
+close $file;
+
+while (<DATA>)
+{
+   chomp;
+   $read = $_;
+   $line = $read;
+   while ( $read =~ /\\$/ )
+   {
+      $read = <DATA>;
+      chomp $read;
+      $line .= "\n$read";
+   }
+   
+   if ($line =~ /^([^:]+):/ )
+   {
+      $resDefault{$1} = $line;
+   }
+}
+
+
+$VER = "gv 3.5.8";
+if (defined $res{"GV.version"})
+{
+   $res{"GV.version"} =~ m/(gv [\.0-9]+$)/ ;
+   $VER = $1;
+}
+
+%remove = ();
+
+
+sub compare
+{
+   my $a1 = $_[0];
+   my $a2 = $_[1];
+   
+   my $b1 = substr($a1,3);
+   my $b2 = substr($a2,3);
+   
+   my @c1 = split(/\./, $b1);
+   my @c2 = split(/\./, $b2);
+   
+   push (@c1, "0") while @c1 < @c2;
+   push (@c2, "0") while @c1 > @c2;
+  
+   for (my $i = 0; $i < @c1; $i++)
+   {
+      return 1 if $c1[$i] < $c2[$i];
+      return 0 if $c1[$i] > $c2[$i];
+   }
+   return 0;
+}
+
+$remove{"GV.version"} = 1;
+$remove{"GV.scales"} = 1 if compare($VER, "gv 3.6.4.90");
+$remove{"GV.gsCmdConvPDF"} = 1 if compare($VER, "gv 3.6.5.91");
+$remove{"GV.scales"} = 1 if compare($VER, "gv 3.6.7.90");
+$remove{"GV.control.baseTranslations"} = 1 if $replaceNavigation;
+$remove{"GV.control.prevPage.baseTranslations"} = 1 if $replaceNavigation;
+$remove{"GV.control.nextPage.baseTranslations"} = 1 if $replaceNavigation;
+
+$newfile = "";
+
+for $line (@res)
+{
+   if ($line =~ /^([^:]+):/ )
+   {
+      $name = $1;
+      $changed = 0;
+
+      $tmp1 = $resDefault{$name};
+      $tmp2 = $line;
+
+      $tmp1 =~ s/\t+/ /g;
+      $tmp1 =~ s/\x09+/ /g;
+      $tmp1 =~ s/:  +/: /g;
+      $tmp1 =~ s/^[\t ]+/\t/mg;
+      $tmp1 =~ s/[\t ]+\\n/\\n/g;
+
+      $tmp2 =~ s/\t+/ /g;
+      $tmp2 =~ s/\x09+/ /g;
+      $tmp2 =~ s/:  +/: /g;
+      $tmp2 =~ s/^[\t ]+/\t/mg;
+      $tmp2 =~ s/[\t ]+\\n/\\m/g;
+
+      $changed = 1 if $tmp1 ne $tmp2;
+
+      $newfile .= "$line\n" if !defined $remove{$name} and ($saveUnchanged or $changed);
+      if (defined $remove{$name} && $name ne "GV.version")
+      {
+         print "Removing resource $name\n";
+      }
+      else
+      {
+	 if (!$saveUnchanged and !$changed)
+	 {
+            print "Removing default resource $name\n";
+	 }
+      }
+   }
+   else
+   {
+      $newfile .= $line."\n";
+   }
+}
+
+$newfile .= "GV.version:\t\tgv 3.6.7.90\n" unless $i18n;
+
+if ($i18n)
+{
+   for $i (keys %resDefault)
+   {
+      $ok = 0;
+      $ok = 1 if $i =~ /\.label$/i ;
+      $ok = 1 if $i =~ /\.title$/i ;
+      $ok = 1 if $i =~ /^GV\*scales/i ;
+      $ok = 1 if $i =~ /^GV\*strings\./i ;
+      next unless $ok;
+      next if defined $res{$i};
+      $newfile .= $resDefault{$i} . "\n";
+  }
+}
+
+if ($altNavigation == 1)
+{
+   $res = $resDefault{"GV.control.prevPage.baseTranslations"};
+   $res = $res{"GV.control.prevPage.baseTranslations"} if defined $res{"GV.control.prevPage.baseTranslations"};
+   $res =~ s/(<Btn1Up>:[^\n]+GV_Page\().*?\)/\1!page-1,bottom)/ ;
+   $res =~ s/(<Btn2Up>:[^\n]+GV_Page\().*?\)/\1!page-5,bottom)/ ;
+   $res =~ s/(<Btn3Up>:[^\n]+GV_Page\().*?\)/\1!page-10,bottom)/ ;
+   $newfile .= "$res\n";
+
+   $res = $resDefault{"GV.control.nextPage.baseTranslations"};
+   $res = $res{"GV.control.nextPage.baseTranslations"} if defined $res{"GV.control.nextPage.baseTranslations"};
+   $res =~ s/(<Btn1Up>:[^\n]+GV_Page\().*?\)/\1!page+1,top)/ ;
+   $res =~ s/(<Btn2Up>:[^\n]+GV_Page\().*?\)/\1!page+5,top)/ ;
+   $res =~ s/(<Btn3Up>:[^\n]+GV_Page\().*?\)/\1!page+10,top)/ ;
+   $newfile .= "$res\n";
+
+   $res = $resDefault{"GV.control.baseTranslations"};
+   $res = $res{"GV.control.baseTranslations"} if defined $res{"GV.control.baseTranslations"};
+   $res =~ s/(<Key>Prior:[^\n]+GV_Page\().*?\)/\1!page-1,bottom)/ ;
+   $res =~ s/(<Key>Next:[^\n]+GV_Page\().*?\)/\1!page+1,top)/ ;
+   $newfile .= "$res\n";
+}
+elsif ($altNavigation == 2)
+{
+   $res = $resDefault{"GV.control.prevPage.baseTranslations"};
+   $res = $res{"GV.control.prevPage.baseTranslations"} if defined $res{"GV.control.prevPage.baseTranslations"};
+   $res =~ s/(<Btn1Up>:[^\n]+GV_Page\().*?\)/\1!page-1)/ ;
+   $res =~ s/(<Btn2Up>:[^\n]+GV_Page\().*?\)/\1!page-5)/ ;
+   $res =~ s/(<Btn3Up>:[^\n]+GV_Page\().*?\)/\1!page-10)/ ;
+   $newfile .= "$res\n";
+
+   $res = $resDefault{"GV.control.nextPage.baseTranslations"};
+   $res = $res{"GV.control.nextPage.baseTranslations"} if defined $res{"GV.control.nextPage.baseTranslations"};
+   $res =~ s/(<Btn1Up>:[^\n]+GV_Page\().*?\)/\1!page+1)/ ;
+   $res =~ s/(<Btn2Up>:[^\n]+GV_Page\().*?\)/\1!page+5)/ ;
+   $res =~ s/(<Btn3Up>:[^\n]+GV_Page\().*?\)/\1!page+10)/ ;
+   $newfile .= "$res\n";
+
+   $res = $resDefault{"GV.control.baseTranslations"};
+   $res = $res{"GV.control.baseTranslations"} if defined $res{"GV.control.baseTranslations"};
+   $res =~ s/(<Key>Prior:[^\n]+GV_Page\().*?\)/\1!page-1)/ ;
+   $res =~ s/(<Key>Next:[^\n]+GV_Page\().*?\)/\1!page+1)/ ;
+   $newfile .= "$res\n";
+}
+
+open ($file, ">", $filename) or die "Cannot open $filename for writing.\n";
+print $file $newfile;
+close $file;

@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Page Location Traps (The GNU troff Manual)</title>
+
+<meta name="description" content="Page Location Traps (The GNU troff Manual)">
+<meta name="keywords" content="Page Location Traps (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Vertical-Position-Traps.html" rel="up" title="Vertical Position Traps">
+<link href="The-Implicit-Page-Trap.html" rel="next" title="The Implicit Page Trap">
+<link href="Vertical-Position-Traps.html" rel="prev" title="Vertical Position Traps">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Page-Location-Traps"></span><div class="header">
+<p>
+Next: <a href="The-Implicit-Page-Trap.html" accesskey="n" rel="next">The Implicit Page Trap</a>, Up: <a href="Vertical-Position-Traps.html" accesskey="u" rel="up">Vertical Position Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Page-Location-Traps-1"></span><h4 class="subsubsection">5.29.1.1 Page Location Traps</h4>
+<span id="index-page-location-traps"></span>
+<span id="index-traps_002c-page-location"></span>
+
+<p>A
+<em>page location trap</em>
+is a vertical position trap that applies to the page;
+that is,
+to the top-level diversion.
+Many can be present;
+manage them with the
+<code>wh</code>
+and
+<code>ch</code>
+requests.
+</p>
+<dl>
+<dt id="index-_002ewh">Request: <strong><tt>.wh</tt></strong> <em>dist [<span class="roman"><i>name</i></span>]</em></dt>
+<dd><span id="index-wh"></span>
+<p>Plant macro
+<var>name</var>
+as page location trap at
+<var>dist</var>.
+The default scaling unit is
+&lsquo;<samp>v</samp>&rsquo;.
+Non-negative values for
+<var>dist</var>
+set the trap relative to the top of the page;
+negative values set the trap relative to the bottom of the page.
+It is not possible to plant a trap
+less than one basic unit from the page bottom:
+the formatter interprets a
+<var>dist</var>
+of <code>-0</code>
+as <code>0</code>,
+the top of the page.
+<code>wh</code>
+removes any existing
+<em>visible</em>
+trap
+(see below)
+at
+<var>dist</var>
+is removed;
+this is its sole function if
+<var>name</var>
+is missing.
+</p>
+<p>A trap springs only if it is
+<em>visible</em>,
+meaning that its location is reachable on the page<a id="DOCF163" href="groff.html_fot.html#FOOT163"><sup>163</sup></a>
+and it is not hidden by another trap
+at the same location already planted there.
+</p>
+<span id="index-page-headers"></span>
+<span id="index-page-footers"></span>
+<span id="index-headers-1"></span>
+<span id="index-footers-1"></span>
+<span id="index-top-margin"></span>
+<span id="index-margin_002c-top"></span>
+<span id="index-bottom-margin"></span>
+<span id="index-margin_002c-bottom"></span>
+<p>A macro package might set headers and footers as follows; this example
+configures vertical margins of one inch to the body text, and one
+half-inch to the titles.  Observe the use of the no-break control
+character with the <code>sp</code> and <code>bp</code> requests to position our text
+baselines and prevent a partially collected line from being written
+outside the body text, and the page number character &lsquo;<samp>%</samp>&rsquo; used with
+the <code>tl</code> request.
+</p>
+<div class="example">
+<pre class="example">.\&quot; hdfo.roff
+.de hd                  \&quot; page header
+'  sp .5i
+.  tl '\\*(Ti''\\*(Da'  \&quot; title and date strings
+'  sp |1i
+..
+.de fo                  \&quot; page footer
+'  sp .5i-1v
+.  tl ''%''
+'  bp
+..
+.wh 0   hd              \&quot; trap at top of the page
+.wh -1i fo              \&quot; trap 1 inch from bottom
+</pre></div>
+
+<p><strong>Caution:</strong> A word about measurements is in order.  Recall that
+the <code>sp</code> request vertically spaces such that the next text baseline
+(of one vee in height by definition) sets with the amount of space given
+to <code>sp</code>&rsquo;s argument <em>above</em> it.  Thus in the example above,
+when the &lsquo;<samp>hd</samp>&rsquo; trap springs at vertical position &lsquo;<samp>0</samp>&rsquo;,
+invoking &lsquo;<samp>sp .5i</samp>&rsquo;, we get the desired half-inch of top margin.
+With the &lsquo;<samp>ft</samp>&rsquo; trap, we space after the body text by one half-inch
+<em>minus one vee</em> to leave a half-inch bottom margin.  The footer
+title, if taller than a baseline rule, thus &ldquo;encroaches&rdquo; into
+the half-inch margin between the body text and the bottom margin, just
+as the header title symmetrically intrudes into the half-inch of space
+between its own cap-height and that of the top of the body text.
+</p>
+<p>To use these traps, copy the above (or load it from a file with the
+<code>so</code> or <code>mso</code> requests), then set up the strings it uses.
+</p>
+<div class="example">
+<pre class="example">.so hdfo.roff
+.ds Ti Final Report\&quot;
+.ds Da 21 May 2023\&quot;
+.ti
+On 5 August of last year,
+this committee tasked me with the investigation of the
+CFIT (controlled flight into terrain) incident of
+.\&quot; <i>...and so on...</i>
+</pre></div>
+
+<p>A trap above the top or at or below the bottom of the page
+can be made visible
+by either moving it into the page area
+or increasing the page length so that the trap is on the page.
+A negative trap value always uses the
+<em>current</em>
+page length;
+the formatter does not convert it to an absolute vertical position.
+<span id="index-page-location-traps_002c-debugging"></span>
+<span id="index-debugging-page-location-traps"></span>
+We can use the
+<code>pwh</code>
+request to dump page location traps to the standard error stream
+(see <a href="Debugging.html">Debugging</a>).
+GNU
+<code>troff</code> reports their positions in basic units,
+and includes empty slots in the list,
+where a trap had been planted
+but subsequently (re)moved,
+because they can affect the visibility of subsequently planted traps.
+An
+<code>nroff</code>
+device example follows.
+</p>
+<div class="example">
+<pre class="example">.pl 5i
+.wh -1i xx
+.pwh
+    error&rarr; xx      -240
+.pl 100i
+.pwh
+    error&rarr; xx      -240
+</pre></div>
+
+<p>It is possible to have more than one trap at the same location (although
+only one at a time can be visible); to achieve this, the traps must be
+defined at different locations, then moved to the same place with the
+<code>ch</code> request.  In the following example, the many empty lines
+caused by the <code>bp</code> request are not shown in the output.
+</p>
+<div class="example">
+<pre class="example">.de a
+.  nop a
+..
+.de b
+.  nop b
+..
+.de c
+.  nop c
+..
+.
+.wh 1i a
+.wh 2i b
+.wh 3i c
+.bp
+    &rArr; a b c
+</pre></div>
+<div class="example">
+<pre class="example">.ch b 1i
+.ch c 1i
+.bp
+    &rArr; a
+</pre></div>
+<div class="example">
+<pre class="example">.ch a 0.5i
+.bp
+    &rArr; a b
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002et_005d">Register: <strong><tt>\n[.t]</tt></strong></dt>
+<dd><span id="index-_002et"></span>
+<span id="index-distance-to-next-vertical-position-trap-register-_0028_002et_0029"></span>
+<span id="index-trap_002c-distance-to-next-vertical-position_002c-register-_0028_002et_0029"></span>
+<p>The read-only register <code>.t</code> holds the distance to the next vertical
+position trap.  If no such traps exist between the drawing position and
+the bottom of the page, it contains the distance to the page bottom.
+Within a diversion, in the absence of a diversion trap, this distance is
+the maximum possible vertical position supported by the output device.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ech">Request: <strong><tt>.ch</tt></strong> <em>name [<span class="roman"><i>dist</i></span>]</em></dt>
+<dd><span id="index-ch"></span>
+<span id="index-changing-trap-location-_0028ch_0029"></span>
+<span id="index-trap_002c-changing-location-_0028ch_0029"></span>
+<p>Change the location of a trap by moving macro <var>name</var> to new location
+<var>dist</var>, or by unplanting it altogether if <var>dist</var> is absent.  The
+default scaling unit is &lsquo;<samp>v</samp>&rsquo;.  Parameters to <code>ch</code> are specified
+in the opposite order from <code>wh</code>.  If <var>name</var> is the earliest
+planted macro of multiple traps at the same location, (re)moving it from
+that location exposes the macro next least recently planted at the same
+place.<a id="DOCF164" href="groff.html_fot.html#FOOT164"><sup>164</sup></a>
+</p>
+<p>Changing a trap&rsquo;s location is useful for building up footnotes in a
+diversion to allow more space at the bottom of the page for them.
+</p>
+
+</dd></dl>
+
+<p>The same macro can be installed simultaneously at multiple locations;
+however, only the earliest-planted instance&mdash;that has not yet been
+deleted with <code>wh</code>&mdash;will be moved by <code>ch</code>.  The following
+example (using an <code>nroff</code> device) illustrates this behavior.  Blank
+lines have been elided from the output.
+</p>
+<div class="example">
+<pre class="example">.de T
+Trap sprung at \\n(nlu.
+.br
+..
+.wh 1i T
+.wh 2i T
+foo
+.sp 11i
+.bp
+.ch T 4i
+bar
+.sp 11i
+.bp
+.ch T 5i
+baz
+.sp 11i
+.bp
+.wh 5i
+.ch T 6i
+qux
+.sp 11i
+</pre></div>
+<div class="example">
+<pre class="example">    &rArr; foo
+    &rArr; Trap sprung at 240u.
+    &rArr; Trap sprung at 480u.
+    &rArr; bar
+    &rArr; Trap sprung at 480u.
+    &rArr; Trap sprung at 960u.
+    &rArr; baz
+    &rArr; Trap sprung at 480u.
+    &rArr; Trap sprung at 1200u.
+    &rArr; qux
+    &rArr; Trap sprung at 1440u.
+</pre></div>
+
+<dl>
+<dt id="index-_005cn_005b_002ene_005d">Register: <strong><tt>\n[.ne]</tt></strong></dt>
+<dd><span id="index-_002ene-1"></span>
+<p>The read-only register <code>.ne</code> contains the amount of space that was
+needed in the last <code>ne</code> request that caused a trap to be sprung;
+it is useful in conjunction with the <code>.trunc</code> register.  See <a href="Page-Control.html">Page Control</a>.  Since the <code>.ne</code> register is set only by traps, it
+doesn&rsquo;t make sense to interpolate it outside of macros called by traps.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002etrunc_005d">Register: <strong><tt>\n[.trunc]</tt></strong></dt>
+<dd><span id="index-_002etrunc"></span>
+<span id="index-ne-request_002c-and-the-_002etrunc-register"></span>
+<span id="index-truncated-vertical-space-register-_0028_002etrunc_0029"></span>
+<p>A read-only register containing the amount of vertical space truncated
+from an <code>sp</code> request by the most recently sprung vertical
+position trap, or, if the trap was sprung by an <code>ne</code> request,
+minus the amount of vertical motion produced by the <code>ne</code>
+request.  In other words, at the point a trap is sprung, it
+represents the difference of what the vertical position would have
+been but for the trap, and what the vertical position actually is.
+Since the <code>.trunc</code> register is set only by traps, it doesn&rsquo;t make
+sense to interpolate it outside of macros called by traps.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002etrap_005d">Register: <strong><tt>\n[.trap]</tt></strong></dt>
+<dd><span id="index-_002etrap"></span>
+<span id="index-next-trap-name-register-_0028_002etrap_0029"></span>
+<span id="index-trap-name_002c-next_002c-register-_0028_002etrap_0029"></span>
+<p>This read-only, string-valued register interpolates the name of the next
+vertical position trap that will be sprung.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_005cn_005b_002epe_005d">Register: <strong><tt>\n[.pe]</tt></strong></dt>
+<dd><span id="index-_002epe"></span>
+<span id="index-bp-request_002c-and-traps-_0028_002epe_0029"></span>
+<span id="index-traps_002c-sprung-by-bp-request-_0028_002epe_0029"></span>
+<span id="index-page-ejection-status-register-_0028_002epe_0029"></span>
+<p>This Boolean-valued, read-only register interpolates&nbsp;1 while a page
+is being ejected, and 0&nbsp;otherwise.
+</p>
+<p>In the following example, we plant the same trap at the top and the
+bottom of the page.  We also make the trap report its name and the
+vertical drawing position.
+</p>
+<div class="example">
+<pre class="example">.de T
+.tm \\$0: page \\n%, nl=\\n[nl] .pe=\\n[.pe]
+..
+.ll 46n
+.wh 0 T
+.wh -1v T
+Those who can make you believe absurdities can make you
+commit atrocities. \[em] Voltaire
+    error&rarr; T: page 1, nl=0 .pe=0
+    error&rarr; T: page 1, nl=2600 .pe=1
+    &rArr; Those who can make you believe absurdities can
+    &rArr; make you commit atrocities. -- Voltaire
+</pre></div>
+</dd></dl>
+
+<span id="index-diversions_002c-and-traps"></span>
+<span id="index-traps_002c-and-diversions"></span>
+<p>When designing macros, keep in mind that diversions and traps do not
+normally interact.  For example, if a trap calls a header macro (while
+outputting a diversion) that tries to change the font on the current
+page, the effect is not visible before the diversion has completely been
+printed (except for input protected with <code>\!</code> or <code>\?</code>) since
+the data in the diversion is already formatted.  In most cases, this is
+not the expected behaviour.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="The-Implicit-Page-Trap.html" accesskey="n" rel="next">The Implicit Page Trap</a>, Up: <a href="Vertical-Position-Traps.html" accesskey="u" rel="up">Vertical Position Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

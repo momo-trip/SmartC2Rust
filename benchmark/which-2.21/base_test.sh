@@ -19,8 +19,7 @@ run_test() {
     local test_passed=false
 
     echo "Running test #${current_test}: $test_name"
-    echo "Test Case #$current_test: Started" >> /root/SmartC2Rust/benchmark/which-2.21/out_flow_c.log
-    echo "Test Case #$current_test: Started" >> /root/SmartC2Rust/benchmark/which-2.21/out_flow_rust.log
+    echo "Test Case #$current_test: Started"
     output=$(eval $command 2>&1)
     exit_code=$?
 

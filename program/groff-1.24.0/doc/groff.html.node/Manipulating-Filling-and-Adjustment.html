@@ -1,0 +1,587 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Manipulating Filling and Adjustment (The GNU troff Manual)</title>
+
+<meta name="description" content="Manipulating Filling and Adjustment (The GNU troff Manual)">
+<meta name="keywords" content="Manipulating Filling and Adjustment (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Manipulating-Hyphenation.html" rel="next" title="Manipulating Hyphenation">
+<link href="Built_002din-Registers.html" rel="prev" title="Built-in Registers">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Manipulating-Filling-and-Adjustment"></span><div class="header">
+<p>
+Next: <a href="Manipulating-Hyphenation.html" accesskey="n" rel="next">Manipulating Hyphenation</a>, Previous: <a href="Registers.html" accesskey="p" rel="prev">Registers</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Manipulating-Filling-and-Adjusting"></span><span id="Manipulating-Filling-and-Adjustment-1"></span><h3 class="section">5.9 Manipulating Filling and Adjustment</h3>
+<span id="index-manipulating-filling-and-adjustment"></span>
+<span id="index-filling-and-adjustment_002c-manipulating"></span>
+<span id="index-adjustment-and-filling_002c-manipulating"></span>
+<span id="index-justifying-text"></span>
+<span id="index-text_002c-justifying"></span>
+
+<span id="index-break-1"></span>
+<span id="index-line-break"></span>
+<span id="index-bp-request_002c-causing-implicit-break"></span>
+<span id="index-ce-request_002c-causing-implicit-break"></span>
+<span id="index-cf-request_002c-causing-implicit-break"></span>
+<span id="index-fi-request_002c-causing-implicit-break"></span>
+<span id="index-fl-request_002c-causing-implicit-break"></span>
+<span id="index-in-request_002c-causing-implicit-break"></span>
+<span id="index-nf-request_002c-causing-implicit-break"></span>
+<span id="index-rj-request_002c-causing-implicit-break"></span>
+<span id="index-sp-request_002c-causing-implicit-break"></span>
+<span id="index-ti-request_002c-causing-implicit-break"></span>
+<span id="index-trf-request_002c-causing-implicit-break"></span>
+<p>When an output line is pending (see below), a break moves the drawing
+position to the beginning of the next text baseline, interrupting
+filling.
+Recall <a href="Breaking.html">Breaking</a>.
+The
+<code>br</code>
+request likewise causes a break.
+Several other requests imply breaks:
+<code>bp</code>,
+<code>brp</code>,
+<code>ce</code>,
+<code>cf</code>,
+<code>fi</code>,
+<code>fl</code>,
+<code>in</code>,
+<code>nf</code>,
+<code>rj</code>,
+<code>sp</code>,
+<code>ti</code>,
+and <code>trf</code>.
+If the no-break control character is used with any of these requests,
+GNU
+<code>troff</code> suppresses the break;
+instead the requested operation takes effect at the next break.
+<span id="index-br-request_002c-nilpotence-with-no_002dbreak-control-character"></span>
+<span id="index-brp-request_002c-nilpotence-with-no_002dbreak-control-character"></span>
+&lsquo;<samp>'br</samp>&rsquo;
+and
+&lsquo;<samp>'brp</samp>&rsquo;
+do nothing.
+</p>
+<div class="example">
+<pre class="example">.ll 55n
+This line is normally filled and adjusted.
+.br
+A line's alignment is decided
+'ce \&quot; Center the next input line (no break).
+when it is output.
+This line returns to normal filling and adjustment.
+    &rArr; This line is normally filled and adjusted.
+    &rArr;    A line's alignment is decided when it is output.
+    &rArr; This line returns to normal filling and adjustment.
+</pre></div>
+
+<p><span id="index-pending-output-line"></span>
+<span id="index-partially-collected-line"></span>
+<span id="index-output-line-properties"></span>
+<span id="index-properties-of-output-lines"></span>
+Output line properties like page offset, indentation, adjustment, and
+even the location of its text baseline, are not determined until the
+line has been broken.  An output line is said to be <em>pending</em> if
+some input has been collected but an output line corresponding to it has
+not yet been written; such an output line is also termed <em>partially
+collected</em>.  If no output line is pending, it is as if a break has
+already happened; additional breaks, whether explicit or implicit, have
+no effect.  If the vertical drawing position is negative&mdash;as it is when
+the formatter starts up&mdash;a break starts a new page (even if no output
+line is pending) unless an end-of-input macro is being interpreted.
+See <a href="End_002dof_002dinput-Traps.html">End-of-input Traps</a>.
+</p>
+<dl>
+<dt id="index-_002ebr">Request: <strong><tt>.br</tt></strong></dt>
+<dd><span id="index-br"></span>
+<p>Break the line: emit any pending output line without adjustment.
+</p>
+<div class="example">
+<pre class="example">foo bar
+.br
+baz
+'br
+qux
+    &rArr; foo bar
+    &rArr; baz qux
+</pre></div>
+</dd></dl>
+
+<p>Sometimes you want to prevent a break within a phrase or between a
+quantity and its units.
+</p>
+<dl>
+<dt id="index-_005c_007e-1">Escape&nbsp;sequence: <strong><tt>\~</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005c_007e"></span>
+<span id="index-unbreakable-space-_0028_005c_007e_0029"></span>
+<span id="index-space_002c-unbreakable-_0028_005c_007e_0029"></span>
+<p>Insert an adjustable,
+unbreakable space.
+As with ordinary spaces,
+GNU
+<code>troff</code> discards any sequence of these at the end of an output line
+if a break occurs.
+</p>
+<div class="example">
+<pre class="example">Set the output speed to\~1.
+There are 1,024\~bytes in 1\~KiB.
+J.\~F.\~Ossanna wrote the original CSTR\~#54.
+</pre></div>
+</dd></dl>
+
+<p>By default, GNU <code>troff</code> fills text and adjusts it to reach the
+output line length.  The <code>nf</code> request disables filling; the
+<code>fi</code> request reënables it.
+</p>
+<dl>
+<dt id="index-_002efi">Request: <strong><tt>.fi</tt></strong></dt>
+<dd><span id="index-fi"></span>
+</dd><dt id="index-_005cn_005b_002eu_005d">Register: <strong><tt>\n[.u]</tt></strong></dt>
+<dd><span id="index-_002eu"></span>
+<span id="index-filling-of-output_002c-enabling-request-_0028fi_0029"></span>
+<span id="index-output_002c-filling_002c-enabling-request-_0028fi_0029"></span>
+<span id="index-fill-mode_002c-enabling_002c-request-_0028fi_0029"></span>
+<span id="index-mode_002c-fill_002c-enabling_002c-request-_0028fi_0029"></span>
+<p>Enable filling of output lines; a pending output line is broken.  The
+read-only register <code>.u</code> is set to&nbsp;1.  The filling enablement
+status, sometimes called <em>fill mode</em>, is associated with the
+environment (see <a href="Environments.html">Environments</a>).  See <a href="Line-Continuation.html">Line Continuation</a>, for
+interaction with the <code>\c</code> escape sequence.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002enf">Request: <strong><tt>.nf</tt></strong></dt>
+<dd><span id="index-nf"></span>
+<span id="index-filling-of-output_002c-disabling-request-_0028nf_0029"></span>
+<span id="index-output_002c-filling_002c-disabling-request-_0028nf_0029"></span>
+<span id="index-no_002dfill-mode-request-_0028nf_0029"></span>
+<span id="index-mode_002c-no_002dfill-request-_0028nf_0029"></span>
+<span id="index-fill-mode_002c-disabling_002c-request-_0028nf_0029"></span>
+<span id="index-mode_002c-fill_002c-disabling_002c-request-_0028nf_0029"></span>
+<p>Disable filling of output lines: the output line length (see <a href="Line-Layout.html">Line Layout</a>) is ignored and output lines are broken where the input lines
+are.  A pending output line is broken and adjustment is suppressed.  The
+read-only register <code>.u</code> is set to&nbsp;0.  The filling enablement
+status is associated with the environment (see <a href="Environments.html">Environments</a>).  See
+<a href="Line-Continuation.html">Line Continuation</a>, for interaction with the <code>\c</code> escape
+sequence.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002ead">Request: <strong><tt>.ad</tt></strong> <em>[<span class="roman"><i>mode</i></span>]</em></dt>
+<dd><span id="index-ad"></span>
+</dd><dt id="index-_005cn_005b_002ej_005d">Register: <strong><tt>\n[.j]</tt></strong></dt>
+<dd><span id="index-_002ej"></span>
+<p>Enable output line adjustment in <var>mode</var>, taking effect when the
+pending (or next) output line is broken.  Adjustment is suppressed when
+filling is.  <var>mode</var> can have one of the following values.
+</p>
+<dl compact="compact">
+<dt><code>b</code></dt>
+<dt><code>n</code></dt>
+<dd><p>Adjust &ldquo;normally&rdquo;: if the output line does not consume the distance
+between the indentation and the configured output line length, GNU
+<code>troff</code> stretches adjustable spaces within the line until that
+length is reached.  When the indentation is zero, this mode spreads the
+line to both the left and right margins.  This is the GNU <code>troff</code>
+default.
+</p>
+</dd>
+<dt><code>c</code></dt>
+<dd><span id="index-centered-text-_0028filled_0029"></span>
+<p>Center filled text.  Contrast with the <code>ce</code> request, which centers
+text <em>without</em> filling it.
+</p>
+</dd>
+<dt><code>l</code></dt>
+<dd><span id="index-ragged_002dright-text"></span>
+<p>Align text to the left without adjusting it.
+</p>
+</dd>
+<dt><code>r</code></dt>
+<dd><span id="index-ragged_002dleft-text"></span>
+<p>Align text to the right without adjusting it.
+</p></dd>
+</dl>
+
+<p><var>mode</var> can also be a value previously stored in the <code>.j</code>
+register.  Using <code>ad</code> without an argument is the same as &lsquo;<samp>.ad
+\n[.j]</samp>&rsquo;; unless filling is disabled, GNU <code>troff</code> resumes adjusting
+lines in the same way it did before adjustment was disabled by
+invocation of the <code>na</code> request.
+</p>
+<span id="index-adjustment-mode-register-_0028_002ej_0029"></span>
+<p>The adjustment mode and enablement status are encoded in the read-only
+register <code>.j</code>.  These parameters are associated with the
+environment (see <a href="Environments.html">Environments</a>).
+</p>
+<p>The value of <code>.j</code> for any adjustment mode is an implementation
+detail and should not be relied upon as a programmer&rsquo;s interface.  Do
+not write logic to interpret or perform arithmetic on it.
+</p>
+<div class="example">
+<pre class="example">.ll 48n
+.de AD
+.  br
+.  ad \\$1
+..
+.de NA
+.  br
+.  na
+..
+left
+.AD r
+.nr ad \n(.j
+right
+.AD c
+center
+.NA
+left
+.AD
+center
+.AD \n(ad
+right
+</pre></div>
+<div class="example">
+<pre class="example">    &rArr; left
+    &rArr;                                            right
+    &rArr;                      center
+    &rArr; left
+    &rArr;                      center
+    &rArr;                                            right
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002ena">Request: <strong><tt>.na</tt></strong></dt>
+<dd><span id="index-na"></span>
+<p>Disable output line adjustment,
+produciing the same output as left-alignment,
+but altering the value of the adjustment mode register
+<code>.j</code>
+differently.
+The adjustment mode
+and enablement status
+are associated with the environment.<a id="DOCF77" href="groff.html_fot.html#FOOT77"><sup>77</sup></a>
+</p></dd></dl>
+
+<p>Normally,
+an explicit break implies non-adjustment of the pending output line,
+as at the end of a paragraph.
+</p>
+<dl>
+<dt id="index-_002ebrp">Request: <strong><tt>.brp</tt></strong></dt>
+<dd><span id="index-brp"></span>
+</dd><dt id="index-_005cp-1">Escape&nbsp;sequence: <strong><tt>\p</tt><span class="roman"><i></i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cp"></span>
+<p>The
+<code>brp</code>
+request commands a break as
+<code>br</code>
+does,
+but also forces adjustment of the output line
+per the current adjustment mode.
+Like
+<code>br</code>,
+it does nothing if invoked with the no-break control character.
+</p>
+<p><code>\p</code>
+schedules a break with adjustment at the next word boundary.
+The escape sequence
+is itself neither a break nor a space of any kind;
+it can thus be placed in the middle of a word
+to cause a break at the end of that word.
+</p>
+<p><code>\p</code>
+is typically used for fine-tuning of typeset output
+late in the document revision process.
+One of its applications is prevention of a break
+after an explicit hyphen when this occurs in an undesired place,
+such as at the end of a recto page,
+or before a displayed figure.
+The hyphenation mode can be configured to prevent breaks
+after
+<em>automatically</em>
+placed hyphens,
+but not explicit ones.<a id="DOCF78" href="groff.html_fot.html#FOOT78"><sup>78</sup></a>
+What one can do in this scenario
+is place <code>\p</code> at the end of the word
+<em>before</em>
+the one that breaks undesirably.
+</p>
+<div class="example">
+<pre class="example">.ll 1.375i
+The next data were out-of-band. \&quot; breaks after &quot;out-&quot;
+.br
+The next data were\p out-of-band. \&quot; breaks after &quot;were&quot;
+</pre></div>
+
+<p>Breaking with immediate adjustment can produce ugly results since GNU
+<code>troff</code> doesn&rsquo;t have a sophisticated paragraph-building algorithm,
+as TeX has, for example.  Instead, GNU <code>troff</code> fills and adjusts
+a paragraph line by line.
+</p>
+<div class="example">
+<pre class="example">.ll 4.5i
+This is an uninteresting sentence.
+This is an uninteresting sentence.\p
+This is an uninteresting sentence.
+</pre></div>
+
+<p>is formatted as follows.
+</p>
+<div class="example">
+<pre class="example">This  is  an uninteresting sentence.  This is
+an          uninteresting           sentence.
+This is an uninteresting sentence.
+</pre></div>
+</dd></dl>
+
+<span id="index-productive-input-line"></span>
+<span id="index-input-line_002c-productive"></span>
+<span id="index-line_002c-productive-input"></span>
+<p>To clearly present the next couple of requests, we must introduce the
+concept of &ldquo;productive&rdquo; input lines.  A <em>productive input line</em> is
+one that directly produces formatted output.
+Text lines produce output,<a id="DOCF79" href="groff.html_fot.html#FOOT79"><sup>79</sup></a>
+as do control lines containing requests like
+&lsquo;<samp>.tl //Page %//</samp>&rsquo;
+or escape sequences like
+&lsquo;<samp>\l'1i'</samp>&rsquo;.
+Macro calls are not themselves productive,
+but their interpolations can be.
+Empty requests, and requests and escape sequences that define
+registers or strings or alter the formatting environment (as with
+changes to the size, face, height, slant, or color of the type) are not
+productive.<a id="DOCF80" href="groff.html_fot.html#FOOT80"><sup>80</sup></a>  We will
+also preview the output line continuation escape sequence, <code>\c</code>,
+which &ldquo;connects&rdquo; two input lines that would otherwise be counted
+separately.  <a id="DOCF81" href="groff.html_fot.html#FOOT81"><sup>81</sup></a>
+</p>
+<div class="example">
+<pre class="example">.de hello
+Hello, world!
+..
+.ce \&quot; center output of next productive input line
+.
+.nr junk-reg 1
+.ft I
+Chorus: \c
+.ft
+.hello
+Went the day well?
+  &rArr;                  <i>Chorus:</i> Hello, world!
+  &rArr; Went the day well?
+</pre></div>
+
+<dl>
+<dt id="index-_002ece">Request: <strong><tt>.ce</tt></strong> <em>[<span class="roman"><i>n</i></span>]</em></dt>
+<dd><span id="index-ce"></span>
+</dd><dt id="index-_005cn_005b_002ece_005d">Register: <strong><tt>\n[.ce]</tt></strong></dt>
+<dd><span id="index-_002ece-1"></span>
+<span id="index-centered-text-_0028unfilled_0029"></span>
+<span id="index-centering-lines-_0028ce_0029"></span>
+<span id="index-lines_002c-centering-_0028ce_0029"></span>
+<p>Break (unless the no-break control character is used), center the output
+of the next <var>n</var> productive input lines with respect to the line
+length and indentation without filling, then break again regardless of
+the invoking control character.
+If the argument is not positive, centering is disabled.  Omitting the
+argument implies an <var>n</var> of &lsquo;<samp>1</samp>&rsquo;.  The count of input lines
+remaining to be centered is stored in the read-only register <code>.ce</code>
+and is associated with the environment (see <a href="Environments.html">Environments</a>).
+</p>
+<span id="index-ce-request_002c-difference-from-_002ead-c"></span>
+<p>While the &lsquo;<samp>.ad&nbsp;c</samp>&rsquo;<!-- /@w --> request also centers text, it fills the text
+as well.
+</p>
+<div class="example">
+<pre class="example">.de FR
+This is a small text fragment that shows the differences
+between the `.ce' and the `.ad c' requests.
+..
+.ll 4i
+.ce \n(.R
+.FR
+.ce 0
+
+.ad c
+.FR
+    &rArr; This is a small text fragment that shows
+    &rArr;              the differences
+    &rArr; between the &lsquo;.ce&rsquo; and the&nbsp;&lsquo;.ad c&rsquo; requests.
+    &rArr;
+    &rArr; This is a small text fragment that shows
+    &rArr;  the differences between the&nbsp;&lsquo;.ce&rsquo; and
+    &rArr;         the &lsquo;.ad c&rsquo; requests.
+</pre></div>
+
+<p>The previous example
+illustrates a common idiom
+of turning centering on
+for a quantity of lines far in excess of what is required,<a id="DOCF82" href="groff.html_fot.html#FOOT82"><sup>82</sup></a>
+and off again after the text to be centered.
+This technique relieves humans of counting lines
+for requests that take a count of input lines as an argument.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002erj">Request: <strong><tt>.rj</tt></strong> <em>[<span class="roman"><i>n</i></span>]</em></dt>
+<dd><span id="index-rj"></span>
+</dd><dt id="index-_005cn_005b_002erj_005d">Register: <strong><tt>\n[.rj]</tt></strong></dt>
+<dd><span id="index-_002erj-1"></span>
+<span id="index-right_002daligning-text-_0028rj_0029"></span>
+<span id="index-text_002c-right_002daligning-_0028rj_0029"></span>
+<p>Break (unless the no-break control character is used), align the output
+of the next <var>n</var> productive input lines to the right margin without
+filling, then break again regardless of the control character.
+If the argument is not positive, right-alignment is disabled.  Omitting
+the argument implies an <var>n</var> of &lsquo;<samp>1</samp>&rsquo;.  The count of input lines
+remaining to be right-aligned is stored in the read-only registeinput r
+<code>.rj</code> and is associated with the environment
+(see <a href="Environments.html">Environments</a>).
+</p>
+<div class="example">
+<pre class="example">.ll 49n
+.rj 3
+At first I hoped that such a technically unsound
+project would collapse but I soon realized it was
+doomed to success. \[em] C. A. R. Hoare
+    &rArr;  At first I hoped that such a technically unsound
+    &rArr; project would collapse but I soon realized it was
+    &rArr;              doomed to success. -- C. A. R. Hoare
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002ess">Request: <strong><tt>.ss</tt></strong> <em>word-space-size [<span class="roman"><i>additional-sentence-space-size</i></span>]</em></dt>
+<dd><span id="index-ss"></span>
+</dd><dt id="index-_005cn_005b_002ess_005d">Register: <strong><tt>\n[.ss]</tt></strong></dt>
+<dd><span id="index-_002ess-1"></span>
+</dd><dt id="index-_005cn_005b_002esss_005d">Register: <strong><tt>\n[.sss]</tt></strong></dt>
+<dd><span id="index-_002esss"></span>
+<span id="index-word-space"></span>
+<span id="index-space_002c-word"></span>
+<span id="index-word-space-size-register-_0028_002ess_0029"></span>
+<span id="index-size-of-word-space-register-_0028_002ess_0029"></span>
+<span id="index-space-between-words-register-_0028_002ess_0029"></span>
+<span id="index-inter_002dsentence-space-size-register-_0028_002esss_0029"></span>
+<span id="index-sentence-space-size-register-_0028_002esss_0029"></span>
+<span id="index-size-of-sentence-space-register-_0028_002esss_0029"></span>
+<span id="index-space-between-sentences-register-_0028_002esss_0029"></span>
+<span id="index-CSTR-_002354-errata-1"></span>
+<span id="index-CSTR-_002354-erratum_002c-ss-request"></span>
+<p>Set the sizes of spaces between words and sentences<a id="DOCF83" href="groff.html_fot.html#FOOT83"><sup>83</sup></a> in twelfths of the space width of
+the currently selected font.<a id="DOCF84" href="groff.html_fot.html#FOOT84"><sup>84</sup></a>  (A <em>word space</em> is
+typically one-fourth to one-third em for Western scripts.)  The default
+for both parameters is&nbsp;12.  Negative values are erroneous.
+<span id="index-inter_002dword-spacing_002c-minimum"></span>
+<span id="index-minimum-inter_002dword-spacing"></span>
+<span id="index-space_002c-between-words"></span>
+The first argument is a minimum; if an output line undergoes adjustment,
+such spaces may increase in width.
+<span id="index-inter_002dsentence-space_002c-additional"></span>
+<span id="index-supplemental-inter_002dsentence-space"></span>
+<span id="index-additional-inter_002dsentence-space"></span>
+<span id="index-space_002c-between-sentences"></span>
+The optional second argument sets the amount of additional space
+separating sentences on the same output line.  If omitted, this amount
+is set to <var>word-space-size</var>.  The request is ignored if there are no
+parameters.
+</p>
+<span id="index-filling_002c-and-inter_002dsentence-space"></span>
+<span id="index-mode_002c-fill_002c-and-inter_002dsentence-space"></span>
+<p>Additional inter-sentence space is used only if the output line is not
+full when the end of a sentence occurs in the input.  If a sentence ends
+at the end of an input line, then both an inter-word space and an
+inter-sentence space are added to the output; if two spaces follow the
+end of a sentence in the middle of an input line, then the second space
+becomes an inter-sentence space in the output.  Additional
+inter-sentence space is not adjusted, but the inter-word space that
+always precedes it may be.  Further input spaces after the second, if
+present, are adjusted as normal.
+</p>
+<p>The read-only registers <code>.ss</code> and <code>.sss</code> hold the minimum
+inter-word space and supplemental inter-sentence space amounts,
+respectively.  These parameters are part of the environment
+(see <a href="Environments.html">Environments</a>).
+</p>
+<span id="index-discardable-horizontal-space"></span>
+<span id="index-space_002c-discardable_002c-horizontal"></span>
+<span id="index-horizontal-discardable-space"></span>
+<p>The <code>ss</code> request can insert discardable horizontal space; that is,
+space that is discarded at a break.  For example, some footnote styles
+collect the notes into a single paragraph with large gaps between
+each note.
+</p>
+<div class="example">
+<pre class="example">.ll 48n
+1.\~J. Fict. Ch. Soc. 6 (2020), 3\[en]14.
+.ss 12 48 \&quot; applies to next sentence ending
+Reprints no longer available through FCS.
+.ss 12 \&quot; go back to normal
+2.\~Better known for other work.
+    &rArr; 1.  J.  Fict. Ch. Soc. 6 (2020), 3-14.  Reprints
+    &rArr; no longer available through FCS.      2.  Better
+    &rArr; known for other work.
+</pre></div>
+
+<p>If <em>undiscardable</em> space is required, use the <code>\h</code> escape
+sequence to put horizontal motion on the output.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Manipulating-Hyphenation.html" accesskey="n" rel="next">Manipulating Hyphenation</a>, Previous: <a href="Registers.html" accesskey="p" rel="prev">Registers</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

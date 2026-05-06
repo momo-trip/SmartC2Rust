@@ -1,0 +1,65 @@
+# Copyright (C) 2014-2022 Free Software Foundation, Inc.
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+DEVX100FONTS = \
+  font/devX100/DESC \
+  font/devX100/TR \
+  font/devX100/TI \
+  font/devX100/TB \
+  font/devX100/TBI \
+  font/devX100/CR \
+  font/devX100/CI \
+  font/devX100/CB \
+  font/devX100/CBI \
+  font/devX100/HR \
+  font/devX100/HI \
+  font/devX100/HB \
+  font/devX100/HBI \
+  font/devX100/NR \
+  font/devX100/NI \
+  font/devX100/NB \
+  font/devX100/NBI \
+  font/devX100/S
+
+if !WITHOUT_X11
+devX100_fontdir = $(fontdir)/devX100
+devX100_font_DATA = $(DEVX100FONTS)
+endif
+
+EXTRA_DIST += $(DEVX100FONTS)
+
+# This target generates font descriptions from core X11 font data
+# returned by a running X server; these are _not_ normally generated
+# during a build, but provided with the groff source distribution.
+#
+# This maintainer-mode target alters files in the source tree.
+maintainer-font-descriptions: devX100_font-descriptions
+devX100_fontsrcdir=$(top_srcdir)/font/devX100
+devX100_font-descriptions: $(xtotroff) $(xditview_srcdir)/DESC.in \
+  $(xditview_srcdir)/FontMap-X11
+	  $(AM_V_GEN)$(MKDIR_P) $(devX100_fontsrcdir) \
+	  && sed -e 's/res .*/res 100/' $(xditview_srcdir)/DESC.in \
+	    >$(devX100_fontsrcdir)/DESC \
+	  && $(xtotroff) -d $(devX100_fontsrcdir) -r 100 -s 10 \
+	    $(xditview_srcdir)/FontMap-X11
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

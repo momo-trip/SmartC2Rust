@@ -1,0 +1,45 @@
+chAf_arrow.chem:
+.br
+.EQ
+delim $$
+.EN
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+    bond length .1 ; BP
+    bond up length .5
+    bond right
+    bond down length .5 from BP
+    bond right
+    bond right from BP ; C
+    double bond up ; O
+    bond right from C
+    benzene pointing right
+    bond right ; C
+    double bond up from C ; O
+    bond right from C ; O
+    bond right ; CH2
+# this is the statement to make the arrow
+    line <- from CH2.s down
+    move down .1 ; "0.085"
+    CH2CH2CH2 right of CH2
+    bond right ; O
+    bond right length .1 ; BP
+    bond up length .5 from BP
+    bond left
+    bond right length .1 from BP
+    bond down length .5 from BP ; BP
+    bond left
+    "$n$" with .w at BP.se
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend
+.EQ
+delim off
+.EN

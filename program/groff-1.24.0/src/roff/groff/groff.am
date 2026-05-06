@@ -1,0 +1,154 @@
+# Copyright 1993-2020 Free Software Foundation, Inc.
+#
+#   Original Makefile.sub rewritten by
+#   Bernd Warken <groff-bernd.warken-72@web.de>
+#   and Werner LEMBERG <wl@gnu.org>
+#
+#   Automake migration by
+#   Bertrand Garrigues <bertrand.garrigues@laposte.net>
+#
+# This file is part of groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+bin_PROGRAMS += groff
+groff_LDADD = \
+  libgroff.a \
+  lib/libgnu.a \
+  $(LIBM)
+groff_SOURCES = \
+  src/roff/groff/groff.cpp \
+  src/roff/groff/pipeline.c \
+  src/roff/groff/pipeline.h
+src/roff/groff/groff.$(OBJEXT): defs.h
+man1_MANS += src/roff/groff/groff.1
+EXTRA_DIST += src/roff/groff/groff.1.man
+
+groff_TESTS = \
+  src/roff/groff/tests/ab-request-works.sh \
+  src/roff/groff/tests/adjustment-works.sh \
+  src/roff/groff/tests/arithmetic-works.sh \
+  src/roff/groff/tests/asciify-composite-nodes-correctly.sh \
+  src/roff/groff/tests/asciify-request-works.sh \
+  src/roff/groff/tests/asciify-special-characters-correctly.sh \
+  src/roff/groff/tests/backslash-X-is-transparent-to-hyphenation.sh \
+  src/roff/groff/tests/backslash-X-works.sh \
+  src/roff/groff/tests/backslash-Y-works.sh \
+  src/roff/groff/tests/backslash-exclamation-early-does-not-fail.sh \
+  src/roff/groff/tests/backslash-s-works-with-single-digit-argument.sh \
+  src/roff/groff/tests/bd-request-works.sh \
+  src/roff/groff/tests/br-and-brp-requests-work.sh \
+  src/roff/groff/tests/break-zero-length-output-line-sanely.sh \
+  src/roff/groff/tests/cf-request-early-does-not-fail.sh \
+  src/roff/groff/tests/cf-request-works.sh \
+  src/roff/groff/tests/cflags-works-on-character-classes.sh \
+  src/roff/groff/tests/check-delimiter-validity.sh \
+  src/roff/groff/tests/class-request-works.sh \
+  src/roff/groff/tests/composite-nodes-produce-approximate-output.sh \
+  src/roff/groff/tests/current-language-and-environment-in-sync.sh \
+  src/roff/groff/tests/degenerate-control-flow-works.sh \
+  src/roff/groff/tests/detect-evil-link-time-optimizer.sh \
+  src/roff/groff/tests/device-control-escapes-express-basic-latin.sh \
+  src/roff/groff/tests/device-control-special-character-handling.sh \
+  src/roff/groff/tests/device-request-passes-most-escape-sequences.sh \
+  src/roff/groff/tests/device-request-works.sh \
+  src/roff/groff/tests/devicem-request-works.sh \
+  src/roff/groff/tests/do-not-crash-on-mismatched-diversion-request.sh \
+  src/roff/groff/tests/do-not-free-file-name-pointers-early.sh \
+  src/roff/groff/tests/do-not-loop-infinitely-when-breaking-cjk.sh \
+  src/roff/groff/tests/dot-b-register-works.sh \
+  src/roff/groff/tests/dot-cp-register-works.sh \
+  src/roff/groff/tests/dot-nm-register-works.sh \
+  src/roff/groff/tests/dot-nn-register-works.sh \
+  src/roff/groff/tests/dot-trap-register-works.sh \
+  src/roff/groff/tests/double-do-request-does-not-fail-assertion.sh \
+  src/roff/groff/tests/draw-arc.sh \
+  src/roff/groff/tests/draw-circle.sh \
+  src/roff/groff/tests/draw-ellipse.sh \
+  src/roff/groff/tests/draw-filled-circle.sh \
+  src/roff/groff/tests/draw-filled-ellipse.sh \
+  src/roff/groff/tests/draw-filled-polygon.sh \
+  src/roff/groff/tests/draw-line.sh \
+  src/roff/groff/tests/draw-polygon.sh \
+  src/roff/groff/tests/draw-spline.sh \
+  src/roff/groff/tests/driver-C-and-G-options-work.sh \
+  src/roff/groff/tests/dvi-device-smoke-test.sh \
+  src/roff/groff/tests/evc-request-produces-no-output-if-invalid.sh \
+  src/roff/groff/tests/fp-request-does-not-traverse-directories.sh \
+  src/roff/groff/tests/handle-special-input-code-points.sh \
+  src/roff/groff/tests/hcode-request-copies-spec-char-code.sh \
+  src/roff/groff/tests/hla-request-works.sh \
+  src/roff/groff/tests/html-device-smoke-test.sh \
+  src/roff/groff/tests/html-device-works-with-grn-and-eqn.sh \
+  src/roff/groff/tests/html-does-not-fumble-tagged-paragraph.sh \
+  src/roff/groff/tests/hys-request-works.sh \
+  src/roff/groff/tests/initialization-is-quiet.sh \
+  src/roff/groff/tests/latin1-device-maps-oq-to-0x27.sh \
+  src/roff/groff/tests/lbp-device-smoke-test.sh \
+  src/roff/groff/tests/lf-request-works.sh \
+  src/roff/groff/tests/lj4-device-smoke-test.sh \
+  src/roff/groff/tests/logical-predicates-work.sh \
+  src/roff/groff/tests/localization-works.sh \
+  src/roff/groff/tests/msoquiet-request-works.sh \
+  src/roff/groff/tests/output-request-works.sh \
+  src/roff/groff/tests/pchar-request-works.sh \
+  src/roff/groff/tests/pdf-device-smoke-test.sh \
+  src/roff/groff/tests/pi-request-works.sh \
+  src/roff/groff/tests/po-request-works.sh \
+  src/roff/groff/tests/ps-device-smoke-test.sh \
+  src/roff/groff/tests/recognize-end-of-sentence.sh \
+  src/roff/groff/tests/regression_savannah_56555.sh \
+  src/roff/groff/tests/regression_savannah_58153.sh \
+  src/roff/groff/tests/regression_savannah_58162.sh \
+  src/roff/groff/tests/regression_savannah_58337.sh \
+  src/roff/groff/tests/regression_savannah_59202.sh \
+  src/roff/groff/tests/safer-mode-works.sh \
+  src/roff/groff/tests/set-stroke-thickness.sh \
+  src/roff/groff/tests/sizes-request-works.sh \
+  src/roff/groff/tests/so-request-accepts-embedded-space-in-arg.sh \
+  src/roff/groff/tests/soquiet-request-works.sh \
+  src/roff/groff/tests/stringdown-and-stringup-requests-work.sh \
+  src/roff/groff/tests/stringdown-request-rejects-request-names.sh \
+  src/roff/groff/tests/stringup-request-transforms-non-basic-latin.sh \
+  src/roff/groff/tests/substring-request-works.sh \
+  src/roff/groff/tests/sy-request-works.sh \
+  src/roff/groff/tests/trf-request-works.sh \
+  src/roff/groff/tests/unencodable-things-in-grout.sh \
+  src/roff/groff/tests/using-diversion-as-character-works.sh \
+  src/roff/groff/tests/warn-on-overset-adjusted-line.sh \
+  src/roff/groff/tests/warn-on-overset-unadjusted-line.sh \
+  src/roff/groff/tests/warn-on-underset-adjusted-line.sh \
+  src/roff/groff/tests/write-request-handles-empty-second-arg.sh
+TESTS += $(groff_TESTS)
+EXTRA_DIST += $(groff_TESTS)
+
+# required test artifacts
+EXTRA_DIST += \
+  src/roff/groff/tests/artifacts/HONEYPOT \
+  src/roff/groff/tests/artifacts/devascii/README \
+  src/roff/groff/tests/artifacts/small-gnu-head.png \
+  src/roff/groff/tests/artifacts/throughput-file
+
+groff_XFAIL_TESTS = \
+  src/roff/groff/tests/current-language-and-environment-in-sync.sh \
+  src/roff/groff/tests/html-device-works-with-grn-and-eqn.sh \
+  src/roff/groff/tests/stringup-request-transforms-non-basic-latin.sh
+XFAIL_TESTS += $(groff_XFAIL_TESTS)
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

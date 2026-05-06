@@ -1,0 +1,30 @@
+
+GV*orientationButton*forcedWidth:	72
+GV.control.MButton.height:	1
+GV.control.MButton.forcedHeight:	1
+GV.control.MButton.borderWidth:	0
+GV.control.MButton.borderColor:	green
+GV.control.MButton.background:	gray
+GV.control.MButton.topShadowPixel:	gray
+GV.control.MButton.bottomShadowPixel:	darkgray
+GV.borderWidth:	0
+GV.control.borderWidth:	0
+GV.control.viewFrame.borderWidth:	0
+GV.control.viewFrame.viewClip.borderWidth:	0
+GV.control.viewFrame.viewClip.page.borderWidth:	0
+
+GV*control.layout:			\
+|v{					\
+    |h{                                 \
+        fileButton                      \
+        stateButton                     \
+        pageButton                      \
+        orientationButton               \
+        scaleButton                     \
+        pageMediaButton                 \
+    }                                   \
+    |h{                                 \
+        newtocFrame<-[1]*+200[1]-[1]>	\
+        viewFrame<+9999-100%*+9999-100%>\
+    }                                   \
+}

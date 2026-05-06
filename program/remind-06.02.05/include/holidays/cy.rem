@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Cyprus
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Πρωτοχρονιά%" %! %b.
+OMIT 6 January MSG %"Ημέρα των Θεοφανίων%" %! %b.
+OMIT [orthodoxeaster($Uy)-48] MSG %"Καθαρά Δευτέρα%" %! %b.
+OMIT 25 March MSG %"Ημέρα της Ελληνικής Ανεξαρτησίας%" %! %b.
+OMIT 1 April MSG %"Εθνική Ημέρα Κύπρου%" %! %b.
+OMIT [orthodoxeaster($Uy)-2] MSG %"Μεγάλη Παρασκευή%" %! %b.
+OMIT [orthodoxeaster($Uy)] MSG %"Κυριακή του Πάσχα%" %! %b.
+OMIT [orthodoxeaster($Uy)+1] MSG %"Δευτέρα της Διακαινησίμου%" %! %b.
+OMIT 1 May MSG %"Πρωτομαγιά%" %! %b.
+OMIT [orthodoxeaster($Uy)+50] MSG %"Δευτέρα του Αγίου Πνεύματος%" %! %b.
+OMIT 15 August MSG %"Κοίμηση της Θεοτόκου%" %! %b.
+OMIT 1 October MSG %"Ημέρα της Κυπριακής Ανεξαρτησίας%" %! %b.
+OMIT 28 October MSG %"Ημέρα του Όχι%" %! %b.
+OMIT 25 December MSG %"Χριστούγεννα%" %! %b.
+OMIT 26 December MSG %"Επομένη Χριστουγέννων%" %! %b.
+
+# Optional holidays
+REM [orthodoxeaster($Uy)-1] MSG %"Μεγάλο Σάββατο%" %! %b.
+REM [orthodoxeaster($Uy)+2] MSG %"Τρίτη της Διακαινησίμου%" %! %b.
+REM 24 December MSG %"Παραμονή Χριστουγέννων%" %! %b.

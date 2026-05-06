@@ -1,0 +1,626 @@
+.TH groff_www @MAN7EXT@ "@MDATE@" "groff @VERSION@"
+.SH Name
+groff_www \- GNU
+.I roff
+macros for authoring web pages
+.
+.
+.\" ====================================================================
+.\" Legal Terms
+.\" ====================================================================
+.\"
+.\" Copyright 2000-2020 Free Software Foundation, Inc.
+.\"
+.\" This file is part of groff, the GNU roff typesetting system.
+.\"
+.\" groff is free software; you can redistribute it and/or modify it
+.\" under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" groff is distributed in the hope that it will be useful, but WITHOUT
+.\" ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+.\" or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+.\" License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program.  If not, see
+.\" <http://www.gnu.org/licenses/>.
+.
+.
+.\" Save and disable compatibility mode (for, e.g., Solaris 10/11).
+.do nr *groff_groff_www_7_man_C \n[.cp]
+.cp 0
+.
+.\" Define fallback for groff 1.23's MR macro if the system lacks it.
+.nr do-fallback 0
+.if !\n(.f           .nr do-fallback 1 \" mandoc
+.if  \n(.g .if !d MR .nr do-fallback 1 \" older groff
+.if !\n(.g           .nr do-fallback 1 \" non-groff *roff
+.if \n[do-fallback]  \{\
+.  de MR
+.    ie \\n(.$=1 \
+.      I \%\\$1
+.    el \
+.      IR \%\\$1 (\\$2)\\$3
+.  .
+.\}
+.rr do-fallback
+.
+.
+.\" ====================================================================
+.SH Synopsis
+.\" ====================================================================
+.
+.SY "groff \-m www"
+.RI [ option\~ .\|.\|.\&]
+.RI [ file\~ .\|.\|.]
+.YS
+.
+.
+.\" ====================================================================
+.SH Description
+.\" ====================================================================
+.
+This manual page describes the GNU
+.I www
+macro package,
+which is part of the
+.MR groff @MAN7EXT@
+document formatting system.
+.
+This macro file is automatically loaded by the default
+.I troffrc
+file when the formatter
+(usually
+.MR groff @MAN1EXT@ )
+is called with either of the options
+.RB \[lq] \-T\~html \[rq]
+or
+.RB \[lq] \-T\~xhtml \[rq].
+.
+The HTML output driver
+.MR grohtml 1
+is in a beta state;
+.I groff
+distributes these macros to encourage its testing.
+.
+.
+.P
+.TS
+tab(@);
+L  L
+Lb L.
+Macro@Meaning
+_
+JOBNAME@split output into multiple files
+HX@automatic heading level cut-off
+BCL@specify colours on a web page
+BGIMG@specify background image
+URL@create a URL using two parameters
+MTO@create an HTML email address
+TAG@generate an HTML name
+IMG@include an image file
+PIMG@include PNG image
+MPIMG@place PNG on the margin and wrap text around it
+HnS@begin heading
+HnE@end heading
+LK@emit automatically collected links
+HR@produce a horizontal rule
+NHR@suppress automatic generation of rules
+HTL@record document title as HTML metadata only
+HEAD@add data to <head> block
+ULS@unordered list begin
+ULE@unordered list end
+OLS@ordered list begin
+OLE@ordered list end
+DLS@definition list begin
+DLE@definition list end
+LI@insert a list item
+DC@generate a drop capital
+HTML@transmit raw HTML to output driver
+CDS@code example begin
+CDE@code example end
+ALN@place links on left of main text
+LNS@start two-column table with links on the left
+LNE@end two-column table started with \fB.LNS\fP
+LINKSTYLE@initialize default URL attributes
+.TE
+.
+.
+.\" ====================================================================
+.SH Macros
+.\" ====================================================================
+.
+.TP 9n \" "HTML" + 2n + hand-tuned for PDF
+.BI JOBNAME\~ file-name-stem
+Split output into multiple HTML files.
+.
+In
+.I ms
+documents,
+a file is split whenever an
+.B .SH
+or
+.RB \[lq] ".NH\~1" \[rq]
+call is encountered.
+.
+Its argument is the file name stem used for output files.
+.
+This option is equivalent to
+.IR \%grohtml 's
+.B \-j
+option.
+.
+.
+.TP
+.BI HX\~ n
+Set section heading level above which
+.I \%grohtml
+is not to automatically generate links to
+.I n.
+.
+For example,
+when used with the
+.MR groff_ms @MAN7EXT@
+package,
+.RB \[lq] ".HX\~2" \[rq]
+causes
+.I \%grohtml
+to generate a list of links for
+.I ms
+macro calls
+.RB \[lq] ".NH\~1" \[rq]
+and
+.RB \[lq] ".NH\~2" \[rq]
+but not for
+.RB \[lq] ".NH\~3" \[rq],
+whereas
+.RB \[lq] ".HX\~0" \[rq]
+generates no hyperlinks to section headings.
+.
+Giving
+.I groff
+the option
+.RB \[lq] "\-P\~\-l" \[rq]
+disables automatic heading linkage.
+.
+.
+.TP
+.BI BCL\~ "foreground background active not-visited visited"
+Configure colours used for
+page foreground,
+page background,
+active hypertext link,
+hypertext links not yet visited,
+and visited hypertext links.
+.
+.
+.TP
+.BI BGIMG\~ file
+Set the background image
+to
+.I file.
+.
+.
+.TP
+.BI URL\~ url\~\c
+.RI [ link-text \~[ post ]]
+Generate a hyperlink to
+.I url
+with optional
+.I link-text
+followed immediately by non-linked text
+.I post.
+.
+.
+.IP
+If
+.I link-text
+is absent,
+.I url
+is formatted as the link text.
+.
+Hyphenation is disabled while formatting a URL;
+insert explicit break points with the
+.B \[rs]:
+escape sequence.
+.
+.
+.TP
+.BI MTO\~ address\~\c
+.RI [ link-text \~[ post ]]
+Generate an email hyperlink to
+.I address
+with optional
+.I link-text
+followed immediately by non-linked text
+.I post.
+.
+.
+.IP
+If
+.I link-text
+is absent,
+.I address
+is formatted as the link text.
+.
+Hyphenation is disabled while formatting a URL;
+insert explicit break points with the
+.B \[rs]:
+escape sequence.
+.
+.
+.TP
+.BI TAG\~ name
+Generate an anchor
+.I name
+marking its location in the document as a target for hyperlinks.
+.
+.
+.TP
+.BI IMG\~ file-name\~\c
+.RB [ \-C | \-L | \-R ]\~\c
+.RI [ width \~[ height ]]
+Insert graphical image
+.I file-name.
+.
+The optional second argument aligns the image to the center
+.RB ( \-C ;\~default),
+left
+.RB ( \-L ),
+or
+right
+.RB ( \-R ).
+.
+The optional
+.I width
+defaults to 100 units
+(in the context of the HTML renderer)
+and the optional
+.I height
+to the same measurement as
+.I width .
+.
+.
+.TP
+.BR PIMG\~ [ \-C | \-L | \-R ]\~\c
+.IR file-name\~ [ width \~[ height ]]
+Insert graphical image
+.I file-name,
+assumed to be in PNG format.
+.
+Compared to
+.BR IMG ,
+this macro has the advantage of working with both PostScript and HTML
+devices since it converts
+.I file-name
+into EPS format using
+.MR pngtopnm 1 ,
+.MR pnmcrop 1 ,
+and
+.MR pnmtops 1 .
+.
+.I height
+and
+.I width
+may be given as percentages
+(of the line length
+.B \[rs]n[.l]
+and page length
+.BR \[rs]n[.p] ,
+respectively).
+.
+.
+.IP
+If the document isn't processed with
+.RB \[lq] \-T\~html \[rq]
+or
+.RB \[lq] \-T\~xhtml \[rq],
+you must use
+.MR groff @MAN1EXT@ 's
+.B \-U
+option.
+.\" XXX: stale?  Does this predate the `psbb` request?
+.
+.
+.TP
+.BR MPIMG\~ [ \-L | \-R ]\~[ \-G\~\c
+.IR gap ]\~\c
+.IR file-name\~ [ width \~[ height ]]
+As
+.BR PIMG ,
+but place the image at a margin and wrap text around it.
+.
+The image is aligned the to the left
+.RB ( \-L ,
+default)
+or right
+.RB ( \-R )
+margin.
+.
+.BI \-G \~gap
+imposes horizontal space of
+.I gap
+pixels between the picture and the text that wraps around it.
+.
+The default
+.I gap
+is zero.
+.
+.
+.TP
+.BI HnS\~ n
+Begin heading at level
+.I n.
+.
+.
+.TP
+.B HnE
+End heading text.
+.
+.
+.TP
+.B LK
+Direct
+.I \%grohtml
+to emit the list of automatically generated hyperlinks at this location.
+.
+.
+.TP
+.B HR
+Generate a full-width horizontal rule when used with
+.RB \[lq] \-T\~html \[rq]
+or
+.RB \[lq] \-T\~xhtml \[rq].
+.
+.
+.TP
+.B NHR
+Suppress the horizontal rules at the document's top and bottom that
+.I \%grohtml
+emits by default.
+.
+.
+.TP
+.B HTL
+Generate an HTML title only.
+.
+This differs from
+.MR groff_ms @MAN7EXT@ 's
+.B TL
+macro,
+which generates both an HTML title and an <H1> heading.
+.
+Use it to provide an HTML title as document metadata but not as
+formatted text.
+.
+The title ends when vertical space
+.RB ( .sp )
+or a break
+.RB ( .br )
+is seen.
+.
+.
+.TP
+.B HEAD
+Add arbitrary data to the HTML <head> element.
+.
+Ignored if not processed with
+.RB \[lq] \-T\~html \[rq]
+or
+.RB \[lq] \-T\~xhtml \[rq].
+.
+.
+.TP
+.B HTML
+All text after this macro is treated as raw HTML.
+.
+Ignored if not processed with
+.RB \[lq] \-T\~html \[rq]
+or
+.RB \[lq] \-T\~xhtml \[rq].
+.
+.
+.TP
+.BI DC\~ "L text"\~\c
+.RI [ color ]
+Format a \[lq]drop cap\[rq]\[em]a large character
+.I L
+(usually a capital letter)
+at a larger size and with a lower text baseline
+than the following
+.I text,
+such that the cap-heights of
+.I L
+and
+.I text
+align,
+in the specified
+.I color
+(default: black).
+.
+.
+.TP
+.B CDS
+Begin code display;
+a monospaced font is selected and filling is disabled.
+.
+.
+.TP
+.B CDE
+End code display.
+.
+.
+.TP
+.BR ALN \~\c
+.RI [ color\~ [ width-percentage ]]
+Enable a \[lq]navigation pane\[rq] containing links to section headings,
+aligned to the left of running text,
+and configure its rendering parameters.
+.
+Columnation is achieved with an HTML table.
+.
+.I color
+indicates an HTML background color to be used in the navigation column;
+the default is
+.BR #eeeeee .
+.
+.I width-percentage
+allocates the given percentage of the navigation pane's table column;
+the default is
+.BR 30 .
+.
+Call this macro at most once,
+at the beginning of the document.
+.
+.
+.TP
+.B LNS
+Begin text indexed by the navigation pane configured by
+.BR ALN .
+.
+.
+.TP
+.B LNE
+End text indexed by navigation pane started by
+.BR LNS .
+.
+.
+.TP
+.BI LINKSTYLE\~ color\~\c
+.RI [ font-style\~ [ "open-glyph close-glyph" ]]
+Configure rendering of formatted hyperlink targets for devices other
+than
+.B html
+and
+.BR xhtml ;
+render
+targets in
+.I color
+(default:
+blue) \" XXX: whose default?  the browser's?
+using the typeface
+.I font-style
+(default:
+.BR CR )
+bracketed with
+.I open-glyph
+and
+.I close-glyph
+(defaults:
+.B \[rs][la]
+and
+.BR \[rs][ra] ,
+respectively).
+.
+.
+.\" ====================================================================
+.SH "Section heading links"
+.\" ====================================================================
+.
+By default
+.I \%grohtml
+generates links to all section headings and places these at the top of
+the HTML document.
+.
+Configure this behavior with
+.B HX
+and/or
+.BR LK .
+.
+.
+.\" ====================================================================
+.SH "Limitations of \f[I]grohtml\f[]"
+.\" ====================================================================
+.
+.MR @g@tbl @MAN1EXT@
+tables are rendered as PNG images.
+.\"
+.\" Paul DuBois's approach with
+.\" .MR tblcvt 1 ,
+.\" part of the
+.\" .UR http://\:www\:.snake\:.net/\:software/\:troffcvt/
+.\" .I troffcvt
+.\" distribution
+.\" .UE ,
+.\" should be explored.
+.
+.
+.P
+All URLs currently are treated as consuming no textual
+space in
+.IR groff .
+.
+This could be considered as a bug since it causes some problems.
+.
+To circumvent this,
+.I www.tmac
+inserts a zero-width character which expands to a harmless space
+(only
+if run with
+.B \-Thtml
+or
+.BR \-Txhtml ).
+.
+.
+.P
+Some of the macros,
+like
+.BR ALN ,
+.BR LNS ,
+and
+.BR LNE ,
+are integrated only with the
+.MR groff_ms @MAN7EXT@
+package.
+.
+.
+.\" ====================================================================
+.SH Files
+.\" ====================================================================
+.
+.I @MACRODIR@/\:www\:.tmac
+.
+.
+.\" ====================================================================
+.SH Authors
+.\" ====================================================================
+.
+The
+.I www
+macro package
+was written by
+.MT gaius@\:glam\:.ac\:.uk
+Gaius Mulley
+.ME ,
+with additions by
+.MT wl@\:gnu\:.org
+Werner Lemberg
+.ME
+and
+.MT groff\-bernd\:.warken\-72@\:web\:.de
+Bernd Warken
+.ME .
+.
+.
+.\" ====================================================================
+.SH "See also"
+.\" ====================================================================
+.
+.MR groff @MAN1EXT@ ,
+.MR @g@troff @MAN1EXT@ ,
+.MR grohtml @MAN1EXT@ ,
+.MR netpbm 1
+.
+.
+.\" Restore compatibility mode (for, e.g., Solaris 10/11).
+.cp \n[*groff_groff_www_7_man_C]
+.do rr *groff_groff_www_7_man_C
+.
+.
+.\" Local Variables:
+.\" fill-column: 72
+.\" mode: nroff
+.\" End:
+.\" vim: set filetype=groff textwidth=72:

@@ -1,0 +1,144 @@
+# Copyright 2006-2014 Free Software Foundation, Inc.
+#
+# Written by Werner Lemberg <wl@gnu.org>
+# Automake migration by Bertrand Garrigues
+#   <bertrand.garrigues@laposte.net>
+#
+# This file is part of hdtbl.
+#
+# hdtbl is distributed with groff, the GNU roff typesetting system.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+hdtbl_srcdir = $(top_srcdir)/contrib/hdtbl
+
+man7_MANS += contrib/hdtbl/groff_hdtbl.7
+
+# Groff command used to generate .ps files
+HDTBLGROFF = \
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  $(GROFFBIN) $(FFLAG) \
+    -dfontpath=$(top_srcdir)/font \
+    -dsopath=$(hdtbl_srcdir)/ \
+    -I $(doc_builddir) -I $(doc_srcdir) \
+     $(MFLAG) -M$(hdtbl_srcdir) -mhdtbl -t -p -e -U -b -wall
+
+HDTBLTMACFILES = \
+  contrib/hdtbl/hdtbl.tmac \
+  contrib/hdtbl/hdmisc.tmac
+hdtbltmacdir = $(tmacdir)
+dist_hdtbltmac_DATA = $(HDTBLTMACFILES)
+
+hdtbl_test_template = contrib/hdtbl/examples/test-hdtbl.sh.in
+
+# Files installed in $(exampledir)/hdtbl.  HDTBLEXAMPLEFILES are
+# located in the source tree, while HDTBLPROCESSEDEXAMPLEFILES are
+# generated in the build tree.
+
+# These files are handled by the '.in.roff' rule.
+HDTBLGENFILES = \
+  contrib/hdtbl/examples/fonts_n.roff \
+  contrib/hdtbl/examples/fonts_x.roff
+EXTRA_DIST += \
+  contrib/hdtbl/examples/fonts_n.in \
+  contrib/hdtbl/examples/fonts_x.in \
+  $(hdtbl_test_template)
+
+$(HDTBLPROCESSEDEXAMPLEFILES): $(DEVPSFONTFILES)
+
+HDTBLEXAMPLEFILES = \
+  contrib/hdtbl/examples/common.roff \
+  contrib/hdtbl/examples/chess_board.roff \
+  contrib/hdtbl/examples/color_boxes.roff \
+  contrib/hdtbl/examples/color_nested_tables.roff \
+  contrib/hdtbl/examples/color_table_cells.roff \
+  contrib/hdtbl/examples/color_transitions.roff \
+  contrib/hdtbl/examples/col_rowspan_colors.roff \
+  contrib/hdtbl/examples/mixed_pickles.roff \
+  contrib/hdtbl/examples/rainbow.roff \
+  contrib/hdtbl/examples/short_reference.roff
+
+HDTBLPROCESSEDEXAMPLEFILES = \
+  contrib/hdtbl/examples/chess_board.ps \
+  contrib/hdtbl/examples/color_boxes.ps \
+  contrib/hdtbl/examples/color_nested_tables.ps \
+  contrib/hdtbl/examples/color_table_cells.ps \
+  contrib/hdtbl/examples/color_transitions.ps \
+  contrib/hdtbl/examples/col_rowspan_colors.ps \
+  contrib/hdtbl/examples/fonts_n.ps \
+  contrib/hdtbl/examples/fonts_x.ps \
+  contrib/hdtbl/examples/mixed_pickles.ps \
+  contrib/hdtbl/examples/rainbow.ps \
+  contrib/hdtbl/examples/short_reference.ps
+
+hdtblexampledir = $(exampledir)/hdtbl
+dist_hdtblexample_DATA = $(HDTBLEXAMPLEFILES)
+nodist_hdtblexample_DATA = \
+  $(HDTBLGENFILES) \
+  $(HDTBLPROCESSEDEXAMPLEFILES) \
+  $(DOC_GNU_EPS)
+
+$(hdtblexample_DATA): $(HDTBLTMACFILES)
+
+MOSTLYCLEANFILES += $(HDTBLGENFILES) $(HDTBLPROCESSEDEXAMPLEFILES)
+
+EXTRA_DIST += \
+  contrib/hdtbl/ChangeLog \
+  contrib/hdtbl/TODO \
+  contrib/hdtbl/groff_hdtbl.7.man
+
+hdtbl_TESTS = contrib/hdtbl/examples/test-hdtbl.sh
+TESTS += $(hdtbl_TESTS)
+contrib/hdtbl/examples/test-hdtbl.sh: \
+  $(top_builddir)/config.status \
+  $(HDTBLPROCESSEDEXAMPLEFILES) \
+  $(top_srcdir)/$(hdtbl_test_template)
+	$(AM_V_GEN)sed \
+	  -e "s|[@]abs_top_builddir[@]|$(abs_top_builddir)|g" \
+	  -e "s|[@]GHOSTSCRIPT[@]|$(GHOSTSCRIPT)|g" \
+	  $(top_srcdir)/$(hdtbl_test_template) > $@ \
+	&& chmod +x $@
+MOSTLYCLEANFILES += $(hdtbl_TESTS)
+
+# Rule to generate ps and roff files
+SUFFIXES += .roff .in .ps
+
+.roff.ps:
+	$(GROFF_V)$(MKDIR_P) `dirname $@` \
+	&& $(HDTBLGROFF) -Tps $< >$@
+
+.in.roff:
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` \
+	&& sed -e "s|[@]fontdir[@]|$(fontdir)|" \
+	       -e "s|[@]EGREP[@]|$(EGREP)|" $< >$@
+
+# groff(1)'s `-I` implies `-g` and `-s`, so we must depend on grn and
+# soelim even though the documents don't require them.
+$(HDTBLPROCESSEDEXAMPLEFILES): $(HDTBLTMACFILES) $(DOC_GNU_EPS) groff \
+  troff eqn pic tbl grops grn soelim font/devps/stamp \
+  contrib/hdtbl/examples/common.roff
+
+uninstall_groffdirs: uninstall-hdtbl-hook
+uninstall-hdtbl-hook:
+	if test -d $(DESTDIR)$(hdtblexampledir); then \
+	  rmdir $(DESTDIR)$(hdtblexampledir); \
+	fi
+
+
+# Local Variables:
+# mode: makefile-automake
+# fill-column: 72
+# End:
+# vim: set autoindent filetype=automake textwidth=72:

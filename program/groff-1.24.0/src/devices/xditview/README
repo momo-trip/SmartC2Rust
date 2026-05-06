@@ -1,0 +1,5 @@
+This is gxditview, an X11 previewer for groff based on MIT's xditview.
+This version can be used with the output of gtroff -Tps as well as
+with -TX75 and -TX100.
+
+Please report bugs at http://savannah.gnu.org/bugs/?group=groff.

@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Punning Names (The GNU troff Manual)</title>
+
+<meta name="description" content="Punning Names (The GNU troff Manual)">
+<meta name="keywords" content="Punning Names (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Environments.html" rel="next" title="Environments">
+<link href="Diversions.html" rel="prev" title="Diversions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Punning-Names"></span><div class="header">
+<p>
+Next: <a href="Environments.html" accesskey="n" rel="next">Environments</a>, Previous: <a href="Diversions.html" accesskey="p" rel="prev">Diversions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Punning-Names-1"></span><h3 class="section">5.31 Punning Names</h3>
+<span id="index-diversions-1"></span>
+
+<p>Macros, strings, and diversions share a name space; recall
+<a href="Identifiers.html">Identifiers</a>.  Internally, the same mechanism is used to store
+them.  You can thus call a macro with string interpolation syntax and
+vice versa.
+</p>
+<div class="example">
+<pre class="example">.de subject
+Typesetting
+..
+.de predicate
+rewards attention to detail
+..
+\*[subject] \*[predicate].
+Truly.
+    &rArr; Typesetting
+    &rArr;  rewards attention to detail Truly.
+</pre></div>
+
+<p>What went wrong?  Strings don&rsquo;t contain newlines, but macros do.  String
+interpolation placed a newline at the end of &lsquo;<samp>\*[subject]</samp>&rsquo;, and the
+next thing on the input was a space.  Then when &lsquo;<samp>\*[predicate]</samp>&rsquo; was
+interpolated, it was followed by the empty request &lsquo;<samp>.</samp>&rsquo; on a line by
+itself.  If we want to use macros as strings, we must take interpolation
+behavior into account.
+</p>
+<div class="example">
+<pre class="example">.de subject
+Typesetting\\
+..
+.de predicate
+rewards attention to detail\\
+..
+\*[subject] \*[predicate].
+Truly.
+    &rArr; Typesetting rewards attention to detail.  Truly.
+</pre></div>
+
+<p>By ending each text line of the macros with an escaped
+<tt class="key">RET</tt>,
+we get the desired effect;
+recall <a href="Line-Continuation.html">Line Continuation</a>.<a id="DOCF173" href="groff.html_fot.html#FOOT173"><sup>173</sup></a>
+What would have happened if we had used only one backslash in each case?
+</p>
+<p>Interpolating a string does not hide existing macro arguments.  We can
+also place the escaped newline outside the string interpolation instead
+of within the string definition.  Thus, in a macro, a more efficient way
+of doing
+</p>
+<div class="example">
+<pre class="example">.xx \\$@
+</pre></div>
+
+<p>is
+</p>
+<div class="example">
+<pre class="example">\\*[xx]\\
+</pre></div>
+
+<p>The latter calling syntax doesn&rsquo;t change the value of
+<code>\$0</code>,
+which is then inherited from the calling macro;
+recall <a href="Parameters.html">Parameters</a>.
+</p>
+<p>It is sometimes convenient to copy a single-line diversion to a string,
+which can then be interpolated with <code>\*</code>.
+</p>
+<div class="example">
+<pre class="example">.di xx
+the
+.ft I
+interpolation system
+.ft
+.br
+.di
+.ds yy This is a test of \*(xx\c
+\*(yy.
+    &rArr; This is a test of the <i>interpolation system</i>.
+</pre></div>
+
+<p>In the foregoing,
+we see that formatted output can thus be stored in a string.
+The
+<code>\c</code>
+escape sequence prevents the subsequent newline
+from being interpreted as a break;
+again,
+recall <a href="Line-Continuation.html">Line Continuation</a>.
+</p>
+<p>Copying multi-output-line diversions produces unexpected results.
+</p>
+<div class="example">
+<pre class="example">.di xxx
+a funny
+.br
+test
+.br
+.di
+.ds yyy This is \*[xxx]\c
+\*[yyy].
+    &rArr; test This is a funny.
+</pre></div>
+
+<p>Usually, it is not predictable whether a diversion contains one or more
+output lines, so this mechanism should be avoided.  With <acronym>AT&amp;T</acronym>
+<code>troff</code>, this was the only solution to strip off a final newline
+from a diversion.  Another disadvantage is that the spaces in the copied
+string are already formatted, preventing their adjustment.  This can
+cause ugly results.
+</p>
+<span id="index-stripping-final-newline-in-diversions"></span>
+<span id="index-diversion_002c-stripping-final-newline"></span>
+<span id="index-final-newline_002c-stripping-in-diversions"></span>
+<span id="index-newline_002c-final_002c-stripping-in-diversions"></span>
+<span id="index-horizontal-space_002c-unformatting"></span>
+<span id="index-space_002c-horizontal_002c-unformatting"></span>
+<span id="index-unformatting-horizontal-space"></span>
+<p>A clean solution to this problem is available in GNU <code>troff</code>,
+using the requests <code>chop</code> to remove the final newline of a
+diversion, and <code>unformat</code> to make the horizontal spaces adjustable
+again.
+</p>
+<div class="example">
+<pre class="example">.box xxx
+a funny
+.br
+test
+.br
+.box
+.chop xxx
+.unformat xxx
+This is \*[xxx].
+    &rArr; This is a funny test.
+</pre></div>
+
+<p>See <a href="GNU-troff-Internals.html">GNU <code>troff</code> Internals</a>.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Environments.html" accesskey="n" rel="next">Environments</a>, Previous: <a href="Diversions.html" accesskey="p" rel="prev">Diversions</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Page Layout (The GNU troff Manual)</title>
+
+<meta name="description" content="Page Layout (The GNU troff Manual)">
+<meta name="keywords" content="Page Layout (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GNU-troff-Reference.html" rel="up" title="GNU troff Reference">
+<link href="Page-Control.html" rel="next" title="Page Control">
+<link href="Line-Continuation.html" rel="prev" title="Line Continuation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Page-Layout"></span><div class="header">
+<p>
+Next: <a href="Page-Control.html" accesskey="n" rel="next">Page Control</a>, Previous: <a href="Line-Continuation.html" accesskey="p" rel="prev">Line Continuation</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Page-Layout-2"></span><h3 class="section">5.17 Page Layout</h3>
+<span id="index-page-layout"></span>
+<span id="index-layout_002c-page"></span>
+
+<p>The formatter permits configuration of the page length and page number.
+</p>
+<dl>
+<dt id="index-_002epl">Request: <strong><tt>.pl</tt></strong> <em>[<span class="roman"><i>length</i></span>]</em></dt>
+<dd><span id="index-pl"></span>
+</dd><dt id="index-_002epl-1">Request: <strong><tt>.pl</tt></strong> <em><tt>+</tt><span class="roman"><i>length</i></span></em></dt>
+<dt id="index-_002epl-2">Request: <strong><tt>.pl</tt></strong> <em><tt>-</tt><span class="roman"><i>length</i></span></em></dt>
+<dt id="index-_005cn_005b_002ep_005d">Register: <strong><tt>\n[.p]</tt></strong></dt>
+<dd><span id="index-_002ep"></span>
+<span id="index-page-length_002c-configuring-_0028pl_0029"></span>
+<span id="index-length-of-the-page_002c-configuring-_0028pl_0029"></span>
+<span id="index-configuring-the-page-length-_0028pl_0029"></span>
+<span id="index-setting-the-page-length-_0028pl_0029"></span>
+<p>Change (increase or decrease) the page length per the numeric expression
+<var>length</var>.  The default scaling unit is &lsquo;<samp>v</samp>&rsquo;.  If <var>length</var> is
+invalid, GNU <code>troff</code> emits a warning in category &lsquo;<samp>number</samp>&rsquo;.  If
+<var>length</var> is absent or invalid, &lsquo;<samp>11i</samp>&rsquo; is assumed.  If
+<var>length</var> is nonpositive, GNU <code>troff</code> emits a warning in
+category &lsquo;<samp>range</samp>&rsquo; and sets the page length to the device&rsquo;s vertical
+motion quantum; recall <a href="Motion-Quanta.html">Motion Quanta</a>.
+</p>
+<span id="index-page-length-register-_0028_002ep_0029"></span>
+<p>The read-only register &lsquo;<samp>.p</samp>&rsquo; interpolates the current page length.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epn">Request: <strong><tt>.pn</tt></strong> <em>num</em></dt>
+<dd><span id="index-pn"></span>
+</dd><dt id="index-_002epn-1">Request: <strong><tt>.pn</tt></strong> <em><tt>+</tt><span class="roman"><i>num</i></span></em></dt>
+<dt id="index-_002epn-2">Request: <strong><tt>.pn</tt></strong> <em><tt>-</tt><span class="roman"><i>num</i></span></em></dt>
+<dt id="index-_005cn_005b_002epn_005d">Register: <strong><tt>\n[.pn]</tt></strong></dt>
+<dd><span id="index-_002epn-3"></span>
+<span id="index-page-number_002c-next_002c-assignment-request-_0028pn_0029"></span>
+<span id="index-next-page-number_002c-assignment-request-_0028pn_0029"></span>
+<span id="index-number_002c-next-page-assignment-request-_0028pn_0029"></span>
+<p>Change (increase or decrease) the page number of the <em>next</em> page
+per the numeric expression <var>num</var>.  If <var>num</var> is invalid, GNU
+<code>troff</code> emits a warning in category &lsquo;<samp>number</samp>&rsquo; and ignores the
+request.  Without an argument, <code>pn</code> is ignored.
+</p>
+<span id="index-next-page-number-register-_0028_002epn_0029"></span>
+<span id="index-page-number_002c-next_002c-register-_0028_002epn_0029"></span>
+<span id="index-number_002c-next-page_002c-register-_0028_002epn_0029"></span>
+<p>The read-only register <code>.pn</code> interpolates <var>num</var> if set by
+<code>pn</code> on the current page, or the current page number plus&nbsp;1.
+</p></dd></dl>
+
+<span id="index-headers"></span>
+<span id="index-footers"></span>
+<span id="index-titles"></span>
+<p>The formatter offers special support for typesetting headers and
+footers, collectively termed <em>titles</em>.  Titles have an independent
+line length, and their placement on the page is not restricted.
+</p>
+<dl>
+<dt id="index-_002etl">Request: <strong><tt>.tl</tt></strong> <em><code>'</code><span class="roman"><i>left</i></span><code>'</code><span class="roman"><i>center</i></span><code>'</code><span class="roman"><i>right</i></span><code>'</code></em></dt>
+<dd><span id="index-tl"></span>
+<span id="index-title-line_002c-formatting-_0028tl_0029"></span>
+<span id="index-formatting-a-title-line-_0028tl_0029"></span>
+<span id="index-three_002dpart-title-_0028tl_0029"></span>
+<span id="index-page-number-character-_0028_0025_0029"></span>
+<p>Format an output line as a title consisting of <var>left</var>, <var>center</var>,
+and <var>right</var>, each aligned accordingly.  The delimiter need not be a
+neutral apostrophe: <code>tl</code> accepts the same delimiters as most escape
+sequences; see <a href="Delimiters.html">Delimiters</a>.  If not used as the delimiter, any
+<em>page number character</em> character is replaced with the current page
+number; the default is &lsquo;<samp>%</samp>&rsquo;; see the the <code>pc</code> request below.
+Without an argument, <code>tl</code> is ignored.  <code>tl</code> writes the title
+line immediately, ignoring any partially collected line.
+</p>
+<p>It is not an error to omit delimiters after the first.  For example,
+&lsquo;<samp>.tl&nbsp;/Thesis</samp>&rsquo;<!-- /@w --> is interpreted as &lsquo;<samp>.tl&nbsp;/Thesis///</samp>&rsquo;<!-- /@w -->: it
+sets a title line comprising only the left-aligned word &lsquo;<samp>Thesis</samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002elt">Request: <strong><tt>.lt</tt></strong> <em>[<span class="roman"><i>length</i></span>]</em></dt>
+<dd><span id="index-lt"></span>
+</dd><dt id="index-_002elt-1">Request: <strong><tt>.lt</tt></strong> <em><tt>+</tt><span class="roman"><i>length</i></span></em></dt>
+<dt id="index-_002elt-2">Request: <strong><tt>.lt</tt></strong> <em><tt>-</tt><span class="roman"><i>length</i></span></em></dt>
+<dt id="index-_005cn_005b_002elt_005d">Register: <strong><tt>\n[.lt]</tt></strong></dt>
+<dd><span id="index-_002elt-3"></span>
+<span id="index-length-of-title-line_002c-configuring-_0028lt_0029"></span>
+<span id="index-title-length_002c-configuring-_0028lt_0029"></span>
+<p>Change (increase or decrease) the line length used by titles per the
+numeric expression <var>length</var>.  The default scaling unit is &lsquo;<samp>m</samp>&rsquo;.
+The formatter&rsquo;s default title length is &lsquo;<samp>6.5i</samp>&rsquo;.  If <var>length</var> is
+invalid, GNU <code>troff</code> emits a warning in category &lsquo;<samp>number</samp>&rsquo; and
+ignores the request.  If <var>length</var> is nonpositive, GNU
+<code>troff</code> emits a warning in category &lsquo;<samp>range</samp>&rsquo; and sets the
+title line length to the device&rsquo;s horizontal motion quantum; recall
+<a href="Motion-Quanta.html">Motion Quanta</a>.  The title length is is associated with the
+environment (see <a href="Environments.html">Environments</a>).  If <var>length</var> is omitted, GNU
+<code>troff</code> restores the environment&rsquo;s previous title length.
+</p>
+<span id="index-title-line-length-register-_0028_002elt_0029"></span>
+<p>The read-only register &lsquo;<samp>.lt</samp>&rsquo; interpolates the title line length.
+</p></dd></dl>
+
+<dl>
+<dt id="index-_002epc">Request: <strong><tt>.pc</tt></strong> <em>[<span class="roman"><i>char</i></span>]</em></dt>
+<dd><span id="index-pc"></span>
+<span id="index-changing-the-page-number-character-_0028pc_0029"></span>
+<span id="index-page-number-character_002c-changing-_0028pc_0029"></span>
+<span id="index-_0025-1"></span>
+<p>Set the page number character to <var>char</var>.  With no argument, the page
+number character is disabled.  <code>pc</code> does not affect the
+register&nbsp;<code>%</code>.
+</p></dd></dl>
+
+<p>The following example exercises title features.
+</p>
+<div class="example">
+<pre class="example">.lt 50n
+This is my partially collected
+.tl 'Isomers 2023'%'Dextrose Edition'
+line.
+    &rArr; Isomers 2023             1        Dextrose Edition
+    &rArr; This is my partially collected line.
+</pre></div>
+
+<p>We most often see titles used in page header and footer traps.
+See <a href="Traps.html">Traps</a>.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Page-Control.html" accesskey="n" rel="next">Page Control</a>, Previous: <a href="Line-Continuation.html" accesskey="p" rel="prev">Line Continuation</a>, Up: <a href="GNU-troff-Reference.html" accesskey="u" rel="up">GNU <code>troff</code> Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

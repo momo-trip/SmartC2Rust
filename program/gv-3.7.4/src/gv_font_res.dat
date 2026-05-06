@@ -1,0 +1,67 @@
+
+!########## gv_font_res_linux.dat
+
+!##### Fonts
+
+GV*font:			-*-Helvetica-Medium-R-Normal--*-140-*-*-P-*-ISO8859-1
+GV*SmeBSB.font:			-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*Button.font:			-*-Helvetica-Medium-R-Normal--*-140-*-*-P-*-ISO8859-1
+
+GV.?.processButton.font:	-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV.?.Label*font:		-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV.?.Button*font:		-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV.?.locator*font:		-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV.?.dateButton*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV.?.titleButton*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*optiongvPopup*infoVerboseButton.font:-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV.?.infoVerboseButton*font:	-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV.?.prevPage*font:		-*-Helvetica-Medium-R-Normal--*-140-*-*-P-*-ISO8859-1
+GV.?.nextPage*font:		-*-Helvetica-Medium-R-Normal--*-140-*-*-P-*-ISO8859-1
+
+GV*newtoc.font:			-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*fileSel*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*fileSel*button1.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*fileSel*button2.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*fileSel*button3.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*fileSel*button4.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*fileSel*pathtext*font:	-*-Helvetica-Medium-R-Normal--*-140-*-*-P-*-ISO8859-1
+
+GV*optionsetupPopup*Label*font:	-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optionsetupPopup*confirmButton.font:-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optionsetupPopup*Switch*font:-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optionsetupPopup*font:	-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*optionsetupPopup*Button.font:-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*optiongvPopup*Label*font:	-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optiongvPopup*Switch*font:	-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optiongvPopup*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*optiongvPopup*Button.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*optionfsPopup*Label*font:	-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optionfsPopup*Switch*font:	-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optionfsPopup*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*optionfsPopup*Button.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*optiongsPopup*Label*font:	-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optiongsPopup*Switch*font:	-*-Helvetica-Medium-R-Normal--*-100-*-*-P-*-ISO8859-1
+GV*optiongsPopup*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*optiongsPopup*Button.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*dialogPopup*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*dialogPopup*Button.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*dialogPopup*message*font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*notePopup*Button.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*notePopup*message*font:	-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*confirmPopup*font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+GV*confirmPopup*Button.font:	-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*versionPopup*Label*font:	-*-Courier-Medium-R-Normal--*-100-*-*-M-*-ISO8859-1
+GV*versionPopup*versionTexta*font:-*-Helvetica-Bold-R-Normal--*-180-*-*-P-*-ISO8859-1
+GV*versionPopup*versionTextb*font:-*-Helvetica-Bold-R-Normal--*-120-*-*-P-*-ISO8859-1
+
+GV*infoPopup*Text*font:		-*-Courier-Medium-R-Normal--*-100-*-*-M-*-ISO8859-1
+
+

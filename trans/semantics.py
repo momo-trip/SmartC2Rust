@@ -69,7 +69,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import clang.cindex
 clang.cindex.Config.set_library_file('/usr/lib/llvm-19/lib/libclang.so.1')  # Numbers may change depending on version
-#clang.cindex.Config.set_library_file('/opt/homebrew/opt/llvm/lib/libclang.dylib') # for mac os
+# clang.cindex.Config.set_library_file('/opt/homebrew/opt/llvm/lib/libclang.dylib') # for mac os
 
 
 from utils_api import (
@@ -398,7 +398,7 @@ def save_report_data(archive_dir, result_path, dep_json_path, meta_dir, target, 
 
     copy_directory(mix_io_dir, destination)
     copy_file(log_file_path, destination)
-    #copy_file(dep_json_path, destination)
+    # copy_file(dep_json_path, destination)
     copy_file(token_path, destination)
     # copy_file("token_macro.json", destination)
     copy_file("time.json", destination)
@@ -520,6 +520,7 @@ def add_line_numbers_custom(input_file, fixed_number):
         # Overwrite the original file with the contents of the temporary file
         os.replace(temp_file.name, input_file)
         #print(f"Wrote file with line numbers and indent levels to {input_file}.")
+
     except IOError as e:
         print(f"An error occurred: {e}")
 
@@ -705,7 +706,7 @@ def generate_zombi(target_funcs, target_dir, list_path, meta_dir, type_json_path
             if 'rust_function_name' not in func_data:
                 continue
 
-            #call_line = input_line + 1
+            # call_line = input_line + 1
             #print(json.dumps(func_data, indent=4))
             end_line = func_data['def_end_line']
             func_name = func_data['name']
@@ -771,7 +772,7 @@ def generate_zombi(target_funcs, target_dir, list_path, meta_dir, type_json_path
             total_statement = f"{prefix} {call_statement} {return_statement}\n"  #total_statement = f"{wrapped_input} {call_statement} {wrapped_output}\n" # {suffix}"
             
             
-            lines[input_line] = total_statement #call_statement
+            lines[input_line] = total_statement # call_statement
             #lines[output_line] = return_statement
 
             # Count the original number of lines
@@ -809,6 +810,7 @@ def merge_metadata(list_path, io_list_path, meta_dir, o_meta_dir, c_io_dir, raw_
     order = read_compile_order(list_path)  # This is the order.txt before merging
     print(f"order at merge_metadata(): {order}")
     # Updating metadata becomes recursive by the amount being updated. Only o_meta_dir should be updated
+    
     """
     def_file_paths =[]
     for file_path in order:
@@ -1315,7 +1317,6 @@ def c_parse_log_2(log_path: str, c_flow_path: str) -> Dict:
     
     # Sort by execution order (optional)
     function_calls.sort(key=lambda x: x["line_number"])
-    
     write_json(c_flow_path, function_calls)
 
     return function_calls
@@ -1341,6 +1342,7 @@ def extract_struct_values(struct_str):
             value = pair.split(':')[1].strip()
             values.append(value)
     return values
+
 
 def parse_input(input_part):
     """
@@ -1753,10 +1755,10 @@ def obtain_rust_interface(rust_source_file):
     delete_file(tags_file)
 
     command = f"ctags --languages=Rust --rust-kinds=fn -x -f {tags_file} {rust_source_file}"
-    #command = f"ctags --languages=Rust --rust-kinds=fn -x -f {tags_file} {rust_source_file}"
-    #command = f"ctags --fields=+n -x --c-kinds=+stfp -o {tags_file} {source_file}" # "--c-kinds=+st"
-    #command = f"ctags --languages=Rust --rust-kinds=fn -x -o {tags_file} {rust_source_file}"
-    #command = f"ctags --languages=Rust --rust-kinds=fn -f - --format=2 --excmd=number --fields=+n -o {tags_file} {rust_source_file}"
+    # command = f"ctags --languages=Rust --rust-kinds=fn -x -f {tags_file} {rust_source_file}"
+    # command = f"ctags --fields=+n -x --c-kinds=+stfp -o {tags_file} {source_file}" # "--c-kinds=+st"
+    # command = f"ctags --languages=Rust --rust-kinds=fn -x -o {tags_file} {rust_source_file}"
+    # command = f"ctags --languages=Rust --rust-kinds=fn -f - --format=2 --excmd=number --fields=+n -o {tags_file} {rust_source_file}"
     subprocess.run(command, shell=True, capture_output=True, text=True)
     
     ctags_output = read_file(tags_file)
@@ -1864,7 +1866,7 @@ def rust_parse_functions(rust_path, meta_dir):
     tags_file = 'tags_output.txt'
     delete_file(tags_file)
 
-    #ctags --fields=+n -x --c-kinds=+stfp -o tags_output.txt -R rust_sampmle/src/calculator.rs --languages=Rust
+    # ctags --fields=+n -x --c-kinds=+stfp -o tags_output.txt -R rust_sampmle/src/calculator.rs --languages=Rust
     command = f"ctags --fields=+n -x --c-kinds=+stfp -o {tags_file} -R {rust_path} --languages=Rust" # "--c-kinds=+st"
     print(command)
     subprocess.run(command, shell=True, capture_output=True, text=True)
@@ -2540,6 +2542,7 @@ def trim_code(target_path, file_code, given_limit, model="gpt-4"):
     return trimmed
 
 
+
 def repair_semantics(repair_target, interface):
 
     llm_interface = interface.llm_interface
@@ -2923,7 +2926,7 @@ def repair_semantics(repair_target, interface):
             """
 
             prompt.extend(["", f"## Directory structure of C program ({c_io_dir}) using functions from Rust program ({rust_io_dir}):"])
-            directory_structure = get_dir_struct('s_repair', mix_io_dir, None)  #c_io_dir)
+            directory_structure = get_dir_struct('s_repair', mix_io_dir, None)  # c_io_dir)
             prompt.extend([directory_structure])
             
 
@@ -2980,7 +2983,7 @@ def repair_semantics(repair_target, interface):
                         #if ongoing_in_mode_flag is False:
                         sequences = []
                         seen_sequences = set()
-                        for mod in sum_modified_list: #modified_list:
+                        for mod in sum_modified_list:
                             if mod['file_path'] not in seen_sequences:
                                 sequences.append(mod['file_path'])
                                 seen_sequences.add(mod['file_path'])
@@ -2993,7 +2996,6 @@ def repair_semantics(repair_target, interface):
                                 seq_string += ", "
                             seq_string += seq_path
                             i += 1
-
 
                         prompt = []
                         prompt.extend([f"Please write the actual modifications for the file {seq_string} in modify_data mode.", #prompt.extend([f"引き続き、modified_dataのモードで、{seq_string}のファイルの実際の修正の内容を書いてください。",
@@ -3031,10 +3033,10 @@ def repair_semantics(repair_target, interface):
                                         ])
 
                         prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"])
-                        prompt.extend([functional_modify_template]) # modify_template])
+                        prompt.extend([functional_modify_template])
 
                         for seq_path in sequences:
-                            seq_code = get_lined_code(seq_path, mix_io_dir)  #read_file(seq_path)
+                            seq_code = get_lined_code(seq_path, mix_io_dir)
                             prompt.extend(["", f"## Code in {seq_path}:", seq_code])
 
                         if error_log is not None:
@@ -3654,7 +3656,7 @@ def reformat_flow(repair_target, interface):
                         "- The content of modified_code in `modify_data` mode responses will be directly copy-pasted, so absolutely do not include any omitted sections.",
                         ])
 
-            rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+            rsp_json = ask_llm(prompt, "continue", llm_interface) # code_blocks = extract_code_blocks(response)
 
         ######################## Proceed per file ########################
 
@@ -3818,13 +3820,6 @@ def get_tree_flow_not(language_key, flow_path):
         
         if "output" in call_info:
             call_info['call_type'] = "output"
-
-        # call_info = call[f"{language_key}_call"]
-        # if not call_info:
-        #     continue
-
-        # if not(target_count - pre_lange <= i and i <= target_count + post_lange):
-        #     continue
         
         # Calculate indentation
         indent = "    " * call_info.get("depth", current_depth)
@@ -3911,10 +3906,10 @@ def get_flow_data(rust_log_path, rust_flow_path, golden_flow_path):
 
         os.makedirs(f"{mix_io_dir}/analysis", exist_ok=True)
 
-        flow_path = f"{mix_io_dir}/analysis/{test_name}.json"  #answer_{test_name}.json"
+        flow_path = f"{mix_io_dir}/analysis/{test_name}.json"
     
         exp_data = {}
-        exp_data['experiment_path'] = "reformat.c"  #experiment_path
+        exp_data['experiment_path'] = "reformat.c"
         exp_data['file_path'] = "reformat.c" 
         exp_data['repair_count'] = 0
         exp_data['average'] = 0
@@ -4273,7 +4268,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
     print(f"run_path is {run_path}")
 
     given_test_number = get_given_num(c_io_dir)
-    # print(given_test_number)
 
     # Run first
     error = None
@@ -4408,9 +4402,9 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
                 exp_data=exp_data,
                 repair_count=repair_count,
                 execute_path=execute_path,
-                #cmd_list=cmd_list,
+                # cmd_list=cmd_list,
                 explore_time=explore_time,
-                #cmd_exe=cmd_exe,
+                # cmd_exe=cmd_exe,
                 notes=notes,
                 progress_queue=progress_queue,
                 log_dir=log_dir,
@@ -4648,7 +4642,7 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
     prompt.extend([code])
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"]) 
-    directory_structure = get_dir_struct("translation", mix_io_dir, None)  #rust_output_dir)
+    directory_structure = get_dir_struct("translation", mix_io_dir, None)
     
     write_file(f"{database_dir}/directry_structure.txt", directory_structure)
     directory_structure = trim_code(f"{database_dir}/directry_structure.txt", directory_structure, 10000)
@@ -5225,7 +5219,7 @@ if __name__ == "__main__":
     #####################################################################
     ##### Input
     #####################################################################
-    
+
     # setup
     process_type = str(sys.argv[1])
 

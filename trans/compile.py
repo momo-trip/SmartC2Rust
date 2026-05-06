@@ -2664,6 +2664,7 @@ def get_modification_files(template_json):
     print(f"modification_files are {modification_files}")
     return list(modification_files), modification_by_file
 
+
 def generate_rust_import(rust_path):
 
     rust_dir = rust_output_dir + "/" + "src"
@@ -3496,7 +3497,6 @@ def repair_execute(repair_target, interface):
             prompt = []
             execute_error = None
 
-            # modeより前
             if 'ongoing' in rsp_json:
                 ongoing_flag = rsp_json['ongoing']
 
@@ -3536,7 +3536,6 @@ def repair_execute(repair_target, interface):
                                     sequences.append(correct_path) #mod['file_path'])
                                     seen_sequences.add(correct_path) #mod['file_path'])
 
-                            # 続き
                             seq_string = ""
                             i = 0
                             for seq_path in sequences:
@@ -3936,14 +3935,14 @@ def repair_execute(repair_target, interface):
             if edite_file not in seen_files:
                 seen_files.add(edite_file)
 
-        return modified_c_keys #, modified_rust_lines
+        return modified_c_keys
     
     elif repair_target == "ask_generates" or repair_target == "ask_correspondence":
         data = read_json(answer_path)
         write_json(answer_path, data)
 
     
-    return modified_c_keys #, modified_rust_lines
+    return modified_c_keys
 
 
 def concatanate_rust_files(rust_path_list):
@@ -4158,6 +4157,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                 c_use_file_path = use_file_path.replace(f"trans_c_{user_id}", f"workspace_{user_id}_{target}")
                 if is_system_file(c_use_file_path, program_files):
                     continue
+
                 # if original_dir not in use_file_path: # Not filtered out in the uses section # Needs checking
                 #     continue
 
@@ -4181,7 +4181,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                 if use_key_name not in use_meta_data: # In the case of local_var
                     continue
 
-                rust_code = get_rust_items(use_meta_data[use_key_name]) # , cashed
+                rust_code = get_rust_items(use_meta_data[use_key_name])
 
                 category = None
                 if use_meta_data[use_key_name]['kind'] == "global_var":
@@ -4296,7 +4296,7 @@ def get_rust_function_name(name_key, c_rust_map):
     return c_rust_map[name_key]
 
 
-def collect_rust_dependencies(cashed, c_item, dep_json_path, meta_dir, build_path, conv_type, c_rust_map): #, meta_dir, convert_type, key_string, dep_json_path):
+def collect_rust_dependencies(cashed, c_item, dep_json_path, meta_dir, build_path, conv_type, c_rust_map):
     
     c_name = c_item['name']
     c_path = c_item['file_path']
@@ -4325,14 +4325,11 @@ def collect_rust_dependencies(cashed, c_item, dep_json_path, meta_dir, build_pat
     #for element_item in c_meta_data:
     #if element_item['category'] == 'function':  # Skipped this but is that okay: if element_item['block_type'] == 'function' and element_item['category'] == 'function':
     function_name = element_item['name']
-    #print(element_item)
     c_flow = element_item['uses']
     name_key = get_name_key(element_item)
 
     for item in c_flow:
-        #rust_flow, new_rust_flow_list = refer_rust_flows(c_path, c_flow, key_string) #rust_flow = item['rust_flow'] 
-        #rust_flow_dict[function_name] = rust_flow
-        rust_code = get_rust_items(cased, item)  # rust_code, cashed
+        rust_code = get_rust_items(cased, item)
 
         if rust_code is not None:
             if name_key not in rust_refs: #function_name not in rust_refs:
@@ -4346,7 +4343,7 @@ def collect_rust_dependencies(cashed, c_item, dep_json_path, meta_dir, build_pat
     at_least_found = False
     keys_to_delete = []  # List to keep track of keys to be deleted
 
-    for name_key, func_list in rust_refs.items():  #for func_name, func_list in rust_refs.items():
+    for name_key, func_list in rust_refs.items():
         has_no_func_def = False
         if any(func_list):
             for func_dict in func_list:
@@ -4355,8 +4352,8 @@ def collect_rust_dependencies(cashed, c_item, dep_json_path, meta_dir, build_pat
                         at_least_found = True
                         has_no_func_def = True
         if not has_no_func_def:
-            rust_func_name = get_rust_function_name(name_key, c_rust_map)  #func_name)
-            keys_to_delete.append(rust_func_name)  # keys_to_delete.append(func_name)  # Mark the key for deletion
+            rust_func_name = get_rust_function_name(name_key, c_rust_map)
+            keys_to_delete.append(rust_func_name)  # Mark the key for deletion
 
     # Delete the keys after the iteration
     for key in keys_to_delete:
@@ -4516,11 +4513,10 @@ def translate_unit(one_unit, work_dir, raw_dir, target_dir, database_dir, origin
     ###############################
     ###### Iterative repair
     ###############################
-
     # compile & repair
     before_count = None
 
-    repair_count = 2 # Setting this to 2 to carry over memory. # 1　
+    repair_count = 2
     interface = {
         'convert_element': 'divided_type',
         'meta_dir': meta_dir,
@@ -4751,7 +4747,7 @@ def set_moment_path(moment_path, average, log_file_path, target):
 
     moment_json[target][trial_id]['average'] = average
     moment_json[target][trial_id]['log_file_path'] = log_file_path
-    #moment_json[target].append(build_path)
+    # moment_json[target].append(build_path)
     write_json(moment_path, moment_json)
 
     return trial_id
@@ -4775,7 +4771,7 @@ def set_convert_type(moment_path, target, convert_type, llm_choice):
     elif llm_choice == 'gemini':
         llm_model = gemini_model
 
-    moment_json[target][trial_id]['llm_model'] = llm_model #llm_choice
+    moment_json[target][trial_id]['llm_model'] = llm_model
     write_json(moment_path, moment_json)
 
 
@@ -4850,17 +4846,16 @@ def initialize(translation_type, original_dir, rust_output_dir, work_dir, target
 
     delete_directory(chat_dir)
     create_directory(chat_dir)
-    #print(chat_dir)
 
     delete_directory("exp")
     create_directory("exp")
 
     """
-    data = read_json(count_path) #logging_path)
+    data = read_json(count_path)
     if data is None:
         data = {}
     data["prompt_id"] = str(0).zfill(4)
-    write_json(count_path, data) #logging_path, data)
+    write_json(count_path, data)
     """
 
     delete_file(f"{database_dir}/judge.json")
@@ -4869,25 +4864,18 @@ def initialize(translation_type, original_dir, rust_output_dir, work_dir, target
     write_json(rust_c_path, {}) # Initialization
     write_json(c_rust_path, {}) # Initialization
 
-
     if not DEBUG_LLM:
         delete_file(history_path)
         #delete_directory(exp_dir)
     
-
     # translation type
-    #LLM_UNIT = False
-    #global UNIFIED_TYPE
-    #global SINGLE_TYPE, DIVIDED_TYPE, PLAIN_TYPE
     global WITH_CONDENSED, WITH_FILES
 
     DIVIDED_TYPE = True
     PLAIN_TYPE = False
     WITH_CONDENSED = True
     WITH_FILES = False
-    # else:
-    #     raise ValueError("TRANSLATION_TYPE is within [S(SINGLE_TYPE), U(UNIFIED_TYPE), D(DIVIDED_TYPE)].")
-    
+
     print("Initializing")
     if (MANUAL_FIRST or not MANUAL) or not DEBUG_LLM:
         print("Renewing the output directory.")
@@ -4900,9 +4888,6 @@ def initialize(translation_type, original_dir, rust_output_dir, work_dir, target
             build_path = get_build_path(target_dir)
             run_script_wo_log(build_path, 1000, True, None, "both") # To align the path of compile_commands.json
 
-    # division type # Currently, this only affects divide.py. After that, metadata has been manipulated and it becomes U or D, so division type is not involved
-    # global LLM_DIV, RULE_DIV
-    
     if not os.path.exists(moment_path):
         write_json(moment_path, {})
 
@@ -4911,8 +4896,7 @@ def initialize(translation_type, original_dir, rust_output_dir, work_dir, target
 # Divide files
 #########################################################
 
-
-#write_json(dep_json_path, json_data) # Write results to a JSON file         
+# Write results to a JSON file         
 def insert_unit_lines(json_data, c_path, dep_json_path):
     dep_data = read_json(dep_json_path)
     for item in dep_data:
@@ -5047,7 +5031,7 @@ def get_child_div(start_line, source_path):
                 if div_start_line <= start_line and start_line <= div_end_line:
                     return div_c_path
 
-    return None #div_c_path
+    return None
 
 
 def get_indirect_inclueds(file_path, dep_json_path):
@@ -5191,15 +5175,15 @@ def divide(average, block_path, block_group_path, target_dir, original_dir, resu
             parts = line.split(':')
             if len(parts) >= 4:
                 name = parts[0]
+
                 # The file path may contain multiple colons, so the last two are line numbers
                 file_path = ':'.join(parts[1:-2])
                 start_line = int(parts[-2])
                 end_line = int(parts[-1])
                 
-                #target_file_path = file_path.replace(os.path.abspath(target_dir), os.path.abspath(original_dir))
                 blocks.append({
                     'name': name,
-                    'file_path': file_path, #target_file_path, #file_path,
+                    'file_path': file_path,
                     'start_line': start_line,
                     'end_line': end_line,
                     'line_count': end_line - start_line + 1
@@ -5364,9 +5348,10 @@ def get_compile_report(archive_dir, result_path, dep_json_path, meta_dir, databa
     copy_directory(rust_output_dir, destination)
     copy_directory(meta_dir, destination)
     copy_directory(exp_dir, destination)
-    copy_directory(chat_dir, destination)  # added
+    copy_directory(chat_dir, destination)
+
     if os.path.exists(chat_macro_dir):
-        copy_directory(chat_macro_dir, destination)  # added
+        copy_directory(chat_macro_dir, destination)
     copy_file(f"{database_dir}/judge.json", destination)
 
     copy_file(log_file_path, destination)
@@ -5645,14 +5630,12 @@ def generate_link_harness(work_dir, build_path, rust_build_path, run_test_path, 
                    f"## Target C functions for step 1:",
     ])
     for func in functions:
-        prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
+        prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})")
     
 
     prompt.extend(["\n## Response format", "Please write the answer in the following JSON format.",  
     ])
     prompt.extend([link_template])
-
-    #code = read_file(run_test_path)
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
     directory_structure = get_dir_struct("translation", work_dir, None)
@@ -6565,7 +6548,6 @@ def insert_is_target(target_dir, marker, meta_dir, div_meta_dir):
                         "func_name": func_name,
                     })
 
-
     markers_by_file = defaultdict(list)
     for r in results:
         markers_by_file[r['file_path']].append(r)
@@ -6866,12 +6848,11 @@ def record_remaining(finished_units, c_order, components, remained_block_path):
 
 def translate(translation_type, list_path, dep_json_path, meta_dir, div_meta_dir, raw_dir, work_dir, target_dir, database_dir,
                   chat_dir, original_dir, c_code_dir, rust_output_dir, logging_path, count_path, token_path, history_path, moment_path, log_dir, 
-                  average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition,  # build_list_path, 
-                  run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,  # , conds_status_path  # , c_lib_path
+                  average, log_file_path, cfg_path, flag_path, build_config_path, rust_edition,
+                  run_test_path, run_all_path, build_path, rust_lib_h_path, rust_build_path, target,
                   time_path, map_path, block_path, block_group_path, remained_block_path, progress_queue, max_iterations, llm_interface,
                   rust_c_path, c_rust_path, build_template_path, run_all_template_path, target_path, global_path,
-                  is_program_path, resume, previous_block_path, marker, build_rs_path, lib_path, toml_path, trial_id
-                  ): # output_file_path# def dfs_sort_files(dep_json_path, output_file_path): # , rust_build_path
+                  is_program_path, resume, previous_block_path, marker, build_rs_path, lib_path, toml_path, trial_id):
 
     #####################################
     ## Translation
@@ -7026,7 +7007,6 @@ def merge_previous_metadata(previous_meta_dir, meta_dir):
 
 
 def replace_target_dir(previous_target_dir, work_dir):
-    # print(f"\nReplaced {work_dir} with contents of {previous_target_dir}")
 
     previous_path = Path(previous_target_dir)
     target_path = Path(work_dir)
@@ -7047,8 +7027,8 @@ def replace_target_dir(previous_target_dir, work_dir):
     print(f"\nReplaced {target_path} with contents of {previous_path}")
 
     binaries = find_binaries(work_dir)
+
     for binary in binaries:
-        #print(binary)
         delete_file(binary)
 
 
@@ -7180,7 +7160,7 @@ def allrust_compile_main(config):
         start_time = time.time()
 
         signal.signal(signal.SIGINT, signal_handler)
-        #atexit.register(show_iteration_counts)  #signal.signal(signal.SIGINT, show_iteration_counts)
+        # atexit.register(show_iteration_counts)  # signal.signal(signal.SIGINT, show_iteration_counts)
 
         llm_interface = LLMInterface(
             project_id=target,

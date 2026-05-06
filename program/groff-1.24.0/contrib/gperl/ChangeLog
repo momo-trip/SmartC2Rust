@@ -1,0 +1,174 @@
+2025-12-31  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gperl.am (EXTRA_DIST): Ship "COPYRIGHT" file in distribution
+	archive.
+
+2025-12-20  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* GPLv2: New file.
+	* gperl.am (EXTRA_DIST): Ship it.
+
+	The GNU GPLv2 covers Bernd Warken's work on gperl through 27
+	August 2015.  Copyrightable changes to gperl since October 2017
+	are licensed under the GNU GPLv3, not GPLv2.
+
+2025-08-02  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gperl.pl: Revise usage and version messages.  Rename scalar
+	`version` to `gperl_version`.  Add scalar `groff_version`, and
+	make its value robust to use of the program directly from the
+	source tree or in built form, copying a technique from groff's
+	`chem` contributed component.  Stop accepting abbreviated forms
+	of `--help` and `--version` options, apart from `-h` and `-v`.
+	Developers have over the decades come to repent of this old,
+	terrible idea, because it prevents them from adding an option
+	name that is a leading substring of another without changing the
+	semantics of existing command lines.  Bump minor component of
+	`gperl_version` accordingly.
+	(usage, version): Reuse subroutines from grog(1), updating usage
+	message appropriately and formatting version report per GNU
+	Coding Standards.
+
+2023-07-17  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gperl.pl: Stop endorsing shebang line space myth.  See
+	<https://savannah.gnu.org/bugs/?64058>.
+
+2022-10-09  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gperl.pl: Include groff version information when reporting our
+	own (as recommended by GNU coding standards).  Also drop
+	gratuitous quotation of program's own name.
+
+2022-05-03  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gperl.am (gperl): Spell dependency on `$(SH_DEPS_SED_SCRIPT)`
+	using that macro expansion instead of a literal file name.  See
+	groff's doc/automake.mom.
+
+2021-01-06  Colin Watson <cjwatson@debian.org>
+
+	* gperl.pl: Avoid Perl's unsafe "<>" operator.
+
+	The "<>" operator is implemented using the two-argument form of
+	"open", which interprets magic such as pipe characters, allowing
+	execution of arbitrary commands which is unlikely to be
+	expected.  Perl >= 5.22 has a "<<>>" operator which avoids this,
+	but also forbids the use of "-" to mean the standard input,
+	which is a facility that the affected groff programs document.
+
+	ARGV::readonly would probably also fix this, but I fundamentally
+	dislike the approach of escaping data in preparation for a
+	language facility to unescape it, especially when the required
+	escaping is as non-obvious as it is here.  (For the same reason,
+	I prefer to use subprocess invocation facilities that allow
+	passing the argument list as a list rather than as a string to
+	be interpreted by the shell.)  So I've abandoned this dubious
+	convenience and changed the affected programs to iterate over
+	command-line arguments manually using the three-argument form of
+	open.
+
+	Fixes <https://savannah.gnu.org/bugs/?55557>.
+
+2020-04-22  G. Branden Robinson <g.branden.robinson@gmail.com>
+
+	* gperl.1.man: Delete references to groffer.
+
+2018-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	* gperl.am (gperl): Use $(AM_V_GEN) to silence file generation.
+
+2015-08-22  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.1.man: Rename `gperl.man'.
+
+	* gperl.am: Include renaming.
+
+2015-08-05  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.am: Add `Last update'.  Setup Emacs mode.
+
+2015-04-03  Werner LEMBERG  <wl@gnu.org>
+
+	* gperl.man: Make it work in compatibility mode.
+	(EL): Fix typo.
+
+2014-10-11  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.2.6
+	Replace `capturex' with backtics, so `use IPC::System::Simple'
+	can be removed.
+
+2014-09-03  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.2.5
+
+	* all files in `gperl': Copying and Emacs setting.
+
+2014-07-06  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.2.4
+	Improve handling of `.Perl' lines.
+
+2014-07-06  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.2.3
+
+	* gperl.man: Compatioble to `doclifter'.
+
+2014-07-04  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.2.2
+
+	* gperl.man: Transform to classical man-page style.
+
+2014-07-03  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Improve definitions.
+
+2014-06-15  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.2.1.
+
+	* gperl.man: Correct the Legalese and documentation of options.
+
+2014-06-15  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.2.  Getting several storage variables from
+	printing in `Perl' with several lines.  Accept string and number
+	register variable names for `.ds' and `.nr'.
+
+	* gperl.man: Rewrite with the actual additions.
+
+2014-06-14  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Version 1.1.  New structure without subs.  Restrict
+	storage to only strings by creating only `.ds'.
+
+	* gperl.man: Major rewrite.  Omit `.nr'.
+
+2014-02-27  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl: Admit file name arguments.  Handle correct temporary
+	file.
+
+2014-02-25  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* gperl.pl, gperl.man, ChangeLog, Makefile.sub:
+	first version 1.0
+
+________________________________________________________________________
+
+Copyright 2014-2021 Free Software Foundation, Inc.
+Copyright      2025 G. Branden Robinson
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+fill-column: 72
+mode: change-log
+version-control: never
+End:
+vim:set autoindent textwidth=72:

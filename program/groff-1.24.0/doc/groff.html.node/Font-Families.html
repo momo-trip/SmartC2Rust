@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents GNU troff version 1.24.0.
+
+Copyright (C) 1994-2018 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 G. Branden Robinson
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Font Families (The GNU troff Manual)</title>
+
+<meta name="description" content="Font Families (The GNU troff Manual)">
+<meta name="keywords" content="Font Families (The GNU troff Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Request-Index.html" rel="index" title="Request Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Using-Fonts.html" rel="up" title="Using Fonts">
+<link href="Font-Positions.html" rel="next" title="Font Positions">
+<link href="Selecting-Fonts.html" rel="prev" title="Selecting Fonts">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Font-Families"></span><div class="header">
+<p>
+Next: <a href="Font-Positions.html" accesskey="n" rel="next">Font Positions</a>, Previous: <a href="Selecting-Fonts.html" accesskey="p" rel="prev">Selecting Fonts</a>, Up: <a href="Using-Fonts.html" accesskey="u" rel="up">Using Fonts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Font-Families-1"></span><h4 class="subsection">5.19.2 Font Families</h4>
+<span id="index-font-families"></span>
+<span id="index-families_002c-font"></span>
+<span id="index-font-styles"></span>
+<span id="index-styles_002c-font"></span>
+
+<p>To accommodate the wide variety of fonts available, GNU <code>troff</code>
+distinguishes <em>font families</em> and <em>font styles</em>.  A resolved
+font name is the catenation of a font family and a style.  Selecting an
+abstract style causes GNU <code>troff</code> to combine it with the default
+font family.
+</p>
+<p>You can thus compose a document using abstract styles exclusively for
+its body or running text&mdash;selecting a specific family only for titles
+or examples, for instance&mdash;and change the default family on the command
+line.
+</p>
+<dl>
+<dt id="index-_002efam">Request: <strong><tt>.fam</tt></strong> <em>[<span class="roman"><i>family</i></span>]</em></dt>
+<dd><span id="index-fam"></span>
+</dd><dt id="index-_005cn_005b_002efam_005d">Register: <strong><tt>\n[.fam]</tt></strong></dt>
+<dd><span id="index-_002efam-1"></span>
+</dd><dt id="index-_005cFf">Escape&nbsp;sequence: <strong><tt>\F</tt><span class="roman"><i>f</i></span><tt></tt></strong></dt>
+<dd><span id="index-_005cF"></span>
+</dd><dt id="index-_005cF_0028fm">Escape&nbsp;sequence: <strong><tt>\F(</tt><span class="roman"><i>fm</i></span><tt></tt></strong></dt>
+<dt id="index-_005cF_005bfamily_005d">Escape&nbsp;sequence: <strong><tt>\F[</tt><span class="roman"><i>family</i></span><tt>]</tt></strong></dt>
+<dd><span id="index-changing-font-family-_0028fam_002c-_005cF_0029"></span>
+<span id="index-font-family_002c-changing-_0028fam_002c-_005cF_0029"></span>
+<p>Set the default font family, used in combination with abstract styles to
+construct a resolved font name, to <var>family</var> (one-character
+name&nbsp;<var>f</var>, two-character name <var>fm</var>).  If no argument is
+given, GNU <code>troff</code> selects the previous font family; if there are
+none, it falls back to the device&rsquo;s default<a id="DOCF114" href="groff.html_fot.html#FOOT114"><sup>114</sup></a> or its own (&lsquo;<samp>T</samp>&rsquo;).
+</p>
+<p>The <code>\F</code> escape sequence works similarly.  In disanalogy to
+<code>\f</code>, &lsquo;<samp>\FP</samp>&rsquo; makes &lsquo;<samp>P</samp>&rsquo; the default family.  Use
+&lsquo;<samp>\F[]</samp>&rsquo; to select the previous default family.  The default font
+family is available in the read-only string-valued register <code>.fam</code>;
+it is associated with the environment (see <a href="Environments.html">Environments</a>).
+</p>
+<div class="example">
+<pre class="example">spam,     \&quot; startup defaults are T (Times) R (roman)
+.fam H    \&quot; make Helvetica the default family
+spam,     \&quot; family H + style R = HR
+.ft B     \&quot; family H + style B = HB
+spam,
+.ft CR    \&quot; Courier roman (default family not changed)
+spam,
+.ft       \&quot; back to Helvetica bold
+spam,
+.fam T    \&quot; make Times the default family
+spam,     \&quot; family T + style B = TB
+.ft AR    \&quot; font AR (not a style)
+baked beans,
+.ft R     \&quot; family T + style R = TR
+and spam.
+</pre></div>
+
+<span id="index-_005cF-escape-sequence_002c-untokenized-on-input"></span>
+<span id="index-untokenized-escape-sequence_002c-_005cF"></span>
+<p>GNU
+<code>troff</code> does not tokenize
+<code>\F</code>
+when reading it;
+the escape sequence updates the environment.
+It thus can be used in requests that expect a single-character argument.
+We can assign a font family to a margin character as follows
+(see <a href="Miscellaneous.html">Miscellaneous</a>).
+</p>
+<div class="example">
+<pre class="example">.mc \F[P]x\F[]
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="index-_002esty">Request: <strong><tt>.sty</tt></strong> <em>pos style</em></dt>
+<dd><span id="index-sty"></span>
+</dd><dt id="index-_005cn_005b_002esty_005d">Register: <strong><tt>\n[.sty]</tt></strong></dt>
+<dd><span id="index-_002esty-1"></span>
+<span id="index-setting-up-an-abstract-font-style-_0028sty_0029"></span>
+<span id="index-abstract-font-style_002c-setting-up-_0028sty_0029"></span>
+<span id="index-font-style_002c-abstract_002c-setting-up-_0028sty_0029"></span>
+<span id="index-style_002c-font_002c-abstract_002c-setting-up-_0028sty_0029"></span>
+<span id="index-cs-request_002c-and-font-styles"></span>
+<span id="index-bd-request_002c-and-font-styles"></span>
+<span id="index-tkf-request_002c-and-font-styles"></span>
+<span id="index-uf-request_002c-and-font-styles"></span>
+<span id="index-fspecial-request_002c-and-font-styles"></span>
+<p>Associate an abstract style <var>style</var> with mounting
+position&nbsp;<var>pos</var>, which must be a non-negative integer.  If the
+requests <code>cs</code>, <code>bd</code>, <code>tkf</code>, <code>uf</code>, or <code>fspecial</code>
+are applied to an abstract style, they are instead applied to the member
+of the default family corresponding to that style.
+</p>
+<span id="index-DESC-1"></span>
+<span id="index-styles-1"></span>
+<p>The default family can be set with the <samp>-f</samp> option (see <a href="Groff-Options.html">Groff Options</a>).  The <code>styles</code> command in the <samp>DESC</samp> file controls
+which font positions (if any) are initially associated with abstract
+styles rather than fonts.
+</p>
+<p><strong>Caution:</strong> The <var>style</var> argument is not validated.
+Errors may occur later, when the formatter attempts to construct a
+resolved font name, or format a character for output.
+</p>
+<div class="example">
+<pre class="example">.nr BarPos \n[.fp]
+.sty \n[.fp] Bar
+.fam Foo
+.ft \n[BarPos]
+.tm .f=\n[.f]
+A
+    error&rarr; error: no font family named 'Foo' exists
+    error&rarr; .f=41
+    error&rarr; error: cannot format glyph: no current font
+</pre></div>
+
+<p>When an abstract style has been selected, the read-only string-valued
+register &lsquo;<samp>.sty</samp>&rsquo; interpolates its name; this datum is associated
+with the environment (see <a href="Environments.html">Environments</a>).  Otherwise, &lsquo;<samp>.sty</samp>&rsquo;
+interpolates nothing.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Font-Positions.html" accesskey="n" rel="next">Font Positions</a>, Previous: <a href="Selecting-Fonts.html" accesskey="p" rel="prev">Selecting Fonts</a>, Up: <a href="Using-Fonts.html" accesskey="u" rel="up">Using Fonts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Request-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

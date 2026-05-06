@@ -1,0 +1,25 @@
+ch4g_BP.chem:
+.br
+.cstart
+
+# This originates from Computing Science Technical Report No. 122
+#   CHEM - A Program for Typesetting Chemical Diagrams: User Manual
+#   by Jon L. Bentley, Lynn W. Jelinski, Brian W. Kernighan
+#   <http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz>.
+
+# this is the isopropyl group
+    bond 120 ; BP       # BP is right end of this bond
+    bond -120 from BP
+    bond right from BP ; C
+    front bond up ; CH3
+    back bond down from C ; D
+    bond right from C ; BP
+# redefine BP to mean the center carbon of this t-butyl group
+    bond up from BP
+    bond right from BP
+    bond down from BP
+
+# Local Variables:
+# mode: Nroff
+# End:
+.cend
