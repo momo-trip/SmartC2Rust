@@ -1442,11 +1442,7 @@ def get_target_location(target_dir, target_path):
     print(f"Parsed {len(functions)} item(s)")
     
     # Search for the actual locations in target_dir where the following comment has been inserted:
-    # self.marker = f'/* Genifai: here is one target function!: [file_path:line:func_name] */'
-    # Marker pattern: /* Genifai: here is one target function!: [file_path:line:func_name] */
-    # marker_pattern = re.compile(r'/\* Genifai: here is one target function!: \[([^:]+):(\d+):([^\]]+)\] \*/')
-    # marker_pattern = re.compile(r'/\* Genifai: here is one target function!: ([^:]+):(\d+):(\d+):([^\s]+) \*/')
-    marker_pattern = re.compile(r'/\* Genifai: here is one target function!: (.+):(\d+):(\w+) \*/')
+    marker_pattern = re.compile(r'/\* Here is one target function: (.+):(\d+):(\w+) \*/')
 
     actual_locations = []
     

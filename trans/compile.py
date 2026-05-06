@@ -6506,16 +6506,16 @@ def insert_is_target(target_dir, marker, meta_dir, div_meta_dir):
     """
     Recursively search files under target_dir,
     detect lines containing marker comments
-    (/* Genifai: here is one target function!: ... */),
+    (/* Here is one target function: ... */),
     and display the file path, line number, and function name.
 
     Returns:
         list[dict]: List of detected marker information
             Each element: {"file_path": str, "line_num": int, "func_name": str, "raw_line": str}
     """
-    # Marker pattern: /* Genifai: here is one target function!: <file_path>:<line_num>:<name> */
+    # Marker pattern: /* Here is one target function: <file_path>:<line_num>:<name> */
     pattern = re.compile(
-        r'/\*\s*Genifai:\s*here is one target function!:\s*(.+?):(\d+):(\S+?)\s*\*/'
+        r'/\*\s*Here is one target function:\s*(.+?):(\d+):(\S+?)\s*\*/'
     )
 
     results = []
