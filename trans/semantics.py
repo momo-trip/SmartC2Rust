@@ -2339,7 +2339,7 @@ def ask_tetscase_report(error):
     prompt.extend(["The following execution log was output when running 20 testcases.",
                    "Please follow the response rules and respond with JSON data summarizing the logs for the failing testcases."])
 
-    prompt.extend(["", f"## Response rules:",
+    prompt.extend(["", f"## Response rules",
                   "- Insert one failing testcase number from 1-20 into the \"test_number\" key.",
                   "- Place the log output section for that test number into the \"error_log\" key value.",
                   "- For the following key values, set True if that information is needed for error fixing, or False if it is not needed.",
@@ -2663,7 +2663,7 @@ def repair_semantics(repair_target, interface):
                                         ])
                 if FFI_STRATEGY == "preserve":
                     prompt.extend(["",
-                                "## Response rules:",
+                                "## Response rules",
                                 "- Before making any modifications, please check the original C program to ensure all functionality is properly implemented. If any features have been simplified or are missing, please modify the Rust program to faithfully implement all the original functionality from the C code.",
                                 "- Please do NOT create function Rust implementations based on your own assumptions, without knowing its C implementaion. Always find and reference the corresponding function in the original C code before writing its Rust equivalent.",
                                 "- To identify the problematic areas, first thoroughly understand the target program.",
@@ -2689,7 +2689,7 @@ def repair_semantics(repair_target, interface):
                             ])
                 else:
                     prompt.extend(["",
-                                "## Response rules:",
+                                "## Response rules",
                                 "- Before making any modifications, please check the original C program to ensure all functionality is properly implemented. If any features have been simplified or are missing, please modify the Rust program to faithfully implement all the original functionality from the C code.",
                                 "- Please do NOT create function Rust implementations based on your own assumptions, without knowing its C implementaion. Always find and reference the corresponding function in the original C code before writing its Rust equivalent.",
                                 "- To identify the problematic areas, first thoroughly understand the target program.",
@@ -2752,7 +2752,7 @@ def repair_semantics(repair_target, interface):
 
                     if FFI_STRATEGY == "preserve":
                         prompt.extend(["",
-                                "## Response rules:",
+                                "## Response rules",
                                 "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
                                 "- Please identify and fix the root cause of the error according to the following rules:",
                                 f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
@@ -2776,7 +2776,7 @@ def repair_semantics(repair_target, interface):
                     else:
                         if flow_on is True:
                             prompt.extend(["",
-                                    "## Response rules:",
+                                    "## Response rules",
                                     "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
                                     "- Please identify and fix the root cause of the error according to the following rules:",
                                     f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
@@ -2800,7 +2800,7 @@ def repair_semantics(repair_target, interface):
 
                         else:
                             prompt.extend(["",
-                                    "## Response rules:",
+                                    "## Response rules",
                                     "- If any features have been simplified or are missing in the translated Rust program, please modify the Rust program to faithfully implement all the original functionality from the C code.",
                                     "- Please identify and fix the root cause of the error according to the following rules:",
                                     f"    - If the root cause can be identified from error logs (compile or runtime error messages), please fix the identified location.",
@@ -3000,7 +3000,7 @@ def repair_semantics(repair_target, interface):
                         prompt = []
                         prompt.extend([f"Please write the actual modifications for the file {seq_string} in modify_data mode.", #prompt.extend([f"引き続き、modified_dataのモードで、{seq_string}のファイルの実際の修正の内容を書いてください。",
                                         "",
-                                        "## Response rules:", 
+                                        "## Response rules", 
                                         "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
                                         "- Then, insert the new content that should be inserted at that [start_line] into the value of the \"modified_data\" key.",
                                         "- Detailed modification process is as follows. Please carefully write start_line, end_line and modified_data considering the process:",
@@ -3086,7 +3086,7 @@ def repair_semantics(repair_target, interface):
 
                             prompt.extend([f"Continue writing the actual modifications for the file {seq_string} in modify_data mode.",
                                     "",
-                                    "## Response rules:", 
+                                    "## Response rules", 
                                     "- Please insert the filename, start line, and end line of the section to be deleted into the \"file_path\", \"start_line\", and \"end_line\" keys in the JSON data.",
                                     "- Then, insert the new content that should be inserted at that [start_line] into the value of the \"modified_data\" key.",
                                     "- Detailed modification process is as follows. Please carefully write start_line, end_line and modified_data considering the process:",
@@ -3158,7 +3158,7 @@ def repair_semantics(repair_target, interface):
                         
             prompt = [f"Please continue with the JSON data response to resolve the error in test{test_number}."] 
 
-            prompt.extend(["## Response rules:", 
+            prompt.extend(["## Response rules", 
                         f"- To avoid hitting the token limit, keep the JSON data included in one response within {output_max} tokens.", 
                         "- If the JSON data for a single mode response is likely to exceed the token limit, split the response into multiple parts.",
                         "- If the JSON data is the last part, set the `ongoing_in_mode` key to `False`. If there are remaining JSON data parts, set the `ongoing_in_mode` key to `True`.",
@@ -3399,7 +3399,7 @@ def reformat_flow(repair_target, interface):
                             "Assuming the C execution results are the correct ideal values, determine the corresponding Rust function names, compare them with the converted Rust execution flow, and create JSON data summarizing whether the argument and return values match for every C function call (call_order).",
                             "Please follow the response rules and response rules below when answering.",
                             "",
-                            "## Response rules:",
+                            "## Response rules",
                             "- The Rust program executes by calling the Rust main function, rust_main(), from the C program's main function via FFI.",
                             f"- Please respond with JSON data in the following format to {flow_path}, using the modify_data mode.",
                             f"- This time, since we will keep updating {flow_path}, please set the \"start_line\" to 1 and \"end_line\" to -1 for the modification target in {flow_path} in modify_data mode.",    
@@ -3642,7 +3642,7 @@ def reformat_flow(repair_target, interface):
             prompt.extend(["Please continue responding with JSON data summarizing whether the argument and return values match between C and Rust calls for all C function calls (call_order).",
                           "Please follow the response rules and response rules when answering."])
 
-            prompt.extend(["", "## Response rules:",
+            prompt.extend(["", "## Response rules",
                         "- If there is an error when representing a backslash as a byte literal, you need to escape the backslash in the source code and also escape it within the byte literal, so please use three backslashes (double backslash).",
                         "- If there is an error when representing a backslash as a character literal, you need to escape the backslash in the source code and also escape it within the character literal, so please use two backslashes.",
                         f"- To avoid hitting the output token limit, please keep the JSON data in a single response to {output_max} tokens or less.", # For long responses,
