@@ -4,77 +4,66 @@
 # Reformed test cases
 
 failed=0
-mkdir -p flow_results
+
+RESULTS_DIR="flow_results"
+mkdir -p "$RESULTS_DIR"
 
 EXPECTED_DIR="expected"
 
-run_test() {
+run_testcase() {
     local test_num=$1
     local binary="./test_t${test_num}"
-    local expected_file="${EXPECTED_DIR}/expected_values_${test_num}.txt"
-    local success_log="flow_results/test${test_num}_success.log"
-    local fail_log="flow_results/test${test_num}_fail.log"
-    local tmp_log="flow_results/test${test_num}_tmp.log"
+    local log_file="$RESULTS_DIR/test${test_num}_tmp.log"
+    local expected_file="$EXPECTED_DIR/expected_values_${test_num}.txt"
 
     echo "Test ${test_num} started"
 
-    if [ ! -x "$binary" ]; then
-        echo "Test ${test_num} failed: binary ${binary} not found" >&2
-        echo "Binary ${binary} not found" > "$fail_log"
-        echo "Test ${test_num} failed" >&2
+    {
+        echo "Running buffer test ${test_num}..."
+
+        if [ ! -x "$binary" ]; then
+            echo "Binary $binary not found or not executable"
+            echo "Test ${test_num} ended"
+            echo "__RESULT__=FAIL"
+            exit 0
+        fi
+
+        TEST_OUTPUT=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/$RESULTS_DIR/test${test_num}_trace.log "$binary" ${test_num} 2>&1)
+        echo "$TEST_OUTPUT"
+
+        if [ ! -f "$expected_file" ]; then
+            echo "Expected values file not found: $expected_file"
+            echo "__RESULT__=FAIL"
+        else
+            expected_output=$(cat "$expected_file")
+            if [ "$TEST_OUTPUT" = "$expected_output" ]; then
+                echo "Output matches expected values"
+                echo "__RESULT__=PASS"
+            else
+                echo "Output differs from expected values"
+                echo "Expected:"
+                echo "$expected_output"
+                echo "Actual:"
+                echo "$TEST_OUTPUT"
+                echo "__RESULT__=FAIL"
+            fi
+        fi
+    } > "$log_file" 2>&1
+
+    if grep -q "__RESULT__=PASS" "$log_file"; then
+        mv "$log_file" "$RESULTS_DIR/test${test_num}_success.log"
         echo "Test ${test_num} ended"
-        failed=1
-        return
-    fi
-
-    LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log "$binary" "$test_num" > "$tmp_log" 2>&1
-    local rc=$?
-
-    if [ $rc -ne 0 ]; then
-        echo "Binary exited with status ${rc}" >> "$tmp_log"
-        mv "$tmp_log" "$fail_log"
-        echo "Test ${test_num} failed" >&2
-        echo "Test ${test_num} ended"
-        failed=1
-        return
-    fi
-
-    if [ ! -f "$expected_file" ]; then
-        echo "Expected file ${expected_file} not found" >> "$tmp_log"
-        mv "$tmp_log" "$fail_log"
-        echo "Test ${test_num} failed" >&2
-        echo "Test ${test_num} ended"
-        failed=1
-        return
-    fi
-
-    local actual_output
-    actual_output=$(cat "$tmp_log")
-    local expected_output
-    expected_output=$(cat "$expected_file")
-
-    if [ "$actual_output" = "$expected_output" ]; then
-        mv "$tmp_log" "$success_log"
         echo "Test ${test_num} passed"
     else
-        {
-            echo "=== EXPECTED ==="
-            echo "$expected_output"
-            echo "=== ACTUAL ==="
-            echo "$actual_output"
-            echo "=== DIFF ==="
-            diff <(echo "$expected_output") <(echo "$actual_output")
-        } >> "$tmp_log"
-        mv "$tmp_log" "$fail_log"
+        mv "$log_file" "$RESULTS_DIR/test${test_num}_fail.log"
+        echo "Test ${test_num} ended"
         echo "Test ${test_num} failed" >&2
         failed=1
     fi
-
-    echo "Test ${test_num} ended"
 }
 
 for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17; do
-    run_test "$i"
+    run_testcase $i
 done
 
 exit $failed

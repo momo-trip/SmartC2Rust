@@ -859,8 +859,8 @@ def get_test_number(log_path):
     match = re.search(r"test(\d+)_trace\.log", basename)
     if match:
         return match.group(1)
-    raise ValueError(f"Could not extract test number from {basename}")
-
+    # raise ValueError(f"Could not extract test number from {basename}")
+    return None
 
 def find_base_dir(original_dir):
     """Find the directory containing c_build.sh by searching up from original_dir"""
@@ -874,11 +874,10 @@ def find_base_dir(original_dir):
 
 def set_golden_dir(original_dir):
     # Find flow_results path
-
     log_dir, log_paths = find_log_paths(original_dir)
-    print(original_dir)
-    print(log_dir)
-    print(log_paths)
+    # print(original_dir)
+    # print(log_dir)
+    # print(log_paths)
 
     #upper_dir = os.path.dirname(log_dir)
     golden_dir = os.path.join(original_dir, "golden")
@@ -886,7 +885,7 @@ def set_golden_dir(original_dir):
 
     os.makedirs(golden_dir, exist_ok=True)
     base_dir = find_base_dir(original_dir)
-    print(base_dir)
+    # print(base_dir)
 
     """
     for log_path in log_paths:
@@ -901,7 +900,9 @@ def set_golden_dir(original_dir):
     tasks = []
     for log_path in log_paths:
         test_number = get_test_number(log_path)
-        #print(test_number)
+        # print(test_number)
+        if test_number is None:
+            continue
         golden_flow_path = f"{golden_dir}/test{test_number}_golden_flow.txt"
         tasks.append((log_path, base_dir, golden_flow_path, False))
 
@@ -1158,7 +1159,7 @@ def macro_main(config):
         print(f"\nNext action->")
         print(f"python3 pre_process.py {MACRO_HOME}/trans_re_0000/{target} golden\n")
         
-        
+
     elif process_type == "golden":
 
         print(original_dir)

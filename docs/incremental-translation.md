@@ -103,7 +103,6 @@ repeated on each switch.
 
 A better approach is to eliminate the need for copying altogether: prepare
 all per-configuration state up front, and make `run_test.sh` configurable.
-
 For example, keep input fixtures, expected outputs, and auxiliary scripts
 for every configuration inside the workspace from the start, and have
 `run_test.sh` dispatch to the right set based on the active configuration.

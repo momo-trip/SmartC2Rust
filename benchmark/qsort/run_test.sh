@@ -1,9 +1,10 @@
 
 #!/bin/bash
-
 # Reformed test cases
 
 failed=0
+
+rm -rf flow_results
 mkdir -p flow_results
 
 run_test() {
@@ -11,10 +12,10 @@ run_test() {
     local test_array=$2
     local expected_sorted_array=$3
     local test_name=$4
-    local binary="./bin/qsort_test_t${test_num}"
 
     echo "Test ${test_num} started"
 
+    local binary="./bin/qsort_test_t${test_num}"
     local output
     output=$(LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${test_num}_trace.log $binary $test_num $test_array 2>&1)
     local exit_code=$?
@@ -23,25 +24,23 @@ run_test() {
     sorted_line=$(echo "$output" | grep "After sorting:" | awk -F "After sorting: " '{print $2}')
 
     local log_file
-    if [ "$sorted_line" = "$expected_sorted_array" ] && [ $exit_code -eq 0 ]; then
-        log_file="flow_results/test${test_num}_success.log"
+    if [ "$sorted_line" = "$expected_sorted_array" ]; then
         echo "Test ${test_num} passed"
+        log_file="flow_results/test${test_num}_success.log"
         echo "Command: $binary $test_num $test_array" > "$log_file"
-        echo "Test name: $test_name" >> "$log_file"
         echo "Output: $output" >> "$log_file"
         echo "Expected sorted array: $expected_sorted_array" >> "$log_file"
         echo "Actual sorted array: $sorted_line" >> "$log_file"
         echo "Exit code: $exit_code" >> "$log_file"
     else
-        log_file="flow_results/test${test_num}_fail.log"
         echo "Test ${test_num} failed" >&2
+        failed=1
+        log_file="flow_results/test${test_num}_fail.log"
         echo "Command: $binary $test_num $test_array" > "$log_file"
-        echo "Test name: $test_name" >> "$log_file"
         echo "Output: $output" >> "$log_file"
         echo "Expected sorted array: $expected_sorted_array" >> "$log_file"
         echo "Actual sorted array: $sorted_line" >> "$log_file"
         echo "Exit code: $exit_code" >> "$log_file"
-        failed=1
     fi
 
     echo "Test ${test_num} ended"

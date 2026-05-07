@@ -1,110 +1,124 @@
 
 #!/bin/bash
 
-# Reformed test cases from base_test.sh
-# Runs original test scripts from tests/ directory
+# Reformed test cases
+
+failed=0
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR" || exit 1
 
 mkdir -p flow_results
 
-failed=0
-
-# Check that we're in the correct directory (from base_test.sh)
+# Check if we're in the correct directory
 if [ ! -f "./time" ] || [ ! -d "./tests" ]; then
     echo "Error: Please run this script from the time_1_9 directory" >&2
     exit 1
 fi
 
-# Setup environment for tests (from base_test.sh)
 export PATH="$SCRIPT_DIR:$PATH"
 export VERSION="1.9"
 export srcdir="tests"
 export builddir="."
-export PATH="$SCRIPT_DIR/tests:$PATH"
 
-# Trace env vars for LD_PRELOAD are set per-test below.
+TESTS_DIR="$SCRIPT_DIR/tests"
+export PATH="$TESTS_DIR:$PATH"
 
-################################################################
+# We'll invoke the test scripts with LD_PRELOAD on the 'time' binary via a wrapper.
+# Because the actual binary under test is 'time' (and 'tests/time-aux'),
+# we set LD_PRELOAD globally per-test so that traces from 'time' invocations are captured.
+
+###############################
 # Test 1: help-version.sh
-################################################################
-echo "Test 1 started"
-LOG1="flow_results/test1.log"
-cd "$SCRIPT_DIR/tests"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test1_trace.log \
-    ./help-version.sh > "$SCRIPT_DIR/$LOG1" 2>&1
-rc1=$?
-cd "$SCRIPT_DIR"
-if [ $rc1 -eq 0 ]; then
-    echo "Test 1 passed"
-    mv "$LOG1" "flow_results/test1_success.log"
-else
-    echo "Test 1 failed" >&2
-    mv "$LOG1" "flow_results/test1_fail.log"
-    failed=1
-fi
-echo "Test 1 ended"
+###############################
+test_num=1
+echo "Test ${test_num} started"
+LOG_FILE="$SCRIPT_DIR/flow_results/test${test_num}_tmp.log"
+: > "$LOG_FILE"
 
-################################################################
+cd "$TESTS_DIR" || exit 1
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test${test_num}_trace.log ./help-version.sh >> "$LOG_FILE" 2>&1
+rc=$?
+cd "$SCRIPT_DIR" || exit 1
+
+if [ $rc -eq 0 ]; then
+    echo "Test ${test_num} passed"
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_success.log"
+else
+    echo "Test ${test_num} failed" >&2
+    failed=1
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_fail.log"
+fi
+echo "Test ${test_num} ended"
+
+###############################
 # Test 2: time-max-rss.sh
-################################################################
-echo "Test 2 started"
-LOG2="flow_results/test2.log"
-cd "$SCRIPT_DIR/tests"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test2_trace.log \
-    ./time-max-rss.sh > "$SCRIPT_DIR/$LOG2" 2>&1
-rc2=$?
-cd "$SCRIPT_DIR"
-if [ $rc2 -eq 0 ]; then
-    echo "Test 2 passed"
-    mv "$LOG2" "flow_results/test2_success.log"
-else
-    echo "Test 2 failed" >&2
-    mv "$LOG2" "flow_results/test2_fail.log"
-    failed=1
-fi
-echo "Test 2 ended"
+###############################
+test_num=2
+echo "Test ${test_num} started"
+LOG_FILE="$SCRIPT_DIR/flow_results/test${test_num}_tmp.log"
+: > "$LOG_FILE"
 
-################################################################
+cd "$TESTS_DIR" || exit 1
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test${test_num}_trace.log ./time-max-rss.sh >> "$LOG_FILE" 2>&1
+rc=$?
+cd "$SCRIPT_DIR" || exit 1
+
+if [ $rc -eq 0 ]; then
+    echo "Test ${test_num} passed"
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_success.log"
+else
+    echo "Test ${test_num} failed" >&2
+    failed=1
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_fail.log"
+fi
+echo "Test ${test_num} ended"
+
+###############################
 # Test 3: time-exit-codes.sh
-################################################################
-echo "Test 3 started"
-LOG3="flow_results/test3.log"
-cd "$SCRIPT_DIR/tests"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test3_trace.log \
-    ./time-exit-codes.sh > "$SCRIPT_DIR/$LOG3" 2>&1
-rc3=$?
-cd "$SCRIPT_DIR"
-if [ $rc3 -eq 0 ]; then
-    echo "Test 3 passed"
-    mv "$LOG3" "flow_results/test3_success.log"
-else
-    echo "Test 3 failed" >&2
-    mv "$LOG3" "flow_results/test3_fail.log"
-    failed=1
-fi
-echo "Test 3 ended"
+###############################
+test_num=3
+echo "Test ${test_num} started"
+LOG_FILE="$SCRIPT_DIR/flow_results/test${test_num}_tmp.log"
+: > "$LOG_FILE"
 
-################################################################
-# Test 4: time-posix-quiet.sh
-################################################################
-echo "Test 4 started"
-LOG4="flow_results/test4.log"
-cd "$SCRIPT_DIR/tests"
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test4_trace.log \
-    ./time-posix-quiet.sh > "$SCRIPT_DIR/$LOG4" 2>&1
-rc4=$?
-cd "$SCRIPT_DIR"
-if [ $rc4 -eq 0 ]; then
-    echo "Test 4 passed"
-    mv "$LOG4" "flow_results/test4_success.log"
+cd "$TESTS_DIR" || exit 1
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test${test_num}_trace.log ./time-exit-codes.sh >> "$LOG_FILE" 2>&1
+rc=$?
+cd "$SCRIPT_DIR" || exit 1
+
+if [ $rc -eq 0 ]; then
+    echo "Test ${test_num} passed"
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_success.log"
 else
-    echo "Test 4 failed" >&2
-    mv "$LOG4" "flow_results/test4_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_fail.log"
 fi
-echo "Test 4 ended"
+echo "Test ${test_num} ended"
+
+###############################
+# Test 4: time-posix-quiet.sh
+###############################
+test_num=4
+echo "Test ${test_num} started"
+LOG_FILE="$SCRIPT_DIR/flow_results/test${test_num}_tmp.log"
+: > "$LOG_FILE"
+
+cd "$TESTS_DIR" || exit 1
+LD_PRELOAD=libtracer.so TRACE_OUTPUT=$SCRIPT_DIR/flow_results/test${test_num}_trace.log ./time-posix-quiet.sh >> "$LOG_FILE" 2>&1
+rc=$?
+cd "$SCRIPT_DIR" || exit 1
+
+if [ $rc -eq 0 ]; then
+    echo "Test ${test_num} passed"
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_success.log"
+else
+    echo "Test ${test_num} failed" >&2
+    failed=1
+    mv "$LOG_FILE" "$SCRIPT_DIR/flow_results/test${test_num}_fail.log"
+fi
+echo "Test ${test_num} ended"
 
 exit $failed
 

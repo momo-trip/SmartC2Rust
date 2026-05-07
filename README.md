@@ -179,7 +179,7 @@ python3 pre_process.py /root/SmartC2Rust/macro/trans_c_0000/{program} meta /root
 **Output:**
 - `trans/trans_c_0000/{program}/`: C source prepared for translation
 - `trans/metadata_0000/{program}/`: enriched metadata (call graphs, dependencies, FFI boundaries)
-- `trans/div_metadata_0000/{program}/`: block-level metadata for incremental translation
+- `trans/div_metadata_0000/{program}/`: block-level metadata
 - `trans/database_0000/{program}/`: translation database
     - `block_output.txt`: Block output file tracking translation units (e.g., `database_0000/avl/block_output.txt`)
 
