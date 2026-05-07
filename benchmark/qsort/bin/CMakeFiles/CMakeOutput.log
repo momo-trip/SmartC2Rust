@@ -1,7 +1,7 @@
 The system is: Linux - 6.12.76-linuxkit - aarch64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
 Compiler: /usr/bin/clang 
-Build flags: 
+Build flags: -finstrument-functions;-g;-gdwarf-4
 Id flags:  
 
 The output was:
@@ -14,7 +14,7 @@ The C compiler identification is Clang, found in "/root/SmartC2Rust/benchmark/qs
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
 Compiler: /usr/bin/clang++ 
-Build flags: 
+Build flags: -finstrument-functions;-g;-gdwarf-4
 Id flags:  
 
 The output was:
@@ -28,10 +28,10 @@ The CXX compiler identification is Clang, found in "/root/SmartC2Rust/benchmark/
 Detecting C compiler ABI info compiled with the following output:
 Change Dir: /root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_82c2e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_82c2e.dir/build.make CMakeFiles/cmTC_82c2e.dir/build
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_0bd17/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_0bd17.dir/build.make CMakeFiles/cmTC_0bd17.dir/build
 gmake[1]: Entering directory '/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o
-/usr/bin/clang   -v -MD -MT CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c
+Building C object CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o
+/usr/bin/clang   -finstrument-functions -g -gdwarf-4    -v -MD -MT CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c
 Ubuntu clang version 14.0.0-1ubuntu1.1
 Target: aarch64-unknown-linux-gnu
 Thread model: posix
@@ -41,7 +41,7 @@ Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/11
 Candidate multilib: .;@m64
 Selected multilib: .;@m64
  (in-process)
- "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debugger-tuning=gdb -v -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c
+ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debug-info-kind=constructor -dwarf-version=4 -debugger-tuning=gdb -v -finstrument-functions -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c
 clang -cc1 version 14.0.0 based upon LLVM 14.0.0 default target aarch64-unknown-linux-gnu
 ignoring nonexistent directory "/usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include"
 ignoring nonexistent directory "/include"
@@ -52,9 +52,9 @@ ignoring nonexistent directory "/include"
  /usr/include/aarch64-linux-gnu
  /usr/include
 End of search list.
-Linking C executable cmTC_82c2e
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_82c2e.dir/link.txt --verbose=1
-/usr/bin/clang  -v CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -o cmTC_82c2e 
+Linking C executable cmTC_0bd17
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0bd17.dir/link.txt --verbose=1
+/usr/bin/clang -finstrument-functions -g -gdwarf-4   -v CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -o cmTC_0bd17 
 Ubuntu clang version 14.0.0-1ubuntu1.1
 Target: aarch64-unknown-linux-gnu
 Thread model: posix
@@ -63,7 +63,7 @@ Found candidate GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/11
 Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/11
 Candidate multilib: .;@m64
 Selected multilib: .;@m64
- "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_82c2e /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o
+ "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_0bd17 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o
 gmake[1]: Leaving directory '/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp'
 
 
@@ -87,10 +87,10 @@ Parsed C implicit link information from above output:
   link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
   ignore line: [Change Dir: /root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_82c2e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_82c2e.dir/build.make CMakeFiles/cmTC_82c2e.dir/build]
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_0bd17/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_0bd17.dir/build.make CMakeFiles/cmTC_0bd17.dir/build]
   ignore line: [gmake[1]: Entering directory '/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp']
-  ignore line: [Building C object CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o]
-  ignore line: [/usr/bin/clang   -v -MD -MT CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
+  ignore line: [Building C object CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/clang   -finstrument-functions -g -gdwarf-4    -v -MD -MT CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
   ignore line: [Ubuntu clang version 14.0.0-1ubuntu1.1]
   ignore line: [Target: aarch64-unknown-linux-gnu]
   ignore line: [Thread model: posix]
@@ -102,7 +102,7 @@ Parsed C implicit link information from above output:
   ignore line: [Selected multilib: .]
   ignore line: [@m64]
   ignore line: [ (in-process)]
-  ignore line: [ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debugger-tuning=gdb -v -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
+  ignore line: [ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debug-info-kind=constructor -dwarf-version=4 -debugger-tuning=gdb -v -finstrument-functions -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
   ignore line: [clang -cc1 version 14.0.0 based upon LLVM 14.0.0 default target aarch64-unknown-linux-gnu]
   ignore line: [ignoring nonexistent directory "/usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include"]
   ignore line: [ignoring nonexistent directory "/include"]
@@ -113,9 +113,9 @@ Parsed C implicit link information from above output:
   ignore line: [ /usr/include/aarch64-linux-gnu]
   ignore line: [ /usr/include]
   ignore line: [End of search list.]
-  ignore line: [Linking C executable cmTC_82c2e]
-  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_82c2e.dir/link.txt --verbose=1]
-  ignore line: [/usr/bin/clang  -v CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -o cmTC_82c2e ]
+  ignore line: [Linking C executable cmTC_0bd17]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0bd17.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang -finstrument-functions -g -gdwarf-4   -v CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -o cmTC_0bd17 ]
   ignore line: [Ubuntu clang version 14.0.0-1ubuntu1.1]
   ignore line: [Target: aarch64-unknown-linux-gnu]
   ignore line: [Thread model: posix]
@@ -126,7 +126,7 @@ Parsed C implicit link information from above output:
   ignore line: [@m64]
   ignore line: [Selected multilib: .]
   ignore line: [@m64]
-  link line: [ "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_82c2e /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o]
+  link line: [ "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_0bd17 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o]
     arg [/usr/bin/ld] ==> ignore
     arg [-pie] ==> ignore
     arg [-EL] ==> ignore
@@ -139,7 +139,7 @@ Parsed C implicit link information from above output:
     arg [-dynamic-linker] ==> ignore
     arg [/lib/ld-linux-aarch64.so.1] ==> ignore
     arg [-o] ==> ignore
-    arg [cmTC_82c2e] ==> ignore
+    arg [cmTC_0bd17] ==> ignore
     arg [/lib/aarch64-linux-gnu/Scrt1.o] ==> obj [/lib/aarch64-linux-gnu/Scrt1.o]
     arg [/lib/aarch64-linux-gnu/crti.o] ==> obj [/lib/aarch64-linux-gnu/crti.o]
     arg [/usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o] ==> obj [/usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o]
@@ -149,7 +149,7 @@ Parsed C implicit link information from above output:
     arg [-L/usr/lib/llvm-14/bin/../lib] ==> dir [/usr/lib/llvm-14/bin/../lib]
     arg [-L/lib] ==> dir [/lib]
     arg [-L/usr/lib] ==> dir [/usr/lib]
-    arg [CMakeFiles/cmTC_82c2e.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [CMakeFiles/cmTC_0bd17.dir/CMakeCCompilerABI.c.o] ==> ignore
     arg [-lgcc] ==> lib [gcc]
     arg [--as-needed] ==> ignore
     arg [-lgcc_s] ==> lib [gcc_s]
@@ -178,10 +178,10 @@ Parsed C implicit link information from above output:
 Detecting CXX compiler ABI info compiled with the following output:
 Change Dir: /root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_bd523/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_bd523.dir/build.make CMakeFiles/cmTC_bd523.dir/build
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a0919/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a0919.dir/build.make CMakeFiles/cmTC_a0919.dir/build
 gmake[1]: Entering directory '/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o
-/usr/bin/clang++   -v -MD -MT CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp
+Building CXX object CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o
+/usr/bin/clang++   -finstrument-functions -g -gdwarf-4    -v -MD -MT CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp
 Ubuntu clang version 14.0.0-1ubuntu1.1
 Target: aarch64-unknown-linux-gnu
 Thread model: posix
@@ -191,7 +191,7 @@ Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/11
 Candidate multilib: .;@m64
 Selected multilib: .;@m64
  (in-process)
- "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debugger-tuning=gdb -v -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/aarch64-linux-gnu/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11/backward -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp
+ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debug-info-kind=constructor -dwarf-version=4 -debugger-tuning=gdb -v -finstrument-functions -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/aarch64-linux-gnu/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11/backward -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp
 clang -cc1 version 14.0.0 based upon LLVM 14.0.0 default target aarch64-unknown-linux-gnu
 ignoring nonexistent directory "/usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include"
 ignoring nonexistent directory "/include"
@@ -205,9 +205,9 @@ ignoring nonexistent directory "/include"
  /usr/include/aarch64-linux-gnu
  /usr/include
 End of search list.
-Linking CXX executable cmTC_bd523
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bd523.dir/link.txt --verbose=1
-/usr/bin/clang++  -v CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_bd523 
+Linking CXX executable cmTC_a0919
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a0919.dir/link.txt --verbose=1
+/usr/bin/clang++ -finstrument-functions -g -gdwarf-4   -v CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_a0919 
 Ubuntu clang version 14.0.0-1ubuntu1.1
 Target: aarch64-unknown-linux-gnu
 Thread model: posix
@@ -216,7 +216,7 @@ Found candidate GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/11
 Selected GCC installation: /usr/bin/../lib/gcc/aarch64-linux-gnu/11
 Candidate multilib: .;@m64
 Selected multilib: .;@m64
- "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_bd523 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o
+ "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_a0919 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o
 gmake[1]: Leaving directory '/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp'
 
 
@@ -246,10 +246,10 @@ Parsed CXX implicit link information from above output:
   link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
   ignore line: [Change Dir: /root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_bd523/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_bd523.dir/build.make CMakeFiles/cmTC_bd523.dir/build]
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a0919/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a0919.dir/build.make CMakeFiles/cmTC_a0919.dir/build]
   ignore line: [gmake[1]: Entering directory '/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp']
-  ignore line: [Building CXX object CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o]
-  ignore line: [/usr/bin/clang++   -v -MD -MT CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Building CXX object CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/bin/clang++   -finstrument-functions -g -gdwarf-4    -v -MD -MT CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp]
   ignore line: [Ubuntu clang version 14.0.0-1ubuntu1.1]
   ignore line: [Target: aarch64-unknown-linux-gnu]
   ignore line: [Thread model: posix]
@@ -261,7 +261,7 @@ Parsed CXX implicit link information from above output:
   ignore line: [Selected multilib: .]
   ignore line: [@m64]
   ignore line: [ (in-process)]
-  ignore line: [ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debugger-tuning=gdb -v -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/aarch64-linux-gnu/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11/backward -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [ "/usr/lib/llvm-14/bin/clang" -cc1 -triple aarch64-unknown-linux-gnu -emit-obj -mrelax-all --mrelax-relocations -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=non-leaf -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu generic -target-feature +neon -target-feature +v8a -target-abi aapcs -fallow-half-arguments-and-returns -mllvm -treat-scalable-fixed-error-as-warning -debug-info-kind=constructor -dwarf-version=4 -debugger-tuning=gdb -v -finstrument-functions -fcoverage-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-14/lib/clang/14.0.0 -dependency-file CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/aarch64-linux-gnu/c++/11 -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../include/c++/11/backward -internal-isystem /usr/lib/llvm-14/lib/clang/14.0.0/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include -internal-externc-isystem /usr/include/aarch64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -fdebug-compilation-dir=/root/SmartC2Rust/benchmark/qsort/bin/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -target-feature +outline-atomics -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp]
   ignore line: [clang -cc1 version 14.0.0 based upon LLVM 14.0.0 default target aarch64-unknown-linux-gnu]
   ignore line: [ignoring nonexistent directory "/usr/bin/../lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include"]
   ignore line: [ignoring nonexistent directory "/include"]
@@ -275,9 +275,9 @@ Parsed CXX implicit link information from above output:
   ignore line: [ /usr/include/aarch64-linux-gnu]
   ignore line: [ /usr/include]
   ignore line: [End of search list.]
-  ignore line: [Linking CXX executable cmTC_bd523]
-  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bd523.dir/link.txt --verbose=1]
-  ignore line: [/usr/bin/clang++  -v CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_bd523 ]
+  ignore line: [Linking CXX executable cmTC_a0919]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a0919.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang++ -finstrument-functions -g -gdwarf-4   -v CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_a0919 ]
   ignore line: [Ubuntu clang version 14.0.0-1ubuntu1.1]
   ignore line: [Target: aarch64-unknown-linux-gnu]
   ignore line: [Thread model: posix]
@@ -288,7 +288,7 @@ Parsed CXX implicit link information from above output:
   ignore line: [@m64]
   ignore line: [Selected multilib: .]
   ignore line: [@m64]
-  link line: [ "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_bd523 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o]
+  link line: [ "/usr/bin/ld" -pie -EL -z relro --hash-style=gnu --build-id --eh-frame-hdr -m aarch64linux -dynamic-linker /lib/ld-linux-aarch64.so.1 -o cmTC_a0919 /lib/aarch64-linux-gnu/Scrt1.o /lib/aarch64-linux-gnu/crti.o /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/bin/../lib/gcc/aarch64-linux-gnu/11 -L/lib/aarch64-linux-gnu -L/usr/lib/aarch64-linux-gnu -L/usr/lib/llvm-14/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtendS.o /lib/aarch64-linux-gnu/crtn.o]
     arg [/usr/bin/ld] ==> ignore
     arg [-pie] ==> ignore
     arg [-EL] ==> ignore
@@ -301,7 +301,7 @@ Parsed CXX implicit link information from above output:
     arg [-dynamic-linker] ==> ignore
     arg [/lib/ld-linux-aarch64.so.1] ==> ignore
     arg [-o] ==> ignore
-    arg [cmTC_bd523] ==> ignore
+    arg [cmTC_a0919] ==> ignore
     arg [/lib/aarch64-linux-gnu/Scrt1.o] ==> obj [/lib/aarch64-linux-gnu/Scrt1.o]
     arg [/lib/aarch64-linux-gnu/crti.o] ==> obj [/lib/aarch64-linux-gnu/crti.o]
     arg [/usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o] ==> obj [/usr/bin/../lib/gcc/aarch64-linux-gnu/11/crtbeginS.o]
@@ -311,7 +311,7 @@ Parsed CXX implicit link information from above output:
     arg [-L/usr/lib/llvm-14/bin/../lib] ==> dir [/usr/lib/llvm-14/bin/../lib]
     arg [-L/lib] ==> dir [/lib]
     arg [-L/usr/lib] ==> dir [/usr/lib]
-    arg [CMakeFiles/cmTC_bd523.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [CMakeFiles/cmTC_a0919.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
     arg [-lstdc++] ==> lib [stdc++]
     arg [-lm] ==> lib [m]
     arg [-lgcc_s] ==> lib [gcc_s]

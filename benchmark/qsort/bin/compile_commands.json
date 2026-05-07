@@ -1,12 +1,12 @@
 [
 {
   "directory": "/root/SmartC2Rust/benchmark/qsort/bin",
-  "command": "/usr/bin/clang    -fprofile-arcs -ftest-coverage -finstrument-functions -g -gdwarf-4 -o CMakeFiles/Qsort.dir/qsort.c.o -c /root/SmartC2Rust/benchmark/qsort/qsort.c",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -fprofile-arcs -ftest-coverage -finstrument-functions -g -gdwarf-4 -o CMakeFiles/Qsort.dir/qsort.c.o -c /root/SmartC2Rust/benchmark/qsort/qsort.c",
   "file": "/root/SmartC2Rust/benchmark/qsort/qsort.c"
 },
 {
   "directory": "/root/SmartC2Rust/benchmark/qsort/bin",
-  "command": "/usr/bin/clang    -fprofile-arcs -ftest-coverage -finstrument-functions -g -gdwarf-4 -o CMakeFiles/qsort_test.dir/qsort.c.o -c /root/SmartC2Rust/benchmark/qsort/qsort.c",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -fprofile-arcs -ftest-coverage -finstrument-functions -g -gdwarf-4 -o CMakeFiles/qsort_test.dir/qsort.c.o -c /root/SmartC2Rust/benchmark/qsort/qsort.c",
   "file": "/root/SmartC2Rust/benchmark/qsort/qsort.c"
 }
 ]

@@ -6,47 +6,35 @@
 failed=0
 mkdir -p flow_results
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Helper: check compressed file is non-empty
-check_nonempty() {
-    local f="$1"
-    if [ -f "$f" ] && [ -s "$f" ]; then
-        return 0
-    fi
-    return 1
+# Helper: run zopfli binary with LD_PRELOAD tracer
+run_zopfli() {
+    local tnum="$1"
+    shift
+    LD_PRELOAD=libtracer.so TRACE_OUTPUT="$PWD/flow_results/test${tnum}_trace.log" "./build/bins/zopfli_t${tnum}" "$@"
 }
 
-# Helper: verify gzip integrity
-verify_gzip() {
-    gunzip -t "$1" 2>/dev/null
-}
-
-# Helper: verify zlib integrity
-verify_zlib() {
-    python3 -c "import zlib; zlib.decompress(open('$1', 'rb').read())" 2>/dev/null
-}
-
-# Helper: check compression size (mirrors assert_file_compressed)
-assert_compressed() {
+assert_file_compressed() {
     local original="$1"
     local compressed="$2"
-    if [ ! -f "$original" ] || [ ! -f "$compressed" ]; then
+    if [ -f "$original" ] && [ -f "$compressed" ]; then
+        original_size=$(stat -c%s "$original")
+        compressed_size=$(stat -c%s "$compressed")
+        echo "DEBUG: Original: ${original_size}B, Compressed: ${compressed_size}B"
+        if [ "$compressed_size" -lt "$original_size" ]; then
+            return 0
+        elif [ "$original_size" -lt 100 ]; then
+            return 0
+        else
+            return 1
+        fi
+    else
         return 1
     fi
-    local original_size compressed_size
-    original_size=$(stat -c%s "$original")
-    compressed_size=$(stat -c%s "$compressed")
-    if [ "$compressed_size" -lt "$original_size" ]; then
-        return 0
-    elif [ "$original_size" -lt 100 ]; then
-        return 0
-    fi
-    return 1
 }
 
-# Create small repetitive test input
 make_small_input() {
     rm -f test_input.txt test_input.txt.gz test_input.txt.zlib test_input.txt.deflate
     echo "This is a test file for zopfli compression" > test_input.txt
@@ -55,7 +43,6 @@ make_small_input() {
     done
 }
 
-# Create larger test input
 make_large_input() {
     rm -f test_input.txt test_input.txt.gz test_input.txt.zlib test_input.txt.deflate
     echo "This is a test file for zopfli compression" > test_input.txt
@@ -64,523 +51,469 @@ make_large_input() {
     done
 }
 
-ZOPFLI_BIN="./build/zopfli"
-TRACE_ENV_PREFIX() {
-    # echo env prefix for trace; caller uses it with eval
-    local n="$1"
-    echo "LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${n}_trace.log"
-}
-
-############################
-# Test 1: Basic gzip compression + size check + integrity check
-############################
-TEST_NUM=1
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_small_input >> "$LOG" 2>&1
+###############################
+# Test 1: Basic gzip compression (also check compression size)
+###############################
+test_num=1
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_small_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} test_input.txt >> "$log" 2>&1
 rc=$?
 pass=1
-if [ $rc -ne 0 ]; then pass=0; echo "zopfli command failed" >> "$LOG"; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; echo "output file missing or empty" >> "$LOG"; fi
-if ! assert_compressed test_input.txt test_input.txt.gz; then pass=0; echo "compression check failed" >> "$LOG"; fi
-if ! verify_gzip test_input.txt.gz; then pass=0; echo "gzip integrity check failed" >> "$LOG"; fi
+if [ $rc -ne 0 ]; then pass=0; fi
+if [ ! -f test_input.txt.gz ] || [ ! -s test_input.txt.gz ]; then pass=0; fi
 if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+    if ! assert_file_compressed test_input.txt test_input.txt.gz >> "$log" 2>&1; then pass=0; fi
+    if ! gunzip -t test_input.txt.gz >> "$log" 2>&1; then pass=0; fi
+fi
+if [ $pass -eq 1 ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 2: Limited iterations (i1)
-############################
-TEST_NUM=2
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_small_input >> "$LOG" 2>&1
+###############################
+test_num=2
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_small_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --i1 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --i1 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 3: Block splitting enabled
-############################
-TEST_NUM=3
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_small_input >> "$LOG" 2>&1
+###############################
+test_num=3
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_small_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --blocksplitting=1 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --blocksplitting=1 test_input.txt >> "$log" 2>&1
+rc=$?
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
+else
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
+    failed=1
+fi
+echo "Test ${test_num} ended"
+
+###############################
+# Test 4: Zlib format (includes compression-size and integrity sub-checks)
+###############################
+test_num=4
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_small_input >> "$log" 2>&1
+rm -f test_input.txt.zlib
+run_zopfli ${test_num} --zlib test_input.txt >> "$log" 2>&1
 rc=$?
 pass=1
 if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
+if [ ! -s test_input.txt.zlib ]; then pass=0; fi
 if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+    if ! assert_file_compressed test_input.txt test_input.txt.zlib >> "$log" 2>&1; then pass=0; fi
+    if ! python3 -c "import zlib; zlib.decompress(open('test_input.txt.zlib','rb').read())" >> "$log" 2>&1; then pass=0; fi
+fi
+if [ $pass -eq 1 ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
-# Test 4: Zlib format + size check + integrity check
-############################
-TEST_NUM=4
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_small_input >> "$LOG" 2>&1
-rm -f test_input.txt.zlib
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --zlib test_input.txt >> "$LOG" 2>&1
-rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; echo "zopfli command failed" >> "$LOG"; fi
-if ! check_nonempty test_input.txt.zlib; then pass=0; echo "output missing" >> "$LOG"; fi
-if ! assert_compressed test_input.txt test_input.txt.zlib; then pass=0; echo "compression check failed" >> "$LOG"; fi
-if ! verify_zlib test_input.txt.zlib; then pass=0; echo "zlib integrity check failed" >> "$LOG"; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
-else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
-    failed=1
-fi
-echo "Test $TEST_NUM ended"
-
-############################
+###############################
 # Test 5: Large file with verbose output
-############################
-TEST_NUM=5
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=5
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --verbose test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --verbose test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
-# Test 6: High iterations i100
-############################
-TEST_NUM=6
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+# Test 6: High iterations (i100)
+###############################
+test_num=6
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --i100 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --i100 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 7: Combined options (i50 + blocksplitting)
-############################
-TEST_NUM=7
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=7
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --i50 --blocksplitting=1 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --i50 --blocksplitting=1 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 8: Block splitting max=10
-############################
-TEST_NUM=8
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=8
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --blocksplittingmax=10 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --blocksplittingmax=10 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
-# Test 9: Multiple format - zlib (large input)
-############################
-TEST_NUM=9
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+# Test 9: Multiple format - zlib (on large file)
+###############################
+test_num=9
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.zlib
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --zlib test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --zlib test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.zlib; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.zlib ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
-# Test 10: Empty file compression + gzip integrity
-############################
-TEST_NUM=10
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
+###############################
+# Test 10: Empty file compression (with integrity check)
+###############################
+test_num=10
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
 rm -f empty_file.txt empty_file.txt.gz
 echo -n "" > empty_file.txt
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli empty_file.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} empty_file.txt >> "$log" 2>&1
 rc=$?
 pass=1
-if [ $rc -ne 0 ]; then pass=0; echo "zopfli failed" >> "$LOG"; fi
-if ! check_nonempty empty_file.txt.gz; then pass=0; echo "empty_file.txt.gz missing or empty" >> "$LOG"; fi
-if ! verify_gzip empty_file.txt.gz; then pass=0; echo "gzip integrity failed" >> "$LOG"; fi
+if [ $rc -ne 0 ]; then pass=0; fi
+if [ ! -f empty_file.txt.gz ] || [ ! -s empty_file.txt.gz ]; then pass=0; fi
+if [ $pass -eq 1 ]; then
+    if ! gunzip -t empty_file.txt.gz >> "$log" 2>&1; then pass=0; fi
+fi
 rm -f empty_file.txt empty_file.txt.gz
 if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 11: Special characters file
-############################
-TEST_NUM=11
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
+###############################
+test_num=11
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
 rm -f special_chars.txt special_chars.txt.gz
 echo "Special chars: !@#\$%^&*()_+{}|:<>?[]\\;'\",./" > special_chars.txt
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli special_chars.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} special_chars.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty special_chars.txt.gz; then pass=0; fi
-rm -f special_chars.txt special_chars.txt.gz
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s special_chars.txt.gz ]; then
+    rm -f special_chars.txt special_chars.txt.gz
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    rm -f special_chars.txt special_chars.txt.gz
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 12: Block splitting disabled
-############################
-TEST_NUM=12
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=12
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --i1 --blocksplitting=0 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --i1 --blocksplitting=0 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 13: Zlib with i1
-############################
-TEST_NUM=13
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=13
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.zlib
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --i1 --zlib test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --i1 --zlib test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.zlib; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.zlib ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 14: Explicit gzip format
-############################
-TEST_NUM=14
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=14
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --gzip test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --gzip test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 15: Verbose with block splitting
-############################
-TEST_NUM=15
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=15
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --verbose --blocksplitting=1 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --verbose --blocksplitting=1 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 16: Verbose with zlib
-############################
-TEST_NUM=16
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=16
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.zlib
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --verbose --zlib test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --verbose --zlib test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.zlib; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.zlib ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 17: Verbose with gzip
-############################
-TEST_NUM=17
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=17
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --verbose --gzip test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --verbose --gzip test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 18: Verbose with i10 and blocksplitting
-############################
-TEST_NUM=18
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=18
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --verbose --i10 --blocksplitting=1 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --verbose --i10 --blocksplitting=1 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 19: High iterations i15
-############################
-TEST_NUM=19
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=19
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --verbose --i15 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --verbose --i15 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
+###############################
 # Test 20: First compression
-############################
-TEST_NUM=20
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+test_num=20
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
-############################
-# Test 21: Second compression with different options
-############################
-TEST_NUM=21
-echo "Test $TEST_NUM started"
-LOG="flow_results/test${TEST_NUM}_tmp.log"
-: > "$LOG"
-make_large_input >> "$LOG" 2>&1
+###############################
+# Test 21: Second compression with different options (--i1)
+###############################
+test_num=21
+echo "Test ${test_num} started"
+log="flow_results/test${test_num}_run.log"
+: > "$log"
+make_large_input >> "$log" 2>&1
 rm -f test_input.txt.gz
-LD_PRELOAD=libtracer.so TRACE_OUTPUT=$PWD/flow_results/test${TEST_NUM}_trace.log ./build/zopfli --i1 test_input.txt >> "$LOG" 2>&1
+run_zopfli ${test_num} --i1 test_input.txt >> "$log" 2>&1
 rc=$?
-pass=1
-if [ $rc -ne 0 ]; then pass=0; fi
-if ! check_nonempty test_input.txt.gz; then pass=0; fi
-if [ $pass -eq 1 ]; then
-    mv "$LOG" flow_results/test${TEST_NUM}_success.log
-    echo "Test $TEST_NUM passed"
+if [ $rc -eq 0 ] && [ -s test_input.txt.gz ]; then
+    mv "$log" "flow_results/test${test_num}_success.log"
+    echo "Test ${test_num} passed"
 else
-    mv "$LOG" flow_results/test${TEST_NUM}_fail.log
-    echo "Test $TEST_NUM failed" >&2
+    mv "$log" "flow_results/test${test_num}_fail.log"
+    echo "Test ${test_num} failed" >&2
     failed=1
 fi
-echo "Test $TEST_NUM ended"
+echo "Test ${test_num} ended"
 
 # Final cleanup
 rm -f test_input.txt test_input.txt.gz test_input.txt.zlib test_input.txt.deflate

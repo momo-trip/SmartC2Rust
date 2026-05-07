@@ -162,8 +162,8 @@ CMakeFiles/zopfli.dir/clean:
 # Target rules for target CMakeFiles/zopflipng.dir
 
 # All Build rule for target.
-CMakeFiles/zopflipng.dir/all: CMakeFiles/libzopfli.dir/all
 CMakeFiles/zopflipng.dir/all: CMakeFiles/libzopflipng.dir/all
+CMakeFiles/zopflipng.dir/all: CMakeFiles/libzopfli.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/zopflipng.dir/build.make CMakeFiles/zopflipng.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/zopflipng.dir/build.make CMakeFiles/zopflipng.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles --progress-num=20,21 "Built target zopflipng"

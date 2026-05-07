@@ -1,224 +1,87 @@
 [
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/util.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/util.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-I/root/SmartC2Rust/benchmark/zopfli/src/zopfli",
-      "-finstrument-functions",
-      "-g",
-      "-gdwarf-4",
-      "-O3",
-      "-DNDEBUG",
-      "-c",
-      "-o",
-      "CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o",
-      "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_bin.c"
-    ],
-    "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
-    "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_bin.c",
-    "output": "/root/SmartC2Rust/benchmark/zopfli/build/CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o"
-  }
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/blocksplitter.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/blocksplitter.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/cache.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/cache.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/deflate.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/deflate.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/gzip_container.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/gzip_container.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/hash.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/hash.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/katajainen.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/katajainen.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/lz77.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/lz77.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/squeeze.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/squeeze.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/tree.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/tree.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/util.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/util.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/zlib_container.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zlib_container.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang   -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopfli.dir/src/zopfli/zopfli_lib.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_lib.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang++  -I/root/SmartC2Rust/benchmark/zopfli/src/zopfli -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopflipng.dir/src/zopflipng/zopflipng_lib.cc.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_lib.cc",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_lib.cc"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang++  -I/root/SmartC2Rust/benchmark/zopfli/src/zopfli -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng.cpp.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng.cpp"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang++  -I/root/SmartC2Rust/benchmark/zopfli/src/zopfli -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/libzopflipng.dir/src/zopflipng/lodepng/lodepng_util.cpp.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopflipng/lodepng/lodepng_util.cpp"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang  -I/root/SmartC2Rust/benchmark/zopfli/src/zopfli -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/zopfli.dir/src/zopfli/zopfli_bin.c.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_bin.c",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopfli/zopfli_bin.c"
+},
+{
+  "directory": "/root/SmartC2Rust/benchmark/zopfli/build",
+  "command": "/usr/bin/clang++  -I/root/SmartC2Rust/benchmark/zopfli/src/zopflipng -I/root/SmartC2Rust/benchmark/zopfli/src/zopfli -finstrument-functions -g -gdwarf-4 -O3 -DNDEBUG -o CMakeFiles/zopflipng.dir/src/zopflipng/zopflipng_bin.cc.o -c /root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_bin.cc",
+  "file": "/root/SmartC2Rust/benchmark/zopfli/src/zopflipng/zopflipng_bin.cc"
+}
 ]

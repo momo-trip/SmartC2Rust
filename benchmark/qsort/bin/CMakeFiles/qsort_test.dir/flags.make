@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = 
 
-C_FLAGS =  -fprofile-arcs -ftest-coverage -finstrument-functions -g -gdwarf-4
+C_FLAGS = -finstrument-functions -g -gdwarf-4 -fprofile-arcs -ftest-coverage -finstrument-functions -g -gdwarf-4
 
