@@ -109,6 +109,7 @@ from c_parser_api import (
     combine_with_innermost_conditioned_blocks,
     parse_trace,
     setup_macro_without_transforming,
+    insert_target_annotation,
 )
 
 from llm_api import (
@@ -1196,11 +1197,14 @@ def macro_main(config):
             print("TBA")
         
         else:
+            # Insert a macro to record the initial position
+            insert_target_annotation(target_dir, target_path, marker)
+
             setup_macro_without_transforming(llm_on, macro_finder, target_dir, database_dir, meta_dir, div_meta_dir, build_path, cfg_path, target_path, marker, 
-                                    list_path, dep_json_path, custom_headers_dir, custom_json_path, custom_header_path, # , build_rs_path  # run_test_path, call_path  #picked_path, macro_list_path, macro_path, all_macro_path, # classified_path, # defined_path, undefined_path, cmd_line_path, 
+                                    list_path, dep_json_path, custom_headers_dir, custom_json_path, custom_header_path, 
                                     llm_choice, llm_interface, token_path, chat_dir, all_macros_path, taken_macros_path, 
                                     all_directive_path, taken_directive_path, is_program_path, global_path,
-                                    guards_path, guarded_macros_path, independent_path, flag_path, const_path, conflict_path # , sys_macros_path
+                                    guards_path, guarded_macros_path, independent_path, flag_path, const_path, conflict_path
                                     )
 
 

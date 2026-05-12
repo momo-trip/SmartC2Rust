@@ -1,0 +1,2 @@
+This is a test file for zopfli compression
+Additional line {1..100} with some random text to compress and make the file larger

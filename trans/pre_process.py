@@ -608,7 +608,7 @@ def find_circular_dependencies(function_calls):
         for i, group in enumerate(scc, 1):
             print(f"Group {i}: {group}")
     
-    print(scc)
+    # print(scc)
     return scc
 
 
@@ -629,7 +629,7 @@ def find_parent_def_key(cashed, meta_dir, use_item, use_file_path, use_start_lin
     found = False
     for key, item in use_meta_data.items():
         ## This should actually be checked: why are some becoming undefined? Probably an issue with the parser.
-        if 'file_path' in item: # This must be checked first, otherwise some definitions become undefined. Why???
+        if 'file_path' in item: # This must be checked first, otherwise some definitions become undefined.
             def_file_path = item['file_path'] # In the case of IFDEF/IF directive.
         
         elif 'definition' in item:
@@ -694,13 +694,9 @@ def load_target_keys(target_path, sorted_functions, meta_dir, target_dir):
 
             name, rel_path, start_line, end_line = line.rsplit(":", 3)
             abs_path = f"{os.path.abspath(target_dir)}/{rel_path}"
-            # meta_data, meta_path = obtain_metadata(file_path, meta_dir, False, None, "def")
             key_name = f"{name}:{abs_path}:{start_line}:{end_line}"
             target_keys.add(key_name)
     
-    # print(target_keys)
-    # print(sorted_set)
-
     missing = target_keys - sorted_set
     if missing:
         print(f"[warn] target keys not found in sorted_functions: {missing}")
@@ -808,7 +804,6 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
                     use_meta_data = div_cashed[use_file_path]
                 
                 if use_meta_data is None:
-                    #print(use_meta_path)
                     continue
 
                 use_def_key = f"{use_name}:{use_file_path}:{use_def_start}"
@@ -831,7 +826,6 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
             dependencies[key_name] = uses_list
     
     # Call topological_flow_sort()
-    # print(dependencies)
     write_json(f"{database_dir}/flow.json", dependencies)
     sorted_functions = topological_flow_sort(dependencies)
 
@@ -1489,10 +1483,8 @@ def get_target_location(target_dir, target_path):
 def generate_build_setup(taken_macros_path, independent_const_build_path, flag_build_path):
 
     macros = read_json(taken_macros_path)
-    ind_consts = set() #[]
-    flags = set() #[]
-
-    print(taken_macros_path)
+    ind_consts = set()
+    flags = set()
 
     for macro_key, item in macros.items():
         if item['is_const'] is True and item['is_independent'] is True and item['definition']['file_path'] not in ["undefined", "unknown"]:
@@ -1508,8 +1500,6 @@ def generate_build_setup(taken_macros_path, independent_const_build_path, flag_b
     flag_macros = {}
     flag_macros['flags'] = list(flags)
     write_json(flag_build_path, flag_macros)
-
-    print(flag_build_path)
 
 
 def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, target_dir, meta_dir, div_meta_dir, database_dir, dep_json_path,
@@ -1530,8 +1520,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     build_path = get_build_path(target_dir)
     run_script_wo_log(build_path, 1000, True, None, "build")
     build_dir = find_compile_commands_json(target_dir) # raw_dir is false
-    print(build_dir)
-    ##
+
     # compile_log_path = f'{database_dir}/compile.log'
     compile_dir, compile_json_path = get_compile_json(target_dir)
     """
@@ -1580,7 +1569,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
 
 
     #---------------------------------------------
-    # Remove include guards # Is it okay to do this after define_blocks()? define_blocks() removes them virtually
+    # Remove include guards
     delete_guards(guards_path, target_dir, meta_dir, is_program_path)  
 
     """
