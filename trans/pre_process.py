@@ -1511,7 +1511,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
 
     unordered_taken_directive_path = f"{database_dir}/unordered_taken_directive.json"
 
-    parse_all("all", macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
+    parse_all("all", target, macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
                     taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, is_program_path, 
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path,
                     given_compile_dir, given_compile_json_path, global_path)
@@ -1532,10 +1532,10 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     changed = False
     if changed is True:
         # 4th round: parsing
-        parse_all("4", macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
+        parse_all("4", target, macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
                     taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, is_program_path, 
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path, 
-                    given_compile_dir, given_compile_json_path, global_path) # , cfg_path
+                    given_compile_dir, given_compile_json_path, global_path)
 
     """
     # It is necessary to detect the consolidated conditional blocks of the expanded parts
@@ -1544,7 +1544,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
 
     if changed is True:
         # 4th round: parsing
-        parse_all("4", macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
+        parse_all("4", target, macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
                     taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, is_program_path, 
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path) # , cfg_path
     """
@@ -1559,7 +1559,7 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
     insert_ifdef_statement(cfg_path, target_dir, div_meta_dir) # flag_path may have been cfg_path
     """
 
-    # parse_all("4", macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
+    # parse_all("4", target, macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
     #              taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, 
     #              all_macros_path, taken_macros_path, guards_path, independent_path, flag_path)
     

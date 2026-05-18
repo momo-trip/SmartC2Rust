@@ -1200,7 +1200,7 @@ def macro_main(config):
             # Insert a macro to record the initial position
             insert_target_annotation(target_dir, target_path, marker)
 
-            setup_macro_without_transforming(llm_on, macro_finder, target_dir, database_dir, meta_dir, div_meta_dir, build_path, cfg_path, target_path, marker, 
+            setup_macro_without_transforming(llm_on, target, macro_finder, target_dir, database_dir, meta_dir, div_meta_dir, build_path, cfg_path, target_path, marker, 
                                     list_path, dep_json_path, custom_headers_dir, custom_json_path, custom_header_path, 
                                     llm_choice, llm_interface, token_path, chat_dir, all_macros_path, taken_macros_path, 
                                     all_directive_path, taken_directive_path, is_program_path, global_path,
