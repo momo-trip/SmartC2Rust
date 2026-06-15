@@ -4,6 +4,7 @@ Iterative, Feedback-Driven C-to-Rust Translation via Large Language Models for S
 
 **Note:** The documentation may not yet cover everything in detail, and the code still contains some traces of trial and error from the development process, so it may not be the easiest to read. I'll continue to clean it up going forward. At the same time, feedback and suggestions are very welcome!
 
+---
 ## Setup with Docker
 
 We prepared the pre-built Docker image, which contains the complete environment (Ubuntu 22.04, Python, Rust, Clang, and all dependencies) ready to run.
@@ -48,7 +49,6 @@ This runs `git pull` on all repositories:
 The sections below walk through each step in detail. If you just want the full
 list of commands for all benchmarks, see [`commands.txt`](commands.txt).
 
----
 
 ### Step 0: Configuration
 
@@ -82,6 +82,7 @@ When scaling to larger programs, performing macro analysis from scratch with LLM
 - FFI strategy
 In the paper, we focus on command-line tools, where the entry point can be translated using a minimize strategy. In contrast, when translating library functions in isolation, FFI interfaces are often unavoidable for interoperability with existing C code. Therefore, we provide two modes (`"minimize"` or `"preserve"`) to support both use cases.
 
+---
 
 ### Step 1: Prepare inputs
 Before running the iterative cycle, prepare two inputs: a 
