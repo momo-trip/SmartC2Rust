@@ -41,7 +41,16 @@ This runs `git pull` on all repositories:
 - [kiso-parser-rust](https://github.com/momo-trip/kiso-parser-rust): Rust parser
 
 
-## Configuration
+---
+
+## Translation procedure
+
+The sections below walk through each step in detail. If you just want the full
+list of commands for all benchmarks, see [`commands.txt`](commands.txt).
+
+---
+
+### Step 0: Configuration
 
 Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 
@@ -66,21 +75,13 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 | `ffi_strategy` | `"minimize"` (default, safe, idiomatic Rust; default) or translation strategy: `"preserve"` (C-compatible via FFI) |
 
 
-## Notes
-### Macro handling
+#### Notes
+- Macro handling
 When scaling to larger programs, performing macro analysis from scratch with LLMs becomes impractical due to cost considerations. Therefore, we introduce a more structured approach by classifying macros into constant and conditional categories based on parser results. The LLM is then used to refine the translated code, ensuring consistency, successful compilation, and integration across translation units.
 
-### FFI strategy
+- FFI strategy
 In the paper, we focus on command-line tools, where the entry point can be translated using a minimize strategy. In contrast, when translating library functions in isolation, FFI interfaces are often unavoidable for interoperability with existing C code. Therefore, we provide two modes (`"minimize"` or `"preserve"`) to support both use cases.
 
----
-
-## Translation procedure
-
-The sections below walk through each step in detail. If you just want the full
-list of commands for all benchmarks, see [`commands.txt`](commands.txt).
-
----
 
 ### Step 1: Prepare inputs
 Before running the iterative cycle, prepare two inputs: a 

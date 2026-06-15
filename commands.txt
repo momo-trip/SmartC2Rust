@@ -1,7 +1,7 @@
 ########################################################
-####    Preparation: Reformat test cases
+####    Step 0: Configuraion
 ########################################################
-Place a config.json like the following:
+Place a `/root/SmartC2Rust/config.json` like the following:
 {
     "llm_choice" : "<LLM model>",
     "claude_api_key" : "<Your API key>",
