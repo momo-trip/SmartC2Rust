@@ -3612,7 +3612,6 @@ def repair_execute(repair_target, interface):
 
     while (1):
         if repair_count == REPAIR_MAX:
-        #if exp_data['repair_count'] == REPAIR_MAX:
             print(f"Force to finish. Hit the REPAIR_MAX ({REPAIR_MAX}).")
             iteration_dict[rust_path] = repair_count
             sys.exit(1)  #return True
@@ -3636,10 +3635,7 @@ def repair_execute(repair_target, interface):
             break
 
         if repair_target == "compile":
-            ref_files = [] #prompt = [] # It's an option to inherit the prompt, but initializing here for now
-            #ref_files = get_ref_files(c_path, dep_json_path)
-            #print(f"ref_files is {ref_files}") # If ref_files are divided, they need to reference the divided ones
-
+            ref_files = [] # prompt = [] # It's an option to inherit the prompt, but initializing here for now
             add_prompt = []
 
             if DEBUG_LLM:
@@ -3763,10 +3759,8 @@ def repair_execute(repair_target, interface):
                         # Important! Added information
                         prompt.extend(add_prompt)
 
-                    # Might be better to remind again here that modify_data should have no content
-        
         # Response format
-        print(f"ongoing_flag is {ongoing_flag}") #prompt = get_auto_prompt(prompt, execute_path)
+        print(f"ongoing_flag is {ongoing_flag}") 
         if ongoing_flag is False:
             print(repair_count)
             print(repair_target)
@@ -3925,7 +3919,7 @@ def repair_execute(repair_target, interface):
 
             if repair_target == "compile" or repair_target == "build":
                 prompt.extend(["", "## Directory structure of the target Rust program:"])
-                directory_structure = get_dir_struct("translation", work_dir, None)  #rust_output_dir)
+                directory_structure = get_dir_struct("translation", work_dir, None) 
                 prompt.extend([directory_structure, ""])
 
                 if not W_O_DEP:
@@ -3936,7 +3930,6 @@ def repair_execute(repair_target, interface):
 
             
         ################################################
-
         prompt = adjust_prompt(prompt)
         print("-------------------------")
 
@@ -4163,10 +4156,7 @@ def repair_execute(repair_target, interface):
                                 if 'ready_to_execute' in child_rsp_json:
                                     ready_to_execute = child_rsp_json['ready_to_execute']
                                 
-                                #ongoing_in_mode_flag = False # For now
-                                
                                 if ready_to_execute is True or ongoing_in_mode_flag is False:
-                                #if ready_to_execute is True or ongoing_in_mode_flag is False:
                                     break
 
                                 # Might be better not to accept ongoing here

@@ -4538,11 +4538,6 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                             llm_interface, progress_queue, max_iterations, target_path
                             ):
     
-    lib_path = f"{rust_io_dir}/src/lib.rs" 
-    build_rs_path = rust_io_dir + '/build.rs'
-    toml_path = f"{rust_io_dir}/Cargo.toml"
-    rust_binary_path = f"{rust_io_dir}/target/release/{target}"
-
     target_functions = []
     with open(target_path, 'r') as f:
         for line in f:
@@ -4556,6 +4551,11 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                     'file_path': parts[1],
                     'start_line': int(parts[2]),
                 })
+    
+    lib_path = f"{rust_io_dir}/src/lib.rs" 
+    build_rs_path = rust_io_dir + '/build.rs'
+    toml_path = f"{rust_io_dir}/Cargo.toml"
+    rust_binary_path = f"{rust_io_dir}/target/release/{target}"
 
     convert_cargo_toml_to_binary(toml_path, target, target_functions)
                 
@@ -4599,8 +4599,18 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                     ]
 
     else:
-        identifiers = [sanitize_identifier(func['file_path']) for func in target_functions]
+        identifiers = []
+        for func in target_functions:
+            identifiers.append(sanitize_identifier(func['file_path']))
+            
         bin_dir = f"{rust_io_dir}/src/bin"
+        os.makedirs(bin_dir, exist_ok=True)
+        for func in target_functions:
+            identifier = sanitize_identifier(func['file_path'])
+            bin_file = f"{bin_dir}/{identifier}.rs"
+            if not os.path.exists(bin_file):
+                with open(bin_file, 'w') as f:
+                    f.write("")
 
         prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to multiple standalone binaries (one binary per sample).",
                   f"The original {lib_path} contains one rust_main_<identifier> per sample, and each must become its own binary file under {bin_dir}/. Follow these rules and steps STRICTLY:",
@@ -4912,7 +4922,7 @@ def rename_paths(c_run_path, run_test_path, run_all_path, created_paths, target_
     return c_run_path, run_test_path, run_all_path, new_files, target_new_files 
 
 
-def initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path):
+def initialize(chat_dir, logging_path, database_dir, token_path): # work_dir, 
     
     delete_directory(chat_dir) 
     create_directory(chat_dir) 
@@ -4921,10 +4931,11 @@ def initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path):
     data["prompt_id"] = str(0).zfill(4)
     write_json(logging_path, data)
     
-    delete_directory(f"{mix_io_dir}/flows")
-    delete_directory(f"{mix_io_dir}/analysis")
-
-    delete_directory(f"{mix_io_dir}/flow_results") 
+    """
+    delete_directory(f"{work_dir}/flows")
+    delete_directory(f"{work_dir}/analysis")
+    delete_directory(f"{work_dir}/flow_results") 
+    """
 
     delete_file(f"{database_dir}/repair_count.txt")
     delete_file(f"{database_dir}/inner_repair.json")
@@ -5092,7 +5103,6 @@ def allrust_semantics_main(config):
     independent_const_build_path, 
     flag_build_path) = extract_all_paths(paths)
 
-    mix_io_dir = work_dir
     c_io_dir = f"{work_dir}/{target}"
     rust_io_dir = f"{work_dir}/trans_rust"
 
@@ -5146,12 +5156,16 @@ def allrust_semantics_main(config):
 
         """
         # Repair function errors
-        check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+        check_semantics(work_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                         raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                         dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                         llm_interface, progress_queue, max_iterations, False
                         )  
         """
+        # Initialize
+        initialize(chat_dir, logging_path, database_dir, token_path) # work_dir, 
+
+        # Setup the s_repair directory
         set_s_repair_dir(compile_dir, target, work_dir)
 
         signal.signal(signal.SIGINT, signal_handler)
@@ -5161,15 +5175,12 @@ def allrust_semantics_main(config):
         # atexit.register(get_report)
         setup_rust_trace(work_dir)
 
-        # Initialize
-        initialize(mix_io_dir, chat_dir, logging_path, database_dir, token_path) 
-
-        # adjust file paths
+        # Adjust file paths
         # adjust_file_path(target, user_id, process_type, rust_io_dir)
 
         # Repair function errors
         repair_count = 1
-        check_semantics(repair_count, mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+        check_semantics(repair_count, work_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                         raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                         dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                         llm_interface, progress_queue, max_iterations, True
@@ -5185,7 +5196,7 @@ def allrust_semantics_main(config):
             target_path = f"{target_dir}/actual_targets.txt"
 
             # Produce the final standalone binary
-            produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+            produce_final_binary(work_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                             raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                             dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                             llm_interface, progress_queue, max_iterations, target_path
@@ -5193,7 +5204,7 @@ def allrust_semantics_main(config):
 
             # Repair function errors
             repair_count = 2
-            check_semantics(repair_count, mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+            check_semantics(repair_count, work_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                             raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                             dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                             llm_interface, progress_queue, max_iterations, False
