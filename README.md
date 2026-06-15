@@ -2,7 +2,7 @@
 
 Iterative, Feedback-Driven C-to-Rust Translation via Large Language Models for Safety and Equivalence
 
-**Note:** The documentation may not yet cover everything in detail, and the code still contains some traces of trial and error from the development process, so it may not be the easiest to read. I'll continue to clean it up going forward. At the same time, feedback and suggestions are very welcome!
+**Note:** The code still contains some traces of trial and error from the development process, so it may not be the easiest to read. I'll continue to clean it up going forward. At the same time, feedback and suggestions are very welcome!
 
 ---
 ## Setup with Docker
@@ -72,14 +72,14 @@ Create `/root/SmartC2Rust/config.json` with your LLM API credentials:
 | `azure_endpoint` | Endpoint URL (required for `claude_azure` backends, otherwise leave empty `""`) |
 | `test_mode` | Set `false` for normal use |
 | `average` | Maximum number of source lines per translation unit. |
-| `ffi_strategy` | `"minimize"` (default, safe, idiomatic Rust; default) or translation strategy: `"preserve"` (C-compatible via FFI) |
+| `ffi_strategy` | `"minimize"` (default; safe, idiomatic Rust) or translation strategy: `"preserve"` (C-compatible via FFI) |
 
 
 #### Notes
-- Macro handling
+- **Macro handling**:
 When scaling to larger programs, performing macro analysis from scratch with LLMs becomes impractical due to cost considerations. Therefore, we introduce a more structured approach by classifying macros into constant and conditional categories based on parser results. The LLM is then used to refine the translated code, ensuring consistency, successful compilation, and integration across translation units.
 
-- FFI strategy
+- **FFI strategy**:
 In the paper, we focus on command-line tools, where the entry point can be translated using a minimize strategy. In contrast, when translating library functions in isolation, FFI interfaces are often unavoidable for interoperability with existing C code. Therefore, we provide two modes (`"minimize"` or `"preserve"`) to support both use cases.
 
 ---
