@@ -21,6 +21,7 @@ program/*.tar.xz
 program/*.tar.bz2
 
 trans/previous_*/
+trans/*trans_rust*/
 *output*/
 tmp*.json
 **/.cargo/registry/
