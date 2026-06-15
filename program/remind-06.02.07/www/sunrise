@@ -1,0 +1,13 @@
+#!/bin/sh
+# Sunrise shell script
+#
+# This file is part of REMIND.
+# Copyright (C) 1992-2026 by Dianne Skoll
+
+echo Content-type: text/html
+echo
+echo "<HTML>"
+$REMIND -arqh $DIR/sunrise.rem
+echo "</HTML>"
+
+exit 0

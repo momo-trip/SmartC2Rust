@@ -4191,7 +4191,7 @@ def get_smallest_fail_id(given_test_number, c_io_dir, error):
     return None
 
 
-def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+def check_semantics(repair_count, mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                     raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                     dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                     llm_interface, progress_queue, max_iterations, flow_on
@@ -4209,20 +4209,19 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
     exp_data['repair_count'] = 0
     exp_data['average'] = 0
 
-    repair_count = 1
-    interface = {
-        'convert_element': "semantics",
-        'mix_io_dir' : mix_io_dir,
-        'meta_dir': meta_dir,
-        'dep_json_path': dep_json_path,
-        'exp_data': exp_data,
-        'repair_count': repair_count,
-        'run_test_path' : run_test_path,
-        'c_io_dir' : c_io_dir,
-        'rust_io_dir' : rust_io_dir,
-        'run_all_path' : run_all_path,
-        'rust_build_path' : rust_build_path,
-    }
+    # interface = {
+    #     'convert_element': "semantics",
+    #     'mix_io_dir' : mix_io_dir,
+    #     'meta_dir': meta_dir,
+    #     'dep_json_path': dep_json_path,
+    #     'exp_data': exp_data,
+    #     'repair_count': repair_count,
+    #     'run_test_path' : run_test_path,
+    #     'c_io_dir' : c_io_dir,
+    #     'rust_io_dir' : rust_io_dir,
+    #     'run_all_path' : run_all_path,
+    #     'rust_build_path' : rust_build_path,
+    # }
 
     interface = SemConfig(
         mix_io_dir=mix_io_dir,
@@ -4298,8 +4297,6 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         success_path = f"{c_io_dir}/flow_results/test{test_number}_success.log" # success_path = f"results/test{test_number}_success.log"
         fail_path = f"{c_io_dir}/flow_results/test{test_number}_fail.log" # fail_path = f"results/test{test_number}_fail.log"
         
-        interface.repair_count = 1
-
         ###############################
         ## Repair semantics
         ###############################
@@ -4328,8 +4325,7 @@ def check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_
         interface.error_log = error_log 
         interface.error = error
         interface.std_out = std_out
-
-        interface.repair_count = repair_count
+        interface.repair_count = repair_count #2 #1
         interface.flow_path = rust_flow_path
 
         modified_c_keys = set()
@@ -4442,7 +4438,7 @@ def sanitize_identifier(file_path):
     return re.sub(r'[^a-zA-Z0-9_]', '_', stem)
 
 
-def convert_cargo_toml_to_binary(toml_path: str, target_name: str) -> None:
+def convert_cargo_toml_to_binary(toml_path, target_name, target_functions) -> None:
     """
     Convert Cargo.toml from a library crate to a binary crate.
     
@@ -4461,23 +4457,37 @@ def convert_cargo_toml_to_binary(toml_path: str, target_name: str) -> None:
     with open(toml_path, 'r') as f:
         doc = tomlkit.parse(f.read())
     
-    # 1. Remove the [lib] section
-    if 'lib' in doc:
-        del doc['lib']
-    
-    # 3. Remove crate-type from [package] (if present)
+    # Remove crate-type from [package] (if present)
     if 'package' in doc and 'crate-type' in doc['package']:
         del doc['package']['crate-type']
     
-    # 2. Add the [[bin]] section
-    bin_table = tomlkit.table()
-    bin_table['name'] = target_name
-    bin_table['path'] = 'src/main.rs'
-    
-    bin_array = tomlkit.aot()  # Array of Tables
-    bin_array.append(bin_table)
-    doc['bin'] = bin_array
-    
+    # Add the [[bin]] section
+    if len(target_functions) == 1:
+        # Remove the [lib] section
+        if 'lib' in doc:
+            del doc['lib']
+            
+        bin_table = tomlkit.table()
+        bin_table['name'] = target_name
+        bin_table['path'] = 'src/main.rs'
+        
+        bin_array = tomlkit.aot()  # Array of Tables
+        bin_array.append(bin_table)
+        doc['bin'] = bin_array
+
+    else:
+        if 'lib' in doc and 'crate-type' in doc['lib']:
+            del doc['lib']['crate-type']
+
+        bin_array = tomlkit.aot()
+        for func in target_functions:
+            name = sanitize_identifier(func['file_path'])
+            bin_table = tomlkit.table()
+            bin_table['name'] = name
+            bin_table['path'] = f'src/bin/{name}.rs'
+            bin_array.append(bin_table)
+        doc['bin'] = bin_array
+
     with open(toml_path, 'w') as f:
         f.write(tomlkit.dumps(doc))
 
@@ -4533,8 +4543,6 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
     toml_path = f"{rust_io_dir}/Cargo.toml"
     rust_binary_path = f"{rust_io_dir}/target/release/{target}"
 
-    convert_cargo_toml_to_binary(toml_path, target)
-
     target_functions = []
     with open(target_path, 'r') as f:
         for line in f:
@@ -4548,13 +4556,16 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                     'file_path': parts[1],
                     'start_line': int(parts[2]),
                 })
+
+    convert_cargo_toml_to_binary(toml_path, target, target_functions)
                 
     if len(target_functions) == 1:
         main_path = f"{rust_io_dir}/src/main.rs"
         if os.path.exists(lib_path):
             os.rename(lib_path, main_path)
             
-        prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to a standalone binary. Please apply the following modifications to the Rust code below. Follow these rules and steps STRICTLY:",
+        prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to a standalone binary.",
+                   f"Please apply the following modifications to the Rust code below. Follow these rules and steps STRICTLY:",
                     "",
                     "## Strict rules",
                     f"Step A: Modification to {main_path}",
@@ -4591,7 +4602,8 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
         identifiers = [sanitize_identifier(func['file_path']) for func in target_functions]
         bin_dir = f"{rust_io_dir}/src/bin"
 
-        prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to multiple standalone binaries (one binary per sample). The original {lib_path} contains one rust_main_<identifier> per sample, and each must become its own binary file under {bin_dir}/. Follow these rules and steps STRICTLY:",
+        prompt = [f"Now we would like to convert Rust code from an FFI wrapper pattern to multiple standalone binaries (one binary per sample).",
+                  f"The original {lib_path} contains one rust_main_<identifier> per sample, and each must become its own binary file under {bin_dir}/. Follow these rules and steps STRICTLY:",
                     "",
                     "## Strict rules",
                     f"Step A: Modification to {lib_path} and {bin_dir}/",
@@ -4612,7 +4624,7 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                     "  4. The bin files must NOT contain copies of shared types or helpers — those stay in lib.rs and are imported via `use trans_rust::*;`.",
                     "",
                     f"Step B: Modification to {run_test_path}",
-                    "  1. Replace each invocation of a C binary with the corresponding Rust binary. The mapping is:",
+                    "  1. Replace each C test binary used as a copy source with the corresponding Rust binary. The mapping is:", #Replace each invocation of a C binary with the corresponding Rust binary. The mapping is:",
                 ]
 
         for func in target_functions:
@@ -4654,8 +4666,8 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
     iteration_count = 0
     progress_queue = None
     max_iterations = 10
-
     max_retries = 10
+    repair_count = 1
 
     for retry in range(max_retries):
         ongoing_flag = None
@@ -4671,7 +4683,7 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
         sum_modified_list = []
         
         while (1):
-            if ongoing_flag is False and ongoing_in_mode_flag is False:
+            if ongoing_flag is False and ongoing_in_mode_flag is False and read_prompt is None and mode != 'read_data':  # if ongoing_flag is False and ongoing_in_mode_flag is False
                 break
                 
             if read_prompt is not None:
@@ -4688,10 +4700,6 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                 mode = rsp_json['mode']
 
                 if mode == 'read_data':
-                    if 'answer' in rsp_json:
-                        code = rsp_json['answer']
-                        append_file(execute_path, code)
-
                     if 'target_files' in rsp_json:
                         target_list = rsp_json['target_files']
                         if not isinstance(target_list, list):
@@ -4703,6 +4711,10 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                         if not isinstance(slice_list, list):
                             slice_list = [slice_list]
                         sum_slice_list.extend(slice_list)
+
+                    # if 'answer' in rsp_json:
+                    #     code = rsp_json['answer']
+                    #     append_file(execute_path, code)
                 
                 if mode == 'modify_data':
                     if 'answer' in rsp_json:
@@ -4710,7 +4722,12 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                         if not isinstance(modified_list, list):
                             modified_list = [modified_list]
                         sum_modified_list.extend(modified_list)
-            
+                
+                if mode == 'execute_command':
+                    if 'answer' in rsp_json:
+                        code = rsp_json['answer']
+                        write_file(execute_path, code)
+                        
             ongoing_flag = False
             if 'ongoing' in rsp_json:
                 ongoing_flag = rsp_json['ongoing']
@@ -4777,6 +4794,12 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                     read_prompt.extend([f"Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"])
                     read_prompt.extend([f'{file_code}\n'])
 
+            if mode == 'execute_command':
+                print(f"In mode: {mode}")
+                execute_error, execute_out, _ = run_script(execute_path, 50, True, None, "both", None, repair_count, None, None, mode)
+                read_prompt = ["- The result of the executed command is as follows.", "",
+                            f"stdout:\n{execute_out}\n", f"stderr:\n{execute_error}\n"]
+                            
             if len(target_functions) == 1:
                 prompt = []
                 prompt.extend([
@@ -4830,7 +4853,7 @@ def produce_final_binary(mix_io_dir, build_path, rust_build_path, run_test_path,
                     "5. Keep each function body EXACTLY the same as the original rust_main_<identifier>, except for the argument population line at the top.",
                     "",
                     f"### Step B: Modification to {run_test_path}",
-                    "1. Replace each invocation of a C binary with the corresponding Rust binary. The mapping is:",
+                    "1. Replace each C test binary used as a copy source with the corresponding Rust binary. The mapping is:",
                 ])
 
                 for func in target_functions:
@@ -5145,7 +5168,8 @@ def allrust_semantics_main(config):
         # adjust_file_path(target, user_id, process_type, rust_io_dir)
 
         # Repair function errors
-        check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+        repair_count = 1
+        check_semantics(repair_count, mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                         raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                         dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                         llm_interface, progress_queue, max_iterations, True
@@ -5168,7 +5192,8 @@ def allrust_semantics_main(config):
                             )  
 
             # Repair function errors
-            check_semantics(mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
+            repair_count = 2
+            check_semantics(repair_count, mix_io_dir, build_path, rust_build_path, run_test_path, run_all_path, run_all_template_path, rust_io_dir, c_io_dir, 
                             raw_dir, meta_dir, work_dir, target_dir, rust_output_dir, database_dir, chat_dir, log_dir, token_path, execute_path,
                             dep_json_path, c_rust_path, rust_c_path, time_path, given_time, target, explore_time, notes,
                             llm_interface, progress_queue, max_iterations, False

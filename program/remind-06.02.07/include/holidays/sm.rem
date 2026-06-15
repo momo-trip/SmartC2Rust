@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for San Marino
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"New Year's Day%" %! %b.
+OMIT 6 January MSG %"Epiphany%" %! %b.
+OMIT 5 February MSG %"Feast of Saint Agatha%" %! %b.
+OMIT 25 March MSG %"Anniversary of the Arengo%" %! %b.
+OMIT [easterdate($Uy)] MSG %"Easter Sunday%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Easter Monday%" %! %b.
+OMIT 1 May MSG %"Labour Day%" %! %b.
+OMIT [easterdate($Uy)+60] MSG %"Corpus Cristi%" %! %b.
+OMIT 28 July MSG %"Liberation from Fascism Day%" %! %b.
+OMIT 15 August MSG %"Assumption Day%" %! %b.
+OMIT 3 September MSG %"Foundation Day%" %! %b.
+OMIT 1 November MSG %"All Saints' Day%" %! %b.
+OMIT 2 November MSG %"Commemoration of the Dead%" %! %b.
+OMIT 8 December MSG %"Immaculate Conception Day%" %! %b.
+OMIT 24 December MSG %"Christmas Eve%" %! %b.
+OMIT 25 December MSG %"Christmas Day%" %! %b.
+OMIT 26 December MSG %"Saint Stephen's Day%" %! %b.
+OMIT 31 December MSG %"New Year's Eve%" %! %b.

@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Kuwait
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"رأس السنة الميلادية%" %! %b.
+OMIT 25 February MSG %"اليوم الوطني%" %! %b.
+OMIT 26 February MSG %"يوم التحرير%" %! %b.

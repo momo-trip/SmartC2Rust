@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Czechia
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Den obnovy samostatného českého státu%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Velký pátek%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Velikonoční pondělí%" %! %b.
+OMIT 1 May MSG %"Svátek práce%" %! %b.
+OMIT 8 May MSG %"Den vítězství%" %! %b.
+OMIT 5 July MSG %"Den slovanských věrozvěstů Cyrila a Metoděje%" %! %b.
+OMIT 6 July MSG %"Den upálení mistra Jana Husa%" %! %b.
+OMIT 28 September MSG %"Den české státnosti%" %! %b.
+OMIT 28 October MSG %"Den vzniku samostatného československého státu%" %! %b.
+OMIT 17 November MSG %"Den boje za svobodu a demokracii%" %! %b.
+OMIT 24 December MSG %"Štědrý den%" %! %b.
+OMIT 25 December MSG %"1. svátek vánoční%" %! %b.
+OMIT 26 December MSG %"2. svátek vánoční%" %! %b.

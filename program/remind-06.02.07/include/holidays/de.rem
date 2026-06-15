@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Germany
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+#
+# Note: This file consists only of the country-wide
+# holidays for Germany.
+#
+# For region-specific holidays, you need to include
+# one of the regional *.rem files in the directory
+# [$SysInclude]/holidays/de/
+
+OMIT 1 January MSG %"Neujahr%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Karfreitag%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Ostermontag%" %! %b.
+OMIT 1 May MSG %"Erster Mai%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"Christi Himmelfahrt%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Pfingstmontag%" %! %b.
+OMIT 3 October MSG %"Tag der Deutschen Einheit%" %! %b.
+OMIT 25 December MSG %"Erster Weihnachtstag%" %! %b.
+OMIT 26 December MSG %"Zweiter Weihnachtstag%" %! %b.

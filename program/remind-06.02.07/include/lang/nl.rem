@@ -1,0 +1,71 @@
+# Support for the Dutch language.
+# This file is part of REMIND.
+# REMIND is Copyright (C) 1992-2026 by Dianne Skoll
+# This file is derived from a translation by Willem Kasdorp and Erik-Jan Vens
+
+TRANSLATE "LANGID" "nl"
+
+SET $Sunday "zondag"
+SET $Monday "maandag"
+SET $Tuesday "dinsdag"
+SET $Wednesday "woensdag"
+SET $Thursday "donderdag"
+SET $Friday "vrijdag"
+SET $Saturday "zaterdag"
+
+SET $January "januari"
+SET $February "februari"
+SET $March "maart"
+SET $April "april"
+SET $May "mei"
+SET $June "juni"
+SET $July "juli"
+SET $August "augustus"
+SET $September "september"
+SET $October "oktober"
+SET $November "november"
+SET $December "december"
+
+SET $Today "vandaag"
+SET $Tomorrow "morgen"
+TRANSLATE "yesterday" "gisteren"
+TRANSLATE "are" "zijn"
+TRANSLATE "were" "waren"
+TRANSLATE "done" "voltooid"
+
+BANNER Herinneringen voor %w, %d %m, %y%o:
+
+SET $Am "am"
+SET $Pm "pm"
+
+SET $Ago "geleden"
+SET $Fromnow "vanaf nu"
+SET $On "op"
+
+SET $Now "nu"
+SET $At "op"
+SET $Minute "minuut"
+SET $Hour "uur"
+SET $Is "is"
+SET $Was "was"
+SET $And "en"
+SET $Hplu "en"
+SET $Mplu "en"
+
+FSET - subst_1(a, d, t) iif(t==now(), $Now, t<now(), subst_1a(now()-t, $Ago), subst_1a(t-now(), $Fromnow))
+FSET - subst_1a(diff, when) subst_1b(diff/60, diff%60) + " " + when
+
+FSET - subst_1b(hdiff, mdiff) iif(hdiff==0, subst_minutes(mdiff), mdiff==0, subst_hours(hdiff), subst_hours(hdiff) + " " + $And + " " + subst_minutes(mdiff))
+FSET - subst_minutes(m) iif(m==1, "1 minuut", m + " minuten")
+FSET - subst_hours(h) iif(h==1, "1 uur", h + " uren")
+
+FSET - subst_bx(a, d, t) iif (d == $U+2, "overmorgen", d+2 == $U, "eergisteren", d >= $U, "over " + (d-$U) + " dagen", ($U-d) + " dagen geleden")
+
+FSET - subst_s(a, d, t) iif(day(d) == 1 || day(d) == 8, "e", day(d) < 20, "de", "te")
+
+FSET - ordx(n) n + "e"
+
+TRANSLATE "No reminders." "Geen herinneringen."
+
+TRANSLATE "Daylight Saving Time Begins" "Daglicht-sparende tijd begint"
+TRANSLATE "Daylight Saving Time Ends" "Daglicht-sparende tijd eindigt"

@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Slovakia
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Deň vzniku Slovenskej republiky%" %! %b.
+OMIT 6 January MSG %"Zjavenie Pána (Traja králi a vianočný sviatok pravoslávnych kresťanov)%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Veľký piatok%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Veľkonočný pondelok%" %! %b.
+OMIT 1 May MSG %"Sviatok práce%" %! %b.
+OMIT 8 May MSG %"Deň víťazstva nad fašizmom%" %! %b.
+OMIT 5 July MSG %"Sviatok svätého Cyrila a svätého Metoda%" %! %b.
+OMIT 29 August MSG %"Výročie Slovenského národného povstania%" %! %b.
+OMIT 1 September MSG %"Deň Ústavy Slovenskej republiky%" %! %b.
+OMIT 15 September MSG %"Sedembolestná Panna Mária%" %! %b.
+OMIT 1 November MSG %"Sviatok Všetkých svätých%" %! %b.
+OMIT 17 November MSG %"Deň boja za slobodu a demokraciu%" %! %b.
+OMIT 24 December MSG %"Štedrý deň%" %! %b.
+OMIT 25 December MSG %"Prvý sviatok vianočný%" %! %b.
+OMIT 26 December MSG %"Druhý sviatok vianočný%" %! %b.
+
+# Optional holidays
+REM 28 October MSG %"Deň vzniku samostatného česko-slovenského štátu%" %! %b.

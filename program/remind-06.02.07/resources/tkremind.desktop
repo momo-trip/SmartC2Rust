@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Exec=tkremind
+StartupNotify=true
+Icon=tkremind
+Terminal=false
+Name=tkremind
+Comment=TkRemind Calendar Program
+Comment[nl]=TkRemind Kalender Programma
+Categories=Office;Calendar;
+Keywords=Calendar;remind;
+Keywords[ca]=Calendari;remind;
+Keywords[de]=Kalender;remind;
+Keywords[en_GB]=Calendar;remind;
+Keywords[es]=Calendario;remind;
+Keywords[nl]=Kalender;remind;

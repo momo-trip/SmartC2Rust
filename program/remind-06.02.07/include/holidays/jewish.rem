@@ -1,0 +1,135 @@
+# Save variables and functions that we will mess with
+PUSH-VARS InIsrael IncludeIsraeliHolidays Reform IncludeOmer IncludeOmerCal SunCal ostart yz odays
+PUSH-FUNCS _h2 _h2I _YZ _PastSat _BackTwoSat
+
+SET InIsrael value("InIsrael", 0)
+SET IncludeIsraeliHolidays value("IncludeIsraeliHolidays", 1)
+SET Reform value("Reform", 0)
+SET IncludeOmer value("IncludeOmer", 1)
+#include Omer in calendar mode
+SET IncludeOmerCal value("IncludeOmerCal", 0)
+
+#include Hebrew date on Sundays in calendar mode
+SET SunCal value("SunCal", 1)
+
+# Convenient function definition to save typing
+FSET _h2(x, y) HEBDATE(x, y, $U-7)
+FSET _h2I(x,y) IIF(InIsrael, _h2(x,y), _h2(x,y)+1)
+FSET _PastSat(x, y) IIF(WKDAYNUM(_h2(x,y))!=6, _h2(x,y), _h2(x,y)+1)
+FSET _BackTwoSat(x, y) IIF(WKDAYNUM(_h2(x,y))!=6, _h2(x,y), _h2(x,y)-2)
+
+
+IF SunCal
+    REM Sun CAL %"[hebday($T)] [hebmon($T)]%"
+ENDIF
+
+REM [hebdate(1, "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Rosh_Hashanah" MSG %"Rosh Hashana 1%" %! %b.
+IF !Reform
+    REM [hebdate(2,  "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Rosh_Hashanah" MSG %"Rosh Hashana 2%" %! %b.
+    REM [_PastSat(3,  "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Fast_of_Gedalia" MSG %"Tzom Gedalia%" %! %b.
+ENDIF
+REM [hebdate(10, "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Yom_Kippur" MSG %"Yom Kippur%" %! %b.
+REM [hebdate(15, "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Sukkot" MSG %"Sukkot 1%" %! %b.
+IF !InIsrael
+    REM [hebdate(16, "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Sukkot" MSG %"Sukkot 2%" %! %b.
+ENDIF
+REM [hebdate(21, "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Hoshana_Rabbah" MSG %"Hoshana Rabba%" %! %b.
+REM [hebdate(22, "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Shemini_Atzeret" MSG %"Shemini Atzeret%" %! %b.
+REM [_h2I(22, "Tishrey")] INFO "Url: https://en.wikipedia.org/wiki/Simchat_Torah" MSG %"Simchat Torah%" %! %b.
+
+# This reminder used to be done as a single reminder.  I have split it
+# into 8 separate reminders because the "rem2dav" script uses
+# synthetic tags as UUIDs and it incorrectly coalesces the 8 days'
+# worth of reminders into a single 8-day reminder.
+
+REM [hebdate(25, "Kislev", $U-9)]   INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 1%" %! %b.
+REM [hebdate(25, "Kislev", $U-9)+1] INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 2%" %! %b.
+REM [hebdate(25, "Kislev", $U-9)+2] INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 3%" %! %b.
+REM [hebdate(25, "Kislev", $U-9)+3] INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 4%" %! %b.
+REM [hebdate(25, "Kislev", $U-9)+4] INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 5%" %! %b.
+REM [hebdate(25, "Kislev", $U-9)+5] INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 6%" %! %b.
+REM [hebdate(25, "Kislev", $U-9)+6] INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 7%" %! %b.
+REM [hebdate(25, "Kislev", $U-9)+7] INFO "Url: https://en.wikipedia.org/wiki/Hanukkah" MSG %"Chanukah 8%" %! %b.
+
+IF !Reform
+    REM [hebdate(10, "Tevet")] INFO "Url: https://en.wikipedia.org/wiki/Tenth_of_Tevet" MSG %"Tzom Tevet%" %! %b.
+ENDIF
+
+REM [hebdate(15, "Shvat")] INFO "Url: https://en.wikipedia.org/wiki/Tu_BiShvat" MSG %"Tu B'Shvat%" %! %b.
+
+REM [hebdate(14, "Adar A")] INFO "Url: https://en.wikipedia.org/wiki/Purim#Purim_Katan" MSG %"Purim Katan%" %! %b.
+REM [hebdate(15, "Adar A")] INFO "Url: https://en.wikipedia.org/wiki/Purim#Shushan_Purim" MSG %"Shushan Purim Katan%" %! %b.
+# If Purim is on Sunday, then Fast of Esther is 11 Adar.
+REM [_BackTwoSat(13, "Adar")] INFO "Url: https://en.wikipedia.org/wiki/Fast_of_Esther" MSG %"Fast of Esther%" %! %b.
+REM [hebdate(14, "Adar")] INFO "Url: https://en.wikipedia.org/wiki/Purim" MSG %"Purim%" %! %b.
+REM [hebdate(15, "Adar")] INFO "Url: https://en.wikipedia.org/wiki/Purim#Shushan_Purim" MSG %"Shushan Purim%" %! %b.
+
+
+REM [hebdate(15, "Nisan")] INFO "Url: https://en.wikipedia.org/wiki/Passover" MSG %"Pesach%" %! %b.
+IF !InIsrael
+    REM [hebdate(16, "Nisan")] INFO "Url: https://en.wikipedia.org/wiki/Passover" MSG %"Pesach 2%" %! %b.
+ENDIF
+REM [hebdate(21, "Nisan")] INFO "Url: https://en.wikipedia.org/wiki/Passover" MSG %"Pesach 7%" %! %b.
+IF !InIsrael && !Reform
+    REM [hebdate(22, "Nisan")] INFO "Url: https://en.wikipedia.org/wiki/Passover" MSG %"Pesach 8%" %! %b.
+ENDIF
+
+REM [hebdate(27, "Nisan")] INFO "Url: https://en.wikipedia.org/wiki/Yom_HaShoah" MSG %"Yom HaShoah%" %! %b.
+
+IF IncludeIsraeliHolidays
+    FSET _YZ(x, y) IIF(WKDAYNUM(_h2(x,y))==0, _h2(x,y)+1,\
+                        WKDAYNUM(_h2(x,y))==4, _h2(x,y)-1,\
+                        WKDAYNUM(_h2(x,y))==5, _h2(x,y)-2,\
+                        _h2(x,y))
+    SET YZ _YZ(4, "Iyar")
+    REM [YZ] INFO "Url: https://en.wikipedia.org/wiki/Yom_HaZikaron" MSG %"Yom HaZikaron%" %! %b.
+    REM [YZ+1] INFO "Url: https://en.wikipedia.org/wiki/Independence_Day_(Israel)" MSG %"Yom Ha'atzmaut%" %! %b.
+    REM [hebdate(28, "Iyar")] INFO "Url: https://en.wikipedia.org/wiki/Jerusalem_Day" MSG %"Yom Yerushalayim%" %! %b.
+ENDIF
+
+IF !Reform
+    REM [hebdate(18, "Iyar")] INFO "Url: https://en.wikipedia.org/wiki/Lag_BaOmer" MSG %"Lag B'Omer%" %! %b.
+ENDIF
+
+REM [hebdate(6,  "Sivan")] INFO "Url: https://en.wikipedia.org/wiki/Shavuot" MSG %"Shavuot%" %! %b.
+
+IF !InIsrael && !Reform
+    REM [hebdate(7, "Sivan")] INFO "Url: https://en.wikipedia.org/wiki/Shavuot" MSG %"Shavuot 2%" %! %b.
+ENDIF
+
+IF !Reform
+    # Tzom Tamuz and Tish'a B'Av are moved to Sunday if they normally
+    # fall on a Saturday
+    REM [_PastSat(17, "Tamuz")] INFO "Url: https://en.wikipedia.org/wiki/Seventeenth_of_Tammuz" MSG %"Tzom Tammuz%" %! %b.
+    REM [_PastSat(9,  "Av")] INFO "Url: https://en.wikipedia.org/wiki/Tisha_B%27Av" MSG %"Tish'a B'Av%" %! %b.
+ENDIF
+
+IF IncludeOmer || IncludeOmerCal
+    SET ostart HEBDATE(16, "Nisan", $U-50)
+    IF ostart <= $U && ($U - ostart < 49)
+        SET odays $U-ostart+1
+        IF IncludeOmer
+            IF odays < 7
+                REM [$U] MSG %"%"Today is the [ORD(odays)] day of the Omer.
+            ELSE
+                IF !(odays % 7)
+                    REM [$U] MSG %"%"Today is the [ORD(odays)] day of the Omer, being [odays / 7] [PLURAL(odays/7, "week")] of the Omer.
+                ELSE
+                    REM [$U] MSG %"%"Today is the [ORD(odays)] day of the Omer, being [odays/7] [PLURAL(odays/7, "week")] and [odays%7] [PLURAL(odays%7, "day")] of the Omer.
+                ENDIF
+            ENDIF
+        ENDIF
+        IF IncludeOmerCal
+            REM [$U] CAL [ORD(odays)] of Omer
+        ENDIF
+    ENDIF
+ENDIF
+
+# Avoid warning about unused variable
+IF IncludeOmerCal
+ENDIF
+
+
+# Tidy up
+POP-FUNCS
+POP-VARS

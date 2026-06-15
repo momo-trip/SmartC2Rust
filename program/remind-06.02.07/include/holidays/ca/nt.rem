@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision NT in Canada
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision NT.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/ca.rem
+
+OMIT 21 June MSG %"National Aboriginal Day%" %! %b.
+REM First Monday in August ADDOMIT SCANFROM -28 MSG %"Civic Holiday%" %! %b.

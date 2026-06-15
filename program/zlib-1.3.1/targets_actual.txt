@@ -1,0 +1,1 @@
+main:/root/SmartC2Rust/trans/trans_c_0000/zlib-1.3.1/test/minigzip.c:487

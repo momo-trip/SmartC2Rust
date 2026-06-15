@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision OW in Switzerland
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision OW.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/ch.rem
+
+OMIT [easterdate($Uy)-2] MSG %"Karfreitag%" %! %b.
+OMIT [easterdate($Uy)+60] MSG %"Fronleichnam%" %! %b.
+OMIT 15 August MSG %"Mariä Himmelfahrt%" %! %b.
+OMIT 25 September MSG %"Bruder Klaus%" %! %b.
+OMIT 1 November MSG %"Allerheiligen%" %! %b.
+OMIT 8 December MSG %"Mariä Empfängnis%" %! %b.
+
+# Optional holidays
+REM 2 January MSG %"Berchtoldstag%" %! %b.
+REM [easterdate($Uy)+1] MSG %"Ostermontag%" %! %b.
+REM [easterdate($Uy)+50] MSG %"Pfingstmontag%" %! %b.
+REM 26 December MSG %"Stephanstag%" %! %b.

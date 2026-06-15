@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision 10 in Malaysia
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision 10.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/my.rem
+
+OMIT 1 January MSG %"Tahun Baharu%" %! %b.
+REM 1 January OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 SATISFY [isany(wkdaynum(date($Ty, 1, 1)), 0, 6)] MSG %"Cuti Tahun Baharu%" %! %b.
+OMIT 11 December MSG %"Hari Keputeraan Sultan Selangor%" %! %b.
+REM 11 December OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 SATISFY [isany(wkdaynum(date($Ty, 12, 11)), 0, 6)] MSG %"Cuti Hari Keputeraan Sultan Selangor%" %! %b.

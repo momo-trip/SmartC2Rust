@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Bangladesh
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 21 February MSG %"International Mother's language Day%" %! %b.
+OMIT 17 March MSG %"Sheikh Mujibur Rahman's Birthday and Children's Day%" %! %b.
+OMIT 26 March MSG %"Independence Day%" %! %b.
+OMIT 14 April MSG %"Bengali New Year's Day%" %! %b.
+OMIT 1 May MSG %"May Day%" %! %b.
+OMIT 15 August MSG %"National Mourning Day%" %! %b.
+OMIT 16 December MSG %"Victory Day%" %! %b.

@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision BRC in Bosnia And Herzegovina
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision BRC.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/ba.rem
+
+REM 3 January ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-2) == 0] MSG %"Nova godina (preneseno)%" %! %b.
+REM 3 January ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-2) == 6] MSG %"Nova godina (preneseno)%" %! %b.
+REM 8 January ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Božić (Pravoslavni) (preneseno)%" %! %b.
+OMIT 8 March MSG %"Dan uspostavljanja Brčko distrikta%" %! %b.
+REM 9 March ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Dan uspostavljanja Brčko distrikta (preneseno)%" %! %b.
+REM 3 May ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-2) == 0] MSG %"Međunarodni praznik rada (preneseno)%" %! %b.
+REM 3 May ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-2) == 6] MSG %"Međunarodni praznik rada (preneseno)%" %! %b.
+REM 26 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Božić (Katolički) (preneseno)%" %! %b.

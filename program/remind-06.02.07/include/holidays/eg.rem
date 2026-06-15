@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Egypt
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"رأس السنة الميلادية%" %! %b.
+OMIT 7 January MSG %"عيد الميلاد المجيد (تقويم قبطي)%" %! %b.
+OMIT 25 January MSG %"عيد ثورة 25 يناير%" %! %b.
+OMIT [orthodoxeaster($Uy)] MSG %"عيد الفصح القبطي%" %! %b.
+OMIT [orthodoxeaster($Uy)+1] MSG %"شم النسيم%" %! %b.
+OMIT 25 April MSG %"عيد تحرير سيناء%" %! %b.
+OMIT 1 May MSG %"عيد العمال%" %! %b.
+OMIT 30 June MSG %"عيد ثورة 30 يونيو%" %! %b.
+OMIT 23 July MSG %"عيد ثورة 23 يوليو%" %! %b.
+OMIT 6 October MSG %"عيد القوات المسلحة%" %! %b.

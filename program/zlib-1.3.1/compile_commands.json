@@ -1,0 +1,616 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-I.",
+      "-c",
+      "-o",
+      "example.o",
+      "test/example.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/test/example.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/example.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "inffast.o",
+      "inffast.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/inffast.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/inffast.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "crc32.o",
+      "crc32.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/crc32.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/crc32.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "deflate.o",
+      "deflate.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/deflate.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/deflate.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "adler32.o",
+      "adler32.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/adler32.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/adler32.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "zutil.o",
+      "zutil.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/zutil.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/zutil.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "inflate.o",
+      "inflate.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/inflate.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/inflate.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "trees.o",
+      "trees.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/trees.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/trees.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "infback.o",
+      "infback.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/infback.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/infback.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "uncompr.o",
+      "uncompr.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/uncompr.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/uncompr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "compress.o",
+      "compress.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/compress.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/compress.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "inftrees.o",
+      "inftrees.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/inftrees.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/inftrees.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "gzclose.o",
+      "gzclose.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzclose.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/gzclose.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "gzlib.o",
+      "gzlib.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzlib.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/gzlib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-I.",
+      "-c",
+      "-o",
+      "minigzip.o",
+      "test/minigzip.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/test/minigzip.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/minigzip.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "gzwrite.o",
+      "gzwrite.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzwrite.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/gzwrite.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-c",
+      "-o",
+      "gzread.o",
+      "gzread.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzread.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/gzread.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/adler32.o",
+      "adler32.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/adler32.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/adler32.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/crc32.o",
+      "crc32.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/crc32.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/crc32.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/infback.o",
+      "infback.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/infback.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/infback.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/deflate.o",
+      "deflate.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/deflate.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/deflate.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/inffast.o",
+      "inffast.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/inffast.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/inffast.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/inflate.o",
+      "inflate.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/inflate.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/inflate.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/inftrees.o",
+      "inftrees.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/inftrees.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/inftrees.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/compress.o",
+      "compress.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/compress.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/compress.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/trees.o",
+      "trees.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/trees.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/trees.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/zutil.o",
+      "zutil.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/zutil.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/zutil.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/gzlib.o",
+      "gzlib.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzlib.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/gzlib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/gzclose.o",
+      "gzclose.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzclose.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/gzclose.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/uncompr.o",
+      "uncompr.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/uncompr.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/uncompr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/gzread.o",
+      "gzread.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzread.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/gzread.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-I.",
+      "-D_FILE_OFFSET_BITS=64",
+      "-c",
+      "-o",
+      "example64.o",
+      "test/example.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/test/example.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/example64.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-I.",
+      "-D_FILE_OFFSET_BITS=64",
+      "-c",
+      "-o",
+      "minigzip64.o",
+      "test/minigzip.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/test/minigzip.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/minigzip64.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-finstrument-functions",
+      "-g",
+      "-gdwarf-4",
+      "-fPIC",
+      "-D_LARGEFILE64_SOURCE=1",
+      "-DHAVE_HIDDEN",
+      "-DPIC",
+      "-c",
+      "-o",
+      "objs/gzwrite.o",
+      "gzwrite.c"
+    ],
+    "directory": "/root/SmartC2Rust/program/zlib-1.3.1",
+    "file": "/root/SmartC2Rust/program/zlib-1.3.1/gzwrite.c",
+    "output": "/root/SmartC2Rust/program/zlib-1.3.1/objs/gzwrite.o"
+  }
+]

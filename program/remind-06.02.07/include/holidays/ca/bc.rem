@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision BC in Canada
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision BC.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/ca.rem
+
+REM Third Monday in February ADDOMIT SCANFROM -28 MSG %"Family Day%" %! %b.
+REM First Monday in August ADDOMIT SCANFROM -28 MSG %"British Columbia Day%" %! %b.

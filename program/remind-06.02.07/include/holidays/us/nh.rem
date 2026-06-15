@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision NH in United States
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision NH.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/us.rem
+
+REM Third Monday in January ADDOMIT SCANFROM -28 MSG %"Dr. Martin Luther King Jr. / Civil Rights Day%" %! %b.
+REM Friday 23 November ADDOMIT SCANFROM -28 MSG %"Day After Thanksgiving%" %! %b.

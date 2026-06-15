@@ -628,46 +628,51 @@ def find_parent_def_key(cashed, meta_dir, use_item, use_file_path, use_start_lin
     
     found = False
     for key, item in use_meta_data.items():
-        ## This should actually be checked: why are some becoming undefined? Probably an issue with the parser.
+        block_start = item['block_start']
+        block_end = item['block_end']
+
+        if not (block_start <= use_start_line <= block_end):
+            continue
+
         if 'file_path' in item: # This must be checked first, otherwise some definitions become undefined.
             def_file_path = item['file_path'] # In the case of IFDEF/IF directive.
         
         elif 'definition' in item:
             definition = item['definition']
-            def_file_path, def_start, def_column = parse_def_loc(definition)
+
+            if definition == "":
+                # top_level_use: name="" / definition="" with no top-level
+                # file_path. A block in this metadata lives, by construction,
+                # in the file the metadata describes.
+                def_file_path = use_file_path
+            else:
+                def_file_path, def_start, def_column = parse_def_loc(definition)
         
         else:
             raise ValueError("Must find the def filename.")
 
         if is_system_file(def_file_path, program_files):
             continue
-
-        block_start = item['block_start']
-        block_end = item['block_end']
-
-        if block_start <= use_start_line <= block_end:
-            if 'type' in item:
-                if item['type'] in ["IFDEF", "IFNDEF", "IF", "ELIF"]:
-                    name = item['type']
-                elif 'name' in item:
-                    name = item['name']
-                else:
-                    raise ValueError("The name should be defined by 'name' or 'type'.")
+        
+        if item.get('kind') == "top_level_use":
+            name = "top_level_use"
+        elif 'type' in item:
+            if item['type'] in ["IFDEF", "IFNDEF", "IF", "ELIF"]:
+                name = item['type']
+            elif 'name' in item:
+                name = item['name']
             else:
-                name = item["name"]
-            """
-            if 'name' not in item:
-                #print(item)
-                item['name'] = "IF"
-            parent_name = item['name']
-            """
-            parent_block_start = block_start
-            use_parent_key = f"{name}:{def_file_path}:{item['block_start']}:{item['block_end']}"
-            found = True
-            break
+                raise ValueError("The name should be defined by 'name' or 'type'.")
+        else:
+            name = item["name"]
+
+        parent_block_start = block_start
+        use_parent_key = f"{name}:{def_file_path}:{item['block_start']}:{item['block_end']}"
+        found = True
+        break
 
     if found is False:
-        raise ValueError(f"Shoud find for {use_item} at {use_meta_path}")
+        raise ValueError(f"Should find the entry {use_item} at {use_meta_path}")
 
     return cashed, use_parent_key, name, parent_block_start
 
@@ -752,14 +757,17 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
             meta_data.items(),
             key=lambda item: item[1]['block_start']
         )
+
         # Build dependencies
         for key, item in sorted_items:
-
             # Skip declarations only (no implementation body)
             if item.get('kind', '').endswith('_decl'):
                 continue
-                
-            if 'type' in item:
+            
+            name = None
+            if item.get('kind') == "top_level_use":
+                name = "top_level_use"
+            elif 'type' in item:
                 if item['type'] in ["IFDEF", "IFNDEF", "IF", "ELIF"]:
                     name = item['type']
                 elif 'name' in item:
@@ -775,26 +783,33 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
             start_line = item["block_start"]
             end_line = item["block_end"]
             
-            """
-            if key is not None:
-                key_name = f"{key}:{end_line}"
-            """
             key_name = f"{name}:{def_file_path}:{start_line}:{end_line}"
 
             if "uses" not in item:
                 item["uses"] = []
-            uses_items = item["uses"]                        
-            
+            uses_items = item["uses"]                                    
             uses_list = []
+
             for use_item in uses_items:
                 use_name = use_item['name']
                 use_definition = use_item['definition']
-                use_file_path = use_item['file_path']
-                use_start_line = use_item['start_line']
 
-                if is_system_file(use_file_path, program_files):
+                if use_definition in ("undefined", "unknown", "external", "pending"): # added
                     continue
 
+                if 'file_path' not in use_item:
+                    print(use_item)
+                
+                if 'file_path' in use_item:
+                    use_file_path = use_item['file_path']
+                    use_start_line = use_item['start_line']
+                else:
+                    use_file_path, use_start_line, _col = parse_def_loc(use_definition)
+                    use_start_line = int(use_start_line)
+                    
+                if is_system_file(use_file_path, program_files):
+                    continue
+                
                 """
                 if use_file_path not in div_cashed:
                     use_meta_data, use_meta_path = obtain_metadata(use_file_path,div_meta_dir, False, None, "def")
@@ -834,11 +849,9 @@ def define_block_order(meta_dir, div_meta_dir, target_dir, database_dir, is_prog
     for cycle in cycles:
         print(" -> ".join(cycle + [cycle[0]]))
 
-    # ===== added =====
     # Enables incremental translation for large-scale programs
     target_keys = load_target_keys(target_path, sorted_functions, meta_dir, target_dir)
     sorted_functions, excluded = restrict_to_reachable(sorted_functions, target_keys, dependencies)
-    # ===== ended =====
 
     with open(f'{block_path}', 'w') as f:
         for fun in sorted_functions:
@@ -865,6 +878,7 @@ def get_base_name(file_path):
     """Get the base name with the numeric suffix removed from the filename"""
     basename = os.path.basename(file_path)
     name, ext = os.path.splitext(basename)
+
     # Remove trailing _number
     base = re.sub(r'_\d+$', '', name)
     return base + ext
@@ -1515,19 +1529,10 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
                     taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, is_program_path, 
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path,
                     given_compile_dir, given_compile_json_path, global_path)
- 
-    """
-    build_path = get_build_path(target_dir)
-    run_script_wo_log(build_path, 1000, True, None, "build")
-    build_dir = find_compile_commands_json(target_dir) # raw_dir is false
 
-    # compile_log_path = f'{database_dir}/compile.log'
-    compile_dir, compile_json_path = get_compile_json(target_dir)
-    """
 
+    """
     #---------------------------------------------
-    # Newly insert locations to be partially expanded
-
     # changed = insert_expanded_code(target_dir, meta_dir, database_dir)
     changed = False
     if changed is True:
@@ -1537,7 +1542,6 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path, 
                     given_compile_dir, given_compile_json_path, global_path)
 
-    """
     # It is necessary to detect the consolidated conditional blocks of the expanded parts
     # Merge conditional blocks
     changed = change_combined_condition(target_dir, meta_dir, database_dir, unordered_taken_directive_path)
@@ -1548,25 +1552,6 @@ def pre_processing(analyzer_path, macro_analyzer_path, target, original_dir, tar
                     taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, is_program_path, 
                     all_macros_path, taken_macros_path, guards_path, guarded_macros_path, independent_path, flag_path, const_path) # , cfg_path
     """
-
-    #---------------------------------------------
-    """
-    # Write out the cfg-related items here (macros used for conditional compilation) <- remove include guards
-    detect_cfg(unordered_taken_directive_path, guards_path, cfg_path)  # detect_cfg(all_directive_path, guards_path, cfg_path)
-
-    # Make prompt generation easier by incorporating cfg if statements as component elements
-    #insert_ifdef_statement(cfg_path, target_dir, meta_dir) # flag_path may have been cfg_path
-    insert_ifdef_statement(cfg_path, target_dir, div_meta_dir) # flag_path may have been cfg_path
-    """
-
-    # parse_all("4", target, macro_finder, target_dir, meta_dir, div_meta_dir, database_dir, build_path, 
-    #              taken_directive_path, unordered_taken_directive_path, all_directive_path, dep_json_path, 
-    #              all_macros_path, taken_macros_path, guards_path, independent_path, flag_path)
-    
-    #---------------------------------------------
-    # Determine blocks # This makes various things disappear, though... I thought I had included it in parse_all
-    # define_blocks(None, all_directive_path, guards_path, target_dir, meta_dir, div_meta_dir, database_dir)  # , raw_dir
-
 
     #---------------------------------------------
     # Remove include guards

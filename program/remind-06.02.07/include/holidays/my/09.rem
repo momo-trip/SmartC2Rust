@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision 09 in Malaysia
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision 09.
+# See important caveats in the file ../README
+#
+# If you want the national holidays as well, you must
+# also SYSINCLUDE holidays/my.rem
+
+OMIT 17 May MSG %"Hari Ulang Tahun Keputeraan Raja Perlis%" %! %b.
+REM 17 May OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 SATISFY [isany(wkdaynum(date($Ty, 5, 17)), 0, 6)] MSG %"Cuti Hari Ulang Tahun Keputeraan Raja Perlis%" %! %b.

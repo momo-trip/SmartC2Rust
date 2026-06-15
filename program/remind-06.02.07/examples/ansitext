@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# A little demo script that displays ANSI text attributes
+# Not all attributes work on all terminals... your mileage may vary.
+# SPDX-License-Identifier: GPL-2.0-only
+
+remind -@2 - <<'EOF'
+
+SET $AddBlankLines 0
+BANNER %
+INCLUDE [$SysInclude]/ansitext.rem
+MSG This file shows off some ANSI text attributes and colors.
+MSG Not all attributes work on all terminals.%_
+
+MSG This is [ansi_bold]bold.[ansi_normal]
+MSG This is [ansi_faint]faint.[ansi_normal]
+MSG This is [ansi_italic]italic.[ansi_normal]
+MSG This is [ansi_underline]underline.[ansi_normal]
+MSG This is [ansi_underline2]underline2.[ansi_normal]%_
+MSG This is [ansi_reverse]reverse.[ansi_normal]%_
+MSG This is [ansi_strikeout]strikeout.[ansi_normal]%_
+MSG This is [ansi_overline]overline.[ansi_normal]%_
+
+MSG This is [ansicolor(255,0,0)]red.[ansicolor("")]
+MSG This is [ansicolor(0,255,0)]green.[ansicolor("")]
+MSG This is [ansicolor(0,0,255)]blue.[ansicolor("")]
+MSG This is [ansicolor(255,255,0)]yellow.[ansicolor("")]
+MSG This is [ansicolor(255,0,255)]magenta.[ansicolor("")]
+MSG This is [ansicolor(0,255,255)]cyan.[ansicolor("")]
+MSG This is [ansi_bold][ansicolor(255,255,255)][ansicolor(0,0,0,1)]white on black[ansicolor("")][ansi_normal]
+MSG This is [ansi_bold][ansicolor(0,0,0)][ansicolor(255,255,255,1)]black on white[ansicolor("")][ansi_normal]
+MSG %_
+
+# You can combine attributes
+MSG This is [ansicolor(0,255,0)][ansicolor(0,0,96,1)][ansi_italic][ansi_bold]Green-Bold-Italic-on-Blue[ansi_normal][ansicolor("")]
+
+EOF
+
+exit 0

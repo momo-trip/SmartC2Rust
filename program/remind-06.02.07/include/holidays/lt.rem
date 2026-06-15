@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Lithuania
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Naujųjų metų diena%" %! %b.
+OMIT 16 February MSG %"Lietuvos valstybės atkūrimo diena%" %! %b.
+OMIT 11 March MSG %"Lietuvos nepriklausomybės atkūrimo diena%" %! %b.
+OMIT [easterdate($Uy)] MSG %"Šv. Velykos%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Antroji šv. Velykų diena%" %! %b.
+OMIT 1 May MSG %"Tarptautinė darbo diena%" %! %b.
+REM First Sunday in May ADDOMIT SCANFROM -28 MSG %"Motinos diena%" %! %b.
+REM First Sunday in June ADDOMIT SCANFROM -28 MSG %"Tėvo diena%" %! %b.
+OMIT 24 June MSG %"Rasos ir Joninių diena%" %! %b.
+OMIT 6 July MSG %"Valstybės (Lietuvos karaliaus Mindaugo karūnavimo) ir Tautiškos giesmės diena%" %! %b.
+OMIT 15 August MSG %"Žolinė (Švč. Mergelės Marijos ėmimo į dangų diena)%" %! %b.
+OMIT 1 November MSG %"Visų Šventųjų diena%" %! %b.
+OMIT 2 November MSG %"Mirusiųjų atminimo (Vėlinių) diena%" %! %b.
+OMIT 24 December MSG %"Kūčių diena%" %! %b.
+OMIT 25 December MSG %"Šv. Kalėdų pirma diena%" %! %b.
+OMIT 26 December MSG %"Šv. Kalėdų antra diena%" %! %b.

@@ -11,8 +11,6 @@ import shutil
 import subprocess
 from functools import reduce
 import clang.cindex
-#clang.cindex.Config.set_library_file('/usr/lib/llvm-19/lib/libclang.so.1')  # The numbers may change depending on the version
-#clang.cindex.Config.set_library_file('/opt/homebrew/opt/llvm/lib/libclang.dylib') # for mac os
 from clang.cindex import CursorKind
 import tempfile
 from pydantic import BaseModel
@@ -108,8 +106,9 @@ from c_parser_api import (
     get_entry_points,
     combine_with_innermost_conditioned_blocks,
     parse_trace,
-    setup_macro_without_transforming,
+    setup_macro_baseline,
     insert_target_annotation,
+    BASELINE,
 )
 
 from llm_api import (
@@ -130,13 +129,16 @@ from llm_api import (
     is_empty_string,
 )
 
+# from baseline_second_api import (
+#     baseline_second,
+# )
+
 MACRO_HOME = "/root/SmartC2Rust/macro"
 TRANS_HOME = "/root/SmartC2Rust/trans"
 C_PARSER_HOME = "/root/kiso-parser-c"
 CONFIG_PATH = "/root/SmartC2Rust/config.json"
 
-
-MACRO_TRANSFORMATION = False 
+ 
 DEBUG_LLM = False
 TEST_MODE = None 
 
@@ -707,7 +709,6 @@ def reformat_testcases(run_all_path, base_run_path, build_path, raw_dir, target_
                 f"  - When a test fails, output the failure message to stderr (e.g., echo \"Test N failed\" >&2).",
                 f"  - Please delete '|| true' if it is used. Each test command should fail naturally so that real errors are detected.",
                 f"  - At the end of the script, use 'exit $failed' so that the script returns non-zero if any test failed.",
-                #"",
                 f"  - Do not add, restore, or extend anything beyond what {base_run_path} actively executes. Use ONLY {base_run_path} as reference. Ignore any other test scripts in the same directory.",
                 f"  - Preserve the validation logic of {base_run_path} exactly.",
             ])
@@ -817,11 +818,6 @@ def find_base_dir(original_dir):
 def set_golden_dir(original_dir):
     # Find flow_results path
     log_dir, log_paths = find_log_paths(original_dir)
-    # print(original_dir)
-    # print(log_dir)
-    # print(log_paths)
-
-    #upper_dir = os.path.dirname(log_dir)
     golden_dir = os.path.join(original_dir, "golden")
     print(golden_dir)
 
@@ -906,31 +902,6 @@ def initialize(target_dir, meta_dir, database_dir, dep_json_path):
         else:
             create_directory(database_dir)
     
-    # delete_directory(root_dir)
-    # delete_directory("preprocessed_output")
-    #delete_file(macro_list_path)
-    #delete_file(macro_path)
-    #delete_file(initial_macro_path)
-
-    #delete_file(initial_list_path)
-    #delete_file(all_macro_path)
-
-    # write_json(f"{database_dir}/pro_functions.json", {})
-    # write_json(f"{database_dir}/pro_data_type.json", {})
-    # write_json(f"{database_dir}/pro_global_var.json", {})
-    # write_json(f"{database_dir}/pro_macro.json", {})
-
-    # write_json(f"{database_dir}/pro_pro_functions.json", {})
-    # write_json(f"{database_dir}/pro_pro_data_type.json", {})
-    # write_json(f"{database_dir}/pro_pro_global_var.json", {})
-    # write_json(f"{database_dir}/pro_pro_macro.json", {})
-
-    # write_json("pro_pro_functions.json", [])
-    # write_json("pro_pro_data_type.json", [])
-    # write_json("pro_pro_global_var.json", [])
-    # write_json("pro_pro_macro.json", [])
-
-
 
 def macro_main(config):
 
@@ -1104,8 +1075,6 @@ def macro_main(config):
 
     elif process_type == "golden":
 
-        print(original_dir)
-        #print(target_path)
         set_golden_dir(original_dir)
 
         print("\n************ End of golden process ************")
@@ -1128,15 +1097,12 @@ def macro_main(config):
         # set_log(log_dir, llm_choice, target, logging_path, 'pre_processing')
 
         # initialize
-        initialize(target_dir, meta_dir, database_dir, dep_json_path) #,  # , flag_json_path 
-                   #macro_list_path, macro_path, all_macro_path)  # , initial_macro_path
-
+        initialize(target_dir, meta_dir, database_dir, dep_json_path)
+  
         # copy the target directory
         check_permission(original_dir)
 
-        copy_directory(original_dir, raw_dir)
-        #grant_permissions(raw_dir)  # If this is enabled, compile_commands.json may occasionally not appear (e.g., tiff-4.3.0)
-
+        copy_directory(original_dir, raw_dir) # grant_permissions(raw_dir)  # If this is enabled, compile_commands.json may occasionally not appear (e.g., tiff-4.3.0)
         copy_file(given_test_path, run_test_path)
 
         print(f"original_dir: {original_dir}") 
@@ -1190,23 +1156,28 @@ def macro_main(config):
                 print(f"  {file_path} ← generated from {', '.join(origins)}")
             #raise ValueError(f"Detected {len(generated)} auto-generated file(s):\n")
                 
-        # sys_macros_path = f"{database_dir}/sys_macros.json"
         llm_on = False
-
-        if MACRO_TRANSFORMATION is True:
-            print("TBA")
         
-        else:
-            # Insert a macro to record the initial position
-            insert_target_annotation(target_dir, target_path, marker)
+        # Insert a macro to record the initial position
+        insert_target_annotation(target_dir, target_path, marker)
 
-            setup_macro_without_transforming(llm_on, target, macro_finder, target_dir, database_dir, meta_dir, div_meta_dir, build_path, cfg_path, target_path, marker, 
+        if BASELINE is True:
+            print("Checking baseline...")
+            setup_macro_baseline(llm_on, target, macro_finder, target_dir, database_dir, meta_dir, div_meta_dir, build_path, cfg_path, target_path, marker, 
                                     list_path, dep_json_path, custom_headers_dir, custom_json_path, custom_header_path, 
                                     llm_choice, llm_interface, token_path, chat_dir, all_macros_path, taken_macros_path, 
                                     all_directive_path, taken_directive_path, is_program_path, global_path,
                                     guards_path, guarded_macros_path, independent_path, flag_path, const_path, conflict_path
                                     )
 
+        else:
+            print("Checking...")
+            baseline_second(llm_on, target, macro_finder, target_dir, database_dir, meta_dir, div_meta_dir, build_path, cfg_path, target_path, marker,  
+                            list_path, dep_json_path, custom_headers_dir, custom_json_path, custom_header_path,
+                            llm_choice, llm_interface, token_path, chat_dir, all_macros_path, taken_macros_path, 
+                            all_directive_path, taken_directive_path, is_program_path, global_path,
+                            guards_path, guarded_macros_path, independent_path, flag_path, const_path, conflict_path
+                            )
 
         normalize_metafiles(meta_dir, raw_dir, all_macros_path, taken_macros_path, guards_path)        
         
@@ -1217,7 +1188,6 @@ def macro_main(config):
             'c_code' : target_dir,
             'all_macros_path' : all_macros_path,
             'taken_macros_path' : taken_macros_path,
-            #'sys_macros_path' : sys_macros_path,
             'guards_path' : guards_path,
             'cfg_path' : cfg_path,
         }
@@ -1227,7 +1197,8 @@ def macro_main(config):
         # analyze_macros_llm(target_dir, c_run_path, picked_path, macro_path, call_path, classified_path, defined_path, undefined_path, cmd_line_path)
         
         print("\n************ End of macro analysis ************\n")        
-        print("\ncd ~/SmartC2Rust/trans")
+        print("\nNext action->")
+        print("cd ~/SmartC2Rust/trans")
         print(f"python3 pre_process.py {MACRO_HOME}/trans_c_0000/{target} meta {target_path} {os.path.abspath(meta_dir)} {os.path.abspath(div_meta_dir)} {os.path.abspath(compile_dir)}")
 
     save_to_output_dir(output, output_dir)
@@ -1258,13 +1229,8 @@ if __name__ == "__main__":
         else:
             base_test_path = str(sys.argv[4])
 
-    # """
-    # elif process_type == "golden":
-    #     target_path = str(sys.argv[3])
-    # """
-
     elif process_type == "macro":
-        llm_on = str(sys.argv[3]) # process_type = "meta"
+        llm_on = str(sys.argv[3])
         given_test_path = str(sys.argv[4])
         target_path = str(sys.argv[5])
 
@@ -1296,5 +1262,4 @@ if __name__ == "__main__":
     if process_type == "reformat":
         original_run_test_path = f"{original_dir}/run_test.sh"
         copy_file(output['run_test_path'], original_dir)
-        # print(f"Saved at {original_run_test_path}")
 

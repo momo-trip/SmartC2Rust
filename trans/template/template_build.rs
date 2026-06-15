@@ -8,7 +8,7 @@ use std::fs;
 //
 // Independent constant macros (no references to other macros) 
 // are handled by bindgen via allowlist_var. The macro parser provides the list of
-// independent macro names in constant_macros.json. 
+// independent macro names in const_macros.json. 
 //
 // Dependent constant macros (referencing other macros) are NOT handled here.
 // They are translated by the LLM.
@@ -18,7 +18,7 @@ use std::fs;
 
 use serde::Deserialize;
 
-/// Top-level structure of constant_macros.json produced by the macro parser.
+/// Top-level structure of const_macros.json produced by the macro parser.
 /// Only independent macro names are needed here; dependent macros are
 /// handled by the LLM during translation.
 #[derive(Debug, Deserialize)]
@@ -54,9 +54,9 @@ fn main() {
 
     let macro_meta: MacroMeta = {
         let raw = fs::read_to_string("// CONST_MACRO_PATH_PLACEHOLDER")
-            .expect("Failed to read constant_macros.json — run the macro parser first");
+            .expect("Failed to read const_macros.json — run the macro parser first");
         serde_json::from_str(&raw)
-            .expect("Failed to parse constant_macros.json")
+            .expect("Failed to parse const_macros.json")
     };
 
     let flag_meta: FlagMeta = match fs::read_to_string("// FLAG_MACRO_PATH_PLACEHOLDER") {
@@ -125,7 +125,7 @@ fn main() {
                     }
                 }
                 Err(e) => {
-                    println!("cargo:warning=bindgen generation failed for {}: {}", path, e);
+                    panic!("bindgen generation failed for {}: {}", path, e);
                 }
             }
         }

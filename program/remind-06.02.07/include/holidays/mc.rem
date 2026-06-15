@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Monaco
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Le jour de l'An%" %! %b.
+REM 2 January ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Le jour de l'An (observé)%" %! %b.
+OMIT 27 January MSG %"La Sainte Dévote%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Le lundi de Pâques%" %! %b.
+OMIT 1 May MSG %"Fête de la Travaille%" %! %b.
+REM 2 May ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Fête de la Travaille (observé)%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"L'Ascension%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Le lundi de Pentecôte%" %! %b.
+OMIT [easterdate($Uy)+60] MSG %"La Fête Dieu%" %! %b.
+OMIT 15 August MSG %"L'Assomption de Marie%" %! %b.
+REM 16 August ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"L'Assomption de Marie (observé)%" %! %b.
+OMIT 1 November MSG %"La Toussaint%" %! %b.
+REM 2 November ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"La Toussaint (observé)%" %! %b.
+OMIT 19 November MSG %"La Fête du Prince%" %! %b.
+REM 20 November ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"La Fête du Prince (observé)%" %! %b.
+REM 8 December ADDOMIT SCANFROM -28 SATISFY [$Tw != 0] MSG %"L'Immaculée Conception%" %! %b.
+REM 9 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"L'Immaculée Conception%" %! %b.
+OMIT 25 December MSG %"Noël%" %! %b.
+REM 26 December ADDOMIT SCANFROM -28 SATISFY [wkdaynum($T-1) == 0] MSG %"Noël (observé)%" %! %b.

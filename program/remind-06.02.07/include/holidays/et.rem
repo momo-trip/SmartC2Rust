@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Ethiopia
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 7 January MSG %"ገና%" %! %b.
+REM 19 January ADDOMIT SCANFROM -28 SATISFY [!isleap($T)] MSG %"ጥምቀት%" %! %b.
+REM 20 January ADDOMIT SCANFROM -28 SATISFY [isleap($T)] MSG %"ጥምቀት%" %! %b.
+OMIT 2 March MSG %"አድዋ%" %! %b.
+OMIT [orthodoxeaster($Uy)-2] MSG %"ስቅለት%" %! %b.
+OMIT [orthodoxeaster($Uy)] MSG %"ፋሲካ%" %! %b.
+OMIT 1 May MSG %"የሰራተኞች ቀን%" %! %b.
+OMIT 5 May MSG %"የአርበኞች ቀን%" %! %b.
+OMIT 28 May MSG %"ደርግ የወደቀበት ቀን%" %! %b.
+REM 11 September ADDOMIT SCANFROM -28 SATISFY [!isleap($Ty+1)] MSG %"እንቁጣጣሽ%" %! %b.
+REM 12 September ADDOMIT SCANFROM -28 SATISFY [isleap($Ty+1)] MSG %"እንቁጣጣሽ%" %! %b.
+REM 27 September ADDOMIT SCANFROM -28 SATISFY [!isleap($Ty+1)] MSG %"መስቀል%" %! %b.
+REM 28 September ADDOMIT SCANFROM -28 SATISFY [isleap($Ty+1)] MSG %"መስቀል%" %! %b.

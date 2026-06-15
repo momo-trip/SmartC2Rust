@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Lesotho
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"New Year's Day%" %! %b.
+OMIT 11 March MSG %"Moshoeshoe's Day%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Good Friday%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Easter Monday%" %! %b.
+OMIT 1 May MSG %"Workers' Day%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"Ascension Day%" %! %b.
+OMIT 25 May MSG %"Africa/Heroes Day%" %! %b.
+OMIT 17 July MSG %"King's Birthday%" %! %b.
+OMIT 4 October MSG %"Independence Day%" %! %b.
+OMIT 25 December MSG %"Christmas Day%" %! %b.
+OMIT 26 December MSG %"Boxing Day%" %! %b.

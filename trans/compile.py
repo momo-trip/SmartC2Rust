@@ -29,6 +29,7 @@ import platform
 import datetime
 from typing import Set, List
 from typing import List, Dict
+import tiktoken
 
 from utils_api import (
     # normal
@@ -97,6 +98,7 @@ from utils_api import (
     append_rust_path,
     update_modified_keys,
     get_name_key,
+    parse_def_loc,
 )
 
 from llm_api import (
@@ -192,7 +194,7 @@ TEST_MODE = None
 
 keyboard_interrupt_occurred = False
 path_count = 0  
-current_c_block_end = 0
+current_c_block_end = 1 #0
 
 finished = False
 platform_instruction = ""
@@ -484,8 +486,9 @@ def search_key(key, rsp_json):
 ##### Translation helper functions
 ##############################################
 
-# "current_block_complete": True if the response \"rust_code\" fully implements the functionality of the original C code from c_block_start to c_block_end without any mocking or simplifications or placeholders. Otherwise, False.,
-convert_template = f"""{{
+translate_template = f"""# In write_rust mode
+{{
+    "mode": "write_rust",
     "rust_code": "The Rust code in the response. Since it will be executed as-is, absolutely no omissions or placeholders should be included. Write the actual implementation so that it can be copied and pasted.",
     "c_block_start": The starting line number of the block in the original C code that was translated in the \"rust_code\",
     "c_block_end": The ending line number of the block in the original C code that was translated in the \"rust_code\",
@@ -495,11 +498,29 @@ convert_template = f"""{{
     "unsafe_used": True if `unsafe` is used at least once in the provided \"rust_code\". Otherwise, False.,
     "reason": An explanation of the response. The explanation must absolutely include a justification regarding the use of `unsafe` (either proof that it is not used or a compelling reason why its use is unavoidable)."
 }}
+
+# In read_data mode
+{{
+    "mode": "read_data",
+    "target_files" : [path/to/file1, path/to/file2, ..., path/to/fileN], 
+    "file_slices" : (if necessary, otherwise None) [
+        {{
+            "file_path" : (file path),
+            "start_line" : (start_line of the scope),
+            "end_line" : (end_line of the scope),
+        }},...
+    ]
+    "ongoing_in_mode" : true if the "answer" response in "read_data" mode is long and will continue in subsequent responses. false otherwise,
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
+}}
 """
 
 
 # "current_block_complete": True if the response \"rust_code\" fully implements the functionality of the original C code from c_block_start to c_block_end without any mocking or simplifications. Otherwise, False.,
-refine_template = f"""{{
+refine_template = f"""# In write_rust mode
+{{ 
+    "mode": "write_rust",
     "rust_code": "The Rust code in the response. Since it will be executed as-is, absolutely no omissions or placeholders should be included. Write the actual implementation so that it can be copied and pasted.",
     "rust_block_start": The starting line number of the corresponding Rust block in the \"rust_code\",
     "rust_block_end": The ending line number of the corresponding Rust block in the \"rust_code\",
@@ -509,6 +530,22 @@ refine_template = f"""{{
     "unsafe_used": True if `unsafe` is used at least once in the provided \"rust_code\". Otherwise, False.,
     "refined_completed" : True if the code has been successfully refined to proper Rust style with improved safety and adherence to Rust principles; otherwise, false,
     "reason": An explanation of the response. The explanation must absolutely include a justification regarding the use of `unsafe` (either proof that it is not used or a compelling reason why its use is unavoidable)."
+}}
+
+# In read_data mode
+{{
+    "mode": "read_data",
+    "target_files" : [path/to/file1, path/to/file2, ..., path/to/fileN], 
+    "file_slices" : (if necessary, otherwise None) [
+        {{
+            "file_path" : (file path),
+            "start_line" : (start_line of the scope),
+            "end_line" : (end_line of the scope),
+        }},...
+    ]
+    "ongoing_in_mode" : true if the "answer" response in "read_data" mode is long and will continue in subsequent responses. false otherwise,
+    "ongoing" : true if the response will continue in a different mode. false otherwise,
+    "reason" : explanatory text for the response (insert here if needed)
 }}
 """
 
@@ -652,7 +689,8 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
             f"    - These C macros are translated to Rust constants by bindgen in `bindings.rs`.",
             f"    - They are available via `include!(concat!(env!(\"OUT_DIR\"), \"/bindings.rs\"));`",
             f"    - Use them directly (just write `{{macro_name}}`). Do NOT redefine them.",
-            f"    - Note: Some macros may also appear in \"Cfg state items\" below. When a macro appears in BOTH lists, use it as a bindgen constant for its VALUE, and use #[cfg(has_<name>)] for CONDITIONAL COMPILATION blocks (#ifdef/#ifndef).",
+            f"    - bindgen blocklists ALL types (blocklist_type(\".*\")) and emits ONLY indenpendent constant macros. It does NOT emit any typedef/struct/enum, nor dependent (referencing) macros.",
+            f"    - Note: Some macros may also appear in \"cfg state items\" below. When a macro appears in BOTH lists, use it as a bindgen constant for its VALUE, and use #[cfg(has_<name>)] for CONDITIONAL COMPILATION blocks (#ifdef/#ifndef).",
             f"    - Macros:",
         ])
         for target_name, callers in independent_macros.items():
@@ -666,7 +704,7 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
     if if_at_least_found:
         ifdef_list = ", ".join(ifdefs)
         added_prompt.extend([
-            "- Cfg state items:", 
+            "- cfg state items:", 
             #"    - Please translate the following #ifdef statements to Rust, taking into consideration that the conditional compilation flags are defined as cfg attributes in build.rs.",
             "    - For EVERY #ifdef/#ifndef statement using a macro listed in \"Macros:\", you MUST wrap the corresponding Rust code with #[cfg(has_<macro_name>)].",
             "    - The conditional compilation flags are automatically detected from C header macros using bindgen, and emitted as cargo:rustc-cfg=has_<macro_name> during the build process.",
@@ -758,11 +796,12 @@ def get_context_prompt(conv_type, prompt, one_unit, dep_json_path, is_program_pa
             "- Independent constant macros access rules:",
             "        - These are already available via `include!(concat!(env!(\"OUT_DIR\"), \"/bindings.rs\"));`",
             "        - Use them directly by name. Do NOT redefine them.",
+            f"        - Note: bindgen blocklists ALL types (blocklist_type(\".*\")) and emits ONLY indenpendent constant macros. It does NOT emit any typedef/struct/enum, nor dependent (referencing) macros.",
         ])
 
     if f_used is True:
         added_prompt.extend([
-            "- Cfg attributes access rules:",
+            "- cfg attributes access rules:",
             "        - These are automatically emitted as `cargo:rustc-cfg=has_<macro_name>` during build.",
             "        - Use them as `#[cfg(has_<name>)]` or `if cfg!(has_<name>)`.",
         ])
@@ -806,6 +845,86 @@ def get_rust_context_prompt(conv_type, one_unit, dep_json_path, meta_dir, rust_o
     return sum_rep_prompt
 
 
+def get_encoder(encoding_name="cl100k_base"):
+    return tiktoken.get_encoding(encoding_name)
+
+
+def count_tokens(text, enc=None):
+    enc = enc or get_encoder()
+    return len(enc.encode(text))
+
+
+def chunk_by_tokens(code, max_tokens, enc):
+    """Split code into chunks of <= max_tokens, line by line.
+
+    Lines are never broken mid-line so the syntax stays intact.
+    If a single line exceeds max_tokens, that line is force-split
+    at the token level.
+    """
+    lines = code.splitlines(keepends=True)
+    chunks, buf, buf_tok = [], [], 0
+
+    for line in lines:
+        line_tok = len(enc.encode(line))
+
+        # A single line exceeds the limit -> force-split at token level
+        if line_tok > max_tokens:
+            if buf:
+                chunks.append("".join(buf))
+                buf, buf_tok = [], 0
+            ids = enc.encode(line)
+            for i in range(0, len(ids), max_tokens):
+                chunks.append(enc.decode(ids[i:i + max_tokens]))
+            continue
+
+        # Adding this line would exceed the limit -> flush the buffer
+        if buf and buf_tok + line_tok > max_tokens:
+            chunks.append("".join(buf))
+            buf, buf_tok = [], 0
+
+        buf.append(line)
+        buf_tok += line_tok
+
+    if buf:
+        chunks.append("".join(buf))
+    return chunks
+
+
+def split_code_by_tokens(code, work_dir, chunk_tokens=40000, out_dir="code_chunks",
+                          prefix="segment", encoding_name="cl100k_base"):
+    """Split code by token length.
+
+    Returns: (should_split, first_chunk, remaining_paths, c_codes)
+      - should_split    : whether splitting was needed (bool)
+      - first_chunk     : the first chunk (the whole code if no split)
+      - remaining_paths : list of file paths where chunks 2..N were written
+      - c_codes         : list of the contents of chunks 2..N (same order as remaining_paths)
+    """
+    enc = get_encoder(encoding_name)
+    chunks = chunk_by_tokens(code, chunk_tokens, enc)
+
+    # No split needed
+    if len(chunks) <= 1:
+        return False, code, [], []
+
+    # Write chunks 2..N to disk and collect their paths and contents
+    out_dir = f"{work_dir}/{out_dir}"
+    os.makedirs(out_dir, exist_ok=True)
+    remaining_paths = []
+    c_codes = []
+    for i, chunk in enumerate(chunks[1:], start=2):
+        path = os.path.join(out_dir, f"{prefix}_part{i}.c")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(chunk)
+        remaining_paths.append(path)
+        c_codes.append(chunk)
+
+    # Append a truncation notice so downstream readers know the code continues
+    first_chunk = chunks[0] + f"\n\n// (... the code is truncated. The remaining code is in {remaining_paths})\n"
+
+    return True, first_chunk, remaining_paths, c_codes
+
+
 def translate_llm(convert_element, one_unit, rust_path, interface):
     
     llm_interface = interface.llm_interface
@@ -831,6 +950,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
     # set the initial prompt
     prompt = []    
     add_prompt = [] # Carry-over prompt
+    read_prompt = None
 
     prompt.extend(["Now we have the goal to translate memory-vulnerable C code into memory-safe Rust code to enhance overall security. ",
                 "Please translate the following C code segment into Rust.", # without using unsafe.",
@@ -840,8 +960,9 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
                 #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                 "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                 "- Distinguish between definitions and declarations in the C code segment:",
-                "    - Definitions (MUST translate): C code that has a body",
-                "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                 "- Please provide complete code without any omitted sections or placeholders, because the code will be directly copied and pasted it for execution. Do NOT use comments like \"// Implementation omitted for brevity\" or similar.",
                 #"- Avoid using unsafe, and achieve equivalent functionality by using the Rust standard library or crates safely.", 
                 #"- Please never use unsafe, raw pointers, or manual memory management.",
@@ -849,7 +970,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
                 "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                 "          - Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                 "          - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                #"          - Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                #"          - cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                 #"          - Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                 "    - For everything else, write in safe Rust without calling C functions through FFI.",
                 #"- Please achieve equivalent functionality by providing the same logical operations using safe Rust patterns, not by replicating the exact C API.",
@@ -876,11 +997,6 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
                 "- About functions, when translating C functions to Rust, please implement all functions as standalone functions without using Rust's methods or impl blocks.",
     ])
 
-    c_code = get_unit_code(one_unit)
-    
-    c_path = f"{database_dir}/tmp.c"
-    write_file(c_path, c_code)
-    c_code = get_lined_code(c_path, database_dir)
 
     target_function = get_target_function(one_unit, target_path)
 
@@ -905,14 +1021,67 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
     for func in functions:
         prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})")
     
+    c_code = get_unit_code(one_unit)
+    c_path = f"{database_dir}/tmp.c"
+    write_file(c_path, c_code)
+    
+    chunk_tokens = 40000
+    lined_code = get_lined_code(c_path, database_dir, chunk_tokens=False)
+    should_split, first_chunk, remaining_paths, c_codes = split_code_by_tokens(lined_code, work_dir, chunk_tokens)
 
     prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
-    prompt.extend([convert_template])
+    prompt.extend([translate_template])
 
-    prompt.extend([
-        f"\n## C code segment:", 
-        c_code
-    ])
+    if should_split is False:
+        c_code = get_lined_code(c_path, database_dir, chunk_tokens)
+        prompt.extend([
+            f"\n## C code segment:", 
+            c_code
+        ])
+
+    else:
+        prompt.extend([
+            f"\n## C code segment:", 
+            f"The C code segment was too long, so it has been split into multiple parts.", 
+            f"The first part is below.",
+            f"The remaining parts are stored at paths {remaining_paths}, so please read those files one by one, in order using read_data mode before proceeding with the translation.",
+            #f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+            "",
+            first_chunk, 
+        ])
+        c_code = first_chunk
+        """
+        prompt_snapshot = prompt.copy()
+        prompt.extend(["\n## Response format", 
+                        f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}."]) 
+        #prompt.extend([translate_template])
+
+        rsp_json = ask_llm(prompt, "init", llm_interface)
+
+        for i in range(len(remaining_paths)):
+            path = remaining_paths[i]
+            code = c_codes[i]
+            remaining_prompt = []
+            remaining_prompt.extend([
+            f"## C code segment of {path}:", 
+                f"The subsequent part is below.",
+                f"Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+                "",
+                code, 
+            ])
+            rsp_json = ask_llm(remaining_prompt, "continue", llm_interface)
+
+        prompt = prompt_snapshot.copy()
+
+        prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
+        prompt.extend([translate_template])
+        """
+
+    # Display the previous read_data
+    if read_prompt is not None:
+        prompt.extend(["", "## Response to the previous request:"])
+        prompt.extend(read_prompt)
+        read_prompt = None # Initialization
 
     rust_code = get_lined_code(rust_path, work_dir)
     prompt.extend([f"\n## Existing code already in {rust_path}:",
@@ -929,7 +1098,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
 
     
     global current_c_block_end
-    current_c_block_end = 0
+    current_c_block_end = 1 #0
 
     ref_files = []
     ongoing_flag = False
@@ -938,12 +1107,12 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
     current_block_complete = None
     refined_completed = None
     ongoing_count = 0
+    read_prompt = None
     exp_data = {}
 
     init_rust_end = count_file_lines(rust_path) + 1
 
     while (1):
-
         if ongoing_flag:
             total_end = count_file_lines(c_path) 
             if current_c_block_end == total_end:
@@ -957,18 +1126,18 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
                     #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Distinguish between definitions and declarations in the C code segment:",
-                    "    - Definitions (MUST translate): C code that has a body",
-                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                    "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                    #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                     "- Do NOT include any omissions or simplification in your answer code.", 
                     #"- Please do not overlap the c_block_start and c_block_end values with previous responses",
-                    #f"- Please translate the remaining code from after line {current_c_block_end}.",
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     # "- Perform the translation corresponding to the initially presented C original code. Even if you know the entire program, do not add or extend code beyond the presented C source code.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
                     "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                    #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                    #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                     #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                     "    - For everything else, write in safe Rust without calling C functions through FFI.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", 
@@ -1011,14 +1180,21 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
                 prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
             
             prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
-            prompt.extend([convert_template])
+            prompt.extend([translate_template])
 
+            """
             c_code = get_lined_specific_code(database_dir, c_path, current_c_block_end, total_end)
-
             prompt.extend([
-                f"\n## C source code (lines {current_c_block_end} - {total_end} in the file {c_path}):",
+                f"\n## C source code):", # (lines {current_c_block_end} - {total_end} in the file {c_path}
                 c_code
             ])
+            """
+
+        # Display the previous read_data mode
+        if read_prompt is not None:
+            prompt.extend(["", "## Response to the previous request:"])
+            prompt.extend(read_prompt)
+            read_prompt = None # Initialization
 
         exp_data['repair_count'] = 0
         exp_data['phase'] = 'convert'
@@ -1067,36 +1243,68 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
         toml_submit = False
         build_submit = False
 
-        if 'rust_code' in rsp_json:
-            append_rust_path(rust_path, rsp_json['rust_code'])
-        
-        if 'toml' in rsp_json:
-            if rsp_json['toml'] is not None:
-                # Here, rewrite the entire Cargo.toml
-                cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
-
-                existing_data = load_toml_file(cargo_toml_path)
-                merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
-                updated_toml_data = toml.dumps(existing_data)  # Convert the overwritten data to TOML format
-                write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
-
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
-
-        else:
-            print("Should include ongoing flag") 
         
-        if 'no_omission' in rsp_json:
-            no_omission = rsp_json['no_omission']
-            if no_omission is False:
-                ongoing_flag = True
+        if 'mode' in rsp_json:
+            mode = rsp_json['mode']
 
-        if 'current_block_complete' in rsp_json:
-            current_block_complete = rsp_json['current_block_complete']
-            if current_block_complete is False:
-                ongoing_flag = True
+            if mode == "write_rust":
+                if 'rust_code' in rsp_json:
+                    append_rust_path(rust_path, rsp_json['rust_code'])
+                
+                if 'toml' in rsp_json:
+                    if rsp_json['toml'] is not None:
+                        # Here, rewrite the entire Cargo.toml
+                        cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
 
+                        existing_data = load_toml_file(cargo_toml_path)
+                        merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
+                        updated_toml_data = toml.dumps(existing_data)  # Convert the overwritten data to TOML format
+                        write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
+
+                if 'no_omission' in rsp_json:
+                    no_omission = rsp_json['no_omission']
+                    if no_omission is False:
+                        ongoing_flag = True
+
+                if 'current_block_complete' in rsp_json:
+                    current_block_complete = rsp_json['current_block_complete']
+                    if current_block_complete is False:
+                        ongoing_flag = True
+
+            elif mode == "read_data":
+                read_prompt = []
+                sum_target_list = []
+                sum_slice_list = []
+
+                if 'target_files' in rsp_json and rsp_json['target_files'] is not None:
+                    target_list = rsp_json['target_files']
+                    if not isinstance(target_list, list):
+                        target_list = [target_list]
+                    sum_target_list.extend(target_list)
+
+                if 'file_slices' in rsp_json and rsp_json['file_slices'] is not None:
+                    slice_list = rsp_json['file_slices']
+                    if not isinstance(slice_list, list):
+                        slice_list = [slice_list]
+                    sum_slice_list.extend(slice_list)
+
+                read_prompt = ["The content obtained in read_data mode is as follows.", ""]
             
+                for see_path in sum_target_list:
+                    file_code = get_lined_code(see_path, work_dir)
+                    read_prompt.extend([f"- Content of the file {see_path}:"])  
+                    if len(file_code) == 0:
+                        file_code = f"Line 1 [0]: [This {see_path} file is currently empty and contains no content. *** STOP *** Do not use read_data mode anymore.]"
+                    read_prompt.extend([f'{file_code}\n'])
+
+                for see_item in sum_slice_list:
+                    file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'])
+                    read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"]) 
+                    read_prompt.extend([f'{file_code}\n'])
+                    
+                
         iteration_dict[rust_path] = 1
 
         if not ongoing_flag:
@@ -1123,15 +1331,16 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
                     #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Distinguish between definitions and declarations in the C code segment:",
-                    "    - Definitions (MUST translate): C code that has a body",
-                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                    "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                    #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                     #"- In particular, do NOT use unsafe or raw pointers. Instead, please use appropriate safe alternatives like Box, Arc, Vec, and others.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
                     "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                    #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                    #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                     #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                     "    - For everything else, write in safe Rust without calling C functions through FFI.",
                     #"- For global variables, prefer const for compile-time constants. For runtime mutable global variables, do NOT use static mut - instead, choose an appropriate type based on the purpose (atomic types, Cell types, OnceCell/Lazy, Mutex/RwLock, etc). Consider whether global state is truly necessary, and if it is, try grouping related variables into a struct.", #"- For global variables, do NOT use static mut. Instead, choose an appropriate type based on the purpose of use. First, consider whether global state is truly necessary - prefer local variables when possible. If global state is necessary, consider grouping related variables into a struct where possible, then select an appropriate type based on usage from options such as atomic types, const, Cell types, OnceCell/Lazy, Mutex/RwLock, etc.", #"- For global variables, do NOT use static mut. Instead, choose an appropriate type based on the purpose of use and whether it will be accessed across threads, such as const, Cell types, OnceCell/Lazy, atomic types, or Mutex/RwLock.",
@@ -1157,20 +1366,71 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
     for func in functions:
         prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
     
-    prompt.extend(["\nPlease provide your response in the following JSON format:"])
-    prompt.extend([refine_template])
 
     rust_code = get_lined_specific_code(database_dir, f"{database_dir}/unrefined.rs", init_rust_end, last_rust_end)
-
     prompt.extend([
         f"\n## Rust source code ({rust_path}):",
         rust_code
     ])
 
-    prompt.extend([
-        f"\n## C code segment:",
-        c_code
-    ])
+    chunk_tokens = 40000
+    lined_code = get_lined_code(c_path, database_dir, chunk_tokens=False)
+    should_split, first_chunk, remaining_paths, c_codes = split_code_by_tokens(lined_code, work_dir, chunk_tokens)
+
+    prompt.extend(["\n## Response format", "Please provide your response in the following JSON format:"]) 
+    prompt.extend([refine_template])
+
+    if should_split is False:
+        prompt.extend([
+            f"\n## C code segment:", 
+            c_code
+        ])
+
+    else:
+        prompt.extend([
+            f"\n## C code segment:", 
+            f"The C code segment was too long, so it has been split into multiple parts.", 
+            f"The first part is below.",
+            f"The remaining parts are stored at paths {remaining_paths}, so please read those files one by one, in order using read_data mode before proceeding with the translation.",
+            #f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+            "",
+            first_chunk, 
+        ])
+        c_code = first_chunk
+
+        """
+        prompt_snapshot = prompt.copy()
+
+        prompt.extend(["\n## Response format", 
+                        f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}."]) 
+        #prompt.extend([translate_template])
+
+        rsp_json = ask_llm(prompt, "init", llm_interface)
+
+        for i in range(len(remaining_paths)):
+            path = remaining_paths[i]
+            c_code = c_codes[i]
+            remaining_prompt = []
+            remaining_prompt.extend([
+            f"## C code segment of {path}:", 
+                f"The subsequent part is below.",
+                f"Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+                "",
+                c_code, 
+            ])
+            rsp_json = ask_llm(remaining_prompt, "continue", llm_interface)
+
+        prompt = prompt_snapshot.copy()
+
+        prompt.extend(["\n## Response format", "Please provide your response in the following JSON format:"]) 
+        prompt.extend([refine_template])
+        """
+
+    # Display the previous read_data mode
+    if read_prompt is not None:
+        prompt.extend(["", "## Response to the previous request:"])
+        prompt.extend(read_prompt)
+        read_prompt = None # Initialization
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
     directory_structure = get_dir_struct("translation", work_dir, None)  #rust_output_dir)
@@ -1180,37 +1440,29 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
     structure = get_cargo_modules(rust_output_dir)
     prompt.extend([structure, ""])
 
-    save_prompt = prompt
+    save_prompt = prompt.copy()
 
     ref_files = []
-    #ref_files = get_ref_files(c_path, dep_json_path)
-
     ongoing_flag = False
     #ongoing_count = 0
-
-    # Initialize here
-    # copy_file(rust_path, f"{database_dir}/unrefined.rs")
-    # delete_file(rust_path)
-
     rust_block_start = None
     rust_block_end = None
-    current_c_block_end = 0
+    current_c_block_end = 1 #0
 
     while (1):
         if ongoing_flag:
             print("Keep going to receive Rust code.")
 
-            prompt = [#"Please continue writing the translated code.",
-                    #f"Please provide the remaining refined code from the current Rust code after line {current_c_block_end} as shown below. Do NOT provide any code before line {current_c_block_end} of the current code.", #f"Please provide the remaining refined code of the current Rust code after line {current_c_block_end} as shown below. Do NOT provide any code before line {current_c_block_end} that were already provided.",
-                    f"Please provide only the refined code corresponding to current code lines {current_c_block_end} onwards. Do NOT include refined code for current code lines before {current_c_block_end}.",
+            prompt = [f"Please provide only the refined code corresponding to current code lines {current_c_block_end} onwards. Do NOT include refined code for current code lines before {current_c_block_end}.",
                     "Keep following the rules below.",
                     "",
                     "## Response rules",
                     #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Distinguish between definitions and declarations in the C code segment:",
-                    "    - Definitions (MUST translate): C code that has a body",
-                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                    "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                    #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                     #"- Please do not overlap the c_block_start and c_block_end values with previous responses",
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
@@ -1218,7 +1470,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
                     "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                     "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                     "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                    #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                    #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                     #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                     "    - For everything else, write in safe Rust without calling C functions through FFI.",
                     #"- Avoid using unsafe, and use the Rust standard library or crates to achieve equivalent functionality in a safe manner.",
@@ -1344,37 +1596,73 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
         toml_submit = False
         build_submit = False
 
-        if 'rust_code' in rsp_json: 
-           append_rust_path(rust_path, rsp_json['rust_code'])
-        
-        if 'toml' in rsp_json: 
-            if rsp_json['toml'] is not None:
-                # Here, rewrite the entire Cargo.toml
-                cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
-
-                existing_data = load_toml_file(cargo_toml_path)
-                merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
-                updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
-                write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
-
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
 
         else:
             print("Should include ongoing flag") 
         
-        if 'no_omission' in rsp_json:
-            no_omission = rsp_json['no_omission']
-            if no_omission is False:
-                ongoing_flag = True
+        if 'mode' in rsp_json:
+            mode = rsp_json['mode']
 
-        if 'current_block_complete' in rsp_json:
-            current_block_complete = rsp_json['current_block_complete']
-            if current_block_complete is False:
-                ongoing_flag = True
+            if mode == "write_rust":
+                if 'rust_code' in rsp_json: 
+                    append_rust_path(rust_path, rsp_json['rust_code'])
+                
+                if 'toml' in rsp_json: 
+                    if rsp_json['toml'] is not None:
+                        # Here, rewrite the entire Cargo.toml
+                        cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
 
-        if 'refined_completed' in rsp_json:
-            refined_completed = True
+                        existing_data = load_toml_file(cargo_toml_path)
+                        merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
+                        updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
+                        write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
+                
+                if 'no_omission' in rsp_json:
+                    no_omission = rsp_json['no_omission']
+                    if no_omission is False:
+                        ongoing_flag = True
+
+                if 'current_block_complete' in rsp_json:
+                    current_block_complete = rsp_json['current_block_complete']
+                    if current_block_complete is False:
+                        ongoing_flag = True
+
+                if 'refined_completed' in rsp_json:
+                    refined_completed = True
+
+            elif mode == "read_data":
+                read_prompt = []
+                sum_target_list = []
+                sum_slice_list = []
+
+                if 'target_files' in rsp_json and rsp_json['target_files'] is not None:
+                    target_list = rsp_json['target_files']
+                    if not isinstance(target_list, list):
+                        target_list = [target_list]
+                    sum_target_list.extend(target_list)
+
+                if 'file_slices' in rsp_json and rsp_json['file_slices'] is not None:
+                    slice_list = rsp_json['file_slices']
+                    if not isinstance(slice_list, list):
+                        slice_list = [slice_list]
+                    sum_slice_list.extend(slice_list)
+
+                read_prompt = ["The content obtained in read_data mode is as follows.", ""]
+            
+                for see_path in sum_target_list:
+                    file_code = get_lined_code(see_path, work_dir)
+                    read_prompt.extend([f"- Content of the file {see_path}:"])  
+                    if len(file_code) == 0:
+                        file_code = f"Line 1 [0]: [This {see_path} file is currently empty and contains no content. *** STOP *** Do not use read_data mode anymore.]"
+                    read_prompt.extend([f'{file_code}\n'])
+
+                for see_item in sum_slice_list:
+                    file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'])
+                    read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"]) 
+                    read_prompt.extend([f'{file_code}\n'])
+                    
 
         iteration_dict[rust_path] = 1
 
@@ -1386,6 +1674,7 @@ def translate_llm(convert_element, one_unit, rust_path, interface):
 
 def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     
+    # Config
     llm_interface = interface.llm_interface
     output_max = llm_interface.output_max
 
@@ -1406,9 +1695,11 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     target = interface.target
     user_id = interface.user_id
 
-    # set the initial prompt
     prompt = []    
     add_prompt = [] # Carry-over prompt
+    read_prompt = None
+
+    # Set the initial prompt
     prompt.extend(["Now we have the goal to translate memory-vulnerable C code into memory-safe Rust code to enhance overall security. ",
                 "Please translate the following C code segment into Rust.", # without using unsafe.",
                 "During the translation process, please strictly apply all the specified rules below and provide only the results that follow the rules.",
@@ -1417,8 +1708,9 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                 "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                 "- Distinguish between definitions and declarations in the C code segment:",
-                "    - Definitions (MUST translate): C code that has a body",
-                "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                 "- Please provide complete code without any omitted sections or placeholders, because the code will be directly copied and pasted it for execution. Do NOT use comments like \"// Implementation omitted for brevity\" or similar.",
                 #"- Avoid using unsafe, and achieve equivalent functionality by using the Rust standard library or crates safely.", 
                 #"- Please never use unsafe, raw pointers, or manual memory management.",
@@ -1426,7 +1718,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                 "          - The rust_main_<identifier> entry point: declared as pub extern \"C\" fn rust_main_<identifier>() with #[no_mangle] so that C main() can call it. This is the only FFI boundary in this project. Stub implementation MUST remain unchanged until you are explicitly instructed to replace it with the actual implementation. Do NOT implement the actual logic of it.",
                 #"                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                 #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                 "    - For everything else, write in safe Rust without calling C functions through FFI.",
                 #"- Please achieve equivalent functionality by providing the same logical operations using safe Rust patterns, not by replicating the exact C API.",
@@ -1452,12 +1744,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 "- When representing backslashes as character literals, escape the backslash once in the source code and again in the character literal, resulting in two backslashes.",
                 "- About functions, when translating C functions to Rust, please implement all functions as standalone functions without using Rust's methods or impl blocks.",
     ])
-
-    c_code = get_unit_code(one_unit)
-    
-    c_path = f"{database_dir}/tmp.c"
-    write_file(c_path, c_code)
-    c_code = get_lined_code(c_path, database_dir)
 
     target_function = get_target_function(one_unit, target_path)
 
@@ -1485,13 +1771,69 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
     
 
-    prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
-    prompt.extend([convert_template])
+    c_code = get_unit_code(one_unit)
+    c_path = f"{database_dir}/tmp.c"
+    write_file(c_path, c_code)
 
-    prompt.extend([
-        f"\n## C code segment:",
-        c_code
-    ])
+    chunk_tokens = 40000
+    lined_code = get_lined_code(c_path, database_dir, chunk_tokens=False)
+    should_split, first_chunk, remaining_paths, c_codes = split_code_by_tokens(lined_code, work_dir, chunk_tokens)
+
+    prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
+    prompt.extend([translate_template])
+
+    if should_split is False:
+        c_code = get_lined_code(c_path, database_dir, chunk_tokens)
+        prompt.extend([
+            f"\n## C code segment:", 
+            c_code
+        ])
+
+    else:
+        prompt.extend([
+            f"\n## C code segment:", 
+            f"The C code segment was too long, so it has been split into multiple parts.", 
+            f"The first part is below.",
+            f"The remaining parts are stored at paths {remaining_paths}, so please read those files one by one, in order using read_data mode before proceeding with the translation.",
+            #f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+            "",
+            first_chunk, 
+        ])
+        c_code = first_chunk
+
+        """
+        prompt_snapshot = prompt.copy()
+
+        prompt.extend(["\n## Response format", 
+                        f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}."]) 
+        #prompt.extend([translate_template])
+
+        rsp_json = ask_llm(prompt, "init", llm_interface)
+
+        for i in range(len(remaining_paths)):
+            path = remaining_paths[i]
+            c_code = c_codes[i]
+            remaining_prompt = []
+            remaining_prompt.extend([
+            f"## C code segment of {path}:", 
+                f"The subsequent part is below.",
+                f"Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+                "",
+                c_code, 
+            ])
+            rsp_json = ask_llm(remaining_prompt, "continue", llm_interface)
+
+        prompt = prompt_snapshot.copy()
+
+        prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
+        prompt.extend([translate_template])
+        """
+
+    # Display the previous read_data mode
+    if read_prompt is not None:
+        prompt.extend(["", "## Response to the previous request:"])
+        prompt.extend(read_prompt)
+        read_prompt = None # Initialization
 
     rust_code = get_lined_code(rust_path, work_dir)
     prompt.extend([f"\n## Existing code already in {rust_path}:",
@@ -1508,7 +1850,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
 
     
     global current_c_block_end
-    current_c_block_end = 0
+    current_c_block_end = 1 #0
 
     ref_files = []
 
@@ -1518,7 +1860,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     current_block_complete = None
     refined_completed = None
     ongoing_count = 0
-
+    read_prompt = None
     exp_data = {}
 
     init_rust_end = count_file_lines(rust_path) + 1
@@ -1532,19 +1874,18 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
             print("Keep going to receive Rust code.")
             
             #if no_omission is not False and current_block_complete is not False: # and refined_completed is not False:
-            prompt = [#"Please continue writing the translated code.",
-                        f"Please translate the remaining code from after line {current_c_block_end} as shown below. Do NOT translate any code before line {current_c_block_end}.",
+            prompt = [f"Please translate the remaining code from after line {current_c_block_end} as shown below. Do NOT translate any code before line {current_c_block_end}.",
                     "Keep following the translation rules.",
                     "",
                     "## Translation rules:",
                     #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Distinguish between definitions and declarations in the C code segment:",
-                    "    - Definitions (MUST translate): C code that has a body",
-                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                    "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                    #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                     "- Do NOT include any omissions or simplification in your answer code.", 
                     #"- Please do not overlap the c_block_start and c_block_end values with previous responses",
-                    #f"- Please translate the remaining code from after line {current_c_block_end}.",
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     # "- Perform the translation corresponding to the initially presented C original code. Even if you know the entire program, do not add or extend code beyond the presented C source code.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
@@ -1592,21 +1933,28 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})")
             
             prompt.extend(["\n## Response format", "In summary, please respond in the following JSON format:"]) 
-            prompt.extend([convert_template])
+            prompt.extend([translate_template])
 
+            """
             c_code = get_lined_specific_code(database_dir, c_path, current_c_block_end, total_end)
-
             prompt.extend([
-                f"\n## C source code (lines {current_c_block_end} - {total_end} in the file {c_path}):",
+                f"\n## C source code:", # (lines {current_c_block_end} - {total_end} in the file {c_path}):",
                 c_code
             ])
+            """
 
+        # Display the previous read_data mode
+        if read_prompt is not None:
+            prompt.extend(["", "## Response to the previous request:"])
+            prompt.extend(read_prompt)
+            read_prompt = None # Initialization
+              
         exp_data['repair_count'] = 0
         exp_data['phase'] = 'convert'
         if ongoing_count == 0:
 
-            if INSERT_FILES: #WITH_FILES:
-                if len(ref_files) != 0: #first_touch:
+            if INSERT_FILES:
+                if len(ref_files) != 0:
                     rust_ref_files = []
                     for ref in ref_files:
                         ref_rust_path = get_rust_path(ref, map_path)
@@ -1618,7 +1966,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     history_path.append(base_rust_path) #history_path.append(rust_path)
                     history_path.extend(rust_ref_files)
                     
-                    rsp_json = ask_llm(prompt, history_path, llm_interface) #code_blocks = extract_code_blocks(response)
+                    rsp_json = ask_llm(prompt, history_path, llm_interface) 
                     if 'c_block_end' in rsp_json:
                         c_block_end = rsp_json['c_block_end']
                         current_c_block_end = c_block_end 
@@ -1636,7 +1984,7 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                 prompt.extend([structure, ""])
                 
 
-            rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+            rsp_json = ask_llm(prompt, "continue", llm_interface)
             if 'c_block_end' in rsp_json:
                 c_block_end = rsp_json['c_block_end']
                 current_c_block_end = c_block_end 
@@ -1648,37 +1996,72 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         toml_submit = False
         build_submit = False
 
-        if 'rust_code' in rsp_json: #len(rsp_blocks) > 0:
-            append_rust_path(rust_path, rsp_json['rust_code']) #toml_submit, build_submit = update_rust_path(rust_path, rsp_json, rust_output_dir)
-        
-        if 'toml' in rsp_json: #if len(rsp_json) > 1:
-            if rsp_json['toml'] is not None:
-                # Here, rewrite the entire Cargo.toml
-                cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
-                #write_toml(rsp_json['toml'], cargo_toml_path) # Write TOML data to file
-
-                # Instead of rewriting the entire Cargo.toml, merge into it
-                existing_data = load_toml_file(cargo_toml_path)
-                merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
-                updated_toml_data = toml.dumps(existing_data)  # Convert the overwritten data to TOML format
-                write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
-
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
             #ongoing_flag = search_key('ongoing', rsp_json)
         else:
             print("Should include ongoing flag") 
         
-        if 'no_omission' in rsp_json:
-            no_omission = rsp_json['no_omission']
-            if no_omission is False:
-                ongoing_flag = True
+        if 'mode' in rsp_json:
+            mode = rsp_json['mode']
 
-        if 'current_block_complete' in rsp_json:
-            current_block_complete = rsp_json['current_block_complete']
-            if current_block_complete is False:
-                ongoing_flag = True
+            if mode == "write_rust":
+                if 'rust_code' in rsp_json:
+                    append_rust_path(rust_path, rsp_json['rust_code'])
+                
+                if 'toml' in rsp_json: #if len(rsp_json) > 1:
+                    if rsp_json['toml'] is not None:
+                        # Here, rewrite the entire Cargo.toml
+                        cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
+                        #write_toml(rsp_json['toml'], cargo_toml_path) # Write TOML data to file
 
+                        # Instead of rewriting the entire Cargo.toml, merge into it
+                        existing_data = load_toml_file(cargo_toml_path)
+                        merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
+                        updated_toml_data = toml.dumps(existing_data)  # Convert the overwritten data to TOML format
+                        write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
+                
+                if 'no_omission' in rsp_json:
+                    no_omission = rsp_json['no_omission']
+                    if no_omission is False:
+                        ongoing_flag = True
+
+                if 'current_block_complete' in rsp_json:
+                    current_block_complete = rsp_json['current_block_complete']
+                    if current_block_complete is False:
+                        ongoing_flag = True
+            
+            elif mode == "read_data":
+                read_prompt = []
+                sum_target_list = []
+                sum_slice_list = []
+
+                if 'target_files' in rsp_json and rsp_json['target_files'] is not None:
+                    target_list = rsp_json['target_files']
+                    if not isinstance(target_list, list):
+                        target_list = [target_list]
+                    sum_target_list.extend(target_list)
+
+                if 'file_slices' in rsp_json and rsp_json['file_slices'] is not None:
+                    slice_list = rsp_json['file_slices']
+                    if not isinstance(slice_list, list):
+                        slice_list = [slice_list]
+                    sum_slice_list.extend(slice_list)
+
+                read_prompt = ["The content obtained in read_data mode is as follows.", ""]
+            
+                for see_path in sum_target_list:
+                    file_code = get_lined_code(see_path, work_dir)
+                    read_prompt.extend([f"- Content of the file {see_path}:"])  
+                    if len(file_code) == 0:
+                        file_code = f"Line 1 [0]: [This {see_path} file is currently empty and contains no content. *** STOP *** Do not use read_data mode anymore.]"
+                    read_prompt.extend([f'{file_code}\n'])
+
+                for see_item in sum_slice_list:
+                    file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'])
+                    read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"]) 
+                    read_prompt.extend([f'{file_code}\n'])
+                    
             
         iteration_dict[rust_path] = 1
 
@@ -1706,8 +2089,9 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Distinguish between definitions and declarations in the C code segment:",
-                    "    - Definitions (MUST translate): C code that has a body",
-                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                    "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                    #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                     #"- In particular, do NOT use unsafe or raw pointers. Instead, please use appropriate safe alternatives like Box, Arc, Vec, and others.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
                     "- Please do not use unsafe, raw pointers, or manual memory management as much as possible.",
@@ -1739,21 +2123,71 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     for func in functions:
         prompt.append(f"   - {func['name']} (from {func['file_path']}, line {func['start_line']})") # lines {func['start_line']}-{func['end_line']})")
     
-    prompt.extend(["\nPlease provide your response in the following JSON format:"])
-    prompt.extend([refine_template])
 
     rust_code = get_lined_specific_code(database_dir, f"{database_dir}/unrefined.rs", init_rust_end, last_rust_end)
-
     prompt.extend([
         f"\n## Rust source code ({rust_path}):",
         rust_code
     ])
 
-    # c_code = get_lined_code(c_path, work_dir)
-    prompt.extend([
-        f"\n## C code segment:",
-        c_code
-    ])
+    lined_code = get_lined_code(c_path, database_dir, chunk_tokens=False)
+    should_split, first_chunk, remaining_paths, c_codes = split_code_by_tokens(lined_code, work_dir, chunk_tokens)
+
+    prompt.extend(["\n## Response format", "Please provide your response in the following JSON format:"]) 
+    prompt.extend([refine_template])
+
+    if should_split is False:
+        prompt.extend([
+            f"\n## C code segment:", 
+            c_code
+        ])
+
+    else:
+        prompt.extend([
+            f"\n## C code segment:", 
+            f"The C code segment was too long, so it has been split into multiple parts.", 
+            f"The first part is below.",
+            f"The remaining parts are stored at paths {remaining_paths}, so please read those files one by one, in order using read_data mode before proceeding with the translation.",
+            #f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+            "",
+            first_chunk, 
+        ])
+        c_code = first_chunk
+
+        """
+        prompt_snapshot = prompt.copy()
+
+        prompt.extend(["\n## Response format", 
+                        f"After this, I will send the fragment information. Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}."]) 
+        #prompt.extend([translate_template])
+
+        rsp_json = ask_llm(prompt, "init", llm_interface)
+
+        for i in range(len(remaining_paths)):
+            path = remaining_paths[i]
+            c_code = c_codes[i]
+            remaining_prompt = []
+            remaining_prompt.extend([
+            f"## C code segment of {path}:", 
+                f"The subsequent part is below.",
+                f"Until I am done, do not respond with anything other than the JSON answer {{\"status\": \"ok\"}}.",
+                "",
+                c_code, 
+            ])
+            rsp_json = ask_llm(remaining_prompt, "continue", llm_interface)
+
+        prompt = prompt_snapshot.copy()
+
+        prompt.extend(["\n## Response format", "Please provide your response in the following JSON format:"]) 
+        prompt.extend([refine_template])
+        """
+
+    # Display the previous read_data mode
+    if read_prompt is not None:
+        prompt.extend(["", "## Response to the previous request:"])
+        prompt.extend(read_prompt)
+        read_prompt = None # Initialization
+
 
     prompt.extend(["", "## Directory structure of the translated Rust program:"])  
     directory_structure = get_dir_struct("translation", work_dir, None)
@@ -1766,12 +2200,10 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
     save_prompt = prompt
 
     ref_files = []
-    # ref_files = get_ref_files(c_path, dep_json_path)
-
     ongoing_flag = False
     rust_block_start = None
     rust_block_end = None
-    current_c_block_end = 0
+    current_c_block_end = 1 #0
 
     while (1):
         if ongoing_flag:
@@ -1779,7 +2211,6 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
             print("Keep going to receive Rust code.")
 
             prompt = [#"Please continue writing the translated code.",
-                    #f"Please provide the remaining refined code from the current Rust code after line {current_c_block_end} as shown below. Do NOT provide any code before line {current_c_block_end} of the current code.", #f"Please provide the remaining refined code of the current Rust code after line {current_c_block_end} as shown below. Do NOT provide any code before line {current_c_block_end} that were already provided.",
                     f"Please provide only the refined code corresponding to current code lines {current_c_block_end} onwards. Do NOT include refined code for current code lines before {current_c_block_end}.",
                     "Keep following the rules below.",
                     "",
@@ -1787,8 +2218,9 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
                     #"- All symbols referenced by the C code below (constants, types, macros, helper functions, global variables) are already defined in either bindings.rs (generated by build.rs) or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Translate all code in the C code segment below into safe Rust. All symbols that are referenced within the C code segment below but whose definition exists outside the segment (constants, macros, helper functions, global variables, type definitions defined in other segments) are already defined in either bindings.rs or the existing lib.rs. Use them directly by name and never redefine them.",
                     "- Distinguish between definitions and declarations in the C code segment:",
-                    "    - Definitions (MUST translate): C code that has a body",
-                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself",
+                    "    - Definitions (MUST translate): translate every construct in the C segment that carries content of its own — i.e. anything with a body or an initializer.",
+                    #"    - Definitions (MUST translate): C code that has a body, including enum and struct/union definitions with their members, and conditional typedefs inside #ifdef/#ifndef blocks — not only functions.",
+                    "    - Declarations (do NOT translate): function prototypes without body, forward declarations without braces (e.g. struct Foo;, typedef struct Foo Foo;), and extern declarations without initializer. Do NOT invent an implementation for it by yourself.",
                     #"- Please do not overlap the c_block_start and c_block_end values with previous responses",
                     #"- Only perform the Rust translation within the range of the original C code initially presented. Do not add any new functions or extensions, and translate only the provided C code.", #"When the translation is complete, set 'ongoing': false.",
                     #"- Do not use unsafe or raw pointers. Instead, please use safe Rust types and operations including custom structs, enums, Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.", #"- NEVER use unsafe or raw pointers. Only use safe Rust types and operations: Vec, Box, Arc, Rc, String, HashMap, and other standard library collections that provide automatic memory management.",
@@ -1921,40 +2353,77 @@ def translate_llm_minimize(convert_element, one_unit, rust_path, interface):
         toml_submit = False
         build_submit = False
 
-        if 'rust_code' in rsp_json: #len(rsp_blocks) > 0:
-           append_rust_path(rust_path, rsp_json['rust_code']) #toml_submit, build_submit = update_rust_path(rust_path, rsp_json, rust_output_dir)
-        
-        if 'toml' in rsp_json: #if len(rsp_json) > 1:
-            if rsp_json['toml'] is not None:
-                # Here, rewrite the entire Cargo.toml
-                cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
-                #write_toml(rsp_json['toml'], cargo_toml_path) # Write TOML data to file
-
-                # Instead of rewriting the entire Cargo.toml, merge into it
-                existing_data = load_toml_file(cargo_toml_path)
-                merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
-                updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
-                write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
-
-
         if 'ongoing' in rsp_json:
             ongoing_flag = rsp_json['ongoing']
             #ongoing_flag = search_key('ongoing', rsp_json)
         else:
             print("Should include ongoing flag") 
         
-        if 'no_omission' in rsp_json:
-            no_omission = rsp_json['no_omission']
-            if no_omission is False:
-                ongoing_flag = True
+        if 'mode' in rsp_json:
+            mode = rsp_json['mode']
 
-        if 'current_block_complete' in rsp_json:
-            current_block_complete = rsp_json['current_block_complete']
-            if current_block_complete is False:
-                ongoing_flag = True
+            if mode == "write_rust":
+                mode = rsp_json['mode']
 
-        if 'refined_completed' in rsp_json:
-            refined_completed = True
+                if 'rust_code' in rsp_json: #len(rsp_blocks) > 0:
+                    append_rust_path(rust_path, rsp_json['rust_code']) #toml_submit, build_submit = update_rust_path(rust_path, rsp_json, rust_output_dir)
+                
+                if 'toml' in rsp_json: #if len(rsp_json) > 1:
+                    if rsp_json['toml'] is not None:
+                        # Here, rewrite the entire Cargo.toml
+                        cargo_toml_path = rust_output_dir + "/" + "Cargo.toml"
+                        #write_toml(rsp_json['toml'], cargo_toml_path) # Write TOML data to file
+
+                        # Instead of rewriting the entire Cargo.toml, merge into it
+                        existing_data = load_toml_file(cargo_toml_path)
+                        merge_toml_json(existing_data, rsp_json['toml']) # Overwrite existing data with new JSON data
+                        updated_toml_data = toml.dumps(existing_data) # Convert the overwritten data to TOML format
+                        write_toml_file(updated_toml_data, cargo_toml_path) # Write TOML data to file
+                
+                if 'no_omission' in rsp_json:
+                    no_omission = rsp_json['no_omission']
+                    if no_omission is False:
+                        ongoing_flag = True
+
+                if 'current_block_complete' in rsp_json:
+                    current_block_complete = rsp_json['current_block_complete']
+                    if current_block_complete is False:
+                        ongoing_flag = True
+
+                if 'refined_completed' in rsp_json:
+                    refined_completed = True
+
+            elif mode == "read_data":
+                read_prompt = []
+                sum_target_list = []
+                sum_slice_list = []
+
+                if 'target_files' in rsp_json and rsp_json['target_files'] is not None:
+                    target_list = rsp_json['target_files']
+                    if not isinstance(target_list, list):
+                        target_list = [target_list]
+                    sum_target_list.extend(target_list)
+
+                if 'file_slices' in rsp_json and rsp_json['file_slices'] is not None:
+                    slice_list = rsp_json['file_slices']
+                    if not isinstance(slice_list, list):
+                        slice_list = [slice_list]
+                    sum_slice_list.extend(slice_list)
+
+                read_prompt = ["The content obtained in read_data mode is as follows.", ""]
+            
+                for see_path in sum_target_list:
+                    file_code = get_lined_code(see_path, work_dir)
+                    read_prompt.extend([f"- Content of the file {see_path}:"])  
+                    if len(file_code) == 0:
+                        file_code = f"Line 1 [0]: [This {see_path} file is currently empty and contains no content. *** STOP *** Do not use read_data mode anymore.]"
+                    read_prompt.extend([f'{file_code}\n'])
+
+                for see_item in sum_slice_list:
+                    file_code = get_lined_specific_code(database_dir, see_item['file_path'], see_item['start_line'], see_item['end_line'])
+                    read_prompt.extend([f"- Content of {see_item['start_line']} - {see_item['end_line']} lines in the file {see_item['file_path']}:"]) 
+                    read_prompt.extend([f'{file_code}\n'])
+                    
 
         iteration_dict[rust_path] = 1
 
@@ -2034,7 +2503,7 @@ def repair_total(convert_element, prompt, c_path, rust_path, exp_data, error): #
             prompt = [item for item in prompt if item is not None]
             rsp_json = ask_llm(prompt, "init", interface)
         else:
-            rsp_json = ask_llm(prompt, "continue", interface) #code_blocks = extract_code_blocks(response)
+            rsp_json = ask_llm(prompt, "continue", interface) 
             if 'c_block_end' in rsp_json:
                 c_block_end = rsp_json['c_block_end']
                 current_c_block_end = c_block_end 
@@ -3199,7 +3668,7 @@ def repair_execute(repair_target, interface):
                             "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                             "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                             "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                            #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                            #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                             #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                             "    - For everything else, write in safe Rust without calling C functions through FFI.",
                             # f"- The code content should be complete, without omissions, and should include entire units such as functions or data types, starting from lines without indentation.", # Ensure the code is complete without omission and includes entire units like functions or data types that can be parsed by ctags.
@@ -3232,7 +3701,7 @@ def repair_execute(repair_target, interface):
                             #"                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                             "               - The rust_main_<identifer> entry point: declared as pub extern \"C\" fn rust_main_<identifer>() with #[no_mangle] so that C main() can call it. This is the only FFI boundary in this project.",
                             #"               - Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                            #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                            #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                             #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                             "    - For everything else, write in safe Rust without calling C functions through FFI.",
                             # f"- The code content should be complete, without omissions, and should include entire units such as functions or data types, starting from lines without indentation.", # Ensure the code is complete without omission and includes entire units like functions or data types that can be parsed by ctags.
@@ -3584,7 +4053,7 @@ def repair_execute(repair_target, interface):
                                                 "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                                                 "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                                                 "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                                                #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                                                #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                                                 #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                                                 "    - For everything else, write in safe Rust without calling C functions through FFI.",
                                                 "- When representing backslashes as byte literals, escape the backslash twice in the source code, and also escape it again in the byte literal, resulting in four backslashes (double backslashes).",
@@ -3749,7 +4218,7 @@ def repair_execute(repair_target, interface):
                                             "    - EXCEPTION: Permit minimal unsafe blocks strictly limited to the following two categories.",
                                             "                  1. Stub implementation of the FFI boundary functions (specified in ## FFI boundary functions below): These C functions are being replaced by Rust. These are declared as extern C fn with #[unsafe(no_mangle)] so that C code can call the Rust replacement. Stub implementation of the FFI boundary functions MUST remain unchanged until you are explicitly instructed to replace them with the actual implementation. Do NOT implement the actual logic of it.", # Note that even inside FFI boundary functions, extract logic into safe Rust helper functions.",
                                             "                  2. Global variables: C global variables shared across the boundary, accessed through unsafe extern C static declarations with getter and setter functions.",
-                                            #"                  3. Cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
+                                            #"                  3. cfg attribute flags: Conditional compilation flags registered as cargo rustc cfg, used with #[cfg(has_FLAG_NAME)] attributes.",
                                             #"                  4. Independent constant macros: C macro constants generated by bindgen in bindings.rs, used directly by name without redefinition.",
                                             "    - For everything else, write in safe Rust without calling C functions through FFI.",
                                             "- When representing backslashes as byte literals, escape the backslash twice in the source code, and also escape it again in the byte literal, resulting in four backslashes (double backslashes).",
@@ -3876,7 +4345,7 @@ def repair_execute(repair_target, interface):
                         "- The `modified_data` content in `modify_data` mode must be directly executable without any omissions.",                        
                         ])
                 
-            rsp_json = ask_llm(prompt, "continue", llm_interface) #code_blocks = extract_code_blocks(response)
+            rsp_json = ask_llm(prompt, "continue", llm_interface) 
 
 
         ######################## Proceed per file ########################
@@ -4134,14 +4603,6 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
         #### Uses
         ###############################
 
-        # if meta_data is None: # Better to double-check this # This case exists: File not found: div_metadata_{user_id}/pp-patterns//usr/include/x86_64-linux-gnu/bits/types/struct_FILE_h.json
-        #     return prompt, cashed, i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, g_at_least_found, global_vars  # , repair_prompt
-        # element_item = meta_data[key_name] #function_name = element_item['name']
-        """
-        if 'uses' not in meta_data[key_name]:
-            return prompt, cashed, i_at_least_found, independent_macros, if_at_least_found, ifdefs, r_at_least_found, rust_refs, g_at_least_found, global_vars
-        """
-
         if meta_data is None:
             raise ValueError(f"Failed to find {key_name} at {meta_path}")
 
@@ -4152,7 +4613,20 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
             uses_list = meta_data[key_name]['uses']
         
             for use_item in uses_list:
-                use_file_path = use_item['file_path']
+                if 'file_path' in use_item:
+                    use_file_path = use_item['file_path']
+                    use_start_line = use_item['start_line']
+
+                elif 'definition' in use_item:
+                    use_definition = use_item['definition']
+                    use_file_path, use_start_line, _col = parse_def_loc(use_definition)
+    
+                else:
+                    raise ValueError("Must have definition or file_path key.")
+                
+                if use_start_line is None: # in case of undefined
+                    continue
+                use_start_line = int(use_start_line)
 
                 c_use_file_path = use_file_path.replace(f"trans_c_{user_id}", f"workspace_{user_id}_{target}")
                 if is_system_file(c_use_file_path, program_files):
@@ -4162,7 +4636,6 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                 #     continue
 
                 use_name = use_item['name']
-                use_start_line = use_item['start_line']
                 use_key_name = f"{use_name}:{use_file_path}:{use_start_line}"
 
                 use_meta_path = obtain_metadata(use_file_path, div_meta_dir, False, True, "def")
@@ -4195,14 +4668,25 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                 
                 if use_meta_data[use_key_name]['kind'] == "directive":
                     #f_used = True
-                    category = "Cfg attribute"
+                    category = "cfg attribute"
 
                 if rust_code is not None:
-                    if target_name not in rust_refs:
-                        rust_refs[target_name] = {} # set()
-                    #rust_refs[target_name].add(rust_code) # added
-                    if target_name not in seen:
-                        rust_refs[target_name] = {
+                    added_name = target_name
+                    if target_name == "top_level_use" and 'components' in meta_data[key_name]:
+                        added_name = ""
+                        com_list = meta_data[key_name]['components']
+                        i = 0
+                        for com_item in com_list:
+                            if i == 0:
+                                added_name = f"{com_item['name']}"
+                            else:
+                                added_name += f", {com_item['name']}"
+                            i += 1
+
+                    if added_name not in rust_refs:
+                        rust_refs[added_name] = {} # rust_refs[target_name].add(rust_code) # added
+                    if added_name not in seen:
+                        rust_refs[added_name] = {
                             "name" : use_name,
                             "rust_code" : rust_code,
                             "category" : category
@@ -4214,7 +4698,7 @@ def collect_dependencies(cashed, c_items, meta_path, meta_data, dep_json_path, i
                         g_used = True
                     elif category == "independent const macros":
                         i_used = True
-                    elif category == "Cfg attribute":
+                    elif category == "cfg attribute":
                         f_used = True
                                 
 
@@ -4333,12 +4817,9 @@ def collect_rust_dependencies(cashed, c_item, dep_json_path, meta_dir, build_pat
 
         if rust_code is not None:
             if name_key not in rust_refs: #function_name not in rust_refs:
-                #rust_refs[function_name] = []
                 rust_refs[name_key] = []
 
             rust_refs[name_key].append(rust_code) # added
-            #rust_refs[function_name].append(rust_code) # added
-
 
     at_least_found = False
     keys_to_delete = []  # List to keep track of keys to be deleted
@@ -6228,7 +6709,6 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
     ######################################
     ## header inclusion
     ######################################
-    # headers = get_headers(dep_json_path, target_dir)
     entries = get_entry_points(target_dir, is_program_path)
 
     print(target_dir)
@@ -6259,7 +6739,6 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
         pattern = r'let config_paths = vec!\[[\s\S]*?\];'
         pattern = r'let config_paths: Vec<&str> = vec!\[[\s\S]*?\];'
 
-    #modified_content = re.sub(pattern, new_header_code, template_content)
     modified_content = re.sub(pattern, new_header_code, template_content, count=1)
 
     # Write the modified content to build.rs
@@ -6292,7 +6771,7 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
 
     write_json(clang_args_json_path, file_clang_args)
     
-    # ← Read content here
+    # Read content here
     with open(build_rs_path, 'r') as f:
         content = f.read()
 
@@ -6360,6 +6839,24 @@ def generate_build_rs(build_template_path, build_rs_path, rust_lib_h_path, dep_j
     )
     with open(build_rs_path, 'w') as f:
         f.write(content)
+
+
+    with open(clang_args_json_path) as f:
+        data = json.load(f)
+
+    new = {}
+    for key, args in data.items():
+        new_key = re.sub(rf'{TRANS_HOME}/workspace_\d+_[^/]+/', '../', key)
+        seen, new_args = set(), []
+        for a in args:
+            a = re.sub(rf'{TRANS_HOME}/workspace_\d+_[^/]+/', '../', a)
+            if a not in seen:                          
+                new_args.append(a); seen.add(a)
+        new[new_key] = new_args
+
+    with open(clang_args_json_path, "w") as f:
+        json.dump(new, f, indent=4)
+
 
 
 # Build the Rust project and extract cargo:warning and cargo:rustc-cfg

@@ -1,0 +1,13 @@
+#!/bin/sh
+# Moon shell script
+#
+# This file is part of REMIND.
+# Copyright (C) 1992-2026 by Dianne Skoll
+
+echo Content-type: text/html
+echo
+echo "<HTML>"
+$REMIND $DIR/moon.rem
+echo "</HTML>"
+exit 0
+

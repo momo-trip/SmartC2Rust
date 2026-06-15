@@ -1,0 +1,31 @@
+Remind for UNIX and Linux
+
+Remind is a sophisticated alarm/calendar program.  Details are given
+in the man page, "remind.1".
+
+INSTALLING REMIND:
+-----------------
+
+If you have Tcl/Tk (wish 4.1 or higher) installed and are running X11:
+----------------------------------------------------------------------
+
+1) Type: wish ./build.tk from the top-level Remind directory.
+   Fill in the various options and hit "Build Remind"
+
+2) Type: "make install" -- you may need to be root to do this.
+
+If you do NOT have Tcl/Tk or are NOT running X11:
+-------------------------------------------------
+
+1) Edit the file "src/custom.h" according to your preferences.
+
+2) Type: "make"
+
+3) Type: "make install" -- you may need to be root to do this.
+
+The subdirectory "www" contains scripts for making a nice calendar
+web server.  See the files README and Makefile in that directory.
+
+--
+Dianne Skoll <dianne@skoll.ca>
+https://dianne.skoll.ca/projects/remind/

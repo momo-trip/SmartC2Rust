@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Haiti
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Fête de l'Indépendance Nationale%" %! %b.
+OMIT 1 January MSG %"Nouvel An%" %! %b.
+OMIT 2 January MSG %"Jour des Aïeux%" %! %b.
+OMIT [easterdate($Uy)-49] MSG %"Carnaval%" %! %b.
+OMIT [easterdate($Uy)-48] MSG %"Lundi Gras%" %! %b.
+OMIT [easterdate($Uy)-47] MSG %"Mardi Gras%" %! %b.
+OMIT [easterdate($Uy)-2] MSG %"Vendredi Saint%" %! %b.
+OMIT [easterdate($Uy)] MSG %"Pâques%" %! %b.
+OMIT 1 May MSG %"Fête de l'Agriculture et du Travail%" %! %b.
+OMIT 18 May MSG %"Fête du Drapeau et de l'Université%" %! %b.
+OMIT [easterdate($Uy)+60] MSG %"Fête-Dieu%" %! %b.
+OMIT 15 August MSG %"Assomption de Marie%" %! %b.
+OMIT 17 October MSG %"Mort de Dessalines%" %! %b.
+OMIT 1 November MSG %"La Toussaint%" %! %b.
+OMIT 2 November MSG %"Fête des Morts%" %! %b.
+OMIT 18 November MSG %"Commémoration de la Bataille de Vertières%" %! %b.
+OMIT 18 November MSG %"Jour des Forces Armées%" %! %b.
+OMIT 25 December MSG %"Noël%" %! %b.
+
+# Optional holidays
+REM [easterdate($Uy)-46] MSG %"Mercredi des Cendres%" %! %b.
+REM [easterdate($Uy)-3] MSG %"Jeudi Saint%" %! %b.
+REM 23 May MSG %"Fête de la Souveraineté Nationale%" %! %b.
+REM [easterdate($Uy)+39] MSG %"Ascension%" %! %b.
+REM 27 June MSG %"Fête de Notre-Dame du Perpétuel Secours, patronne d'Haiti%" %! %b.
+REM 20 September MSG %"Anniversaire de Naissance de Jean-Jacques Dessalines%" %! %b.
+REM 5 December MSG %"Jour de la Découverte%" %! %b.

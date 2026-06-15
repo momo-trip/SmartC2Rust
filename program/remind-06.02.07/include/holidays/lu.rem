@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+# Holiday file for Luxembourg
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# See important caveats in the README file in this directory.
+
+OMIT 1 January MSG %"Neijoerschdag%" %! %b.
+OMIT [easterdate($Uy)+1] MSG %"Ouschterméindeg%" %! %b.
+OMIT 1 May MSG %"Dag vun der Aarbecht%" %! %b.
+OMIT 9 May MSG %"Europadag%" %! %b.
+OMIT [easterdate($Uy)+39] MSG %"Christi Himmelfaart%" %! %b.
+OMIT [easterdate($Uy)+50] MSG %"Péngschtméindeg%" %! %b.
+OMIT 23 June MSG %"Nationalfeierdag%" %! %b.
+OMIT 15 August MSG %"Léiffrawëschdag%" %! %b.
+OMIT 1 November MSG %"Allerhellgen%" %! %b.
+OMIT 25 December MSG %"Chrëschtdag%" %! %b.
+OMIT 26 December MSG %"Stiefesdag%" %! %b.
