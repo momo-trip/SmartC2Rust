@@ -1,4 +1,18 @@
 ########################################################
+####    Preparation: Reformat test cases
+########################################################
+Place a config.json like the following:
+{
+    "llm_choice" : "<LLM model>",
+    "claude_api_key" : "<Your API key>",
+    "azure_endpoint" : "<Endpoint if necessary>",
+    "test_mode": false,
+    "average": 400,
+    "ffi_strategy": "minimize"
+}
+
+
+########################################################
 ####    Step 1: Reformat test cases
 ########################################################
 

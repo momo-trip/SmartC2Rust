@@ -77,6 +77,9 @@ In the paper, we focus on command-line tools, where the entry point can be trans
 
 ## Translation procedure
 
+The sections below walk through each step in detail. If you just want the full
+list of commands for all benchmarks, see [`commands.txt`](commands.txt).
+
 ---
 
 ### Step 1: Prepare inputs
